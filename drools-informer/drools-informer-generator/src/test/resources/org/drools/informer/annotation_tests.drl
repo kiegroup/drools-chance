@@ -1,0 +1,45 @@
+
+package org.drools.informer;
+
+import java.lang.annotation.Annotation;
+import org.drools.informer.annotations.Questionable;
+import org.drools.informer.annotations.QuestionMark;
+import org.drools.informer.annotations.AllowedAnswers;
+import org.drools.informer.ISurveyable;
+
+import org.drools.informer.Group;
+import org.drools.informer.InvalidAnswer;
+import org.drools.informer.Question;
+import org.drools.informer.Questionnaire;
+import org.drools.informer.MultipleChoiceQuestion;
+import org.drools.informer.MultipleChoiceQuestion.PossibleAnswer;
+import org.drools.informer.Note;
+import org.drools.informer.Item;
+import org.drools.informer.DomainModelAssociation;
+import org.drools.informer.Answer;
+import org.drools.informer.domain.DomainModelSupport;
+
+
+
+
+query questionnaire( String $context )
+    $quest : Questionnaire( context == $context )
+end
+
+
+query question( String $context, String $type )
+    $quest : Question( context == $context, type == $type )
+end
+
+query association( Object $obj, String $prop )
+    $quest : DomainModelAssociation( object == $obj, property == $prop )
+end
+
+query associations( Object $obj )
+    $quest : DomainModelAssociation( object == $obj )
+end
+
+
+
+
+

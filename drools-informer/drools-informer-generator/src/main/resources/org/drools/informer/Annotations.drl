@@ -1,0 +1,153 @@
+package org.drools.informer;
+
+
+import java.lang.annotation.Annotation;
+import org.drools.informer.annotations.Questionable;
+import org.drools.informer.annotations.QuestionMark;
+import org.drools.informer.annotations.AllowedAnswers;
+import org.drools.informer.ISurveyable;
+
+import org.drools.informer.Group;
+import org.drools.informer.InvalidAnswer;
+import org.drools.informer.Question;
+import org.drools.informer.Questionnaire;
+import org.drools.informer.MultipleChoiceQuestion;
+import org.drools.informer.MultipleChoiceQuestion.PossibleAnswer;
+import org.drools.informer.Note;
+import org.drools.informer.Item;
+import org.drools.informer.DomainModelAssociation;
+import org.drools.informer.Answer;
+import org.drools.informer.domain.DomainModelSupport;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Arrays;
+
+import java.lang.reflect.Field;
+
+
+// Helper object for cleaning things up
+declare SurveyableMarker
+    id : String     @key
+end
+
+
+
+
+rule "SurveyableMarker"
+salience 100
+when
+    ISurveyable( $id : id )
+    not SurveyableMarker( id == $id )
+then
+    insert( new SurveyableMarker($id) );
+end
+
+
+rule "Questionnaire_Auto"
+dialect "mvel"
+when
+    $o   : ISurveyable( $id : id )
+    $ann : Questionable( $lab : label ) from $o.getClass().getAnnotations()
+           not Questionnaire( id == $id, type == $o.getClass().getName() )
+then
+    Questionnaire quest = new Questionnaire();
+        quest.forceId( $id );
+        quest.setContext( $id );
+        quest.setLabel( $lab );
+        quest.setType( $o.getClass().getName() );
+    insert(quest);
+end
+
+
+
+rule "Question_Auto"
+dialect "mvel"
+no-loop
+salience 1
+when
+    $o   : ISurveyable( $id : id )
+           Questionable( ) from $o.getClass().getAnnotations()
+    $qst : Questionnaire( $ctx : context == $id )
+    $fld : Field( $fldName : name, $fldKlass : class ) from $o.getClass().getDeclaredFields()
+    $qm  : QuestionMark( $lab : label, $qType : type,
+                         $req : required,
+                         $dateFormat : dateFormat ) from $fld.getAnnotations()
+           not AllowedAnswers() from $fld.getAnnotations()
+           not Question( context == $id, type == $fldName )
+then
+    Question q = new Question( $fldName, $lab );
+        q.setContext( $id );
+        q.setAnswerType( $qType );
+        q.setRequired( $req );
+        q.setDateFormat( $dateFormat );
+
+        $qst.addItem( q.id );
+    insert( q );
+
+    DomainModelAssociation dma = new DomainModelAssociation( );
+        dma.setObject((Object) $o);
+        dma.setQuestionId(q.id);
+        dma.setContext($id);
+        dma.setProperty($fldName);
+    insert(dma);
+end
+
+
+
+
+rule "MultipleChoice_Question_Auto"
+dialect "mvel"
+no-loop
+salience 1
+when
+    $o   : ISurveyable( $id : id )
+           Questionable( ) from $o.getClass().getAnnotations()
+    $qst : Questionnaire( $ctx : context == $id  )
+    $fld : Field( $fldName : name, $fldKlass : class ) from $o.getClass().getDeclaredFields()
+    $q   : QuestionMark( $lab : label, $qType : type,
+                         $req : required ) from $fld.getAnnotations()
+           AllowedAnswers( $ansValues : values ) from $fld.getAnnotations()
+           not MultipleChoiceQuestion( context == $id, type == $fldName )
+then
+    MultipleChoiceQuestion mcq = new MultipleChoiceQuestion( $fldName, $lab );
+        mcq.setContext( $id );
+        mcq.setAnswerType($qType);
+        mcq.setRequired($req);
+        mcq.setPreLabel($lab);
+        mcq.setPossibleAnswersByValue( $ansValues );
+
+        $qst.addItem(mcq.id);
+            update($qst);
+    insert(mcq);
+
+    DomainModelAssociation dma = new DomainModelAssociation( );
+        dma.setObject((Object) $o);
+        dma.setQuestionId(mcq.id);
+        dma.setContext($id);
+        dma.setProperty($fldName);
+    insert(dma);
+end
+
+
+
+rule "Cleanup"
+salience -100
+when
+    SurveyableMarker( $id : id )
+    not ISurveyable( id == $id )
+    $obj : InformerObject( context == $id )
+then
+    retract( $obj );
+end
+
+rule "Cleanup_final"
+salience -110
+when
+    $marker : SurveyableMarker( $id : id )
+    not ISurveyable( id == $id )
+then
+    retract( $marker );
+end
+
