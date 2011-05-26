@@ -1,0 +1,26 @@
+
+package org.drools.informer
+
+query "activeObjects"
+	object : InformerObject(active == true);
+end
+
+query "activeObjectsInContext" (String context)
+	object : InformerObject( active == true, context == context );
+end
+
+
+query "answeredQuestions"
+	question : Question(answered == true);
+end
+
+query "answeredQuestionsInContext" (String context)
+	question : Question(answered == true, context == context);
+end
+
+
+
+query "getItemId"( String type, String context )
+    Item( type == type, context == context, $id : id )
+end
+

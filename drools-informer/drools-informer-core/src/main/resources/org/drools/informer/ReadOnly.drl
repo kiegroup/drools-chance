@@ -1,0 +1,86 @@
+
+package org.drools.informer
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+/*
+* A question/group is marked as readonly if it is contained in any group that is readonly.  This means that if you put a question
+* in two groups both of which are active, but only one of which is readonly then the question will appear as readonly in both.
+*/
+rule "propagate readonly from group to subgroups"
+no-loop
+salience 5
+when
+	item : Group( itemStyles : stylesList,
+	              stylesList not contains "readonly-inherited"
+	           && stylesList not contains "readonly" )
+	exists (
+	    Group( itemList contains item.id, active == true,
+	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
+	)
+then
+        item.addPresentationStyle("readonly-inherited");
+		update(item);
+end
+
+rule "propagate readonly from group to question"
+no-loop
+salience 4
+when
+	item : Question( itemStyles : stylesList,
+	              stylesList not contains "readonly-inherited"
+	           && stylesList not contains "readonly" )
+	exists (
+	    Group( itemList contains item.id, active == true,
+	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
+	)
+then
+        item.addPresentationStyle("readonly-inherited");
+		update(item);
+end
+
+
+
+rule "remove readonly from group to subgroups"
+no-loop
+salience 2
+when
+	item : Group( itemStyles : stylesList,
+	              stylesList contains "readonly-inherited"
+	           || stylesList contains "readonly" )
+	not (
+	    Group( itemList contains item.id, active == true,
+	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
+	)
+then
+        item.removePresentationStyle("readonly-inherited");
+		update(item);
+end
+
+rule "remove readonly from group to question"
+no-loop
+salience 1
+when
+	item : Question( itemStyles : stylesList,
+	              stylesList contains "readonly-inherited"
+	           || stylesList contains "readonly" )
+	not (
+	    Group( itemList contains item.id, active == true,
+	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
+	)
+then
+        item.removePresentationStyle("readonly-inherited");
+		update(item);
+end
+
+
+
+
+
+
+
+

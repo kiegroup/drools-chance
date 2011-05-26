@@ -1,0 +1,34 @@
+import org.drools.informer.*;
+
+global java.util.List list;
+
+/*
+  A questionnaire of a given Type (normally passed as a parameter)
+  is created if not already present.
+  The trigger is the context for which the questionnaire must be created
+*/
+rule "Generate On Demand"
+when
+    $ctx : String( )
+    not Questionnaire( context == $ctx, type == "TestType" )
+then
+    Questionnaire q = new Questionnaire("TestType");
+        q.setContext($ctx);
+
+    Question q1 = new Question("Question 1", "Please Answer Question 1");
+        q1.setAnswerType(Question.QuestionType.TYPE_TEXT);
+        q1.setContext($ctx);
+
+    insert(q);
+    insert(q1);
+end
+
+
+rule "onAnswer"
+when
+    Question( type == "Question 1",
+              answer == "xyz",
+              $ctx: context )
+then
+    list.add($ctx);
+end

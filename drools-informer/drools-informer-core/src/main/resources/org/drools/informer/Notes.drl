@@ -1,0 +1,26 @@
+package org.drools.informer
+
+
+
+rule "IncludeNotes"
+no-loop
+when
+    $n : Note( $ctx : context, $noteId : id )
+    $quest : Questionnaire( id == $ctx, itemList not contains $noteId )
+then
+    $quest.addItem($noteId);
+    update($quest);
+end
+
+
+
+rule "RemoveUnusedNotes"
+no-loop
+when
+    $quest : Questionnaire( $itemz : itemList )
+    $itemId : String() from $itemz;
+    not Item( id == $itemId )
+then
+    $quest.removeItem($itemId);
+    update($quest);
+end
