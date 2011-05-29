@@ -50,7 +50,9 @@ public class Questionnaire extends Group {
 
 	public static final String COMPLETION_ACTION_RETURN = "#return";
 
-	private String activeItem;
+	private String defaultLanguage = "EN";
+
+    private String activeItem;
 
 	private transient ArrayList<NavigationStackEntry> navigationStack = new ArrayList<NavigationStackEntry>();
 
@@ -309,4 +311,12 @@ public class Questionnaire extends Group {
 	public void setMarkupAllowed(boolean markupAllowed) {
 		this.markupAllowed = markupAllowed;
 	}
+
+    public String getDefaultLanguage() {
+        return defaultLanguage;
+    }
+
+    public void setDefaultLanguage(String defaultLanguage) {
+        this.defaultLanguage = defaultLanguage;
+    }
 }

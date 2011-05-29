@@ -94,6 +94,12 @@ public class Question extends Item {
         QuestionType(String val) {
             value = val;
         }
+
+        public String getValue() {
+            return value;
+        }
+
+
     }
 
 
@@ -137,6 +143,12 @@ public class Question extends Item {
 	 */
 	@AnswerField
 	private String listAnswer;
+
+
+    @AnswerField
+    private String lastAnswer;
+
+
 
 	public Question() {
 	}
@@ -218,7 +230,24 @@ public class Question extends Item {
 		return QuestionType.valueOf(answerType);
 	}
 
-	public String getTextAnswer() {
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLastAnswer() {
+        return lastAnswer;
+    }
+
+    public void setLastAnswer(String lastAnswer) {
+        this.lastAnswer = lastAnswer;
+    }
+
+    public String getTextAnswer() {
 		checkType(QuestionType.TYPE_TEXT);
 		return textAnswer;
 	}
@@ -313,6 +342,8 @@ public class Question extends Item {
 			throw new IllegalStateException("answerType has not been specified");
 		}
         QuestionType basicAnswerType = getBasicAnswerType();
+
+        setLastAnswer( (answer != null) ? answer.toString() : null);
 
 		if (basicAnswerType.equals(QuestionType.TYPE_TEXT)) {
 			setTextAnswer((String) answer);

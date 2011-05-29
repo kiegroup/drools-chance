@@ -371,11 +371,11 @@ public class ChangeCollectorTest {
 
 		question5.setAnswer("answer5New");
 		c.objectUpdated(new ObjectUpdatedEventMock("5", question5, question5));
-		c.objectRetracted(new ObjectRetractedEventMock("a", answer5New));
+//		c.objectRetracted(new ObjectRetractedEventMock("a", answer5New));
 
 		assertNull(c.getCreate());
 		assertNull(c.getUpdate());
-		assertNull(c.getDelete());
+//		assertNull(c.getDelete());
 	}
 
 	@Test

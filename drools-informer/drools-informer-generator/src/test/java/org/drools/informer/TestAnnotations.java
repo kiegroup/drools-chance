@@ -135,12 +135,10 @@ public class TestAnnotations {
         }
 
 
+//        System.out.println(p1);
+//        System.out.println(p2);
 
-
-        System.out.println("**********************************" + p1);
-        System.out.println(p2);
-
-//        kSession.retract(kSession.getFactHandle(p1));
+        kSession.retract(kSession.getFactHandle(p1));
         kSession.retract(kSession.getFactHandle(p2));
 
         kSession.fireAllRules();

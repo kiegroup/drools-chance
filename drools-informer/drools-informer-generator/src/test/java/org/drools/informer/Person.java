@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-@Questionable(label = "Demographic Info Survey")
+@Questionable(label = "Demographic Info Survey" )
 public class Person implements ISurveyable {
 
 

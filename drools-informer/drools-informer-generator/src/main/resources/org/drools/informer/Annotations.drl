@@ -46,16 +46,19 @@ end
 
 
 rule "Questionnaire_Auto"
-dialect "mvel"
 when
     $o   : ISurveyable( $id : id )
-    $ann : Questionable( $lab : label ) from $o.getClass().getAnnotations()
+    $ann : Questionable(
+                            $lab : label,
+                            $lang : language
+                       ) from $o.getClass().getAnnotations()
            not Questionnaire( id == $id, type == $o.getClass().getName() )
 then
     Questionnaire quest = new Questionnaire();
         quest.forceId( $id );
         quest.setContext( $id );
         quest.setLabel( $lab );
+        quest.setDefaultLanguage( $lang );
         quest.setType( $o.getClass().getName() );
     insert(quest);
 end
@@ -82,7 +85,6 @@ then
         q.setAnswerType( $qType );
         q.setRequired( $req );
         q.setDateFormat( $dateFormat );
-
         $qst.addItem( q.id );
     insert( q );
 

@@ -13,4 +13,8 @@ public @interface Questionable {
 
     String label();
 
+    String language() default "EN";
+
+//    String context() default "";
+
 }
