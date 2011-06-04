@@ -38,7 +38,8 @@ rule "copy new answers into the corresponding questions"
 salience 30 # before: "discard invalid multiple choice answers"
 when
 	answer : Answer(questionId : questionId, answerValue : value);
-	question : Question(id == questionId, basicAnswerType : basicAnswerType)
+	question : Question(id == questionId, basicAnswerType : basicAnswerType,
+	                    finalAnswer == false || lastAnswer == null )
 then
 	retract(answer);
 	// Convert blank string and "null" string to real null
@@ -115,4 +116,15 @@ when
 then
 	questionnaire.setInvalidAnswers(false);
 	update(questionnaire);
+end
+
+
+rule "removeFinalQuestions"
+no-loop
+when
+    $q     : Question( $id : id, finalAnswer == true, lastAnswer != null )
+    $quest : Questionnaire( items contains $id )
+then
+    $quest.removeItem($id);
+    update($quest);
 end

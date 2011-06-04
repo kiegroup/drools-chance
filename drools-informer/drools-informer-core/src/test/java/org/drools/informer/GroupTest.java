@@ -297,12 +297,4 @@ public class GroupTest {
 		assertEquals(null, group.getInternalItemsAsString());
 	}
 
-	@Test
-	public void testAssigningCategory() {
-		Group group = new Group();
-		assertEquals(null, group.getCategory());
-		group.setCategory("A");
-		assertEquals("A", group.getCategory());
-	}
-
 }

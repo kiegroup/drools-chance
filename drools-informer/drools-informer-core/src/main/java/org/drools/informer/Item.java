@@ -37,10 +37,6 @@ public abstract class Item extends InformerObject {
 	 */
 	private List<String> presentationStyles;
 	
-	/**
-	 * This is a way of optionally abstractly grouping elements for use outside Tohu.
-	 */
-	private String category;
 
 
     public Item() {
@@ -59,24 +55,6 @@ public abstract class Item extends InformerObject {
 	 */
 	public String getId() {
 		return id;
-	}
-
-	/**
-	 * Return an optional abstract grouping identifying string
-	 * 
-	 * @return
-	 */
-	public String getCategory() {
-		return category;
-	}
-
-	/**
-	 * Sets an (optional) abstract grouping identifying string.
-	 * 
-	 * To be used outside of Tohu.
-	 */
-	public void setCategory(String category) {
-		this.category = category;
 	}
 
 	/**
@@ -291,7 +269,6 @@ public abstract class Item extends InformerObject {
         return "Item{" +
                 "id='" + id + '\'' +
                 ", presentationStyles=" + presentationStyles +
-                ", category='" + category + '\'' +
                 "} " + super.toString();
     }
 

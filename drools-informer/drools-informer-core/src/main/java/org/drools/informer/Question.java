@@ -110,6 +110,8 @@ public class Question extends Item {
 
 	private String postLabel;
 
+    private String reason;
+
 	private boolean required;
 
 	private QuestionType answerType;
@@ -149,6 +151,9 @@ public class Question extends Item {
     private String lastAnswer;
 
 
+    private boolean finalAnswer = false;
+
+
 
 	public Question() {
 	}
@@ -178,7 +183,15 @@ public class Question extends Item {
 		this.postLabel = postLabel;
 	}
 
-	public boolean isRequired() {
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public boolean isRequired() {
 		return required;
 	}
 
@@ -191,7 +204,19 @@ public class Question extends Item {
 		this.required = required;
 	}
 
-	public QuestionType getAnswerType() {
+
+    public boolean isFinalAnswer() {
+        return finalAnswer;
+    }
+
+    public void setFinalAnswer(boolean finalAnswer) {
+        this.finalAnswer = finalAnswer;
+    }
+
+
+
+
+    public QuestionType getAnswerType() {
 		return answerType;
 	}
 
@@ -431,6 +456,8 @@ public class Question extends Item {
 		} else if (basicAnswerType.equals(QuestionType.TYPE_LIST)) {
 			setListAnswer(answerValue);
 		}
+
+        setLastAnswer(answerValue);
     }
 
 
@@ -500,6 +527,7 @@ public class Question extends Item {
                 ", postLabel='" + postLabel + '\'' +
                 ", required=" + required +
                 ", answerType=" + answerType +
+                ", lastAnswer=" + lastAnswer +
                 ", textAnswer='" + textAnswer + '\'' +
                 ", numberAnswer=" + numberAnswer +
                 ", decimalAnswer=" + decimalAnswer +

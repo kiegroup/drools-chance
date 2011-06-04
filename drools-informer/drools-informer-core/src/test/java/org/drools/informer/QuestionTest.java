@@ -41,7 +41,7 @@ public class QuestionTest {
 	public void testUnknownAnswerType() {
 		Question q = new Question();
 		try {
-			q.setAnswerType(null);
+			q.setAnswerType((Question.QuestionType) null);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
@@ -162,4 +162,9 @@ public class QuestionTest {
 		q.setDateAnswer((Date) null);
 		assertNull(q.getDateAnswer());
 	}
+
+
+
+
+
 }
