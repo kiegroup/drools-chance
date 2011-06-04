@@ -1,0 +1,26 @@
+
+@declare{'detachQuestionRule'}
+
+rule "Attach @{questType} in @{context}"
+no-loop
+when
+    $Quest : org.drools.informer.Questionnaire( $ctx : context == "@{context}",
+                            $itemList : itemList )
+    $quest : org.drools.informer.Question( type == "@{questType}", context == $ctx,
+                                           $id : id not memberOf $itemList )
+    $hold  : @{klass}( id == "@{context}", @{whenClause} )
+then
+    System.err.println("(Re)attaching question @{questType} as it is relevant again");
+    $Quest.addItem($id);
+    org.drools.informer.DomainModelAssociation dma = new org.drools.informer.DomainModelAssociation();
+        dma.setObject( $hold );
+        dma.setQuestionId( $id );
+        dma.setContext( "@{context}" );
+        dma.setProperty("@{questType}");
+    insert(dma);
+    update($Quest);
+end
+
+@end{}
+
+@includeNamed{'detachQuestionRule'}

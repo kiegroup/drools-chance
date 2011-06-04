@@ -14,7 +14,7 @@ import java.util.List;
 public class Person implements ISurveyable {
 
 
-    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = "Please fill name" )
+    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = "Please fill name", finalAnswer = true )
     private String name;
 
     @QuestionMark( type = Question.QuestionType.TYPE_NUMBER, label = "Please fill age", required = false )
@@ -31,7 +31,8 @@ public class Person implements ISurveyable {
     private List<Integer> luckyNumbers;
 
 
-    @QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Birth Date?", dateFormat = "dd/MM/yyyy" )
+    @QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Birth Date?", dateFormat = "dd/MM/yyyy",
+                   when = "age < 5" )
     private Date birthDate;
 
 

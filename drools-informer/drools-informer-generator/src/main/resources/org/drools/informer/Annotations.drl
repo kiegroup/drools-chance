@@ -24,7 +24,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Arrays;
 
+import org.drools.agent.KnowledgeAgent;
+
+import org.drools.builder.ResourceType;
+import org.drools.io.Resource;
+import org.drools.io.impl.ByteArrayResource;
+import org.drools.io.impl.ChangeSetImpl;
+
+
 import java.lang.reflect.Field;
+
+
+global KnowledgeAgent kAgent;
 
 
 // Helper object for cleaning things up
@@ -76,7 +87,9 @@ when
     $fld : Field( $fldName : name, $fldKlass : class ) from $o.getClass().getDeclaredFields()
     $qm  : QuestionMark( $lab : label, $qType : type,
                          $req : required,
-                         $dateFormat : dateFormat ) from $fld.getAnnotations()
+                         $dateFormat : dateFormat,
+                         $oneShot : finalAnswer
+                         ) from $fld.getAnnotations()
            not AllowedAnswers() from $fld.getAnnotations()
            not Question( context == $id, type == $fldName )
 then
@@ -84,6 +97,7 @@ then
         q.setContext( $id );
         q.setAnswerType( $qType );
         q.setRequired( $req );
+        q.setFinalAnswer( $oneShot );
         q.setDateFormat( $dateFormat );
         $qst.addItem( q.id );
     insert( q );
@@ -132,6 +146,67 @@ then
     insert(dma);
 end
 
+
+
+
+
+
+
+
+
+rule "Whens"
+no-loop
+salience 1
+when
+    $o   : ISurveyable( $id : id )
+           Questionable( ) from $o.getClass().getAnnotations()
+    eval ( kAgent != null )
+    $fld : Field( $fldName : name, $fldKlass : class ) from $o.getClass().getDeclaredFields()
+    $q   : QuestionMark( $when : when != "" ) from $fld.getAnnotations()
+
+    not    ResourceHolder( id == $id, target == $fldName )
+then
+    java.util.Map map = new java.util.HashMap();
+        map.put("context",$id);
+        map.put("questType",$fldName);
+        map.put("klass",$o.getClass().getName());
+        map.put("whenClause",$when);
+
+    String drl = "package org.drools.informer \n";
+    drl += org.drools.informer.GeneratorTemplateManager.getInstance().applyTemplate("detachQuestion.drlt", $o, map);
+    drl += org.drools.informer.GeneratorTemplateManager.getInstance().applyTemplate("attachQuestion.drlt", $o, map);
+
+
+    System.out.println("----------------------------------------------------------");
+
+    ByteArrayResource bar = new ByteArrayResource(drl.getBytes());
+        bar.setResourceType(ResourceType.DRL);
+        ChangeSetImpl changeSet = new ChangeSetImpl();
+            changeSet.setResourcesAdded(Arrays.asList((Resource) bar));
+
+    ResourceHolder rh = new ResourceHolder($id, $fldName, bar);
+    insert(rh);
+
+    kAgent.applyChangeSet(changeSet);
+
+end
+
+
+
+
+
+rule "Clean Rules"
+salience -999
+when
+    $rh : ResourceHolder( $id : id, $res : res )
+    not ISurveyable( id == $id )
+    eval ( kAgent != null )
+then
+    ChangeSetImpl changeSet = new ChangeSetImpl();
+        changeSet.setResourcesRemoved(Arrays.asList((Resource) $res));
+    kAgent.applyChangeSet(changeSet);
+    retract($rh);
+end
 
 
 rule "Cleanup"

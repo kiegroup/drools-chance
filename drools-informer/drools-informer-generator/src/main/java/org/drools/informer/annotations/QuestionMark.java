@@ -21,8 +21,10 @@ public @interface QuestionMark {
 
     boolean required() default true;
 
-
     String dateFormat() default "";
 
+    boolean finalAnswer() default false;
 
+
+    String when() default "";
 }
