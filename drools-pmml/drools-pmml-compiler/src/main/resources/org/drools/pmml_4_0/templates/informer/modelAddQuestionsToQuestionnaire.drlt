@@ -1,0 +1,17 @@
+
+@declare{'modelAddQuestionsToQuestionnaireRule'}
+rule "Assignment"
+no-loop
+salience -100
+when
+    $questionnaire : Questionnaire( $ctx : context == @{format("string",model)},
+                                    $items : itemList )
+    $question      : Question( $id : id not memberOf $items, context == $ctx )
+then
+    $questionnaire.addItem($id);
+    update($questionnaire);
+end
+@end{}
+
+@includeNamed{'modelAddQuestionsToQuestionnaireRule'}
+

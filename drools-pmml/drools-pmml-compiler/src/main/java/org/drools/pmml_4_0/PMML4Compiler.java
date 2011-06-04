@@ -20,10 +20,13 @@ import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.RuleBaseConfiguration;
 import org.drools.builder.*;
+import org.drools.common.DefaultFactHandle;
+import org.drools.common.EventFactHandle;
 import org.drools.conf.EventProcessingOption;
 import org.drools.io.ResourceFactory;
 import org.drools.pmml_4_0.descr.PMML;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
@@ -32,10 +35,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 
 public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
@@ -130,6 +130,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 
             "informer/modelQuestionnaire.drlt",
+            "informer/modelAddQuestionsToQuestionnaire.drlt",
             "informer/modelQuestion.drlt",
             "informer/modelMultiQuestion.drlt",
             "informer/modelQuestionBinding.drlt",
@@ -281,6 +282,8 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 			}
 		}
 	}
+
+
 
 
 

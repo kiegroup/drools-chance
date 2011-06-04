@@ -490,48 +490,92 @@ public class PMML4Wrapper {
 
 
 
+//
+//    public String mapDatatypeToQuestion(DATATYPE datatype) {
+//        String s = datatype != null ? datatype.value() : null;
+//		if (s == null) return Object.class.getName();
+//		if ("Integer".equalsIgnoreCase(s))
+//            return Question.QuestionType.TYPE_NUMBER.getValue();
+//		else if ("Float".equalsIgnoreCase(s))
+//		    return Question.QuestionType.TYPE_DECIMAL.getValue();
+//        else if ("Double".equalsIgnoreCase(s))
+//		    return Question.QuestionType.TYPE_DECIMAL.getValue();
+//        else if ("Boolean".equalsIgnoreCase(s))
+//            return Question.QuestionType.TYPE_BOOLEAN.getValue();
+//		else if ("String".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_TEXT.getValue();
+//		else if ("Date".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_DATE.getValue();
+//		else if ("Time".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_DATE.getValue();
+//		else if ("DateTime".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_DATE.getValue();
+//		else if ("DateDaysSince[0]".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_NUMBER.getValue();
+//		else if ("DateDaysSince[1960]".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_NUMBER.getValue();
+//		else if ("DateDaysSince[1970]".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_NUMBER.getValue();
+//		else if ("DateDaysSince[1980]".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_NUMBER.getValue();
+//		else if ("TimeSeconds".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_NUMBER.getValue();
+//		else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_NUMBER.getValue();
+//		else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_NUMBER.getValue();
+//		else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_NUMBER.getValue();
+//		else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_NUMBER.getValue();
+//        else if ("collection".equalsIgnoreCase(s))
+//			return Question.QuestionType.TYPE_LIST.getValue();
+//		else
+//			return Question.QuestionType.TYPE_TEXT.getValue();
+//	}
+
 
     public String mapDatatypeToQuestion(DATATYPE datatype) {
         String s = datatype != null ? datatype.value() : null;
 		if (s == null) return Object.class.getName();
 		if ("Integer".equalsIgnoreCase(s))
-            return Question.TYPE_NUMBER;
+            return "Question.QuestionType.TYPE_NUMBER";
 		else if ("Float".equalsIgnoreCase(s))
-		    return Question.TYPE_DECIMAL;
+		    return "Question.QuestionType.TYPE_DECIMAL";
         else if ("Double".equalsIgnoreCase(s))
-		    return Question.TYPE_DECIMAL;
+		    return "Question.QuestionType.TYPE_DECIMAL";
         else if ("Boolean".equalsIgnoreCase(s))
-            return Question.TYPE_BOOLEAN;
+            return "Question.QuestionType.TYPE_BOOLEAN";
 		else if ("String".equalsIgnoreCase(s))
-			return Question.TYPE_TEXT;
+			return "Question.QuestionType.TYPE_TEXT";
 		else if ("Date".equalsIgnoreCase(s))
-			return Question.TYPE_DATE;
+			return "Question.QuestionType.TYPE_DATE";
 		else if ("Time".equalsIgnoreCase(s))
-			return Question.TYPE_DATE;
+			return "Question.QuestionType.TYPE_DATE";
 		else if ("DateTime".equalsIgnoreCase(s))
-			return Question.TYPE_DATE;
+			return "Question.QuestionType.TYPE_DATE";
 		else if ("DateDaysSince[0]".equalsIgnoreCase(s))
-			return Question.TYPE_NUMBER;
+			return "Question.QuestionType.TYPE_NUMBER";
 		else if ("DateDaysSince[1960]".equalsIgnoreCase(s))
-			return Question.TYPE_NUMBER;
+			return "Question.QuestionType.TYPE_NUMBER";
 		else if ("DateDaysSince[1970]".equalsIgnoreCase(s))
-			return Question.TYPE_NUMBER;
+			return "Question.QuestionType.TYPE_NUMBER";
 		else if ("DateDaysSince[1980]".equalsIgnoreCase(s))
-			return Question.TYPE_NUMBER;
+			return "Question.QuestionType.TYPE_NUMBER";
 		else if ("TimeSeconds".equalsIgnoreCase(s))
-			return Question.TYPE_NUMBER;
+			return "Question.QuestionType.TYPE_NUMBER";
 		else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(s))
-			return Question.TYPE_NUMBER;
+			return "Question.QuestionType.TYPE_NUMBER";
 		else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(s))
-			return Question.TYPE_NUMBER;
+			return "Question.QuestionType.TYPE_NUMBER";
 		else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(s))
-			return Question.TYPE_NUMBER;
+			return "Question.QuestionType.TYPE_NUMBER";
 		else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(s))
-			return Question.TYPE_NUMBER;
+			return "Question.QuestionType.TYPE_NUMBER";
         else if ("collection".equalsIgnoreCase(s))
-			return Question.TYPE_LIST;
+			return "Question.QuestionType.TYPE_LIST";
 		else
-			return Question.TYPE_TEXT;
+			return "Question.QuestionType.TYPE_TEXT";
 	}
 
 }

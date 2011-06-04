@@ -44,6 +44,8 @@ then
         map.put("fields",$inputs);
         map.put("model",utils.context);
     applyTemplate("modelQuestionnaire.drlt", utils, registry, map, theory);
+
+    applyTemplate("modelAddQuestionsToQuestionnaire.drlt", utils, registry, map, theory);
 end
 
 

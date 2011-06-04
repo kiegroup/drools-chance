@@ -14,7 +14,8 @@ no-loop
 salience 1000
 when
 then
-    Questionnaire questionnaire = new Questionnaire(@{format("string",model)});
+    Questionnaire questionnaire = new Questionnaire(@{format("string",model)}+"_Questionnaire");
+    questionnaire.setContext(@{format("string",model)});
 	questionnaire.setLabel(@{format("string",model)} + " form");
 
 	questionnaire.setItems({  @foreach{fld : fields} @{format("string",model)}+"_"+@{format("string",compactUpperCase(fld.name))} @end{","}  });

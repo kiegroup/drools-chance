@@ -20,14 +20,12 @@ then
 
     $bean.setValid(false);
 
-    System.out.println(" HAXXED --------------------------------------- update question -> assoc   " + questionId + "  > " + object + " > " + answer);
-	Class propertyClass = PropertyUtils.getPropertyType(object, property);
+    Class propertyClass = PropertyUtils.getPropertyType(object, property);
 	Object propertyValue = DomainModelSupport.answerToObject(question.getBasicAnswerType(), answer, propertyClass);
 	Object oldPropertyValue = PropertyUtils.getProperty(object, property);
 	PropertyUtils.setProperty(object, property, propertyValue);
 
 	association.setLastAnswer(answer);
-	System.out.println("HAXXED Updated " + $bean);
 
     update($bean);
 	update(association);
