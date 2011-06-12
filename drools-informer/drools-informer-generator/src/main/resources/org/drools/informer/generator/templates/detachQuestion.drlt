@@ -9,8 +9,8 @@ when
     $quest : org.drools.informer.Question( type == "@{questType}", context == $ctx,
                        $id : id memberOf $itemList )
     $dom   : org.drools.informer.DomainModelAssociation( questionId == $id )
-    $hold  : @{klass}( id == "@{context}" )
-    not      @{klass}( id == "@{context}", @{whenClause} )
+    $hold  : @{klass}( questionnaireId == "@{context}" )
+    not      @{klass}( questionnaireId == "@{context}", @{whenClause} )
 then
     System.err.println("Detaching question @{questType} " + $id + " as it is not longer relevant");
     $Quest.removeItem($id);

@@ -41,16 +41,16 @@ public class Person implements ISurveyable {
 
 
 
-    private String id;
+    private String questionnaireId;
 
-    public String getId() {
-        return id;
+    public String getQuestionnaireId() {
+        return questionnaireId;
     }
 
 
 
     public Person(String id, String name, int age) {
-        this.id = id;
+        this.questionnaireId = id;
         this.name = name;
         this.age = age;
     }
@@ -59,7 +59,7 @@ public class Person implements ISurveyable {
     @Override
     public String toString() {
         return "Person{" +
-                "id='" + id + '\'' +
+                "questionnaireId='" + questionnaireId + '\'' +
                 ", age=" + age +
                 ", name='" + name + '\'' +
                 ", luckyNumbers=" + luckyNumbers +
@@ -77,14 +77,14 @@ public class Person implements ISurveyable {
 
         Person person = (Person) o;
 
-        if (id != null ? !id.equals(person.id) : person.id != null) return false;
+        if (questionnaireId != null ? !questionnaireId.equals(person.questionnaireId) : person.questionnaireId != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return questionnaireId != null ? questionnaireId.hashCode() : 0;
     }
 
     public String getName() {

@@ -8,7 +8,7 @@ when
                             $itemList : itemList )
     $quest : org.drools.informer.Question( type == "@{questType}", context == $ctx,
                                            $id : id not memberOf $itemList )
-    $hold  : @{klass}( id == "@{context}", @{whenClause} )
+    $hold  : @{klass}( questionnaireId == "@{context}", @{whenClause} )
 then
     System.err.println("(Re)attaching question @{questType} as it is relevant again");
     $Quest.addItem($id);

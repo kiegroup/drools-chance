@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public interface ISurveyable extends Serializable {
 
-    public String getId();
+    public String getQuestionnaireId();
 
 
 

@@ -36,7 +36,7 @@
 
   <modules>
     <module>drools-informer-core</module>
-    <!-- <module>drools-informer-loader</module> -->
+    <module>drools-informer-loader</module>
     <module>drools-informer-generator</module>
   </modules>
 

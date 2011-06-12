@@ -68,26 +68,26 @@ public class TestAnnotations {
         kSession.insert(p2);
         kSession.fireAllRules();
 
-        assertEquals(1, kSession.getQueryResults("questionnaire", p1.getId()).size());
-        assertEquals(1, kSession.getQueryResults("questionnaire",p2.getId()).size());
+        assertEquals(1, kSession.getQueryResults("questionnaire", p1.getQuestionnaireId()).size());
+        assertEquals(1, kSession.getQueryResults("questionnaire",p2.getQuestionnaireId()).size());
 
-        assertEquals(1, kSession.getQueryResults("question", p1.getId(), "name").size());
-        assertEquals(1, kSession.getQueryResults("question", p1.getId(), "age").size());
-        assertEquals(1, kSession.getQueryResults("question", p1.getId(), "hobbies").size());
-        assertEquals(1, kSession.getQueryResults("question", p1.getId(), "luckyNumbers").size());
+        assertEquals(1, kSession.getQueryResults("question", p1.getQuestionnaireId(), "name").size());
+        assertEquals(1, kSession.getQueryResults("question", p1.getQuestionnaireId(), "age").size());
+        assertEquals(1, kSession.getQueryResults("question", p1.getQuestionnaireId(), "hobbies").size());
+        assertEquals(1, kSession.getQueryResults("question", p1.getQuestionnaireId(), "luckyNumbers").size());
 
         assertEquals(5, kSession.getQueryResults("associations", p1).size());
         assertEquals(5, kSession.getQueryResults("associations", p2).size());
 
 
-        Answer ans = new Answer("age",p1.getId(),"44");
+        Answer ans = new Answer("age",p1.getQuestionnaireId(),"44");
         kSession.insert(ans);
         kSession.fireAllRules();
 
         assertEquals(44,p1.getAge());
         assertEquals(35,p2.getAge());
 
-        Answer ans2 = new Answer("name",p1.getId(),"joe");
+        Answer ans2 = new Answer("name",p1.getQuestionnaireId(),"joe");
         kSession.insert(ans2);
         kSession.fireAllRules();
 
@@ -95,7 +95,7 @@ public class TestAnnotations {
         assertEquals("alan",p2.getName());
 
 
-        Answer ans3 = new Answer("hobbies",p1.getId(),"Reading");
+        Answer ans3 = new Answer("hobbies",p1.getQuestionnaireId(),"Reading");
         kSession.insert(ans3);
         kSession.fireAllRules();
 
@@ -103,7 +103,7 @@ public class TestAnnotations {
         assertNull(p2.getHobbies());
 
 
-        Answer ans35 = new Answer("hobbies",p1.getId(),"Reading,Swimming,Sleeping");
+        Answer ans35 = new Answer("hobbies",p1.getQuestionnaireId(),"Reading,Swimming,Sleeping");
         kSession.insert(ans35);
         kSession.fireAllRules();
 
@@ -112,7 +112,7 @@ public class TestAnnotations {
 
 
 
-        Answer ans4 = new Answer("hobbies",p1.getId(),"Reading,Sleeping");
+        Answer ans4 = new Answer("hobbies",p1.getQuestionnaireId(),"Reading,Sleeping");
         kSession.insert(ans4);
         kSession.fireAllRules();
 
@@ -120,7 +120,7 @@ public class TestAnnotations {
         assertNull(p2.getHobbies());
 
 
-        Answer ans5 = new Answer("luckyNumbers",p1.getId(),"13");
+        Answer ans5 = new Answer("luckyNumbers",p1.getQuestionnaireId(),"13");
         kSession.insert(ans5);
         kSession.fireAllRules();
 
@@ -131,7 +131,7 @@ public class TestAnnotations {
 
 
         // Cannot change the birthdate!! The question is not relevant and thus detached
-        Answer ans6 = new Answer("birthDate",p1.getId(),"01/12/1981");
+        Answer ans6 = new Answer("birthDate",p1.getQuestionnaireId(),"01/12/1981");
         kSession.insert(ans6);
         kSession.fireAllRules();
 
@@ -141,7 +141,7 @@ public class TestAnnotations {
 
 
 
-        Answer ans7 = new Answer("doomsHour",p1.getId(),"01:32:44");
+        Answer ans7 = new Answer("doomsHour",p1.getQuestionnaireId(),"01:32:44");
         kSession.insert(ans7);
         kSession.fireAllRules();
 
@@ -157,7 +157,7 @@ public class TestAnnotations {
 
 
 
-        Answer ans8 = new Answer("name",p1.getId(),"this will never change the name");
+        Answer ans8 = new Answer("name",p1.getQuestionnaireId(),"this will never change the name");
         kSession.insert(ans8);
         kSession.fireAllRules();
 
@@ -165,7 +165,7 @@ public class TestAnnotations {
         assertEquals("alan",p2.getName());
 
 
-        Answer ans10 = new Answer("age",p1.getId(),"4");
+        Answer ans10 = new Answer("age",p1.getQuestionnaireId(),"4");
         kSession.insert(ans10);
         kSession.fireAllRules();
 
@@ -187,7 +187,7 @@ public class TestAnnotations {
         }
 
         // not for p2
-        Answer ans11 = new Answer("birthDate",p2.getId(),"01/12/1981");
+        Answer ans11 = new Answer("birthDate",p2.getQuestionnaireId(),"01/12/1981");
         kSession.insert(ans11);
         kSession.fireAllRules();
 
@@ -217,7 +217,7 @@ public class TestAnnotations {
         kSession.insert(p1);
         kSession.fireAllRules();
 
-        Answer ans99 = new Answer("age",p1.getId(),"44");
+        Answer ans99 = new Answer("age",p1.getQuestionnaireId(),"44");
         kSession.insert(ans99);
         kSession.fireAllRules();
 
