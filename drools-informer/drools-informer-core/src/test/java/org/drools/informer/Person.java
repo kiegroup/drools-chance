@@ -1,12 +1,10 @@
 package org.drools.informer;
 
 
-import org.drools.informer.annotations.AllowedAnswers;
-import org.drools.informer.annotations.QuestionMark;
-import org.drools.informer.annotations.Questionable;
+import org.drools.informer.generator.ISurveyable;
+import org.drools.informer.generator.annotations.Questionable;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -14,29 +12,29 @@ import java.util.List;
 public class Person implements ISurveyable {
 
 
-    @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = "Please fill name", finalAnswer = true )
+    @org.drools.informer.generator.annotations.QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = "Please fill name", finalAnswer = true )
     private String name;
 
-    @QuestionMark( type = Question.QuestionType.TYPE_NUMBER, label = "Please fill age", required = false )
+    @org.drools.informer.generator.annotations.QuestionMark( type = Question.QuestionType.TYPE_NUMBER, label = "Please fill age", required = false )
     private int age;
 
 
-    @QuestionMark( type = Question.QuestionType.TYPE_LIST, label = "Please choose all your hobbies", required = true )
-    @AllowedAnswers( values = { "Sport=Play Sport", "Reading=Reading Books", "Sleeping=Sleeping All Day" } )
+    @org.drools.informer.generator.annotations.QuestionMark( type = Question.QuestionType.TYPE_LIST, label = "Please choose all your hobbies", required = true )
+    @org.drools.informer.generator.annotations.AllowedAnswers( values = { "Sport=Play Sport", "Reading=Reading Books", "Sleeping=Sleeping All Day" } )
     private List<String> hobbies;
 
 
-    @QuestionMark( type = Question.QuestionType.TYPE_LIST, label = "Please choose your lucky numbers", required = true )
-    @AllowedAnswers( values = { "3", "13", "17", "81" } )
+    @org.drools.informer.generator.annotations.QuestionMark( type = Question.QuestionType.TYPE_LIST, label = "Please choose your lucky numbers", required = true )
+    @org.drools.informer.generator.annotations.AllowedAnswers( values = { "3", "13", "17", "81" } )
     private List<Integer> luckyNumbers;
 
 
-    @QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Birth Date?", dateFormat = "dd/MM/yyyy",
+    @org.drools.informer.generator.annotations.QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Birth Date?", dateFormat = "dd/MM/yyyy",
                    when = "age < 5" )
     private Date birthDate;
 
 
-    @QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Timing", dateFormat = "HH:mm:SS" )
+    @org.drools.informer.generator.annotations.QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Timing", dateFormat = "HH:mm:SS" )
     private Date doomsHour;
 
 

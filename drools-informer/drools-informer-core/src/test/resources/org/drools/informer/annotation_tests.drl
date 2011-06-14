@@ -2,10 +2,10 @@
 package org.drools.informer;
 
 import java.lang.annotation.Annotation;
-import org.drools.informer.annotations.Questionable;
-import org.drools.informer.annotations.QuestionMark;
-import org.drools.informer.annotations.AllowedAnswers;
-import org.drools.informer.ISurveyable;
+import org.drools.informer.generator.annotations.Questionable;
+import org.drools.informer.generator.annotations.QuestionMark;
+import org.drools.informer.generator.annotations.AllowedAnswers;
+import org.drools.informer.generator.ISurveyable;
 
 import org.drools.informer.Group;
 import org.drools.informer.InvalidAnswer;

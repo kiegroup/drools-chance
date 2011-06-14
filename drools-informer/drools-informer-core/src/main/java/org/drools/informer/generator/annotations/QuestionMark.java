@@ -1,4 +1,4 @@
-package org.drools.informer.annotations;
+package org.drools.informer.generator.annotations;
 
 
 import org.drools.informer.Question;
@@ -7,8 +7,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.text.DateFormat;
-import java.util.Locale;
 
 
 @Retention(value = RetentionPolicy.RUNTIME)

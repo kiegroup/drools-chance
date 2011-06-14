@@ -2,10 +2,12 @@ package org.drools.informer;
 
 
 import java.lang.annotation.Annotation;
-import org.drools.informer.annotations.Questionable;
-import org.drools.informer.annotations.QuestionMark;
-import org.drools.informer.annotations.AllowedAnswers;
-import org.drools.informer.ISurveyable;
+import org.drools.informer.generator.annotations.Questionable;
+import org.drools.informer.generator.annotations.QuestionMark;
+import org.drools.informer.generator.annotations.AllowedAnswers;
+import org.drools.informer.generator.GeneratorTemplateManager;
+import org.drools.informer.generator.ResourceHolder;
+import org.drools.informer.generator.ISurveyable;
 
 import org.drools.informer.Group;
 import org.drools.informer.InvalidAnswer;
@@ -173,8 +175,8 @@ then
         map.put("whenClause",$when);
 
     String drl = "package org.drools.informer \n";
-    drl += org.drools.informer.GeneratorTemplateManager.getInstance().applyTemplate("detachQuestion.drlt", $o, map);
-    drl += org.drools.informer.GeneratorTemplateManager.getInstance().applyTemplate("attachQuestion.drlt", $o, map);
+    drl += GeneratorTemplateManager.getInstance().applyTemplate("detachQuestion.drlt", $o, map);
+    drl += GeneratorTemplateManager.getInstance().applyTemplate("attachQuestion.drlt", $o, map);
 
 
     System.out.println("----------------------------------------------------------");

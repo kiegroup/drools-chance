@@ -1,4 +1,4 @@
-package org.drools.informer;
+package org.drools.informer.generator;
 
 import org.drools.io.Resource;
 

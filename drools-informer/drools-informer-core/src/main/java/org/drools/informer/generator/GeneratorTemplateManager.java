@@ -1,13 +1,8 @@
-package org.drools.informer;
+package org.drools.informer.generator;
 
 
 import org.drools.informer.util.TemplateManager;
 import org.mvel2.templates.SimpleTemplateRegistry;
-import org.mvel2.templates.TemplateRegistry;
-
-import java.util.List;
-
-
 
 
 public class GeneratorTemplateManager extends TemplateManager {

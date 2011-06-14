@@ -1,30 +1,18 @@
 package org.drools.informer;
 
 
-import org.drools.ChangeSet;
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentConfiguration;
 import org.drools.agent.KnowledgeAgentFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.Resource;
-import org.drools.io.impl.ByteArrayResource;
 import org.drools.io.impl.ChangeSetImpl;
 import org.drools.io.impl.ClassPathResource;
-import org.drools.lang.ParseException;
-import org.drools.rule.*;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.spi.KnowledgeHelper;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
@@ -45,11 +33,9 @@ public class TestAnnotations {
         ChangeSetImpl changeSet = new ChangeSetImpl();
         ClassPathResource res1 = new ClassPathResource("org/drools/informer/informer-changeset.xml");
         res1.setResourceType(ResourceType.CHANGE_SET);
-        ClassPathResource res2 = new ClassPathResource("org/drools/informer/informer-generator-changeset.xml");
-        res2.setResourceType(ResourceType.CHANGE_SET);
         ClassPathResource res3 = new ClassPathResource("org/drools/informer/annotation_tests.drl");
         res3.setResourceType(ResourceType.DRL);
-        changeSet.setResourcesAdded(Arrays.asList((Resource) res1, res2, res3));
+        changeSet.setResourcesAdded(Arrays.asList((Resource) res1, res3));
 
         kAgent.applyChangeSet(changeSet);
 
