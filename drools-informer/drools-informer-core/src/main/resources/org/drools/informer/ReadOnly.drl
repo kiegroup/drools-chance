@@ -15,32 +15,32 @@ rule "propagate readonly from group to subgroups"
 no-loop
 salience 5
 when
-	item : Group( itemStyles : stylesList,
+	$item : Group( itemStyles : stylesList,
 	              stylesList not contains "readonly-inherited"
 	           && stylesList not contains "readonly" )
 	exists (
-	    Group( itemList contains item.id, active == true,
+	    Group( itemList contains $item.id, active == true,
 	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
 	)
 then
-        item.addPresentationStyle("readonly-inherited");
-		update(item);
+        $item.addPresentationStyle("readonly-inherited");
+		update($item);
 end
 
 rule "propagate readonly from group to question"
 no-loop
 salience 4
 when
-	item : Question( itemStyles : stylesList,
+	$item : Question( itemStyles : stylesList,
 	              stylesList not contains "readonly-inherited"
 	           && stylesList not contains "readonly" )
 	exists (
-	    Group( itemList contains item.id, active == true,
+	    Group( itemList contains $item.id, active == true,
 	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
 	)
 then
-        item.addPresentationStyle("readonly-inherited");
-		update(item);
+        $item.addPresentationStyle("readonly-inherited");
+		update($item);
 end
 
 
@@ -49,32 +49,32 @@ rule "remove readonly from group to subgroups"
 no-loop
 salience 2
 when
-	item : Group( itemStyles : stylesList,
+	$item : Group( itemStyles : stylesList,
 	              stylesList contains "readonly-inherited"
 	           || stylesList contains "readonly" )
 	not (
-	    Group( itemList contains item.id, active == true,
+	    Group( itemList contains $item.id, active == true,
 	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
 	)
 then
-        item.removePresentationStyle("readonly-inherited");
-		update(item);
+        $item.removePresentationStyle("readonly-inherited");
+		update($item);
 end
 
 rule "remove readonly from group to question"
 no-loop
 salience 1
 when
-	item : Question( itemStyles : stylesList,
+	$item : Question( itemStyles : stylesList,
 	              stylesList contains "readonly-inherited"
 	           || stylesList contains "readonly" )
 	not (
-	    Group( itemList contains item.id, active == true,
+	    Group( itemList contains $item.id, active == true,
 	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
 	)
 then
-        item.removePresentationStyle("readonly-inherited");
-		update(item);
+        $item.removePresentationStyle("readonly-inherited");
+		update($item);
 end
 
 

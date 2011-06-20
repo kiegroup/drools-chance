@@ -8,96 +8,220 @@
 
 package org.drools.pmml_4_0.descr;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for TIME-ANCHOR.
+ * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * 
  * <pre>
- * &lt;simpleType name="TIME-ANCHOR">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="dateTimeMillisecdondsSince[0]"/>
- *     &lt;enumeration value="dateTimeMillisecdondsSince[1960]"/>
- *     &lt;enumeration value="dateTimeMillisecdondsSince[1970]"/>
- *     &lt;enumeration value="dateTimeMillisecdondsSince[1980]"/>
- *     &lt;enumeration value="dateTimeSecdondsSince[0]"/>
- *     &lt;enumeration value="dateTimeSecdondsSince[1960]"/>
- *     &lt;enumeration value="dateTimeSecdondsSince[1970]"/>
- *     &lt;enumeration value="dateTimeSecdondsSince[1980]"/>
- *     &lt;enumeration value="dateDaysSince[0]"/>
- *     &lt;enumeration value="dateDaysSince[1960]"/>
- *     &lt;enumeration value="dateDaysSince[1970]"/>
- *     &lt;enumeration value="dateDaysSince[1980]"/>
- *     &lt;enumeration value="dateMonthsSince[0]"/>
- *     &lt;enumeration value="dateMonthsSince[1960]"/>
- *     &lt;enumeration value="dateMonthsSince[1970]"/>
- *     &lt;enumeration value="dateMonthsSince[1980]"/>
- *     &lt;enumeration value="dateYearsSince[0]"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;complexType>
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element ref="{http://www.dmg.org/PMML-4_0}TimeCycle" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.dmg.org/PMML-4_0}TimeException" maxOccurs="2" minOccurs="0"/>
+ *       &lt;/sequence>
+ *       &lt;attribute name="type" type="{http://www.dmg.org/PMML-4_0}TIME-ANCHOR" />
+ *       &lt;attribute name="offset" type="{http://www.dmg.org/PMML-4_0}INT-NUMBER" />
+ *       &lt;attribute name="stepsize" type="{http://www.dmg.org/PMML-4_0}INT-NUMBER" />
+ *       &lt;attribute name="displayName" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
  * </pre>
  * 
+ * 
  */
-@XmlType(name = "TIME-ANCHOR")
-@XmlEnum
-public enum TIMEANCHOR {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = {
+    "timeCycles",
+    "timeExceptions"
+})
+@XmlRootElement(name = "TimeAnchor")
+public class TimeAnchor
+    implements Serializable
+{
 
-    @XmlEnumValue("dateTimeMillisecdondsSince[0]")
-    DATE_TIME_MILLISECDONDS_SINCE_0("dateTimeMillisecdondsSince[0]"),
-    @XmlEnumValue("dateTimeMillisecdondsSince[1960]")
-    DATE_TIME_MILLISECDONDS_SINCE_1960("dateTimeMillisecdondsSince[1960]"),
-    @XmlEnumValue("dateTimeMillisecdondsSince[1970]")
-    DATE_TIME_MILLISECDONDS_SINCE_1970("dateTimeMillisecdondsSince[1970]"),
-    @XmlEnumValue("dateTimeMillisecdondsSince[1980]")
-    DATE_TIME_MILLISECDONDS_SINCE_1980("dateTimeMillisecdondsSince[1980]"),
-    @XmlEnumValue("dateTimeSecdondsSince[0]")
-    DATE_TIME_SECDONDS_SINCE_0("dateTimeSecdondsSince[0]"),
-    @XmlEnumValue("dateTimeSecdondsSince[1960]")
-    DATE_TIME_SECDONDS_SINCE_1960("dateTimeSecdondsSince[1960]"),
-    @XmlEnumValue("dateTimeSecdondsSince[1970]")
-    DATE_TIME_SECDONDS_SINCE_1970("dateTimeSecdondsSince[1970]"),
-    @XmlEnumValue("dateTimeSecdondsSince[1980]")
-    DATE_TIME_SECDONDS_SINCE_1980("dateTimeSecdondsSince[1980]"),
-    @XmlEnumValue("dateDaysSince[0]")
-    DATE_DAYS_SINCE_0("dateDaysSince[0]"),
-    @XmlEnumValue("dateDaysSince[1960]")
-    DATE_DAYS_SINCE_1960("dateDaysSince[1960]"),
-    @XmlEnumValue("dateDaysSince[1970]")
-    DATE_DAYS_SINCE_1970("dateDaysSince[1970]"),
-    @XmlEnumValue("dateDaysSince[1980]")
-    DATE_DAYS_SINCE_1980("dateDaysSince[1980]"),
-    @XmlEnumValue("dateMonthsSince[0]")
-    DATE_MONTHS_SINCE_0("dateMonthsSince[0]"),
-    @XmlEnumValue("dateMonthsSince[1960]")
-    DATE_MONTHS_SINCE_1960("dateMonthsSince[1960]"),
-    @XmlEnumValue("dateMonthsSince[1970]")
-    DATE_MONTHS_SINCE_1970("dateMonthsSince[1970]"),
-    @XmlEnumValue("dateMonthsSince[1980]")
-    DATE_MONTHS_SINCE_1980("dateMonthsSince[1980]"),
-    @XmlEnumValue("dateYearsSince[0]")
-    DATE_YEARS_SINCE_0("dateYearsSince[0]");
-    private final String value;
+    private final static long serialVersionUID = 1L;
+    @XmlElement(name = "TimeCycle")
+    protected List<TimeCycle> timeCycles;
+    @XmlElement(name = "TimeException")
+    protected List<TimeException> timeExceptions;
+    @XmlAttribute
+    protected TIMEANCHOR type;
+    @XmlAttribute
+    protected BigInteger offset;
+    @XmlAttribute
+    protected BigInteger stepsize;
+    @XmlAttribute
+    @XmlSchemaType(name = "anySimpleType")
+    protected String displayName;
 
-    TIMEANCHOR(String v) {
-        value = v;
-    }
-
-    public String value() {
-        return value;
-    }
-
-    public static TIMEANCHOR fromValue(String v) {
-        for (TIMEANCHOR c: TIMEANCHOR.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
+    /**
+     * Gets the value of the timeCycles property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the timeCycles property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTimeCycles().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link TimeCycle }
+     * 
+     * 
+     */
+    public List<TimeCycle> getTimeCycles() {
+        if (timeCycles == null) {
+            timeCycles = new ArrayList<TimeCycle>();
         }
-        throw new IllegalArgumentException(v);
+        return this.timeCycles;
+    }
+
+    /**
+     * Gets the value of the timeExceptions property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the timeExceptions property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTimeExceptions().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link TimeException }
+     * 
+     * 
+     */
+    public List<TimeException> getTimeExceptions() {
+        if (timeExceptions == null) {
+            timeExceptions = new ArrayList<TimeException>();
+        }
+        return this.timeExceptions;
+    }
+
+    /**
+     * Gets the value of the type property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TIMEANCHOR }
+     *     
+     */
+    public TIMEANCHOR getType() {
+        return type;
+    }
+
+    /**
+     * Sets the value of the type property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TIMEANCHOR }
+     *     
+     */
+    public void setType(TIMEANCHOR value) {
+        this.type = value;
+    }
+
+    /**
+     * Gets the value of the offset property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BigInteger }
+     *     
+     */
+    public BigInteger getOffset() {
+        return offset;
+    }
+
+    /**
+     * Sets the value of the offset property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigInteger }
+     *     
+     */
+    public void setOffset(BigInteger value) {
+        this.offset = value;
+    }
+
+    /**
+     * Gets the value of the stepsize property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BigInteger }
+     *     
+     */
+    public BigInteger getStepsize() {
+        return stepsize;
+    }
+
+    /**
+     * Sets the value of the stepsize property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigInteger }
+     *     
+     */
+    public void setStepsize(BigInteger value) {
+        this.stepsize = value;
+    }
+
+    /**
+     * Gets the value of the displayName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * Sets the value of the displayName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDisplayName(String value) {
+        this.displayName = value;
     }
 
 }

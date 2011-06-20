@@ -30,7 +30,7 @@ public class Person implements ISurveyable {
 
 
     @org.drools.informer.generator.annotations.QuestionMark( type = Question.QuestionType.TYPE_DATE, label = "Birth Date?", dateFormat = "dd/MM/yyyy",
-                   when = "age < 5" )
+                   whenCondition = "age < 5" )
     private Date birthDate;
 
 

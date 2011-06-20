@@ -1,6 +1,9 @@
 package org.drools.informer;
 
 
+import org.drools.KnowledgeBase;
+import org.drools.builder.KnowledgeBuilder;
+import org.drools.informer.generator.annotations.QuestionMark;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentConfiguration;
 import org.drools.agent.KnowledgeAgentFactory;
@@ -13,18 +16,23 @@ import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import org.drools.KnowledgeBaseFactory;
+import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.io.impl.ByteArrayResource;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class TestAnnotations {
+public class AnnotationsTest {
 
 
 
 
     @Test
-    public void testGenerateQuestionnaireWithAnnotations() {
+    public void testGenerateQuestionnaireWithAnnotations() throws NoSuchFieldException {
 
         KnowledgeAgentConfiguration kaConfig = KnowledgeAgentFactory.newKnowledgeAgentConfiguration();
         kaConfig.setProperty("drools.agent.newInstance","false");
@@ -48,8 +56,9 @@ public class TestAnnotations {
 
         Person p1 = new Person("0001",null,18);
         Person p2 = new Person("0002","alan",35);
-
-
+        assertTrue(p1.getClass().getDeclaredField("birthDate").getAnnotations()[0] instanceof QuestionMark );
+        assertEquals(1, p1.getClass().getDeclaredField("birthDate").getAnnotations().length);
+        
         kSession.insert(p1);
         kSession.insert(p2);
         kSession.fireAllRules();
@@ -219,6 +228,30 @@ public class TestAnnotations {
 
 
 
+    }
+    
+    @Test 
+    public void annotationTest(){
+        
+        String drl ="package org.drools.core;\n"
+                
+                + "declare Person @Deprecated \n"
+                + " name: String \n"
+                + "end \n";
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kbuilder.add(new ByteArrayResource(drl.getBytes()), ResourceType.DRL);
+
+        assertEquals(0,kbuilder.getErrors().size());
+        
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
+        
+        Class clazz = kbase.getFactType("org.drools.core", "Person").getFactClass();
+        
+        assertEquals(1, clazz.getAnnotations().length);
+        assertNotNull(clazz.getAnnotation(Deprecated.class));
+        
+        
     }
 
 }

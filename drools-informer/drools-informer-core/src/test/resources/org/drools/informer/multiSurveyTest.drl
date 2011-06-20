@@ -1,4 +1,6 @@
-import org.drools.informer.*;
+package org.drools.informer;
+import org.drools.informer.Questionnaire;
+import org.drools.informer.Question;
 
 global java.util.List list;
 

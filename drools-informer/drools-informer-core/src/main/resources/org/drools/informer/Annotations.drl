@@ -163,8 +163,9 @@ when
     $o   : ISurveyable( $id : questionnaireId )
            Questionable( ) from $o.getClass().getAnnotations()
     eval ( kAgent != null )
-    $fld : Field( $fldName : name, $fldKlass : class ) from $o.getClass().getDeclaredFields()
-    $q   : QuestionMark( $when : when != "" ) from $fld.getAnnotations()
+    $fld : Field( $fldName : name, $fldKlass : class, annotations.length > 0 ) from $o.getClass().getDeclaredFields()
+    $q   : QuestionMark( $whenCondition : whenCondition != "" ) from $fld.getAnnotations()
+    //$q   : Object(  ) from $fld.getAnnotations()
 
     not    ResourceHolder( id == $id, target == $fldName )
 then
@@ -172,8 +173,9 @@ then
         map.put("context",$id);
         map.put("questType",$fldName);
         map.put("klass",$o.getClass().getName());
-        map.put("whenClause",$when);
+        map.put("whenClause",$whenCondition);
 
+      System.out.println("----------------------------------------------------------"+$fld+ "-->>"+$fldName + "question: "+$q);
     String drl = "package org.drools.informer \n";
     drl += GeneratorTemplateManager.getInstance().applyTemplate("detachQuestion.drlt", $o, map);
     drl += GeneratorTemplateManager.getInstance().applyTemplate("attachQuestion.drlt", $o, map);

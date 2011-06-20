@@ -24,5 +24,5 @@ public @interface QuestionMark {
     boolean finalAnswer() default false;
 
 
-    String when() default "";
+    String whenCondition() default "";
 }

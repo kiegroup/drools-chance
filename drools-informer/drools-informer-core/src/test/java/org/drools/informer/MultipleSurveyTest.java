@@ -41,6 +41,8 @@ public class MultipleSurveyTest {
         logger.debug(Arrays.toString(knowledgeBuilder.getErrors().toArray()));
         System.err.println(Arrays.toString(knowledgeBuilder.getErrors().toArray()));
 
+        
+        
         assertFalse(knowledgeBuilder.hasErrors());
         knowledgeBase = KnowledgeBaseFactory.newKnowledgeBase();
         knowledgeBase.addKnowledgePackages(knowledgeBuilder.getKnowledgePackages());

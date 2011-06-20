@@ -24,9 +24,9 @@ rule "retract all prior validation errors when a new answer is given"
 salience 4 # before: "copy new answers into the corresponding questions"
 when
 	Answer(questionId : questionId);
-	invalidAnswer : InvalidAnswer( questionId == questionId )
+	$invalidAnswer : InvalidAnswer( questionId == questionId )
 then
-	retract(invalidAnswer);
+	retract($invalidAnswer);
 end
 
 
@@ -38,7 +38,7 @@ rule "copy new answers into the corresponding questions"
 salience 30 # before: "discard invalid multiple choice answers"
 when
 	answer : Answer(questionId : questionId, answerValue : value);
-	question : Question(id == questionId, basicAnswerType : basicAnswerType,
+	$question : Question(id == questionId, basicAnswerType : basicAnswerType,
 	                    finalAnswer == false || lastAnswer == null )
 then
 	retract(answer);
@@ -48,8 +48,8 @@ then
 		answerValue = null;
 	}
 	try {
-	    question.fit(answerValue,basicAnswerType);
-		update(question);
+	    $question.fit(answerValue,basicAnswerType);
+		update($question);
 	} catch (NumberFormatException e) {
 		InvalidAnswer invalidAnswer = new InvalidAnswer(questionId,
 		                                                "invalidDataType",
@@ -66,12 +66,12 @@ end
 rule "discard invalid multiple choice answers"
 salience 20 # before: "copy question answers to the underlying domain model"
 when
-	question : MultipleChoiceQuestion(answered == true, $answers : answerItems != null, $possibleAnswers : possibleAnswers)
+	$question : MultipleChoiceQuestion(answered == true, $answers : answerItems != null, $possibleAnswers : possibleAnswers)
 	$s : String() from $answers
     not PossibleAnswer( value == $s ) from $possibleAnswers
 then
-	question.setAnswer(null);
-	update(question);
+	$question.setAnswer(null);
+	update($question);
 end
 
 
@@ -79,19 +79,19 @@ end
 rule "retract orphan answers"
 salience -1 # after: any rules that create questions
 when
-	answer : Answer(questionId : questionId);
+	$answer : Answer(questionId : questionId);
 	not(exists(Question(id == questionId)));
 then
-	retract(answer);
+	retract($answer);
 end
 
 
 rule "required questions answered"
 salience -1 # after: any rules that create questions
 when
-	question : Question(required == true, answered == false);
+	$question : Question(required == true, answered == false);
 then
-	InvalidAnswer invalidAnswer = new InvalidAnswer(question.getId(), "You must answer this question");
+	InvalidAnswer invalidAnswer = new InvalidAnswer($question.getId(), "You must answer this question");
 	invalidAnswer.setType("nonDisplayed");
 	insertLogical(invalidAnswer);
 end
@@ -100,22 +100,22 @@ end
 rule "has invalid answers"
 salience -2 # after: any rules that create invalid answers
 when
-	questionnaire : Questionnaire(invalidAnswers == false);
+	$questionnaire : Questionnaire(invalidAnswers == false);
 	exists(InvalidAnswer());
 then
-	questionnaire.setInvalidAnswers(true);
-	update(questionnaire);
+	$questionnaire.setInvalidAnswers(true);
+	update($questionnaire);
 end
 
 
 rule "doesn't have invalid answers"
 salience -2 # after: any rules that create invalid answers
 when
-	questionnaire : Questionnaire(invalidAnswers == true);
+	$questionnaire : Questionnaire(invalidAnswers == true);
 	not(exists(InvalidAnswer()));
 then
-	questionnaire.setInvalidAnswers(false);
-	update(questionnaire);
+	$questionnaire.setInvalidAnswers(false);
+	update($questionnaire);
 end
 
 
