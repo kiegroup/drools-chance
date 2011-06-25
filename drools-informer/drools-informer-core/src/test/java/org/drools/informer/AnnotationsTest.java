@@ -230,6 +230,33 @@ public class AnnotationsTest {
 
     }
     
+    @Test
+    public void annotationTest() {
 
+        String drl ="package org.drools.test;\n"
+
+                + "declare Person @Deprecated \n"
+                + " name: String @Deprecated \n"
+                + "end \n";
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kbuilder.add(new ByteArrayResource(drl.getBytes()), ResourceType.DRL);
+
+        assertEquals(0,kbuilder.getErrors().size());
+
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
+
+        Class clazz = kbase.getFactType("org.drools.core", "Person").getFactClass();
+        try {
+            assertNotNull(clazz.getDeclaredField("name").getAnnotation(Deprecated.class));
+        } catch (NoSuchFieldException nsfe) {
+            fail("field name has not been generated correctly : " + nsfe.getMessage());
+        }
+
+        assertEquals(1, clazz.getAnnotations().length);
+        assertNotNull(clazz.getAnnotation(Deprecated.class));
+
+
+    }
 
 }

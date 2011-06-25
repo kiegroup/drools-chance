@@ -61,11 +61,12 @@ end
 rule "Questionnaire_Auto"
 when
     $o   : ISurveyable( $id : questionnaireId )
+    $k1 : Class( $name : name ) from $o.getClass()
     $ann : Questionable(
                             $lab : label,
                             $lang : language
-                       ) from $o.getClass().getAnnotations()
-           not Questionnaire( id == $id, type == $o.getClass().getName() )
+                       ) from $k1.getAnnotations()
+           not Questionnaire( id == $id, type == $name )
 then
     Questionnaire quest = new Questionnaire();
         quest.forceId( $id );
@@ -84,9 +85,10 @@ no-loop
 salience 1
 when
     $o   : ISurveyable( $id : questionnaireId )
-           Questionable( ) from $o.getClass().getAnnotations()
+    $k1 : Class() from $o.getClass()
+           Questionable( ) from $k1.getAnnotations()
     $qst : Questionnaire( $ctx : context == $id )
-    $fld : Field( $fldName : name, $fldKlass : class ) from $o.getClass().getDeclaredFields()
+    $fld : Field( $fldName : name, $fldKlass : class ) from $k1.getDeclaredFields()
     $qm  : QuestionMark( $lab : label, $qType : type,
                          $req : required,
                          $dateFormat : dateFormat,
@@ -121,9 +123,10 @@ no-loop
 salience 1
 when
     $o   : ISurveyable( $id : questionnaireId )
-           Questionable( ) from $o.getClass().getAnnotations()
+    $k1  : Class() from $o.getClass()
+           Questionable( ) from $k1.getAnnotations()
     $qst : Questionnaire( $ctx : context == $id  )
-    $fld : Field( $fldName : name, $fldKlass : class ) from $o.getClass().getDeclaredFields()
+    $fld : Field( $fldName : name, $fldKlass : class ) from $k1.getDeclaredFields()
     $q   : QuestionMark( $lab : label, $qType : type,
                          $req : required ) from $fld.getAnnotations()
            AllowedAnswers( $ansValues : values ) from $fld.getAnnotations()
@@ -161,12 +164,11 @@ no-loop
 salience 1
 when
     $o   : ISurveyable( $id : questionnaireId )
-           Questionable( ) from $o.getClass().getAnnotations()
+    $k1  : Class() from $o.getClass()
+           Questionable( ) from $k1.getAnnotations()
     eval ( kAgent != null )
-    $fld : Field( $fldName : name, $fldKlass : class, annotations.length > 0 ) from $o.getClass().getDeclaredFields()
+    $fld : Field( $fldName : name, $fldKlass : class, annotations.length > 0 ) from $k1.getDeclaredFields()
     $q   : QuestionMark( $whenCondition : whenCondition != "" ) from $fld.getAnnotations()
-    //$q   : Object(  ) from $fld.getAnnotations()
-
     not    ResourceHolder( id == $id, target == $fldName )
 then
     java.util.Map map = new java.util.HashMap();

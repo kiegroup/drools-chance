@@ -22,12 +22,12 @@ import org.drools.informer.domain.DomainModelSupport;
 
 
 
-query questionnaire1( String $context )
+query questionnaire( String $context )
     $quest : Questionnaire( context == $context )
 end
 
 
-query question2( String $context, String $type )
+query question( String $context, String $type )
     $quest : Question( context == $context, type == $type )
 end
 
