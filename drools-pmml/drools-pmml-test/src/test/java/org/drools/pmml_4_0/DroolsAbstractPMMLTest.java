@@ -34,7 +34,7 @@ public abstract class DroolsAbstractPMMLTest {
 
 
     public static final String RESOURCE_PATH = BASE_PACK;
-    public static final String TEMPLATE_PATH = "/" + RESOURCE_PATH + "/org/drools/pmml_4_0/templates/";
+
 
 
 
@@ -66,13 +66,13 @@ public abstract class DroolsAbstractPMMLTest {
 
         if (! verbose) {
             for (String pmmlSource : pmmlSources) {
-                kbuilder.add(ResourceFactory.newClassPathResource("org/drools/pmml_4_0/"+pmmlSource),ResourceType.PMML);
+                kbuilder.add(ResourceFactory.newClassPathResource(pmmlSource),ResourceType.PMML);
             }
         } else {
             PMML4Compiler compiler = new PMML4Compiler();
             try {
                 for (String pmmlSource : pmmlSources) {
-                    String src = compiler.compile(ResourceFactory.newClassPathResource("org/drools/pmml_4_0/" + pmmlSource).getInputStream());
+                    String src = compiler.compile(ResourceFactory.newClassPathResource(pmmlSource).getInputStream());
                     System.out.println(src);
                     kbuilder.add(ResourceFactory.newByteArrayResource(src.getBytes()),ResourceType.DRL);
                 }
@@ -97,6 +97,10 @@ public abstract class DroolsAbstractPMMLTest {
 		return kbase.newStatefulKnowledgeSession();
 
 	}
+
+
+
+
 
 
 
