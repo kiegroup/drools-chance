@@ -23,7 +23,7 @@ import java.util.Collection;
 public class TestConstrainedDataDictionary extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = true;
-    private static final String source = "test_constr_data_dic.xml";
+    private static final String source = "org/drools/pmml_4_0/test_constr_data_dic.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 
 
