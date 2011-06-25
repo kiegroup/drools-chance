@@ -48,7 +48,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     public static final String[] PMML_VISIT_RULES = new String[] {
             (BASE_PACK+"/pmml_visitor.drl"),
             (BASE_PACK+"/pmml_compiler.drl"),
-            (BASE_PACK+"/pmml_informer.drl")
+//            (BASE_PACK+"/pmml_informer.drl")
     };
 
 

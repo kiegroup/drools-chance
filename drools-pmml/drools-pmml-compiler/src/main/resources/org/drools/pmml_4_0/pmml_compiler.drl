@@ -16,51 +16,51 @@ global PMML4Wrapper utils;
  function void applyTemplate(String templateName, Object context, TemplateRegistry registry, Map vars, StringBuilder builder) {
     CompiledTemplate template = (CompiledTemplate) registry.getNamedTemplate(templateName);
     builder.append(TemplateRuntime.execute(template, context, vars));
-	//builder.append(TemplateRuntime.execute(template, context, new org.mvel2.integration.impl.DefaultLocalVariableResolverFactory()));
  }
 
 
 
 // the function is repeated here because of rule processDerivedField_MapValues
     function String format(String type, String val) {
-        if (type == null)
+        if (type == null) {
             return val;
-		if ("Integer".equalsIgnoreCase(type))
+        } else if ("Integer".equalsIgnoreCase(type)) {
 			return val;
-		else if ("Float".equalsIgnoreCase(type))
+		} else if ("Float".equalsIgnoreCase(type)) {
 			return val;
-		else if ("Double".equalsIgnoreCase(type))
+		} else if ("Double".equalsIgnoreCase(type)) {
 			return val;
-		else if ("Boolean".equalsIgnoreCase(type))
+		} else if ("Boolean".equalsIgnoreCase(type)) {
 			return val;
-		else if ("String".equalsIgnoreCase(type))
+		} else if ("String".equalsIgnoreCase(type)) {
 			return "\""+val+"\"";
-		else if ("Date".equalsIgnoreCase(type))
+		} else if ("Date".equalsIgnoreCase(type)) {
 			return "\""+val+"\"";
-		else if ("Time".equalsIgnoreCase(type))
+		} else if ("Time".equalsIgnoreCase(type)) {
 			return "\""+val+"\"";
-		else if ("DateTime".equalsIgnoreCase(type))
+		} else if ("DateTime".equalsIgnoreCase(type)) {
 			return "\""+val+"\"";
-		else if ("DateDaysSince[0]".equalsIgnoreCase(type))
+		} else if ("DateDaysSince[0]".equalsIgnoreCase(type)) {
 			return val;
-		else if ("DateDaysSince[1960]".equalsIgnoreCase(type))
+		} else if ("DateDaysSince[1960]".equalsIgnoreCase(type)) {
 			return val;
-		else if ("DateDaysSince[1970]".equalsIgnoreCase(type))
+		} else if ("DateDaysSince[1970]".equalsIgnoreCase(type)) {
 			return val;
-		else if ("DateDaysSince[1980]".equalsIgnoreCase(type))
+		} else if ("DateDaysSince[1980]".equalsIgnoreCase(type)) {
 			return val;
-		else if ("TimeSeconds".equalsIgnoreCase(type))
+		} else if ("TimeSeconds".equalsIgnoreCase(type)) {
 			return val;
-		else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(type))
+		} else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(type)) {
 			return val;
-		else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(type))
+		} else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(type)) {
 			return val;
-		else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(type))
+		} else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(type)) {
 			return val;
-		else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(type))
+		} else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(type)) {
 			return val;
-		else
+		} else {
 			return val;
+		}
     }
 
 
@@ -739,6 +739,8 @@ when
 then
     retract($map);
 end
+
+
 
  //******************************************************************************************************************
  //     Aggregations

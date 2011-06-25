@@ -18,20 +18,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-multiproject</artifactId>
-        <version>5.2.0-SNAPSHOT</version>
-    </parent>
-
+  <parent>
     <groupId>org.drools</groupId>
-    <artifactId>drools-pmml</artifactId>
+    <artifactId>drools-chance</artifactId>
+    <version>5.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>drools-pmml</artifactId>
   <packaging>pom</packaging>
-    
+
 
   <name>Drools :: PMML</name>
+  <description> Predictive Model Evaluation </description>
 
 
   <modules>
@@ -39,5 +39,6 @@
     <module>drools-pmml-test</module>
   </modules>
 
-    
+
+
 </project>
