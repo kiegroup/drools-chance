@@ -17,7 +17,7 @@ import org.junit.Test;
 public class TestUserDefinedFunctions extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = true;
-    private static final String source = "test_user_functions.xml";
+    private static final String source = "org/drools/pmml_4_0/test_user_functions.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 
 
