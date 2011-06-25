@@ -7,18 +7,14 @@ import org.drools.pmml_4_0.PMML4Compiler;
 import org.drools.pmml_4_0.PMML4Wrapper;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Test;
+
+import javax.security.sasl.SaslServer;
+
 import static org.junit.Assert.*;
 
 import java.io.*;
 
 
-/**
- * Created by IntelliJ IDEA.
- * User: davide
- * Date: 11/12/10
- * Time: 10:11 PM
- * To change this template use File | Settings | File Templates.
- */
 public class TestHeader extends DroolsAbstractPMMLTest {
 
 
