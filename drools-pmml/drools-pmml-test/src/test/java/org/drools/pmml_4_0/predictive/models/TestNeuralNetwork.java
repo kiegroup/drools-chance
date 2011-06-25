@@ -9,17 +9,19 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class TestNeuralNetwork extends DroolsAbstractPMMLTest {
 
 
     private static final boolean VERBOSE = true;
-    private static final String source1 = "test_ann_regression.xml";
-    private static final String source2 = "test_ann_iris.xml";
-    private static final String source22 = "test_ann_iris_v2.xml";
-    private static final String source23 = "test_ann_iris_prediction.xml";
-    private static final String source3 = "test_miningSchema.xml";
-    private static final String source4 = "test_ann_HEART.xml";
+    private static final String source1 = "org/drools/pmml_4_0/test_ann_regression.xml";
+    private static final String source2 = "org/drools/pmml_4_0/test_ann_iris.xml";
+    private static final String source22 = "org/drools/pmml_4_0/test_ann_iris_v2.xml";
+    private static final String source23 = "org/drools/pmml_4_0/test_ann_iris_prediction.xml";
+    private static final String source3 = "org/drools/pmml_4_0/test_miningSchema.xml";
+    private static final String source4 = "org/drools/pmml_4_0/test_ann_HEART.xml";
+    private static final String source5 = "org/drools/pmml_4_0/test_ann_mixed_simple.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 
 
@@ -150,7 +152,7 @@ public class TestNeuralNetwork extends DroolsAbstractPMMLTest {
         Assert.assertEquals(6, getNumAssertedSynapses());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_PETALLEN").insert(40);
+        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(40);
         getKSession().getWorkingMemoryEntryPoint("in_PETALWID").insert(10);
         getKSession().getWorkingMemoryEntryPoint("in_SPECIES").insert("virginica");
         getKSession().getWorkingMemoryEntryPoint("in_SEPALWID").insert(33);
@@ -270,6 +272,27 @@ public class TestNeuralNetwork extends DroolsAbstractPMMLTest {
 
     }
 
+
+
+
+     @Test
+    public void testSimpleMixed() throws Exception {
+        setKSession(getModelSession(source5, VERBOSE));
+        setKbase(getKSession().getKnowledgeBase());
+
+
+        getKSession().fireAllRules();  //init model
+
+
+         getKSession().getWorkingMemoryEntryPoint("in_Domicile").insert("urban");
+         getKSession().fireAllRules();  //init model
+
+
+         System.err.println(reportWMObjects(getKSession()));
+
+         fail("TODO");
+
+     }
 
 
 
