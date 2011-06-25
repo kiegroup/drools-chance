@@ -1,0 +1,16 @@
+@declare{'commonFactCreationBit'}
+    @{type} @{varName} = new @{type}("@{id}");
+    @if{ aQuestionType || anImpactType }
+        @{varName}.setAnswerType(@{ansType});
+        @if{ ansValue != null} @{varName}.setAnswer(@{ansValue}); @end{}
+        @if{ aQuestionType && required } @{varName}.setRequired(true); @end{}
+        @if{ category != null} @{varName}.setCategory("@{category}"); @end{}
+        @if{ anImpactType && showReason && postLabel != null} @{varName}.setReason("@{postLabel}") @end{}
+    @end{}
+    @if{ preLabel != null}
+        @{varName}.set@{method}("@{preLabel}");
+    @end{}
+@end{}
+@includeNamed{'commonFactCreationBit'}
+
+

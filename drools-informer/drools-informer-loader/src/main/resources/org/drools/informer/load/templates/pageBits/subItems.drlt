@@ -1,0 +1,21 @@
+
+@declare{'subItemsBits'}
+    @code{ method = possibleAnswers ? "setPossibleAnswers" : "setItems" }
+        @{varName}.@{method}({
+            @foreach{ tuple : entries }
+                @if{ ( ! possibleAnswers ) || ( tuple.conditionClause == null ) }
+                    @if{ possibleAnswers }
+                        new PossibleAnswer(
+                            @if{ tuple.id != null} "@{tuple.id}" @else{} null @end{}
+                            @if{ tuple.representation != null } "@{tuple.representation}" @else{} , null @end{}
+                        )
+                    @else{}
+                        "@{tuple.id}"
+                    @end{}
+                @end{}
+            @end{","}
+        });
+@end{}
+
+
+@includeNamed{'subItemsBits'}

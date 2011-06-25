@@ -1,0 +1,19 @@
+
+
+
+@declare{'triggerRule'}
+
+rule "Trigger @{displayFactId}"
+salience 50
+when
+    @{whenClause}
+then
+    ListEntryFact lef = new ListEntryFact();
+        lef.setId("@{displayFactId}");
+        insertLogical(lef);
+end
+
+@end{}
+
+
+@includeNamed{'triggerRule'}

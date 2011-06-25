@@ -1,0 +1,27 @@
+
+
+
+
+@declare{'questionnaireRule'}
+rule "Questionnaire_@{id}"
+when
+
+then
+    Questionnaire quest = new Questionnaire("@{id}");
+    quest.setLabel("@{applicationName}");
+    quest.setCompletionAction("@{completionAction}");
+    quest.setItems(new String[] { @{itemList} });
+    @if{ activePage != null }
+        quest.setActiveItem("@{activePage}");
+    @end{}
+    quest.setEnableActionValidation(@{actionValidation});
+    quest.setMarkupAllowed(@{markupAllowed});
+    insertLogical(quest);
+end
+@end{}
+
+
+@includeNamed{'questionnaireRule'}
+
+
+

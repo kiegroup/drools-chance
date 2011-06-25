@@ -1,0 +1,14 @@
+@declare{'globalImpactRule'}
+
+rule "Create @{id}"
+  dialect "mvel"
+  salience 100
+  no-loop
+when
+then
+    @{body}
+    insert(@{varName});
+end
+@end{}
+
+@includeNamed{'globalImpactRule'}

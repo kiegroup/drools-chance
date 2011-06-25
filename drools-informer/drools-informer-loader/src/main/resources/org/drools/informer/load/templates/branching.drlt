@@ -1,0 +1,22 @@
+
+@declare{'BranchingRule'}
+
+    rule "Branch @{id}"
+    salience 75
+    no-loop
+    when
+	    @{premise}
+		q : Questionnaire( items not contains "@{id}" , $branched : branched )
+	then
+    	if (! $branched) {
+    	    q.navigationBranch( new String[] {"@{id}"}, "@{id}" );
+    	} else {
+            q.appendItem( "@{id}", @if{ postLabel != null } "@{postLabel}"  @else{} q.getActiveItem()  @end{} );
+    	}
+		update(q);
+	end
+
+@end{}
+
+
+@includeNamed{'BranchingRule'}

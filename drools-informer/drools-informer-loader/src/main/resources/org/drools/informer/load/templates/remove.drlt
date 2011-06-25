@@ -1,0 +1,19 @@
+
+
+@declare{'removeRule'}
+
+rule "Remove_@{displayFactId}"
+salience 15
+no-loop
+when
+    not lef : ListEntryFact( id == "@{displayFactId}" )
+    mcq : MultipleChoiceQuestion( id == "@{elementId}", possibleAnswers contains "@{tupleId}")
+then
+    mcq.removePossibleAnswer(@{tupleId})
+    update(mcq);
+end
+
+@end{}
+
+
+@includeNamed{'removeRule'}

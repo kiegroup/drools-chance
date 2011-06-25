@@ -1,0 +1,13 @@
+
+@declare{'validationRule'}
+    rule "Validate @{id}_@{rowNumber}"
+    when
+        @{premise}
+    then
+        insertLogical( new InvalidAnswer("@{baseId}","@{message}") );
+    end
+@end{}
+
+
+
+@includeNamed{'validationRule'}

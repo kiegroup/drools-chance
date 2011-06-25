@@ -1,0 +1,22 @@
+
+
+@declare{"includeRule"}
+
+rule "Include @{displayFactId}"
+salience 25
+no-loop
+when
+    lef : ListEntryFact( id == "@{displayFactId}" )
+    mcq : MultipleChoiceQuestion( id == "@{elementId}", possibleAnswers not contains "@{tupleId}" )
+then
+    mcq.insertPossibleAnswer( new PossibleAnswer("@{tupleId}","@{tupleRepresentation}",@{rowNumber}) );
+    update(mcq);
+end
+
+@end{}
+
+
+@includeNamed{'includedRule'}
+
+
+
