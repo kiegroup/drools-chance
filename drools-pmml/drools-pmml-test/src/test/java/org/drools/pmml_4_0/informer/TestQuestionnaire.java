@@ -30,7 +30,8 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -44,9 +45,9 @@ import static org.junit.Assert.*;
 public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = true;
-    private static final String source = "test_miningSchema.xml";
-    private static final String source2 = "test_ann_iris_prediction.xml";
-    private static final String sourceMix = "test_ann_mixed_inputs.xml";
+    private static final String source = "org/drools/pmml_4_0/test_miningSchema.xml";
+    private static final String source2 = "org/drools/pmml_4_0/test_ann_iris_prediction.xml";
+    private static final String sourceMix = "org/drools/pmml_4_0/test_ann_mixed_inputs.xml";
 
 
     private static final String packageName = "org.drools.pmml_4_0.test";

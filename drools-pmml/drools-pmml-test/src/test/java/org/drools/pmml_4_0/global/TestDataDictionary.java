@@ -21,7 +21,7 @@ import org.junit.Test;
 public class TestDataDictionary extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = false;
-    private static final String source = "test_data_dic.xml";
+    private static final String source = "org/drools/pmml_4_0/test_data_dic.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 
 
