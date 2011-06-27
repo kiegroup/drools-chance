@@ -1,12 +1,16 @@
 package org.drools.pmml_4_0;
 
+import org.drools.base.TypeResolver;
+import org.drools.compiler.PackageBuilder;
 import org.drools.informer.Question;
 import org.drools.pmml_4_0.descr.*;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class PMML4Wrapper {
@@ -14,6 +18,9 @@ public class PMML4Wrapper {
 	private String pack;
 
     private static int counter = 0;
+
+    private Set<String> definedModelBeans;
+    private TypeResolver resolver;
 
     public int nextCount() {
         return counter++;
@@ -24,15 +31,62 @@ public class PMML4Wrapper {
 
 
     public PMML4Wrapper() {
+        definedModelBeans = new HashSet<String>();
 
     }
 
 
 
 
+    public void addModelBeanDefinition(String beanType) {
+        this.definedModelBeans.add(beanType);
+    }
+
+    public boolean isModelBeanDefined(String beanType) {
+//        boolean flag =  definedModelBeans.contains(beanType);
+//        if (flag) {
+//            try {
+//                Class.forName(pack+"."+beanType);
+//                return true;
+//            } catch (ClassNotFoundException cnfe) {
+//                definedModelBeans.remove(beanType);
+//                return false;
+//            }
+//        } else {
+//            return false;
+//        }
+        boolean flag =  definedModelBeans.contains(beanType);
+        if (resolver == null) {
+                try {
+                Class.forName(pack+"."+beanType);
+                return true;
+            } catch (ClassNotFoundException cnfe) {
+                definedModelBeans.remove(beanType);
+                return false;
+            }
+        } else if (flag) {
+            try {
+                resolver.resolveType(pack+"."+beanType);
+                return true;
+            } catch (ClassNotFoundException cnfe) {
+                definedModelBeans.remove(beanType);
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
 
-	public String getPack() {
+    public TypeResolver getResolver() {
+        return resolver;
+    }
+
+    public void setResolver(TypeResolver resolver) {
+        this.resolver = resolver;
+    }
+
+    public String getPack() {
 		return pack;
 	}
 	public void setPack(String pack) {
@@ -577,5 +631,6 @@ public class PMML4Wrapper {
 		else
 			return "Question.QuestionType.TYPE_TEXT";
 	}
+
 
 }

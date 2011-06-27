@@ -13,7 +13,7 @@ no-loop
 salience 99
 when
     $in : @{name}( $val : value,
-          @if{ context != null } context == @{context}, @end{}
+          @if{ context != null } context == @{format("string",context)}, @end{}
           @foreach{ v : vals } value == @{v} @end{' || '}
           )
 then

@@ -14,7 +14,7 @@ import org.junit.Test;
  *
  * PMML Test : Focus on the DataDictionary section
  */
-public class TestMiningSchema extends DroolsAbstractPMMLTest {
+public class MiningSchemaTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = false;
     private static final String source = "org/drools/pmml_4_0/test_miningSchema.xml";
@@ -22,11 +22,6 @@ public class TestMiningSchema extends DroolsAbstractPMMLTest {
 
 
 
-    @Before
-    public void setUp() throws Exception {
-        setKSession(getModelSession(source, VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
-    }
 
 
 

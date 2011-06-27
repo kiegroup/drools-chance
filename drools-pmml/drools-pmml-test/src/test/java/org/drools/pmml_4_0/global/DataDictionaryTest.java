@@ -18,21 +18,19 @@ import org.junit.Test;
  *
  * PMML Test : Focus on the DataDictionary section
  */
-public class TestDataDictionary extends DroolsAbstractPMMLTest {
+public class DataDictionaryTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = false;
     private static final String source = "org/drools/pmml_4_0/test_data_dic.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 
 
-    @Before
-    public void setUp() throws Exception {
-        setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
-    }
+
 
     @Test
     public void testDataTypes() throws Exception {
+        setKSession(getModelSession(source,VERBOSE));
+        setKbase(getKSession().getKnowledgeBase());
 
         FactType gender = getKbase().getFactType(packageName,"Gender");
         FactType noclaims = getKbase().getFactType(packageName,"NoOfClaims");
@@ -103,6 +101,9 @@ public class TestDataDictionary extends DroolsAbstractPMMLTest {
 
     @Test
     public void testEntryPoints() throws Exception {
+
+        setKSession(getModelSession(source,VERBOSE));
+        setKbase(getKSession().getKnowledgeBase());
 
         FactType gender = getKbase().getFactType(packageName,"Gender");
         FactType noclaims = getKbase().getFactType(packageName,"NoOfClaims");

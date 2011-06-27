@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * PMML Test : Focus on the DataDictionary section
  */
-public class TestDiscretizeFields extends DroolsAbstractPMMLTest {
+public class DiscretizeFieldsTest extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = true;
+    private static final boolean VERBOSE = false;
     private static final String source = "org/drools/pmml_4_0/test_derived_fields_discretize.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 

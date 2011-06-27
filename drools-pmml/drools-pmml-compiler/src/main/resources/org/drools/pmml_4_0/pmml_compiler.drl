@@ -89,6 +89,11 @@ end
 
 
 
+declare FieldMarker
+    name : String   @key
+    dataType : DATATYPE
+end
+
 declare TypeOfField
     name : String     @key
     dataType : DATATYPE
@@ -107,7 +112,9 @@ end
 rule "processDataDictionary"
 when
     $dic : DataDictionary( $flds : dataFields )
+    eval( ! utils.isModelBeanDefined("DataField") )
 then
+    utils.addModelBeanDefinition("DataField");
     applyTemplate("rootDataField.drlt", utils, registry, new HashMap(), theory);
 end
 
@@ -117,14 +124,19 @@ dialect "mvel"
 when
     $fld : DataField( $n : name, $t : dataType )
 then
+    insert( new FieldMarker($n,$t) );
     insertLogical( new TypeOfField($n,$t) );
 end
 
 rule "processDataField_define"
 dialect "mvel"
+salience 1
 when
-    $fld : DataField( )
+    $fld : DataField( $n : name, $t : dataType)
+    not FieldMarker( name == $n )
+    eval( ! utils.isModelBeanDefined(utils.compactUpperCase($n)) )
 then
+    utils.addModelBeanDefinition(utils.compactUpperCase($n));
     HashMap map = new HashMap();
         map.put("context",utils.context);
         map.put("fullName",$fld.displayName);
@@ -283,8 +295,10 @@ end
 
 rule "processDerivedField_define"
 dialect "mvel"
+salience 1
 when
-    $fld : DerivedField( )
+    $fld : DerivedField( $n : name, $t :  dataType )
+    not FieldMarker( name == $n )
 then
 //    String opt = $fld.optype.value;
     HashMap map = new HashMap();
@@ -308,6 +322,7 @@ dialect "mvel"
 when
     $fld : DerivedField( $n : name, $t : dataType )
 then
+    insert( new FieldMarker($n,$t) );
     insertLogical( new TypeOfField($n,$t) );
 end
 
@@ -751,7 +766,7 @@ rule "processDerivedField_Collect"
 dialect "mvel"
 when
     $fld : DerivedField( $ag : aggregate )
-    Aggregate( this == $ag, $func : function == "multiset",
+    Aggregate( this == $ag, $func : this.function == "multiset",
                 $groupBy : groupField, $afield : field, $constr : sqlWhere )
 then
     HashMap map = new HashMap();
@@ -768,7 +783,7 @@ rule "processDerivedField_Aggregation"
 dialect "mvel"
 when
     $fld : DerivedField( $ag : aggregate )
-    Aggregate( this == $ag, $func : function != "multiset",
+    Aggregate( this == $ag, $func : this.function != "multiset",
                 $groupBy : groupField, $afield : field, $constr : sqlWhere )
 then
     HashMap map = new HashMap();
@@ -814,7 +829,7 @@ dialect "mvel"
 salience -5
 when
     $fld : DerivedField( $app : apply )
-    $a : Apply( this == $app, $fun : function, $arity : constantsAndFieldRevesAndNormContinuouses.size )
+    $a : Apply( this == $app, $fun : this.function, $arity : constantsAndFieldRevesAndNormContinuouses.size )
     $args : List( size == $arity ) from accumulate (
         $res : FunctionResult( father == $a, $x : expr ),
         init( List list = new LinkedList(); ),
@@ -847,7 +862,7 @@ rule "NestedConst"
 dialect "mvel"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : function )
+    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $c : Constant( this memberOf $expr, $x : value)
 then
     //System.out.println("Visit const : " + $x + " child of " + $f);
@@ -858,7 +873,7 @@ rule "NestedRef"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : function )
+    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $fr : FieldRef( this memberOf $expr, $x : field )
 then
     //System.out.println("Visit field : " + $x + " child of " + $f + " || " + fld2var);
@@ -873,8 +888,8 @@ rule "Scoop"
 dialect "mvel"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : function )
-    $a2 : Apply( this memberOf $expr, $f2 : function, $arity : constantsAndFieldRevesAndNormContinuouses.size )
+    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
+    $a2 : Apply( this memberOf $expr, $f2 : this.function, $arity : constantsAndFieldRevesAndNormContinuouses.size )
     $args : List( size == $arity ) from accumulate (
         $res : FunctionResult( father == $a2, $x : expr ),
         init( List list = new LinkedList(); ),
@@ -896,7 +911,7 @@ rule "NestedAggregate_onBasicField"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : function )
+    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $agg : Aggregate( this memberOf $expr, $aggField : field )
     $super : DataField( name == $aggField, $optype : optype, $dataType : dataType)
 then
@@ -918,7 +933,7 @@ rule "NestedAggregate_onDerivedField"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : function )
+    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $agg : Aggregate( this memberOf $expr, $aggField : field )
     $super : DerivedField( name == $aggField, $optype : optype, $dataType : dataType)
 then
@@ -940,7 +955,7 @@ rule "NestedMapValues"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : function )
+    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $map : MapValues( this memberOf $expr, $dataType : dataType  )
 then
     String name = "Inner"+utils.nextCount();
@@ -961,7 +976,7 @@ rule "NestedDiscretize"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : function )
+    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $dix : Discretize( this memberOf $expr, $dataType : dataType  )
 then
     String name = "Inner"+utils.nextCount();
@@ -982,7 +997,7 @@ rule "NestedNormContinuous"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : function )
+    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $nct : NormContinuous( this memberOf $expr  )
 then
     String name = "Inner"+utils.nextCount();
@@ -1004,7 +1019,7 @@ rule "NestedNormDiscrete"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : function )
+    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $ndx : NormDiscrete( this memberOf $expr  )
 then
     String name = "Inner"+utils.nextCount();
@@ -1044,7 +1059,7 @@ end
  salience 15
  no-loop
  when
-     $a : Apply( $args : constantsAndFieldRevesAndNormContinuouses, $fun : function  )
+     $a : Apply( $args : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
      DefineFunction( name == $fun, apply != $a )
      $df : DerivedField( apply == $a )
  then
@@ -1063,7 +1078,7 @@ end
  salience -1
  no-loop
  when
-     $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $fun : function  )
+     $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
      DefineFunction( name == $fun, $body : apply != $a, $paramFields : parameterFields )
      $father : Apply( $superArgs : constantsAndFieldRevesAndNormContinuouses contains $a )
      $params : java.util.LinkedHashMap() from accumulate (
@@ -1140,7 +1155,7 @@ end
  no-loop
  when
      $mc : MatchContext( $father: father, $a : root, $newbody : body )
-     Apply(  this == $a, $expr : constantsAndFieldRevesAndNormContinuouses, $fun : function  )
+     Apply(  this == $a, $expr : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
      DefineFunction( name == $fun )
      Apply( this == $father, $superArgs : constantsAndFieldRevesAndNormContinuouses )
  then
@@ -1284,11 +1299,12 @@ end
 
 
 rule "Preprocess_Inputs_OutliersAsExtremeLow" //numeric only
-dialect "java"
 when
     MiningSchema( $inputs : miningFields )
     $fld : MiningField( this memberOf $inputs,  $name : name, usageType.value == "active",
-                        outliers.value == "asExtremeValues",
+                        $vaal : outliers.value,
+                        //avoid mysterious reason why I can't use == "asExtremeValues" in the line above !?!?!
+                        $vaal.equals( "asExtremeValues" ),
                         $low : lowValue != null )
     TypeOfField( name == $name, $type : dataType )
 then
@@ -1305,7 +1321,9 @@ dialect "java"
 when
     MiningSchema( $inputs : miningFields )
     $fld : MiningField( this memberOf $inputs,  $name : name, usageType.value == "active",
-                        outliers.value == "asExtremeValues",
+                        $vaal : outliers.value,
+                        //avoid mysterious reason why I can't use == "asExtremeValues" in the line above !?!?!
+                        $vaal.equals( "asExtremeValues" ),
                         $upp : highValue != null )
     TypeOfField( name == $name, $type : dataType )
 then
@@ -1361,12 +1379,12 @@ end
 
 
 
- rule "Output_Type"
- when
+rule "Output_Type"
+when
      $of : OutputField( $name : name, $dataType : dataType != null)
- then
-     insert(new TypeOfField($name,$dataType));
- end
+then
+     insertLogical(new TypeOfField($name,$dataType));
+end
 
 
   rule "Output_Type2"
@@ -1375,7 +1393,7 @@ end
       $of : OutputField( $name : name, dataType == null, $tgt : targetField)
       TypeOfField( name == $tgt, $dataType : dataType )
   then
-      insert(new TypeOfField($name,$dataType));
+      insertLogical(new TypeOfField($name,$dataType));
   end
 
 
@@ -1383,18 +1401,20 @@ end
 
  rule "DeclareOutput_Neural"
  dialect "mvel"
+ salience 1
  when
      $of : OutputField( $name : name, $tgt : targetField )
      $tf : TypeOfField( name == $name )
      $mod : OutputParentModel( field == $of, $mt : modelType )
+     eval(! utils.isModelBeanDefined(utils.compactUpperCase($name)) )
  then
+    utils.addModelBeanDefinition($name);
      HashMap map = new HashMap();
          map.put("context",utils.context);
          map.put("fullName",$of.displayName);
          map.put("name",utils.compactUpperCase($of.name));
          map.put("super","OutputField");
          map.put("modelType",$mt)
-
          map.put("type",utils.mapDatatype($tf.dataType));
      applyTemplate("ioTypeDeclare.drlt", utils, registry, map, theory);
      applyTemplate("updateIOField.drlt", utils, registry, map, theory);
@@ -1462,14 +1482,18 @@ end
 
 
 rule "setupNNs"
-dialect "mvel"
 when
    NeuralNetwork()
    $stat : ModelStat( neuralNetwork == false )
+   eval( ! utils.isModelBeanDefined("Stym") )
 then
+   utils.addModelBeanDefinition("Stym");
+   utils.addModelBeanDefinition("Charge");
+   utils.addModelBeanDefinition("Synapse");
    applyTemplate("neuralBeans.drlt", null, registry, null, theory);
+
    applyTemplate("neuralLinkSynapses.drlt", null, registry, null, theory);
-   $stat.neuralNetwork = true;
+   $stat.setNeuralNetwork(true);
    update($stat);
 end
 
@@ -1478,9 +1502,9 @@ end
 rule "visitNeuralNetwork_context"
 salience -9
 when
-    $net : NeuralNetwork( $name : modelName)
+    $net : NeuralNetwork( $name : modelName )
 then
-    //System.out.println("Set context, now is " + $name);
+    System.out.println("Set context, now is " + $name);
      utils.context = utils.compactUpperCase($name);
 end
 
@@ -1824,3 +1848,35 @@ when
 then
    System.err.println("TODO WARNING : Expected number of fields in datadictionary different from actual : " + $exp + " vs " + $act);
 end
+
+
+
+
+
+rule "CleanOnFinish_DataField"
+salience -9999
+when
+    $df : DataField()
+    not PMML()
+then
+    retract($df);
+end
+
+rule "CleanOnFinish_ModelStat"
+salience -9999
+when
+    $ms : ModelStat()
+    not PMML()
+then
+    retract($ms);
+end
+
+rule "CleanOnFinish_Qry"
+salience -9999
+when
+    $qm : QueryMarker()
+    not PMML()
+then
+    retract($qm);
+end
+

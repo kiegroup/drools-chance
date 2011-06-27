@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 import java.io.*;
 
 
-public class TestHeader extends DroolsAbstractPMMLTest {
+public class HeaderTest extends DroolsAbstractPMMLTest {
 
 
 
@@ -36,7 +36,7 @@ public class TestHeader extends DroolsAbstractPMMLTest {
         boolean copyright = false;
         boolean annotation = false;
 
-		String theory = new PMML4Compiler().compile(source);
+		String theory = new PMML4Compiler().compile(source,null);
         BufferedReader reader = new BufferedReader(new StringReader(theory));
         try {
             String line = "";

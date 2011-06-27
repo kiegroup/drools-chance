@@ -15,7 +15,7 @@ no-loop
 salience 99
 when
     $bean : @{name}( $ctx : context == @{format("string",context)} , $val : value )
-    $quest : Questionnaire( id == @{format("string",context)} )
+    $quest : Questionnaire( context == @{format("string",context)} )
 then
     Note outNote = new Note(@{noteId});
         outNote.setContext(@{format("string",context)});

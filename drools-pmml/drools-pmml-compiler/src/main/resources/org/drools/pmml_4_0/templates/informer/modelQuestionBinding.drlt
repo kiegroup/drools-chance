@@ -13,7 +13,7 @@ dialect "mvel"
 no-loop
 salience 99
 when
-    $quest: Question( $id : id == "@{model+"_"+name}" )
+    $quest: Question( $id : id, $type : type == "@{model+"_"+name}" )
     $bean : @{name}( $ctx : context == @{format("string",context)} , $val : value )
     not DomainModelAssociation( questionId == $id, object == $bean, context == @{format("string",context)} )
 then

@@ -8,8 +8,7 @@
 }
 
 @declare{'modelQuestionRule'}
-rule "Model_Question_@{model}_@{name}"
-dialect "mvel"
+rule "Model_Question_@{model}_@{name}_@{context}"
 no-loop
 salience 99
 when
@@ -17,7 +16,7 @@ then
     Question quest = new Question(@{format("string",model)}+"_"+@{format("string",name)});
         quest.setContext(@{format("string",model)});
         quest.setAnswerType(@{mapDatatypeToQuestion(dataType)});
-        quest.setPreLabel("Please insert " + @{format("string",fullName)});
+        quest.setPreLabel("Please insert " +  @{format("string",displayName)});
     insertLogical(quest);
 end
 @end{}

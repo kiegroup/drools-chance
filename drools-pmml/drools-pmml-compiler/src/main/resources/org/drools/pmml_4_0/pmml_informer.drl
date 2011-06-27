@@ -61,11 +61,13 @@ when
     TypeOfField( name == $name, $type : dataType )
     $dfld : DataField( $vsize : values.size == 0, name == $name, $full : displayName )
 then
+    String fullS = ""+$full;  //avoiding obscure MVEL problem in choosing between overloaded versions of format() in PMML4Wrapper
     HashMap map = new HashMap();
         map.put("name",utils.compactUpperCase($name));
-        map.put("fullName",$full);
+        map.put("displayName",fullS);
         map.put("model",utils.context);
         map.put("dataType",$type);
+    System.out.println(map);
     applyTemplate("modelQuestion.drlt", utils, registry, map, theory);
     applyTemplate("modelQuestionBinding.drlt", utils, registry, map, theory);
     applyTemplate("modelQuestionRebinding.drlt", utils, registry, map, theory);

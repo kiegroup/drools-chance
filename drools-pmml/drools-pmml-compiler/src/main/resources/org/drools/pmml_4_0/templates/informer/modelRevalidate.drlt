@@ -11,13 +11,12 @@
 
 rule "Model_Revalidate"
 no-loop
-salience 8
+salience 50
 when
     question : Question(questionId : id, answerType != null, answer : answer != null);
 	association : DomainModelAssociation(questionId == questionId, object : object, property : property, lastAnswer != answer);
 	$bean : DataField( this == object )
 then
-
     $bean.setValid(false);
 
     Class propertyClass = PropertyUtils.getPropertyType(object, property);

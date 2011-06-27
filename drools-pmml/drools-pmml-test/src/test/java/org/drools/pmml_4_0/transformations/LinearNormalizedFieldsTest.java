@@ -15,9 +15,9 @@ import static org.junit.Assert.*;
  *
  * PMML Test : Focus on the DataDictionary section
  */
-public class TestLinearNormalizedFields extends DroolsAbstractPMMLTest {
+public class LinearNormalizedFieldsTest extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = true;
+    private static final boolean VERBOSE = false;
     private static final String source = "org/drools/pmml_4_0/test_derived_fields_linearNorm.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 

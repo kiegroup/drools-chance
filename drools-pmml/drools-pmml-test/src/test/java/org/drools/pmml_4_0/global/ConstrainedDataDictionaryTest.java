@@ -20,9 +20,9 @@ import java.util.Collection;
  *
  * PMML Test : Focus on the DataDictionary section
  */
-public class TestConstrainedDataDictionary extends DroolsAbstractPMMLTest {
+public class ConstrainedDataDictionaryTest extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = true;
+    private static final boolean VERBOSE = false;
     private static final String source = "org/drools/pmml_4_0/test_constr_data_dic.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 

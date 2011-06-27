@@ -15,7 +15,7 @@ rule "Model_Create_ReBinding_@{model}_@{name}"
 no-loop
 salience 200
 when
-    $quest: Question( $id : id == "@{model+"_"+name}" )
+    $quest: Question( $id : id, type == "@{model+"_"+name}" )
     $ans  : Answer( questionId == $id, $val : value )
     not @{name}( context == @{ctx} )
 then

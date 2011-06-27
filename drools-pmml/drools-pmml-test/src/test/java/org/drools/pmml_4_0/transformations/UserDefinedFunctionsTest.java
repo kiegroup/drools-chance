@@ -3,7 +3,6 @@ package org.drools.pmml_4_0.transformations;
 
 import org.drools.pmml_4_0.DroolsAbstractPMMLTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -15,17 +14,16 @@ import org.junit.Test;
  *
  * PMML Test : Focus on the DataDictionary section
  */
-public class TestUserDefinedFunctions2 extends DroolsAbstractPMMLTest {
+public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = true;
-    private static final String source = "org/drools/pmml_4_0/test_user_functions2.xml";
+    private static final boolean VERBOSE = false;
+    private static final String source = "org/drools/pmml_4_0/test_user_functions.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 
 
 
     @Before
-    public void init() throws Exception {
-
+    public void setUp() throws Exception {
         setKSession(getModelSession(source, VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
     }
@@ -33,12 +31,11 @@ public class TestUserDefinedFunctions2 extends DroolsAbstractPMMLTest {
 
 
     @Test
-    @Ignore
-    public void functions() throws Exception {
+    public void testFunctions() throws Exception {
         getKSession().getWorkingMemoryEntryPoint("in_Age").insert(10);
 
         getKSession().fireAllRules();
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName, "UserAge"), true, false, null, 6270.0  );
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName, "UserAge"), true, false,  null,6270.0  );
 
     }
 

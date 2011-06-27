@@ -16,17 +16,21 @@
 
 package org.drools.pmml_4_0;
 
+import com.sun.xml.internal.ws.developer.Stateful;
+import org.antlr.analysis.StateCluster;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.RuleBaseConfiguration;
 import org.drools.builder.*;
 import org.drools.common.DefaultFactHandle;
 import org.drools.common.EventFactHandle;
+import org.drools.compiler.PackageRegistry;
 import org.drools.conf.EventProcessingOption;
 import org.drools.io.ResourceFactory;
 import org.drools.pmml_4_0.descr.PMML;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
+import org.jcp.xml.dsig.internal.dom.Utils;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
@@ -48,7 +52,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     public static final String[] PMML_VISIT_RULES = new String[] {
             (BASE_PACK+"/pmml_visitor.drl"),
             (BASE_PACK+"/pmml_compiler.drl"),
-//            (BASE_PACK+"/pmml_informer.drl")
+            (BASE_PACK+"/pmml_informer.drl")
     };
 
 
@@ -147,12 +151,15 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     protected static final String RESOURCE_PATH = BASE_PACK;
     protected static final String TEMPLATE_PATH = "/" + RESOURCE_PATH + "/templates/";
 
+    private static TemplateRegistry registry;
     private static KnowledgeBase visitor;
+    private StatefulKnowledgeSession visitorSession;
+
+//    private StatefulKnowledgeSession kSession;
+//    private KnowledgeBase kbase;
 
 
-    private StatefulKnowledgeSession kSession;
-    private KnowledgeBase kbase;
-
+    private PMML4Wrapper context;
 
     static {
         try {
@@ -160,6 +167,8 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             for (String t : PMML_VISIT_RULES)
                 theories.add(ResourceFactory.newClassPathResource(t,PMML4Compiler.class).getInputStream());
             visitor = readKnowledgeBase( theories );
+            registry = new SimpleTemplateRegistry();
+                buildRegistry(registry);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -168,8 +177,8 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
     public PMML4Compiler() {
         super();
-
-
+        context = new PMML4Wrapper();
+            context.setPack("org.drools.pmml_4_0.test");
     }
 
 
@@ -207,37 +216,43 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 	protected String generateTheory(PMML pmml) {
         StringBuilder sb = new StringBuilder();
 
-        TemplateRegistry registry = new SimpleTemplateRegistry();
-        buildRegistry(registry);
 
-        StatefulKnowledgeSession visitorSession = visitor.newStatefulKnowledgeSession();
 
-        PMML4Wrapper wrapper = new PMML4Wrapper();
-            wrapper.setPack("org.drools.pmml_4_0.test");
+        visitorSession = visitor.newStatefulKnowledgeSession();
+//        for (Object o : visitorSession.getObjects()) {
+//            System.err.println(o);
+//        }
+
+        visitorSession.setGlobal("registry",registry);
+            visitorSession.setGlobal("fld2var",new HashMap());
+            visitorSession.setGlobal("utils",context);
 
         visitorSession.setGlobal("theory",sb);
-            visitorSession.setGlobal("registry",registry);
-            visitorSession.setGlobal("fld2var",new HashMap());
-            visitorSession.setGlobal("utils",wrapper);
 
 
-            visitorSession.insert(pmml);
+        FactHandle pmh = visitorSession.insert(pmml);
             visitorSession.fireAllRules();
 
 
         String ans = sb.toString();
+
+//        visitorSession.retract(pmh);
+//        visitorSession.fireAllRules();
         visitorSession.dispose();
+
+
+
 
         return ans;
 	}
 
 
 
-    private void buildRegistry(TemplateRegistry registry) {
+    private static void buildRegistry(TemplateRegistry registry) {
         for (String ntempl : NAMED_TEMPLATES) {
             try {
                 String path = TEMPLATE_PATH+ntempl;
-                InputStream stream = ResourceFactory.newClassPathResource(path, this.getClass()).getInputStream();
+                InputStream stream = ResourceFactory.newClassPathResource(path, PMML4Compiler.class).getInputStream();
 
                 registry.addNamedTemplate( path.substring(path.lastIndexOf('/') + 1),
                                            TemplateCompiler.compileTemplate(stream));
@@ -249,14 +264,22 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 
 
-    public String compile(String fileName) {
+    public String compile(String fileName, Map<String,PackageRegistry> registries) {
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(RESOURCE_PATH+"/"+fileName);
-        return compile(stream);
+        return compile(stream,registries);
     }
 
 
-    public String compile(InputStream source) {
+    public String compile(InputStream source, Map<String,PackageRegistry> registries) {
         PMML pmml = loadModel(PMML,source);
+        if (registries != null) {
+            if (registries.containsKey(context.getPack())) {
+                context.setResolver(registries.get(context.getPack()).getTypeResolver());
+            } else {
+                context.setResolver(null);
+            }
+
+        }
         return generateTheory(pmml);
     }
 

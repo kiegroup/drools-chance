@@ -6,7 +6,7 @@ import org.junit.Test;
 
 
 
-public class TestTargetsAndOutputs extends DroolsAbstractPMMLTest {
+public class TargetsAndOutputsTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = false;
     private static final String source = "org/drools/pmml_4_0/test_target_and_output.xml";

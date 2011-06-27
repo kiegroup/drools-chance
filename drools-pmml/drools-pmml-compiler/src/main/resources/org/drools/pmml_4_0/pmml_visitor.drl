@@ -314,7 +314,7 @@ end
 rule "visitApply"
 salience 0
 when
-    Apply( $args : constantsAndFieldRevesAndNormContinuouses, $fun : function )
+    Apply( $args : constantsAndFieldRevesAndNormContinuouses, $fun : this.function )
     $arg : Object() from $args
 then
    insertLogical($arg);
@@ -529,6 +529,15 @@ end
 
 
  //------------------------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+
 
 
 

@@ -15,7 +15,7 @@ import org.junit.Test;
  *
  * PMML Test : Focus on the DataDictionary section
  */
-public class TestMapValues extends DroolsAbstractPMMLTest {
+public class MapValuesTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = false;
     private static final String source = "org/drools/pmml_4_0/test_derived_fields_mapvalues.xml";

@@ -17,8 +17,8 @@ when
     $assoc : DomainModelAssociation( $id : questionId, object == $bean )
     $quest: Question( id == $id )
 then
-System.out.println("MOdel-driven invalid answer");
-    insertLogical( new InvalidAnswer($id, " Value of " + $bean.getClass().getSimpleName() + " not valid in model " + $ct) );
+System.out.println("MOdel-driven invalid answer " + $bean);
+    insertLogical( new InvalidAnswer($id, " Value of " + $bean.getClass().getSimpleName() + " not valid in model " + $ct + " >>> " + $bean) );
 end
 @end{}
 

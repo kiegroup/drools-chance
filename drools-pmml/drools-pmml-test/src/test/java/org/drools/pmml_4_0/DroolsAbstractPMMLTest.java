@@ -60,8 +60,8 @@ public abstract class DroolsAbstractPMMLTest {
 
 		KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
 
-		    kbuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/informer-changeset.xml"), ResourceType.CHANGE_SET);
-//            kbuilder.add(ResourceFactory.newClassPathResource("Active.drl", Questionnaire.class),ResourceType.DRL);
+		kbuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/informer-changeset.xml"), ResourceType.CHANGE_SET);
+
 
 
         if (! verbose) {
@@ -72,8 +72,7 @@ public abstract class DroolsAbstractPMMLTest {
             PMML4Compiler compiler = new PMML4Compiler();
             try {
                 for (String pmmlSource : pmmlSources) {
-                    String src = compiler.compile(ResourceFactory.newClassPathResource(pmmlSource).getInputStream());
-                    System.out.println(src);
+                    String src = compiler.compile(ResourceFactory.newClassPathResource(pmmlSource).getInputStream(),null);
                     kbuilder.add(ResourceFactory.newByteArrayResource(src.getBytes()),ResourceType.DRL);
                 }
             } catch (IOException e) {

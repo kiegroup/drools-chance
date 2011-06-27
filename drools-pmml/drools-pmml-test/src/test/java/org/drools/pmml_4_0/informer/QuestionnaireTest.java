@@ -25,6 +25,7 @@ import org.drools.informer.InvalidAnswer;
 import org.drools.informer.Note;
 import org.drools.pmml_4_0.DroolsAbstractPMMLTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -34,17 +35,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-/**
- * Created by IntelliJ IDEA.
- * User: davide
- * Date: 11/12/10
- * Time: 10:11 PM
- *
- * PMML Test : Focus on the DataDictionary section
- */
-public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = true;
+public class QuestionnaireTest extends DroolsAbstractPMMLTest {
+
+    private static final boolean VERBOSE = false;
     private static final String source = "org/drools/pmml_4_0/test_miningSchema.xml";
     private static final String source2 = "org/drools/pmml_4_0/test_ann_iris_prediction.xml";
     private static final String sourceMix = "org/drools/pmml_4_0/test_ann_mixed_inputs.xml";
@@ -52,13 +46,6 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
     private static final String packageName = "org.drools.pmml_4_0.test";
 
-
-
-    @Before
-    public void setUp() throws Exception {
-        setKSession(getModelSession(source, VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
-    }
 
 
 
@@ -84,7 +71,7 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
         Collection c = getKSession().getObjects(new ClassObjectFilter(DomainModelAssociation.class));
         Iterator iter = c.iterator();
-        assertEquals(2,c.size());
+        assertEquals(2, c.size());
         DomainModelAssociation dma1 = (DomainModelAssociation) iter.next();
         if (dma1.getObject().getClass().equals(nump.getFactClass())) {
             assertEquals(5,nump.get(dma1.getObject(),"value"));
@@ -110,7 +97,7 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
         c = getKSession().getObjects(new ClassObjectFilter(DomainModelAssociation.class));
         iter = c.iterator();
-        assertEquals(3,c.size());
+        assertEquals(3, c.size());
         while (iter.hasNext()) {
             DomainModelAssociation dma = (DomainModelAssociation) iter.next();
 
@@ -136,22 +123,94 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
 
     @Test
+    public void testMixModel() throws Exception {
+        setKSession(getModelSession(new String[] {sourceMix},VERBOSE));
+        setKbase(getKSession().getKnowledgeBase());
+
+        getKSession().fireAllRules();
+
+
+
+        Answer ans1 = new Answer(getQId("Mixed","Gender"),"male");
+
+        getKSession().insert(ans1);
+        getKSession().getWorkingMemoryEntryPoint("in_Domicile").insert("rural");
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_0"),true,false,"Mixed",1.0);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_1"),true,false,"Mixed",0.0);
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_6"),true,false,"Mixed",0.0);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_7"),true,false,"Mixed",1.0);
+
+
+
+        Answer ans2 = new Answer(getQId("Mixed","Scrambled"),"7");
+        getKSession().insert(ans2);
+
+
+        Answer ans3 = new Answer(getQId("Mixed","NoOfClaims"),"1");
+        getKSession().insert(ans3);
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_5"),true,false,"Mixed",7);
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_2"),true,false,"Mixed",0.0);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_3"),true,false,"Mixed",1.0);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_4"),true,false,"Mixed",0.0);
+
+
+
+        Answer ans4 = new Answer(getQId("Mixed","AgeOfCar"),"-3");
+        getKSession().insert(ans4);
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_8"),false,false,"Mixed",-3.0);
+
+
+        Answer ans5 = new Answer(getQId("Mixed","AgeOfCar"),"4.0");
+        getKSession().insert(ans5);
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_8"),true,false,"Mixed",4.0);
+
+        System.err.println(reportWMObjects(getKSession()));
+
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Out_Claims"),true,false,"Mixed",95.0);
+
+    }
+
+
+
+
+
+
+    @Test
     public void testGenerateInputsByAnswer() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
 
         getKSession().fireAllRules();
 
-        Answer ans1 = new Answer("IRIS_MLP_PetalLength","2.5");
-        Answer ans2 = new Answer("IRIS_MLP_PetalNumber","5");
+
+        String qid1 = getQId("IRIS_MLP","PetalLength");
+        String qid2 = getQId("IRIS_MLP","PetalNumber");
+
+        Answer ans1 = new Answer(qid1,"2.5");
+        Answer ans2 = new Answer(qid2,"5");
 
         getKSession().insert(ans1);
         getKSession().insert(ans2);
 
         getKSession().fireAllRules();
 
-        FactType nump = getKbase().getFactType("org.drools.pmml_4_0.test","PetalNumber");
-        FactType lenp = getKbase().getFactType("org.drools.pmml_4_0.test","PetalLength");
+        FactType nump = getKbase().getFactType("org.drools.pmml_4_0.test", "PetalNumber");
+        FactType lenp = getKbase().getFactType("org.drools.pmml_4_0.test", "PetalLength");
 
         Collection c = getKSession().getObjects(new ClassObjectFilter(nump.getFactClass()));
         assertEquals(2,c.size());
@@ -165,7 +224,7 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
 
         Collection d = getKSession().getObjects(new ClassObjectFilter(lenp.getFactClass()));
-        assertEquals(2,d.size());
+        assertEquals(2, d.size());
 
         Iterator i2 = d.iterator();
         while (i2.hasNext()) {
@@ -194,8 +253,11 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        Answer ans1 = new Answer("IRIS_MLP_PetalLength","2.5");
-        Answer ans2 = new Answer("IRIS_MLP_PetalNumber","-7");
+        String qid1 = getQId("IRIS_MLP","PetalLength");
+        String qid2 = getQId("IRIS_MLP","PetalNumber");
+
+        Answer ans1 = new Answer(qid1,"2.5");
+        Answer ans2 = new Answer(qid2,"-7");
 
         getKSession().insert(ans1);
         getKSession().insert(ans2);
@@ -217,7 +279,7 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
         System.out.println("\n\n\n\n\n\n\n\n\n\n");
 
-        Answer ans3 = new Answer("IRIS_MLP_PetalNumber","6");
+        Answer ans3 = new Answer(qid2,"6");
 
 
         getKSession().insert(ans3);
@@ -272,10 +334,25 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
 
 
+    private String getQId(String model, String field) {
+        return (String) getKSession().getQueryResults("getItemId",model+"_"+field,model).iterator().next().get("$id");
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Test
-
     public void testMultipleModels() throws Exception {
         setKSession(getModelSession(new String[] {source,source2},VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
@@ -302,14 +379,14 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
         checkFirstDataFieldOfTypeStatus(petalNumType,false,false,"Neupre",4);
         assertEquals(1, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
-        assertEquals(2,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
+        assertEquals(2, getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
 
 
         System.out.println("\n\n\n\n\n\n\n\n Before 2 \n");
 
 
-        Answer ans1 = new Answer("Neupre_PetalNumber","40");
+        Answer ans1 = new Answer(getQId("Neupre","PetalNumber"),"40");
         getKSession().insert(ans1);
         getKSession().fireAllRules();
 
@@ -332,16 +409,16 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
         System.out.println("\n\n\n\n\n\n\n\n Before 3 \n");
 
 
-        Answer ans2 = new Answer("Neupre_PetalNumber","-4");
+        Answer ans2 = new Answer(getQId("Neupre","PetalNumber"),"-7");
         getKSession().insert(ans2);
 
-        getKSession().fireAllRules();
+       getKSession().fireAllRules();
 
 
-//        System.err.println(reportWMObjects(getKSession()));
+        System.err.println(reportWMObjects(getKSession()));
 
 
-        checkFirstDataFieldOfTypeStatus(petalNumType,false,false,"Neupre",-4);
+        checkFirstDataFieldOfTypeStatus(petalNumType,false,false,"Neupre",-7);
 
         assertEquals(1, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
         assertEquals(3,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
@@ -359,7 +436,7 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 //
 //
 //
-        Answer ans3 = new Answer("Neupre_PetalNumber","44");
+        Answer ans3 = new Answer(getQId("Neupre","PetalNumber"),"44");
         getKSession().insert(ans3);
 
         getKSession().fireAllRules();
@@ -381,65 +458,6 @@ public class TestQuestionnaire extends DroolsAbstractPMMLTest {
 
 
 
-
-
-    @Test
-    public void testMixModel() throws Exception {
-        setKSession(getModelSession(new String[] {sourceMix},VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
-
-        getKSession().fireAllRules();
-
-
-
-        Answer ans1 = new Answer("Mixed_Gender","male");
-        getKSession().insert(ans1);
-        getKSession().getWorkingMemoryEntryPoint("in_Domicile").insert("rural");
-
-        getKSession().fireAllRules();
-
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_0"),true,false,"Mixed",1.0);
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_1"),true,false,"Mixed",0.0);
-
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_6"),true,false,"Mixed",0.0);
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_7"),true,false,"Mixed",1.0);
-
-
-        Answer ans2 = new Answer("Mixed_Scrambled","7");
-        getKSession().insert(ans2);
-        Answer ans3 = new Answer("Mixed_NoOfClaims","1");
-        getKSession().insert(ans3);
-
-        getKSession().fireAllRules();
-
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_5"),true,false,"Mixed",7);
-
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_2"),true,false,"Mixed",0.0);
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_3"),true,false,"Mixed",1.0);
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_4"),true,false,"Mixed",0.0);
-
-
-        Answer ans4 = new Answer("Mixed_AgeOfCar","-3");
-        getKSession().insert(ans4);
-
-        getKSession().fireAllRules();
-
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_8"),false,false,"Mixed",-3.0);
-
-
-        Answer ans5 = new Answer("Mixed_AgeOfCar","4.0");
-        getKSession().insert(ans5);
-
-        getKSession().fireAllRules();
-
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Mixed_8"),true,false,"Mixed",4.0);
-
-        System.err.println(reportWMObjects(getKSession()));
-
-
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Out_Claims"),true,false,"Mixed",95.0);
-
-    }
 
 
 
