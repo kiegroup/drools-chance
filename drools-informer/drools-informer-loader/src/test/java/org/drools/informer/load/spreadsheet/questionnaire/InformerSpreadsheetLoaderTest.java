@@ -42,7 +42,7 @@ import java.io.File;
  */
 public class InformerSpreadsheetLoaderTest {
 
-	@Test
+	@Test  @Ignore
 	public void testProcessSimpleFile() {
 		InformerSpreadsheetLoader loader = new InformerSpreadsheetLoader();
 		byte[] compiled = loader.compileFile("SampleDecisionTreeSimple.xls");
@@ -74,7 +74,7 @@ public class InformerSpreadsheetLoaderTest {
 		
 	}
 
-    @Test
+    @Test  @Ignore
 	public void testProcessComplexFile() {
 		InformerSpreadsheetLoader loader = new InformerSpreadsheetLoader();
         byte[] compiled = loader.compileFile("SampleDecisionTreeComplex.xls");
