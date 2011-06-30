@@ -18,38 +18,117 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.drools</groupId>
-    <artifactId>drools-pmml</artifactId>
-    <version>5.3.0-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-pmml</artifactId>
+        <version>5.3.0-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>drools-pmml-compiler</artifactId>
+    <artifactId>drools-pmml-compiler</artifactId>
 
-  <name>Drools :: PMML - Compiler </name>
+    <name>Drools :: PMML - Compiler </name>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>knowledge-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-compiler</artifactId>
-    </dependency>
-    <dependency>
-       <groupId>org.drools</groupId>
-       <artifactId>drools-informer-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>knowledge-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-informer-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+    
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          
+        </dependency>
+    </dependencies>
+  
+    <build>
+        <plugins>
+            <!--plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                    </execution>
+               </executions>
+               <configuration>
+                    <outputDirectory>src/main/java</outputDirectory>
+                    <packageName>org.drools.pmml_4_0.descr</packageName>
+                    <schemaFiles>org/drools/pmml_4_0/pmml-4-0.xsd</schemaFiles>
+                    <bindingFiles>bindings.xjb</bindingFiles>
+                    <extension>true</extension>
+                    <clearOutputDir>false</clearOutputDir>
+                    
+               </configuration>
+           </plugin-->
+           
+           
+            <!--plugin>
+                <groupId>org.apache.ws.jaxme</groupId>
+                <artifactId>maven-jaxme-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jaxme</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemas>
+                        <value>src/main/xsd/org/drools/pmml_4_0/pmml-4-0.xsd</value>
+                    </schemas>
+                    <packageName>
+                         org.drools.pmml_4_0.descr
+                    </packageName>
+                    <bindings>
+                        <value>
+                            src/main/jxb/bindings.xjb
+                        </value>
+                    </bindings>
+                    
+                    <target>
+                        src/main/java
+                    </target>
+                    <extension>
+                        true
+                    </extension>
+                </configuration>
+            </plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
