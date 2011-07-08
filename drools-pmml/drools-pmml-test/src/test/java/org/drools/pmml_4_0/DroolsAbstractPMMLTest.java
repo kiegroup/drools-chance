@@ -141,6 +141,7 @@ public abstract class DroolsAbstractPMMLTest {
 		}
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
             conf.setEventProcessingMode(EventProcessingOption.STREAM);
+            conf.setAssertBehaviour(RuleBaseConfiguration.AssertBehaviour.EQUALITY);
             //conf.setConflictResolver(LifoConflictResolver.getInstance());
 		KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase(conf);
 		kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());

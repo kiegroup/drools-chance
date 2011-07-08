@@ -706,7 +706,7 @@ salience -1
 when
     $fld : DerivedField( $map : mapValues )
     MapValues( this == $map, $rows : inlineTable.rows, $outColumn : outputColumn )
-    $row : Row( $cells : elementContent ) from $rows
+    $row : Row( $cells : content ) from $rows
 then
     insertLogical( $row );
 end
@@ -722,7 +722,7 @@ when
     $sup : MapSupportBean( ref == $map,
                            $colMap : columns != null, $keys : columns.keySet,
                            $typeMap : types != null, $tkeys : types.keySet )
-    $row : Row( $cells : elementContent, this memberOf $rows )
+    $row : Row( $cells : content, this memberOf $rows )
     $fieldRestrMap : java.util.HashMap() from accumulate (
         org.w3c.dom.Element( $tag : tagName != $outColumn, $text : textContent,
                              tagName memberOf $keys, tagName memberOf $tkeys ) from $cells,
@@ -1859,6 +1859,7 @@ when
     $df : DataField()
     not PMML()
 then
+    System.out.println("Have problems with " + $df);
     retract($df);
 end
 
