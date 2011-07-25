@@ -66,7 +66,7 @@ public class SequenceRule implements Serializable
         @XmlElement(name = "ConsequentSequence", required = true, type = ConsequentSequence.class),
         @XmlElement(name = "Time", required = true, type = Time.class)
     })
-    protected List<Object> timesAndConsequentSequences;
+    protected List<Serializable> timesAndConsequentSequences;
     @XmlAttribute(required = true)
     protected String id;
     @XmlAttribute(required = true)
@@ -180,9 +180,9 @@ public class SequenceRule implements Serializable
      * 
      * 
      */
-    public List<Object> getTimesAndConsequentSequences() {
+    public List<Serializable> getTimesAndConsequentSequences() {
         if (timesAndConsequentSequences == null) {
-            timesAndConsequentSequences = new ArrayList<Object>();
+            timesAndConsequentSequences = new ArrayList<Serializable>();
         }
         return this.timesAndConsequentSequences;
     }

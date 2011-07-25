@@ -59,18 +59,18 @@ public class TimeSeriesModel implements Serializable
     private final static long serialVersionUID = 145235L;
     @XmlElementRefs({
         @XmlElementRef(name = "Output", namespace = "http://www.dmg.org/PMML-4_0", type = Output.class),
-        @XmlElementRef(name = "ExponentialSmoothing", namespace = "http://www.dmg.org/PMML-4_0", type = ExponentialSmoothing.class),
         @XmlElementRef(name = "LocalTransformations", namespace = "http://www.dmg.org/PMML-4_0", type = LocalTransformations.class),
-        @XmlElementRef(name = "ModelStats", namespace = "http://www.dmg.org/PMML-4_0", type = ModelStats.class),
-        @XmlElementRef(name = "TimeSeries", namespace = "http://www.dmg.org/PMML-4_0", type = TimeSeries.class),
-        @XmlElementRef(name = "SpectralAnalysis", namespace = "http://www.dmg.org/PMML-4_0", type = JAXBElement.class),
-        @XmlElementRef(name = "SeasonalTrendDecomposition", namespace = "http://www.dmg.org/PMML-4_0", type = JAXBElement.class),
         @XmlElementRef(name = "ModelVerification", namespace = "http://www.dmg.org/PMML-4_0", type = ModelVerification.class),
-        @XmlElementRef(name = "Extension", namespace = "http://www.dmg.org/PMML-4_0", type = Extension.class),
+        @XmlElementRef(name = "ExponentialSmoothing", namespace = "http://www.dmg.org/PMML-4_0", type = ExponentialSmoothing.class),
+        @XmlElementRef(name = "SeasonalTrendDecomposition", namespace = "http://www.dmg.org/PMML-4_0", type = JAXBElement.class),
+        @XmlElementRef(name = "ARIMA", namespace = "http://www.dmg.org/PMML-4_0", type = JAXBElement.class),
+        @XmlElementRef(name = "ModelStats", namespace = "http://www.dmg.org/PMML-4_0", type = ModelStats.class),
         @XmlElementRef(name = "MiningSchema", namespace = "http://www.dmg.org/PMML-4_0", type = MiningSchema.class),
-        @XmlElementRef(name = "ARIMA", namespace = "http://www.dmg.org/PMML-4_0", type = JAXBElement.class)
+        @XmlElementRef(name = "SpectralAnalysis", namespace = "http://www.dmg.org/PMML-4_0", type = JAXBElement.class),
+        @XmlElementRef(name = "Extension", namespace = "http://www.dmg.org/PMML-4_0", type = Extension.class),
+        @XmlElementRef(name = "TimeSeries", namespace = "http://www.dmg.org/PMML-4_0", type = TimeSeries.class)
     })
-    protected List<Serializable> extensionsAndMiningSchemasAndOutputs;
+    protected List<Object> extensionsAndMiningSchemasAndOutputs;
     @XmlAttribute
     protected String modelName;
     @XmlAttribute(required = true)
@@ -99,22 +99,22 @@ public class TimeSeriesModel implements Serializable
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Output }
-     * {@link ExponentialSmoothing }
      * {@link LocalTransformations }
-     * {@link TimeSeries }
+     * {@link ModelVerification }
+     * {@link ExponentialSmoothing }
+     * {@link JAXBElement }{@code <}{@link Object }{@code >}
      * {@link ModelStats }
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
-     * {@link ModelVerification }
-     * {@link JAXBElement }{@code <}{@link Object }{@code >}
      * {@link MiningSchema }
-     * {@link Extension }
      * {@link JAXBElement }{@code <}{@link Object }{@code >}
+     * {@link Extension }
+     * {@link TimeSeries }
      * 
      * 
      */
-    public List<Serializable> getExtensionsAndMiningSchemasAndOutputs() {
+    public List<Object> getExtensionsAndMiningSchemasAndOutputs() {
         if (extensionsAndMiningSchemasAndOutputs == null) {
-            extensionsAndMiningSchemasAndOutputs = new ArrayList<Serializable>();
+            extensionsAndMiningSchemasAndOutputs = new ArrayList<Object>();
         }
         return this.extensionsAndMiningSchemasAndOutputs;
     }

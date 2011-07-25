@@ -60,12 +60,12 @@ public class Node implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
-        @XmlElement(name = "CompoundPredicate", type = CompoundPredicate.class),
         @XmlElement(name = "Extension", type = Extension.class),
-        @XmlElement(name = "True", type = True.class),
+        @XmlElement(name = "SimpleSetPredicate", type = SimpleSetPredicate.class),
         @XmlElement(name = "False", type = False.class),
         @XmlElement(name = "SimplePredicate", type = SimplePredicate.class),
-        @XmlElement(name = "SimpleSetPredicate", type = SimpleSetPredicate.class)
+        @XmlElement(name = "CompoundPredicate", type = CompoundPredicate.class),
+        @XmlElement(name = "True", type = True.class)
     })
     protected List<Object> extensionsAndSimplePredicatesAndCompoundPredicates;
     @XmlElement(name = "DecisionTree")
@@ -105,12 +105,12 @@ public class Node implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link CompoundPredicate }
      * {@link Extension }
-     * {@link True }
+     * {@link SimpleSetPredicate }
      * {@link False }
      * {@link SimplePredicate }
-     * {@link SimpleSetPredicate }
+     * {@link CompoundPredicate }
+     * {@link True }
      * 
      * 
      */

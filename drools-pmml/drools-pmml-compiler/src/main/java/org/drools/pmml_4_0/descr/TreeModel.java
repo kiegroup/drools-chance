@@ -66,15 +66,15 @@ public class TreeModel implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
+        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
+        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
+        @XmlElement(name = "Targets", required = true, type = Targets.class),
+        @XmlElement(name = "Node", required = true, type = Node.class),
+        @XmlElement(name = "Output", required = true, type = Output.class),
         @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
         @XmlElement(name = "Extension", required = true, type = Extension.class),
-        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
-        @XmlElement(name = "Output", required = true, type = Output.class),
-        @XmlElement(name = "Node", required = true, type = Node.class),
-        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
         @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
-        @XmlElement(name = "Targets", required = true, type = Targets.class)
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class)
     })
     protected List<Object> extensionsAndNodesAndMiningSchemas;
     @XmlAttribute
@@ -110,15 +110,15 @@ public class TreeModel implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link ModelVerification }
+     * {@link LocalTransformations }
+     * {@link Targets }
+     * {@link Node }
+     * {@link Output }
      * {@link ModelStats }
      * {@link Extension }
-     * {@link ModelVerification }
-     * {@link Output }
-     * {@link Node }
-     * {@link LocalTransformations }
      * {@link ModelExplanation }
      * {@link MiningSchema }
-     * {@link Targets }
      * 
      * 
      */

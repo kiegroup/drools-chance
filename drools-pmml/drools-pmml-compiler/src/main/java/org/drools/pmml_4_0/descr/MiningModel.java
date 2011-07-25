@@ -58,17 +58,17 @@ public class MiningModel implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
-        @XmlElement(name = "DecisionTree", required = true, type = DecisionTree.class),
         @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
-        @XmlElement(name = "Regression", required = true, type = Regression.class),
-        @XmlElement(name = "Segmentation", required = true, type = Segmentation.class),
+        @XmlElement(name = "DecisionTree", required = true, type = DecisionTree.class),
         @XmlElement(name = "Targets", required = true, type = Targets.class),
-        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
-        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
+        @XmlElement(name = "Regression", required = true, type = Regression.class),
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
         @XmlElement(name = "Extension", required = true, type = Extension.class),
         @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
-        @XmlElement(name = "Output", required = true, type = Output.class)
+        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
+        @XmlElement(name = "Output", required = true, type = Output.class),
+        @XmlElement(name = "Segmentation", required = true, type = Segmentation.class),
+        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class)
     })
     protected List<Object> extensionsAndMiningSchemasAndOutputs;
     @XmlAttribute
@@ -96,17 +96,17 @@ public class MiningModel implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link DecisionTree }
      * {@link ModelStats }
-     * {@link MiningSchema }
-     * {@link Regression }
-     * {@link Segmentation }
+     * {@link DecisionTree }
      * {@link Targets }
-     * {@link LocalTransformations }
-     * {@link ModelExplanation }
+     * {@link Regression }
+     * {@link MiningSchema }
      * {@link Extension }
      * {@link ModelVerification }
+     * {@link ModelExplanation }
      * {@link Output }
+     * {@link Segmentation }
+     * {@link LocalTransformations }
      * 
      * 
      */

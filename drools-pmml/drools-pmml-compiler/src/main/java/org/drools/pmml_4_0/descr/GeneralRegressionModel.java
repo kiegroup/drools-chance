@@ -103,21 +103,21 @@ public class GeneralRegressionModel implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
+        @XmlElement(name = "EventValues", required = true, type = EventValues.class),
+        @XmlElement(name = "FactorList", required = true, type = FactorList.class),
+        @XmlElement(name = "BaseCumHazardTables", required = true, type = BaseCumHazardTables.class),
+        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
+        @XmlElement(name = "PPMatrix", required = true, type = PPMatrix.class),
+        @XmlElement(name = "Output", required = true, type = Output.class),
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
+        @XmlElement(name = "Targets", required = true, type = Targets.class),
+        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
         @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
+        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
+        @XmlElement(name = "ParameterList", required = true, type = ParameterList.class),
         @XmlElement(name = "ParamMatrix", required = true, type = ParamMatrix.class),
         @XmlElement(name = "PCovMatrix", required = true, type = PCovMatrix.class),
-        @XmlElement(name = "Targets", required = true, type = Targets.class),
-        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
-        @XmlElement(name = "Output", required = true, type = Output.class),
-        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
-        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
         @XmlElement(name = "Extension", required = true, type = Extension.class),
-        @XmlElement(name = "BaseCumHazardTables", required = true, type = BaseCumHazardTables.class),
-        @XmlElement(name = "EventValues", required = true, type = EventValues.class),
-        @XmlElement(name = "PPMatrix", required = true, type = PPMatrix.class),
-        @XmlElement(name = "ParameterList", required = true, type = ParameterList.class),
-        @XmlElement(name = "FactorList", required = true, type = FactorList.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
         @XmlElement(name = "CovariateList", required = true, type = CovariateList.class)
     })
     protected List<Object> extensionsAndParamMatrixesAndPPMatrixes;
@@ -182,21 +182,21 @@ public class GeneralRegressionModel implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link EventValues }
+     * {@link FactorList }
+     * {@link BaseCumHazardTables }
+     * {@link ModelVerification }
+     * {@link PPMatrix }
+     * {@link Output }
+     * {@link MiningSchema }
+     * {@link Targets }
+     * {@link ModelStats }
      * {@link LocalTransformations }
+     * {@link ModelExplanation }
+     * {@link ParameterList }
      * {@link ParamMatrix }
      * {@link PCovMatrix }
-     * {@link Targets }
-     * {@link ModelVerification }
-     * {@link Output }
-     * {@link ModelExplanation }
-     * {@link ModelStats }
      * {@link Extension }
-     * {@link BaseCumHazardTables }
-     * {@link EventValues }
-     * {@link PPMatrix }
-     * {@link ParameterList }
-     * {@link FactorList }
-     * {@link MiningSchema }
      * {@link CovariateList }
      * 
      * 

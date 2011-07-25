@@ -66,17 +66,17 @@ public class ClusteringModel implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
-        @XmlElement(name = "Extension", required = true, type = Extension.class),
-        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
-        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
         @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
-        @XmlElement(name = "ClusteringField", required = true, type = ClusteringField.class),
         @XmlElement(name = "MissingValueWeights", required = true, type = MissingValueWeights.class),
-        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
+        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
         @XmlElement(name = "Output", required = true, type = Output.class),
+        @XmlElement(name = "ClusteringField", required = true, type = ClusteringField.class),
+        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
+        @XmlElement(name = "Extension", required = true, type = Extension.class),
         @XmlElement(name = "ComparisonMeasure", required = true, type = ComparisonMeasure.class),
-        @XmlElement(name = "Cluster", required = true, type = Cluster.class)
+        @XmlElement(name = "Cluster", required = true, type = Cluster.class),
+        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class)
     })
     protected List<Object> extensionsAndClustersAndComparisonMeasures;
     @XmlAttribute
@@ -108,17 +108,17 @@ public class ClusteringModel implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Extension }
-     * {@link ModelVerification }
-     * {@link ModelExplanation }
      * {@link ModelStats }
-     * {@link MiningSchema }
-     * {@link ClusteringField }
      * {@link MissingValueWeights }
-     * {@link LocalTransformations }
+     * {@link ModelExplanation }
+     * {@link MiningSchema }
      * {@link Output }
+     * {@link ClusteringField }
+     * {@link LocalTransformations }
+     * {@link Extension }
      * {@link ComparisonMeasure }
      * {@link Cluster }
+     * {@link ModelVerification }
      * 
      * 
      */

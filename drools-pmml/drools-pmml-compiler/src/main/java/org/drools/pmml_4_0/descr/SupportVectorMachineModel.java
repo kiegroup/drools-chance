@@ -67,21 +67,21 @@ public class SupportVectorMachineModel implements Serializable
     private final static long serialVersionUID = 145235L;
     @XmlElements({
         @XmlElement(name = "VectorDictionary", required = true, type = VectorDictionary.class),
-        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
-        @XmlElement(name = "Extension", required = true, type = Extension.class),
-        @XmlElement(name = "LinearKernelType", required = true, type = LinearKernelType.class),
-        @XmlElement(name = "Targets", required = true, type = Targets.class),
-        @XmlElement(name = "PolynomialKernelType", required = true, type = PolynomialKernelType.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
-        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
-        @XmlElement(name = "RadialBasisKernelType", required = true, type = RadialBasisKernelType.class),
-        @XmlElement(name = "SigmoidKernelType", required = true, type = SigmoidKernelType.class),
-        @XmlElement(name = "Output", required = true, type = Output.class),
         @XmlElement(name = "SupportVectorMachine", required = true, type = SupportVectorMachine.class),
         @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
+        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
+        @XmlElement(name = "Output", required = true, type = Output.class),
+        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
+        @XmlElement(name = "LinearKernelType", required = true, type = LinearKernelType.class),
+        @XmlElement(name = "PolynomialKernelType", required = true, type = PolynomialKernelType.class),
+        @XmlElement(name = "Targets", required = true, type = Targets.class),
+        @XmlElement(name = "RadialBasisKernelType", required = true, type = RadialBasisKernelType.class),
+        @XmlElement(name = "Extension", required = true, type = Extension.class),
+        @XmlElement(name = "SigmoidKernelType", required = true, type = SigmoidKernelType.class),
         @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class)
     })
-    protected List<Object> extensionsAndSupportVectorMachinesAndVectorDictionaries;
+    protected List<Serializable> extensionsAndSupportVectorMachinesAndVectorDictionaries;
     @XmlAttribute
     protected String modelName;
     @XmlAttribute(required = true)
@@ -114,25 +114,25 @@ public class SupportVectorMachineModel implements Serializable
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link VectorDictionary }
-     * {@link ModelExplanation }
-     * {@link Extension }
-     * {@link LinearKernelType }
-     * {@link Targets }
-     * {@link PolynomialKernelType }
-     * {@link MiningSchema }
-     * {@link ModelVerification }
-     * {@link RadialBasisKernelType }
-     * {@link SigmoidKernelType }
-     * {@link Output }
      * {@link SupportVectorMachine }
      * {@link ModelStats }
+     * {@link ModelVerification }
+     * {@link MiningSchema }
+     * {@link Output }
+     * {@link ModelExplanation }
+     * {@link LinearKernelType }
+     * {@link PolynomialKernelType }
+     * {@link Targets }
+     * {@link RadialBasisKernelType }
+     * {@link Extension }
+     * {@link SigmoidKernelType }
      * {@link LocalTransformations }
      * 
      * 
      */
-    public List<Object> getExtensionsAndSupportVectorMachinesAndVectorDictionaries() {
+    public List<Serializable> getExtensionsAndSupportVectorMachinesAndVectorDictionaries() {
         if (extensionsAndSupportVectorMachinesAndVectorDictionaries == null) {
-            extensionsAndSupportVectorMachinesAndVectorDictionaries = new ArrayList<Object>();
+            extensionsAndSupportVectorMachinesAndVectorDictionaries = new ArrayList<Serializable>();
         }
         return this.extensionsAndSupportVectorMachinesAndVectorDictionaries;
     }

@@ -13,22 +13,24 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for Con element declaration.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{http://www.dmg.org/PMML-4_0}Extension" maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="from" use="required" type="{http://www.dmg.org/PMML-4_0}NN-NEURON-IDREF" />
- *       &lt;attribute name="weight" use="required" type="{http://www.dmg.org/PMML-4_0}REAL-NUMBER" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;element name="Con">
+ *   &lt;complexType>
+ *     &lt;complexContent>
+ *       &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *         &lt;sequence>
+ *           &lt;element ref="{http://www.dmg.org/PMML-4_0}Extension" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;/sequence>
+ *         &lt;attribute name="from" use="required" type="{http://www.dmg.org/PMML-4_0}NN-NEURON-IDREF" />
+ *         &lt;attribute name="weight" use="required" type="{http://www.dmg.org/PMML-4_0}REAL-NUMBER" />
+ *       &lt;/restriction>
+ *     &lt;/complexContent>
+ *   &lt;/complexType>
+ * &lt;/element>
  * </pre>
  * 
  * 
@@ -38,7 +40,7 @@ import javax.xml.bind.annotation.XmlType;
     "extensions"
 })
 @XmlRootElement(name = "Con")
-public class Con
+public class Synapse
     implements Serializable
 {
 

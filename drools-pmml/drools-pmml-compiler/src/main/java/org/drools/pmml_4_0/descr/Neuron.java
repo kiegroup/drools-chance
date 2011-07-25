@@ -50,7 +50,7 @@ public class Neuron
     @XmlElement(name = "Extension")
     protected List<Extension> extensions;
     @XmlElement(name = "Con", required = true)
-    protected List<Con> cons;
+    protected List<Synapse> cons;
     @XmlAttribute(required = true)
     protected String id;
     @XmlAttribute
@@ -107,13 +107,13 @@ public class Neuron
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Con }
+     * {@link Synapse }
      * 
      * 
      */
-    public List<Con> getCons() {
+    public List<Synapse> getCons() {
         if (cons == null) {
-            cons = new ArrayList<Con>();
+            cons = new ArrayList<Synapse>();
         }
         return this.cons;
     }

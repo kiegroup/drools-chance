@@ -61,19 +61,19 @@ public class TextModel implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
-        @XmlElement(name = "TextCorpus", required = true, type = TextCorpus.class),
-        @XmlElement(name = "DocumentTermMatrix", required = true, type = DocumentTermMatrix.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
         @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
-        @XmlElement(name = "Targets", required = true, type = Targets.class),
-        @XmlElement(name = "Output", required = true, type = Output.class),
-        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
-        @XmlElement(name = "TextModelNormalization", required = true, type = TextModelNormalization.class),
-        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
-        @XmlElement(name = "TextDictionary", required = true, type = TextDictionary.class),
-        @XmlElement(name = "TextModelSimiliarity", required = true, type = TextModelSimiliarity.class),
         @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
-        @XmlElement(name = "Extension", required = true, type = Extension.class)
+        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
+        @XmlElement(name = "TextModelNormalization", required = true, type = TextModelNormalization.class),
+        @XmlElement(name = "DocumentTermMatrix", required = true, type = DocumentTermMatrix.class),
+        @XmlElement(name = "TextModelSimiliarity", required = true, type = TextModelSimiliarity.class),
+        @XmlElement(name = "Output", required = true, type = Output.class),
+        @XmlElement(name = "Extension", required = true, type = Extension.class),
+        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
+        @XmlElement(name = "TextDictionary", required = true, type = TextDictionary.class),
+        @XmlElement(name = "Targets", required = true, type = Targets.class),
+        @XmlElement(name = "TextCorpus", required = true, type = TextCorpus.class)
     })
     protected List<Object> extensionsAndDocumentTermMatrixesAndTextCorpuses;
     @XmlAttribute
@@ -105,19 +105,19 @@ public class TextModel implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link TextCorpus }
-     * {@link DocumentTermMatrix }
-     * {@link MiningSchema }
      * {@link ModelExplanation }
-     * {@link Targets }
-     * {@link Output }
-     * {@link LocalTransformations }
-     * {@link TextModelNormalization }
-     * {@link ModelStats }
-     * {@link TextDictionary }
-     * {@link TextModelSimiliarity }
      * {@link ModelVerification }
+     * {@link ModelStats }
+     * {@link TextModelNormalization }
+     * {@link DocumentTermMatrix }
+     * {@link TextModelSimiliarity }
+     * {@link Output }
      * {@link Extension }
+     * {@link LocalTransformations }
+     * {@link MiningSchema }
+     * {@link TextDictionary }
+     * {@link Targets }
+     * {@link TextCorpus }
      * 
      * 
      */

@@ -64,17 +64,17 @@ public class NeuralNetwork implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
+        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
         @XmlElement(name = "Targets", required = true, type = Targets.class),
         @XmlElement(name = "Output", required = true, type = Output.class),
-        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
-        @XmlElement(name = "NeuralOutputs", required = true, type = NeuralOutputs.class),
-        @XmlElement(name = "NeuralLayer", required = true, type = NeuralLayer.class),
-        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
         @XmlElement(name = "Extension", required = true, type = Extension.class),
-        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
+        @XmlElement(name = "NeuralOutputs", required = true, type = NeuralOutputs.class),
+        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
+        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
+        @XmlElement(name = "NeuralLayer", required = true, type = NeuralLayer.class),
         @XmlElement(name = "NeuralInputs", required = true, type = NeuralInputs.class),
-        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class)
+        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class)
     })
     protected List<Object> extensionsAndNeuralLayersAndNeuralInputs;
     @XmlAttribute
@@ -115,17 +115,17 @@ public class NeuralNetwork implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link ModelExplanation }
+     * {@link MiningSchema }
      * {@link Targets }
      * {@link Output }
-     * {@link LocalTransformations }
-     * {@link MiningSchema }
-     * {@link NeuralOutputs }
-     * {@link NeuralLayer }
-     * {@link ModelStats }
      * {@link Extension }
-     * {@link ModelVerification }
+     * {@link NeuralOutputs }
+     * {@link LocalTransformations }
+     * {@link ModelStats }
+     * {@link NeuralLayer }
      * {@link NeuralInputs }
-     * {@link ModelExplanation }
+     * {@link ModelVerification }
      * 
      * 
      */

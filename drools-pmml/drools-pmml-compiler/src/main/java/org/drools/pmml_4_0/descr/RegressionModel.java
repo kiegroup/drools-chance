@@ -66,16 +66,16 @@ public class RegressionModel implements Serializable
     private final static long serialVersionUID = 145235L;
     @XmlElements({
         @XmlElement(name = "RegressionTable", required = true, type = RegressionTable.class),
-        @XmlElement(name = "Output", required = true, type = Output.class),
         @XmlElement(name = "Targets", required = true, type = Targets.class),
-        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
         @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
+        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
         @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
         @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
         @XmlElement(name = "Extension", required = true, type = Extension.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class)
+        @XmlElement(name = "Output", required = true, type = Output.class)
     })
-    protected List<Serializable> extensionsAndRegressionTablesAndMiningSchemas;
+    protected List<Object> extensionsAndRegressionTablesAndMiningSchemas;
     @XmlAttribute
     protected String modelName;
     @XmlAttribute(required = true)
@@ -108,20 +108,20 @@ public class RegressionModel implements Serializable
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link RegressionTable }
-     * {@link Output }
      * {@link Targets }
-     * {@link ModelStats }
      * {@link ModelVerification }
+     * {@link ModelStats }
      * {@link ModelExplanation }
+     * {@link MiningSchema }
      * {@link LocalTransformations }
      * {@link Extension }
-     * {@link MiningSchema }
+     * {@link Output }
      * 
      * 
      */
-    public List<Serializable> getExtensionsAndRegressionTablesAndMiningSchemas() {
+    public List<Object> getExtensionsAndRegressionTablesAndMiningSchemas() {
         if (extensionsAndRegressionTablesAndMiningSchemas == null) {
-            extensionsAndRegressionTablesAndMiningSchemas = new ArrayList<Serializable>();
+            extensionsAndRegressionTablesAndMiningSchemas = new ArrayList<Object>();
         }
         return this.extensionsAndRegressionTablesAndMiningSchemas;
     }

@@ -62,16 +62,16 @@ public class SequenceModel implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
+        @XmlElement(name = "Sequence", required = true, type = Sequence.class),
+        @XmlElement(name = "Itemset", required = true, type = Itemset.class),
+        @XmlElement(name = "Constraints", required = true, type = Constraints.class),
+        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
+        @XmlElement(name = "SequenceRule", required = true, type = SequenceRule.class),
         @XmlElement(name = "Item", required = true, type = Item.class),
         @XmlElement(name = "Extension", required = true, type = Extension.class),
-        @XmlElement(name = "Itemset", required = true, type = Itemset.class),
         @XmlElement(name = "SetPredicate", required = true, type = SetPredicate.class),
-        @XmlElement(name = "Constraints", required = true, type = Constraints.class),
-        @XmlElement(name = "Sequence", required = true, type = Sequence.class),
-        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
-        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
         @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
-        @XmlElement(name = "SequenceRule", required = true, type = SequenceRule.class)
+        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class)
     })
     protected List<Object> extensionsAndSequencesAndMiningSchemas;
     @XmlAttribute
@@ -111,16 +111,16 @@ public class SequenceModel implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link Sequence }
+     * {@link Itemset }
+     * {@link Constraints }
+     * {@link LocalTransformations }
+     * {@link SequenceRule }
      * {@link Item }
      * {@link Extension }
-     * {@link Itemset }
      * {@link SetPredicate }
-     * {@link Constraints }
-     * {@link Sequence }
-     * {@link LocalTransformations }
-     * {@link ModelStats }
      * {@link MiningSchema }
-     * {@link SequenceRule }
+     * {@link ModelStats }
      * 
      * 
      */

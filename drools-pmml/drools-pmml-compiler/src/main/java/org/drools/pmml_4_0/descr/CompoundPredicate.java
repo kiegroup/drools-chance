@@ -59,9 +59,9 @@ public class CompoundPredicate implements Serializable
     protected List<Extension> extensions;
     @XmlElements({
         @XmlElement(name = "SimpleSetPredicate", type = SimpleSetPredicate.class),
-        @XmlElement(name = "CompoundPredicate", type = CompoundPredicate.class),
-        @XmlElement(name = "SimplePredicate", type = SimplePredicate.class),
         @XmlElement(name = "False", type = False.class),
+        @XmlElement(name = "SimplePredicate", type = SimplePredicate.class),
+        @XmlElement(name = "CompoundPredicate", type = CompoundPredicate.class),
         @XmlElement(name = "True", type = True.class)
     })
     protected List<Object> simplePredicatesAndCompoundPredicatesAndSimpleSetPredicates;
@@ -116,9 +116,9 @@ public class CompoundPredicate implements Serializable
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link SimpleSetPredicate }
-     * {@link CompoundPredicate }
-     * {@link SimplePredicate }
      * {@link False }
+     * {@link SimplePredicate }
+     * {@link CompoundPredicate }
      * {@link True }
      * 
      * 

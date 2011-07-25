@@ -43,7 +43,7 @@ public class Timestamp
     private final static long serialVersionUID = 145235L;
     @XmlElementRef(name = "Extension", namespace = "http://www.dmg.org/PMML-4_0", type = Extension.class)
     @XmlMixed
-    protected List<Serializable> content;
+    protected List<Object> content;
 
     /**
      * Gets the value of the content property.
@@ -63,14 +63,14 @@ public class Timestamp
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Extension }
      * {@link String }
+     * {@link Extension }
      * 
      * 
      */
-    public List<Serializable> getContent() {
+    public List<Object> getContent() {
         if (content == null) {
-            content = new ArrayList<Serializable>();
+            content = new ArrayList<Object>();
         }
         return this.content;
     }

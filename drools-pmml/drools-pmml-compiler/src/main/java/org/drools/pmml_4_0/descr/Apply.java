@@ -47,14 +47,14 @@ public class Apply implements Serializable
     @XmlElement(name = "Extension")
     protected List<Extension> extensions;
     @XmlElements({
-        @XmlElement(name = "Discretize", type = Discretize.class),
         @XmlElement(name = "Apply", type = Apply.class),
         @XmlElement(name = "NormContinuous", type = NormContinuous.class),
-        @XmlElement(name = "Aggregate", type = Aggregate.class),
+        @XmlElement(name = "Constant", type = Constant.class),
+        @XmlElement(name = "Discretize", type = Discretize.class),
         @XmlElement(name = "MapValues", type = MapValues.class),
         @XmlElement(name = "NormDiscrete", type = NormDiscrete.class),
         @XmlElement(name = "FieldRef", type = FieldRef.class),
-        @XmlElement(name = "Constant", type = Constant.class)
+        @XmlElement(name = "Aggregate", type = Aggregate.class)
     })
     protected List<Object> constantsAndFieldRevesAndNormContinuouses;
     @XmlAttribute(required = true)
@@ -107,14 +107,14 @@ public class Apply implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Discretize }
      * {@link Apply }
      * {@link NormContinuous }
-     * {@link Aggregate }
+     * {@link Constant }
+     * {@link Discretize }
      * {@link MapValues }
      * {@link NormDiscrete }
      * {@link FieldRef }
-     * {@link Constant }
+     * {@link Aggregate }
      * 
      * 
      */

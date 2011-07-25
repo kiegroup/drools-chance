@@ -56,16 +56,16 @@ public class NaiveBayesModel implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
-        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
-        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
-        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
         @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
-        @XmlElement(name = "BayesOutput", required = true, type = BayesOutput.class),
-        @XmlElement(name = "Output", required = true, type = Output.class),
-        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
-        @XmlElement(name = "Targets", required = true, type = Targets.class),
+        @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
         @XmlElement(name = "BayesInputs", required = true, type = BayesInputs.class),
-        @XmlElement(name = "Extension", required = true, type = Extension.class)
+        @XmlElement(name = "Extension", required = true, type = Extension.class),
+        @XmlElement(name = "BayesOutput", required = true, type = BayesOutput.class),
+        @XmlElement(name = "Targets", required = true, type = Targets.class),
+        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
+        @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
+        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
+        @XmlElement(name = "Output", required = true, type = Output.class)
     })
     protected List<Object> extensionsAndBayesOutputsAndBayesInputs;
     @XmlAttribute
@@ -95,16 +95,16 @@ public class NaiveBayesModel implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link ModelVerification }
-     * {@link ModelStats }
-     * {@link ModelExplanation }
      * {@link MiningSchema }
-     * {@link BayesOutput }
-     * {@link Output }
-     * {@link LocalTransformations }
-     * {@link Targets }
+     * {@link ModelStats }
      * {@link BayesInputs }
      * {@link Extension }
+     * {@link BayesOutput }
+     * {@link Targets }
+     * {@link ModelExplanation }
+     * {@link ModelVerification }
+     * {@link LocalTransformations }
+     * {@link Output }
      * 
      * 
      */

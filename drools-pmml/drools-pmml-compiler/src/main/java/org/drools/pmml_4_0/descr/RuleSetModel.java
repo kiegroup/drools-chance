@@ -54,15 +54,15 @@ public class RuleSetModel implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
-        @XmlElement(name = "Extension", required = true, type = Extension.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
         @XmlElement(name = "ModelVerification", required = true, type = ModelVerification.class),
-        @XmlElement(name = "RuleSet", required = true, type = RuleSet.class),
+        @XmlElement(name = "Targets", required = true, type = Targets.class),
+        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
+        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class),
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
         @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
         @XmlElement(name = "Output", required = true, type = Output.class),
-        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
-        @XmlElement(name = "Targets", required = true, type = Targets.class),
-        @XmlElement(name = "ModelExplanation", required = true, type = ModelExplanation.class)
+        @XmlElement(name = "RuleSet", required = true, type = RuleSet.class),
+        @XmlElement(name = "Extension", required = true, type = Extension.class)
     })
     protected List<Object> extensionsAndRuleSetsAndMiningSchemas;
     @XmlAttribute
@@ -90,15 +90,15 @@ public class RuleSetModel implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Extension }
-     * {@link MiningSchema }
      * {@link ModelVerification }
-     * {@link RuleSet }
+     * {@link Targets }
+     * {@link LocalTransformations }
+     * {@link ModelExplanation }
+     * {@link MiningSchema }
      * {@link ModelStats }
      * {@link Output }
-     * {@link LocalTransformations }
-     * {@link Targets }
-     * {@link ModelExplanation }
+     * {@link RuleSet }
+     * {@link Extension }
      * 
      * 
      */

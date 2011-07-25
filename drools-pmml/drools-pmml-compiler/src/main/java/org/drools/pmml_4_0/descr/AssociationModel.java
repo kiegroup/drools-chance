@@ -64,14 +64,14 @@ public class AssociationModel implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
+        @XmlElement(name = "AssociationRule", required = true, type = AssociationRule.class),
+        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
+        @XmlElement(name = "Extension", required = true, type = Extension.class),
+        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
         @XmlElement(name = "Item", required = true, type = Item.class),
         @XmlElement(name = "ModelStats", required = true, type = ModelStats.class),
-        @XmlElement(name = "MiningSchema", required = true, type = MiningSchema.class),
-        @XmlElement(name = "AssociationRule", required = true, type = AssociationRule.class),
-        @XmlElement(name = "LocalTransformations", required = true, type = LocalTransformations.class),
-        @XmlElement(name = "Extension", required = true, type = Extension.class),
-        @XmlElement(name = "Itemset", required = true, type = Itemset.class),
-        @XmlElement(name = "Output", required = true, type = Output.class)
+        @XmlElement(name = "Output", required = true, type = Output.class),
+        @XmlElement(name = "Itemset", required = true, type = Itemset.class)
     })
     protected List<Object> extensionsAndMiningSchemasAndOutputs;
     @XmlAttribute
@@ -117,14 +117,14 @@ public class AssociationModel implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link AssociationRule }
+     * {@link MiningSchema }
+     * {@link Extension }
+     * {@link LocalTransformations }
      * {@link Item }
      * {@link ModelStats }
-     * {@link MiningSchema }
-     * {@link AssociationRule }
-     * {@link LocalTransformations }
-     * {@link Extension }
-     * {@link Itemset }
      * {@link Output }
+     * {@link Itemset }
      * 
      * 
      */

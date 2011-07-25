@@ -78,19 +78,19 @@ public class PMML
     @XmlElement(name = "TransformationDictionary")
     protected TransformationDictionary transformationDictionary;
     @XmlElements({
-        @XmlElement(name = "SupportVectorMachineModel", type = SupportVectorMachineModel.class),
-        @XmlElement(name = "NeuralNetwork", type = NeuralNetwork.class),
-        @XmlElement(name = "NaiveBayesModel", type = NaiveBayesModel.class),
+        @XmlElement(name = "ClusteringModel", type = ClusteringModel.class),
+        @XmlElement(name = "AssociationModel", type = AssociationModel.class),
+        @XmlElement(name = "MiningModel", type = MiningModel.class),
         @XmlElement(name = "RegressionModel", type = RegressionModel.class),
+        @XmlElement(name = "RuleSetModel", type = RuleSetModel.class),
         @XmlElement(name = "GeneralRegressionModel", type = GeneralRegressionModel.class),
         @XmlElement(name = "TextModel", type = TextModel.class),
-        @XmlElement(name = "ClusteringModel", type = ClusteringModel.class),
+        @XmlElement(name = "NaiveBayesModel", type = NaiveBayesModel.class),
+        @XmlElement(name = "NeuralNetwork", type = NeuralNetwork.class),
         @XmlElement(name = "SequenceModel", type = SequenceModel.class),
-        @XmlElement(name = "AssociationModel", type = AssociationModel.class),
-        @XmlElement(name = "TreeModel", type = TreeModel.class),
-        @XmlElement(name = "RuleSetModel", type = RuleSetModel.class),
-        @XmlElement(name = "MiningModel", type = MiningModel.class),
-        @XmlElement(name = "TimeSeriesModel", type = TimeSeriesModel.class)
+        @XmlElement(name = "TimeSeriesModel", type = TimeSeriesModel.class),
+        @XmlElement(name = "SupportVectorMachineModel", type = SupportVectorMachineModel.class),
+        @XmlElement(name = "TreeModel", type = TreeModel.class)
     })
     protected List<Object> associationModelsAndClusteringModelsAndGeneralRegressionModels;
     @XmlElement(name = "Extension")
@@ -212,19 +212,19 @@ public class PMML
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link SupportVectorMachineModel }
-     * {@link NeuralNetwork }
-     * {@link NaiveBayesModel }
+     * {@link ClusteringModel }
+     * {@link AssociationModel }
+     * {@link MiningModel }
      * {@link RegressionModel }
+     * {@link RuleSetModel }
      * {@link GeneralRegressionModel }
      * {@link TextModel }
-     * {@link ClusteringModel }
+     * {@link NaiveBayesModel }
+     * {@link NeuralNetwork }
      * {@link SequenceModel }
-     * {@link AssociationModel }
-     * {@link TreeModel }
-     * {@link RuleSetModel }
-     * {@link MiningModel }
      * {@link TimeSeriesModel }
+     * {@link SupportVectorMachineModel }
+     * {@link TreeModel }
      * 
      * 
      */

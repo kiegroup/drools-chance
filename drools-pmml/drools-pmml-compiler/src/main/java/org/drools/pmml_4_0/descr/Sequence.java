@@ -52,9 +52,9 @@ public class Sequence implements Serializable
 
     private final static long serialVersionUID = 145235L;
     @XmlElements({
-        @XmlElement(name = "SetReference", required = true, type = SetReference.class),
         @XmlElement(name = "Delimiter", required = true, type = Delimiter.class),
         @XmlElement(name = "Extension", required = true, type = Extension.class),
+        @XmlElement(name = "SetReference", required = true, type = SetReference.class),
         @XmlElement(name = "Time", required = true, type = Time.class)
     })
     protected List<Object> extensionsAndSetReferencesAndDelimiters;
@@ -85,9 +85,9 @@ public class Sequence implements Serializable
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link SetReference }
      * {@link Delimiter }
      * {@link Extension }
+     * {@link SetReference }
      * {@link Time }
      * 
      * 

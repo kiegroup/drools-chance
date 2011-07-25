@@ -64,7 +64,7 @@ public class CompoundRule implements Serializable
         @XmlElement(name = "CompoundRule", type = CompoundRule.class),
         @XmlElement(name = "SimpleRule", type = SimpleRule.class)
     })
-    protected List<Serializable> simpleRulesAndCompoundRules;
+    protected List<Object> simpleRulesAndCompoundRules;
 
     /**
      * Gets the value of the extensions property.
@@ -238,9 +238,9 @@ public class CompoundRule implements Serializable
      * 
      * 
      */
-    public List<Serializable> getSimpleRulesAndCompoundRules() {
+    public List<Object> getSimpleRulesAndCompoundRules() {
         if (simpleRulesAndCompoundRules == null) {
-            simpleRulesAndCompoundRules = new ArrayList<Serializable>();
+            simpleRulesAndCompoundRules = new ArrayList<Object>();
         }
         return this.simpleRulesAndCompoundRules;
     }
