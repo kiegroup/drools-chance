@@ -18,10 +18,7 @@ import org.drools.runtime.rule.FactHandle;
 import org.drools.runtime.rule.QueryResults;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 
 public abstract class DroolsAbstractPMMLTest {
@@ -40,6 +37,7 @@ public abstract class DroolsAbstractPMMLTest {
 
     private StatefulKnowledgeSession kSession;
     private KnowledgeBase kbase;
+    private static PMML4Compiler compiler = new PMML4Compiler();
 
 
 
@@ -47,8 +45,6 @@ public abstract class DroolsAbstractPMMLTest {
 
     public DroolsAbstractPMMLTest() {
         super();
-
-
     }
 
     protected StatefulKnowledgeSession getModelSession(String pmmlSource, boolean verbose) {
@@ -69,11 +65,12 @@ public abstract class DroolsAbstractPMMLTest {
                 kbuilder.add(ResourceFactory.newClassPathResource(pmmlSource),ResourceType.PMML);
             }
         } else {
-            PMML4Compiler compiler = new PMML4Compiler();
+
             try {
                 for (String pmmlSource : pmmlSources) {
                     String src = compiler.compile(ResourceFactory.newClassPathResource(pmmlSource).getInputStream(),null);
                     kbuilder.add(ResourceFactory.newByteArrayResource(src.getBytes()),ResourceType.DRL);
+                    System.out.println(src);
                 }
             } catch (IOException e) {
                 fail(e.getMessage());

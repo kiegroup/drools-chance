@@ -1796,6 +1796,71 @@ end
 
 
 
+
+
+  //******************************************************************************************************************
+  //     Tree
+  //
+  //******************************************************************************************************************
+
+
+
+rule "TreeRoot"
+when
+    $tree : TreeModel()
+then
+    System.err.println("COmpiling tree");
+end
+
+rule "visitTree_context"
+salience -9
+when
+    $net : TreeModel( $name : modelName )
+then
+    System.out.println("Set context, now is " + $name);
+    utils.context = utils.compactUpperCase($name);
+end
+
+rule "CompileNode"
+when
+    $node : Node( $nid : id, $score : score, nodes != null, $c : nodes )
+then
+    System.err.println( $node + "  " + $nid + " / " + $score + " | " + $c.size() );
+end
+
+rule "CompileLeaf"
+when
+    $node : Node( $nid : id, $score : score, nodes == null)
+then
+    System.err.println( "LEAF " + $node + "  " + $nid + " / " + $score );
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //******************************************************************************************************************
+  //     Cleanup
+  //
+  //******************************************************************************************************************
+
+
+
+
+
+
+
+
 rule "Clean_WM_Pre"
 salience -18
 dialect "mvel"
@@ -1859,7 +1924,7 @@ when
     $df : DataField()
     not PMML()
 then
-    System.out.println("Have problems with " + $df);
+    System.out.println("Have problems with " + $df.getName());
     retract($df);
 end
 

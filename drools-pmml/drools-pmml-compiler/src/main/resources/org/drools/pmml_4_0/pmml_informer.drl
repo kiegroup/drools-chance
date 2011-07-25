@@ -117,7 +117,6 @@ when
 //    TypeOfField( name == $name, $type : dataType )
     $dfld : DataField( name == $name, $full : displayName )
 then
-    System.out.println("Found Predicted Mined Field @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     HashMap map = new HashMap();
         map.put("name",utils.compactUpperCase($name));
         map.put("fullName",$full);
@@ -134,7 +133,6 @@ when
     OutputField( $name : name, $tgt : targetField )
     $dfld : DataField( name == $tgt, $full : displayName )
 then
-    System.out.println("Found Output Field @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+$name);
     HashMap map = new HashMap();
         map.put("name",utils.compactUpperCase($name));
         map.put("fullName",$full);
@@ -152,7 +150,6 @@ when
     $dfld : DerivedField( name == $tgt, $full : displayName )
     not DataField( name == $tgt )
 then
-    System.out.println("Found Output Derived Field @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+$name);
     HashMap map = new HashMap();
         map.put("name",utils.compactUpperCase($name));
         map.put("fullName",$full);

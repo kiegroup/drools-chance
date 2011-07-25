@@ -533,8 +533,24 @@ end
 
 
 
+rule "visitTree"
+salience -10
+when
+    $tree : TreeModel( $info : extensionsAndNodesAndMiningSchemas, $name : modelName)
+    $o : Object() from $info
+then
+    insertLogical($o);
+end
 
 
+rule "visitChildrenNodes"
+salience -8
+when
+    $node  : Node( $children : nodes )
+    $child : Node() from $children
+then
+    insertLogical( $child );
+end
 
 
 
