@@ -1,0 +1,109 @@
+package org.drools.informer;
+
+import java.util.Set;
+
+declare Progress
+@role( event )
+@duration( 0 )
+    formId          : String    @key
+    percentage      : int
+end
+
+declare ProgressStatus
+    formId          : String    @key
+    percentage      : int
+end
+
+
+declare Cancel
+@role( event )
+    formId          : String
+end
+
+declare Failure
+@role( event )
+    formId          : String
+end
+
+
+declare Size
+    formId          : String
+    num             : long
+end
+
+query includes( Group $master, String $qid )
+    ( $master := Group( itemList contains $qid ) )
+    or
+    (
+      $master := Group( $list : itemList )
+      and
+      $inner  := Group( id memberOf $list )
+      and
+                 includes( $inner, $qid ; )
+    )
+end
+
+
+query size( String $formId, long $num )
+    Set( $num := size ) from accumulate (
+                   $q : Question( $qid : id )
+                    and
+                    ?includes( $quest, $qid ; )
+                ,
+                collectSet ( $q )
+             )
+end
+
+
+query progress( String $formId, int $percent )
+    ProgressStatus( $formId, $percent ; )
+end
+
+
+
+
+
+
+
+rule "Init Questionnaire Size"
+when
+    $quest : Questionnaire( $formId : id )
+             ?size( $formId, $num ; )
+then
+    insert( new Size( $formId, $num ) );
+end
+
+rule "Init Questionnaire State"
+when
+    $quest : Questionnaire( $formId : id )
+then
+    insert( new ProgressStatus( $formId, 0 ) );
+end
+
+
+
+rule "Questionnaire Progress"
+salience -100 // when questionnaire is stable
+when
+    $quest : Questionnaire( $formId : id )
+             Number( $num : longValue ) from accumulate (
+                   $q : Question( $qid : id, lastAnswer != null )
+                    and
+                    ?includes( $quest, $qid ; )
+                ,
+                count ( $q )
+             )
+             Size( formId == $formId, $max : num > 0 )
+then
+    insert( new Progress( $formId, (int) Math.round( 100.0*$num/$max ) ) );
+end
+
+rule "Update Status"
+no-loop
+when
+    $pro    : Progress( $formId, $latestPerc ; )
+    $state  : ProgressStatus( $formId ; percentage != $latestPerc )
+then
+    $state.setPercentage( $latestPerc );
+    update( $state );
+end

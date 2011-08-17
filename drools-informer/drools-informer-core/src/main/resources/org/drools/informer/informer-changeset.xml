@@ -15,7 +15,7 @@
   -->
 
 <change-set xmlns='http://drools.org/drools-5.0/change-set' xmlns:xs='http://www.w3.org/2001/XMLSchema-instance'
-  xs:schemaLocation='http://drools.org/drools-5.0/change-set drools-change-set-5.0.xsd'>
+  xs:schemaLocation='http://drools.org/drools-5.0/change-set  http://anonsvn.jboss.org/repos/labs/labs/jbossrules/trunk/drools-api/src/main/resources/change-set-1.0.0.xsd'>
   <add>
     <resource type="DRL" source="classpath:org/drools/informer/Annotations.drl" />
     <resource type="DRL" source="classpath:org/drools/informer/Active.drl" />
@@ -26,5 +26,6 @@
     <resource type="DRL" source="classpath:org/drools/informer/Question.drl" />
     <resource type="DRL" source="classpath:org/drools/informer/ReadOnly.drl" />
     <resource type="DRL" source="classpath:org/drools/informer/DomainModel.drl" />
+    <resource type="DRL" source="classpath:org/drools/informer/Status.drl" />
   </add>
 </change-set>

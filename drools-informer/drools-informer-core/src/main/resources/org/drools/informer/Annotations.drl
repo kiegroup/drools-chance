@@ -58,10 +58,11 @@ then
 end
 
 
+
 rule "Questionnaire_Auto"
 when
     $o   : ISurveyable( $id : questionnaireId )
-    $k1 : Class( $name : name ) from $o.getClass()
+    $k1  : Class( $name : name ) from $o.getClass()
     $ann : Questionable(
                             $lab : label,
                             $lang : language

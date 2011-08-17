@@ -17,16 +17,14 @@ rule "build list of available items"
 no-loop
 when
 	$questionnaire : Questionnaire( $oldAvailableItems : availableItemList, $items : itemList )
-	$newItems : ArrayList( size > 0 ) from accumulate (
+	$newItems : List( size > 0 ) from accumulate (
 	        Item( $id : id != $questionnaire.id,
 	              id memberOf $items ),
-	        init( ArrayList list = new ArrayList(); ),
-	        action( list.add($id); ),
-	        result( list )
+	        collectList( $id )
 	    )
 then
-    $questionnaire.setAvailableItems($newItems);
-    update($questionnaire);
+    $questionnaire.setAvailableItems( $newItems );
+    update( $questionnaire );
 end
 
 
@@ -36,10 +34,10 @@ end
 rule "return from navigation branch"
 salience 5 # before : activate top-level item (if Questionnaire.activeItem is used)
 when
-	$questionnaire : Questionnaire(activeItem == "#return")
+	$questionnaire : Questionnaire( activeItem == "#return" )
 then
 	$questionnaire.navigationReturn();
-	update($questionnaire);
+	update( $questionnaire );
 end
 
 rule "activate top-level item (if Questionnaire.activeItem is used)"
@@ -47,7 +45,7 @@ no-loop
 salience 4 # before: "activate/deactivate lower-level items (if Questionnaire.activeItem is used)"
 when
 	$questionnaire : Questionnaire(activeItem != null);
-	$item : Item(id memberOf $questionnaire.itemList, id == $questionnaire.activeItem, active == false)
+	$item : Item( id memberOf $questionnaire.itemList, id == $questionnaire.activeItem, active == false )
 then
 	$item.setActive(true);
 	update($item);
@@ -58,7 +56,7 @@ no-loop
 salience 4 # before: "activate/deactivate lower-level items (if Questionnaire.activeItem is used)"
 when
 	$questionnaire : Questionnaire(activeItem != null);
-	$item : Item(id memberOf $questionnaire.itemList, id != $questionnaire.activeItem, active == true)
+	$item : Item( id memberOf $questionnaire.itemList, id != $questionnaire.activeItem, active == true )
 then
 	$item.setActive(false);
 	update($item);
@@ -71,9 +69,9 @@ no-loop
 salience 3 # before: "activate/deactivate InvalidAnswers"
 when
 	$questionnaire : Questionnaire(activeItem != null);
-	$item : Item(id != $questionnaire.id,
-	            id not memberOf $questionnaire.itemList,
-	            active == false);
+	$item : Item( id != $questionnaire.id,
+	              id not memberOf $questionnaire.itemList,
+	              active == false);
 	exists Group(id != $questionnaire.id, itemList contains $item.id,
 	             active == true);
 then
@@ -87,7 +85,7 @@ salience 3 # before: "activate/deactivate InvalidAnswers"
 when
 	$questionnaire : Questionnaire(activeItem != null);
 	$item : Item( id != $questionnaire.id, id not memberOf $questionnaire.itemList,
-	             active == true );
+	              active == true );
 	not Group( id != $questionnaire.id, itemList contains $item.id,
 	           active == true )
 then
@@ -108,38 +106,38 @@ rule "activate everything (if Questionnaire.activeItem is not used)"
 salience 3 # before: "activate/deactivate InvalidAnswers"
 when
 	$questionnaire : Questionnaire(activeItem == null);
-	$item : Item(id != $questionnaire.id, active == false);
+	$item : Item( id != $questionnaire.id, active == false );
 then
-	$item.setActive(true);
-	update($item);
+	$item.setActive( true );
+	update( $item );
 end
 
 rule "activate/deactivate InvalidAnswers"
 salience 2 # before: "propagate readonly from group to questions or subgroups"
 when
 	$question : Question();
-	$invalidAnswer : InvalidAnswer(questionId == $question.id, active != $question.active);
+	$invalidAnswer : InvalidAnswer( questionId == $question.id, active != $question.active );
 then
-	$invalidAnswer.setActive($question.isActive());
-	update($invalidAnswer);
+	$invalidAnswer.setActive( $question.isActive() );
+	update( $invalidAnswer );
 end
 
 rule "retract invalid answers for inactive questions"
 salience -1000 # ensure this is the last rule in the Agenda Group to fire
 when
     $invalidAnswer : InvalidAnswer();
-    $question : Question($id : id == $invalidAnswer.questionId, active == false);
-    $questionnaire : Questionnaire(enableActionValidation == true, itemList contains $id);
+    $question : Question( $id : id == $invalidAnswer.questionId, active == false )
+    $questionnaire : Questionnaire( enableActionValidation == true, itemList contains $id )
 then
-    retract($invalidAnswer);
+    retract( $invalidAnswer );
 end
 
 rule "deactivate orphan InvalidAnswers"
 salience 2 # before: "propagate readonly from group to questions or subgroups"
 when
-	$invalidAnswer : InvalidAnswer(active == true);
-	not(exists(Question(id == $invalidAnswer.questionId)));
+	$invalidAnswer : InvalidAnswer( active == true )
+	not ( exists Question( id == $invalidAnswer.questionId ) )
 then
-	$invalidAnswer.setActive(false);
-	update($invalidAnswer);
+	$invalidAnswer.setActive( false );
+	update( $invalidAnswer );
 end
