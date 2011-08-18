@@ -16,8 +16,6 @@
 
 package org.drools.informer.generator;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
