@@ -1,20 +1,36 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.drools.chance.common;
 
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.IDistributionStrategyFactory;
 
+import org.drools.chance.distribution.fuzzy.linguistic.LinguisticPossibilityDistributionStrategyFactory;
+import org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartitionStrategyFactory;
+import org.drools.chance.distribution.probability.dirichlet.DirichletDistributionStrategyFactory;
+import org.drools.chance.distribution.probability.discrete.DiscreteDistribution;
+import org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategy;
+import org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategyFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Created by IntelliJ IDEA.
- * User: davide
- * Date: 12/31/10
- * Time: 3:12 AM
- * To change this template use File | Settings | File Templates.
- */
+
 public class Bean_HandleGenTest {
 
     @Before
@@ -56,7 +72,7 @@ public class Bean_HandleGenTest {
         Bean b = new Bean();
 
         junit.framework.TestCase.assertNull(b.getAge());
-        junit.framework.TestCase.assertNull(b.getField());
+        junit.framework.TestCase.assertNull(b.getName());
 
 
         System.out.println(b);
@@ -64,6 +80,8 @@ public class Bean_HandleGenTest {
 
         System.out.println("Setting a handle. The handle has meta-field with prior probabilities: the bean now reflects that");
         Bean_HandleGen bh = new Bean_HandleGen(b);
+
+
         System.out.println(b);
         System.out.println(bh);
 
@@ -71,7 +89,7 @@ public class Bean_HandleGenTest {
         junit.framework.TestCase.assertEquals("philip",bh.getFieldValue());
 
         junit.framework.TestCase.assertEquals(20, b.getAge().intValue());
-        junit.framework.TestCase.assertEquals("philip",b.getField());
+        junit.framework.TestCase.assertEquals("philip",b.getName());
         
         
         junit.framework.TestCase.assertEquals(50,b.getWeight(),1e-02);
@@ -86,7 +104,7 @@ public class Bean_HandleGenTest {
         bh.setWeight(20.0);
 
         junit.framework.TestCase.assertEquals(18, b.getAge().intValue());
-        junit.framework.TestCase.assertEquals("john",b.getField());
+        junit.framework.TestCase.assertEquals("john",b.getName());
 
         junit.framework.TestCase.assertEquals(18, bh.getAgeValue().intValue());
         junit.framework.TestCase.assertEquals("john",bh.getFieldValue());
