@@ -20,6 +20,7 @@ then
     x.setValue(@{target});
     x.setMissing(false);
     x.setValid(true);
+    x.setName(@{format("string",name)});
     x.setContext($ctx);
     System.err.println("TODO PredicateFieldRule.drlt >> Chance " + x + " / degree = " + $val);
   insertLogical(x);

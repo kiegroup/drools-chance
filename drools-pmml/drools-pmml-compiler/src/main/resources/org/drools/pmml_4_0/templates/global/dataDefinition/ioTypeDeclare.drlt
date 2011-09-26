@@ -20,11 +20,12 @@
  }
  declare @{name} extends @if{ super != null } @{super} @else{} DataField @end{}
   @@role(event)
+  @Traitable
 
    value : @{type} @@key  @position(1) @comment{
                                         //@if{continuous} @@comparable @elseif{cyclic} @@comparable(cyclic) @elseif{ordinal} @@comparable(ordinal) @end{}
                                        }
-   displayValue : String = @if{ fullName != null } @{format("string",fullName)} @else{} @{name} @end{}
+   displayValue : String = @if{ fullName != null } @{format("string",fullName)} @else{} @{format("string",name)} @end{}
 
    @if{ "NeuralNetwork".equals(modelType) }
      residual : Double

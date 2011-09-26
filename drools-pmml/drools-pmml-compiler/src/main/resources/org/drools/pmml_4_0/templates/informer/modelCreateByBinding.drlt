@@ -23,6 +23,7 @@ then
         x.setMissing(false);
         x.setValid(false);
         x.setContext(null);
+        x.setName(@{format("string",name)});
 
 	BeanUtils.setProperty(x, "value", $val);
 

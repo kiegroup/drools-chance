@@ -18,6 +18,7 @@ then
     x.setValue($x);
     x.setMissing($m);
     x.setValid($v);
+    x.setName(@{format("string",name)});
     x.setContext(@{format("string",model)});
   insertLogical(x);
 end

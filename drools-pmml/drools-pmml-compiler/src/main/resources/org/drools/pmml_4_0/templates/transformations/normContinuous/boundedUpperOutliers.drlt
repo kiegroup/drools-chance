@@ -25,6 +25,7 @@ then
     x.setMissing(false);
     x.setValid(true);
     x.setContext($ctx);
+    x.setName(@{format("string",name)});
     //x.setContinous();
   insertLogical(x);
 end

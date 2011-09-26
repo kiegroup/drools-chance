@@ -55,7 +55,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     protected static final String[] NAMED_TEMPLATES = new String[] {
 
             "global/pmml_header.drlt",
-
+            "global/modelMark.drlt",
 
             "global/dataDefinition/rootDataField.drlt",
             "global/dataDefinition/ioTypeDeclare.drlt",
@@ -235,9 +235,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 //        visitorSession.fireAllRules();
         visitorSession.dispose();
 
-
-
-
+//        System.out.println(ans);
         return ans;
 	}
 

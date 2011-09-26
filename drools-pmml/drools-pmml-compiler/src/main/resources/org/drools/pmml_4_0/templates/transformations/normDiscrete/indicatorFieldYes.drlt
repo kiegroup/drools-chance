@@ -11,7 +11,7 @@
 @declare{'indicatorFieldYesRule'}
 rule "indicatorFieldYes_@{name}"
 when
- $src : @{origField}( missing == false, valid == true, value == @{target}, $ctx : context
+ $src : @{origField}( missing == false, valid == true, value == @{target}, $ctx : context //!= null
                       @if{ context != null } , context == @{format("string",context)} @end{})
 then
   @{name} x = new @{name}();
@@ -19,6 +19,7 @@ then
     x.setMissing(false);
     x.setValid(true);
     x.setContext($ctx);
+    x.setName(@{format("string",name)});
   insertLogical(x);
 end
 @end{}

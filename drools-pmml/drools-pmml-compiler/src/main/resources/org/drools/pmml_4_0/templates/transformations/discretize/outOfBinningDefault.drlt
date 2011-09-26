@@ -24,6 +24,7 @@ then
     x.setValue(@{target});
     x.setMissing(false);
     x.setValid(true);
+    x.setName(@{format("string",name)});
     x.setContext(@{context});
   insertLogical(x);
 end

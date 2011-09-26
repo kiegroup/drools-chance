@@ -28,6 +28,7 @@ then
     x.setValue($agg);
     x.setMissing(false);
     x.setValid(true);
+    x.setName(@{format("string",name)});
     x.setContext(@{context});
   insertLogical(x);
 end

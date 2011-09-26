@@ -20,6 +20,7 @@ then
     x.setValue($val);
     x.setMissing($m);
     x.setValid($v);
+    x.setName(@{format("string",name)});
     x.setContext($ctx);
   insert(x);
 end

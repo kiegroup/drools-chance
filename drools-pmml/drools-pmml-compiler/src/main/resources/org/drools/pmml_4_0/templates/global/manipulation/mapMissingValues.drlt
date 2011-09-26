@@ -16,6 +16,7 @@ when
 then
   @{name} x = new @{name}();
     x.setValue(@{target});
+    x.setName(@{format("string",name)});
     x.setMissing(false);
     x.setValid(true);
     x.setContext($ctx);

@@ -4,7 +4,9 @@ package org.drools.pmml_4_0.predictive.models;
 import junit.framework.Assert;
 import org.drools.ClassObjectFilter;
 import org.drools.definition.type.FactType;
+import org.drools.informer.Answer;
 import org.drools.pmml_4_0.DroolsAbstractPMMLTest;
+import org.drools.runtime.rule.Variable;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -22,6 +24,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
     private static final String source3 = "org/drools/pmml_4_0/test_miningSchema.xml";
     private static final String source4 = "org/drools/pmml_4_0/test_ann_HEART.xml";
     private static final String source5 = "org/drools/pmml_4_0/test_ann_mixed_simple.xml";
+    private static final String source6 = "org/drools/pmml_4_0/mock_ptsd.pmml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 
 
@@ -58,6 +61,37 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
     }
 
 
+
+    @Test
+    public void testPTSD() throws Exception {
+        setKSession(getModelSession(source6,VERBOSE));
+        setKbase(getKSession().getKnowledgeBase());
+
+        getKSession().fireAllRules();  //init model
+
+        getKSession().getWorkingMemoryEntryPoint("in_Gender").insert("male");
+        getKSession().getWorkingMemoryEntryPoint("in_Alcohol").insert("yes");
+        getKSession().getWorkingMemoryEntryPoint("in_Deployments").insert("1");
+//        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(30.2);
+
+        getKSession().fireAllRules();
+
+        Answer ans2 = new Answer(getQId("MockPTSD","Age"),"30.2");
+        getKSession().insert(ans2);
+
+        getKSession().fireAllRules();
+
+        Thread.sleep(200);
+        System.err.println(reportWMObjects(getKSession()));
+
+        Assert.assertEquals( 0.2802, queryDoubleField("PTSD", "MockPTSD" ) );
+
+    }
+
+    private String getQId(String model, String field) {
+        return (String) getKSession().getQueryResults( "getItemId", model+"_"+field, model, Variable.v ).iterator().next().get("$id");
+
+    }
 
     @Test
     @Ignore
@@ -194,8 +228,8 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
 
-     @Test
-     @Ignore
+    @Test
+    @Ignore
     public void testHeart() throws Exception {
         setKSession(getModelSession(source4,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
@@ -209,23 +243,23 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         getKSession().getWorkingMemoryEntryPoint("in_Ca").insert(1.0);
         getKSession().getWorkingMemoryEntryPoint("in_Chol").insert(5.0);
         getKSession().getWorkingMemoryEntryPoint("in_Cp").insert("asympt");
-         getKSession().getWorkingMemoryEntryPoint("in_Exang").insert("yes");
-         getKSession().getWorkingMemoryEntryPoint("in_Fbs").insert("t");
-         getKSession().getWorkingMemoryEntryPoint("in_Oldpeak").insert(1.0);
-         getKSession().getWorkingMemoryEntryPoint("in_Restecg").insert("normal");
-         getKSession().getWorkingMemoryEntryPoint("in_Sex").insert("male");
-         getKSession().getWorkingMemoryEntryPoint("in_Slope").insert("flat");
-         getKSession().getWorkingMemoryEntryPoint("in_Thal").insert("normal");
-         getKSession().getWorkingMemoryEntryPoint("in_Thalach").insert(3.3);
-         getKSession().getWorkingMemoryEntryPoint("in_Trestbps").insert(2.5);
+        getKSession().getWorkingMemoryEntryPoint("in_Exang").insert("yes");
+        getKSession().getWorkingMemoryEntryPoint("in_Fbs").insert("t");
+        getKSession().getWorkingMemoryEntryPoint("in_Oldpeak").insert(1.0);
+        getKSession().getWorkingMemoryEntryPoint("in_Restecg").insert("normal");
+        getKSession().getWorkingMemoryEntryPoint("in_Sex").insert("male");
+        getKSession().getWorkingMemoryEntryPoint("in_Slope").insert("flat");
+        getKSession().getWorkingMemoryEntryPoint("in_Thal").insert("normal");
+        getKSession().getWorkingMemoryEntryPoint("in_Thalach").insert(3.3);
+        getKSession().getWorkingMemoryEntryPoint("in_Trestbps").insert(2.5);
 
 
-         getKSession().fireAllRules();
+        getKSession().fireAllRules();
 
 
         System.err.println(reportWMObjects(getKSession()));
-         Assert.fail("Probabilty feature not yet done");
-     }
+        Assert.fail("Probabilty feature not yet done");
+    }
 
 
 
@@ -233,7 +267,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
 
-     @Test
+    @Test
     public void testOverride() throws Exception {
         setKSession(getModelSession(source3,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
@@ -241,10 +275,10 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         getKSession().fireAllRules();
 
         getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(2.2);
-            getKSession().fireAllRules();
+        getKSession().fireAllRules();
 
         getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(5);
-            getKSession().fireAllRules();
+        getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
 
@@ -260,7 +294,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
         getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(2.5);
         getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(6);
-            getKSession().fireAllRules();
+        getKSession().fireAllRules();
 
 
         System.err.println(reportWMObjects(getKSession()));
@@ -275,7 +309,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
 
-     @Test      @Ignore
+    @Test      @Ignore
     public void testSimpleMixed() throws Exception {
         setKSession(getModelSession(source5, VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
@@ -284,15 +318,15 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         getKSession().fireAllRules();  //init model
 
 
-         getKSession().getWorkingMemoryEntryPoint("in_Domicile").insert("urban");
-         getKSession().fireAllRules();  //init model
+        getKSession().getWorkingMemoryEntryPoint("in_Domicile").insert("urban");
+        getKSession().fireAllRules();  //init model
 
 
-         System.err.println(reportWMObjects(getKSession()));
+        System.err.println(reportWMObjects(getKSession()));
 
-         fail("TODO");
+        fail("TODO");
 
-     }
+    }
 
 
 

@@ -12,11 +12,16 @@
 }
 
 @declare{'rootDataFieldRule'}
-declare DataField
+
+declare PMML4AbstractField
+end
+
+declare DataField extends PMML4AbstractField
  @@role(event)
    valid : boolean   = false      @position(3)
    missing : boolean  = false     @position(4)
-   context : String @key            @position(2)
+   context : String @key          @position(2)
+   name    : String
 //   cyclic = (false) : boolean
 //   continuous = (false) : boolean
 //   categorical = (false) : boolean

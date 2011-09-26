@@ -23,6 +23,7 @@ when
 then
     @{name} input = new @{name}();
         input.setValue($in);
+        input.setName(@{format("string",name)});
         input.setMissing(false);
         input.setValid(@{notRestricted});
         input.setContext(null);

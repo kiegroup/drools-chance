@@ -1,0 +1,13 @@
+@declare{'modelMarkRule'}
+
+rule "Mark_@{name}"
+when
+then
+    ModelMarker mark = new ModelMarker( "@{name}", "@{type}" );
+    insert( mark );
+end
+
+@end{}
+
+
+@includeNamed{'modelMarkRule'}

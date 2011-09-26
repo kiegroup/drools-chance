@@ -17,6 +17,9 @@
 
 package @{pack};
 
+import org.drools.pmml_4_0.ModelMarker;
+import org.drools.pmml_4_0.PMML4AbstractField;
+
 import org.drools.informer.Group;
 import org.drools.informer.InvalidAnswer;
 import org.drools.informer.Question;

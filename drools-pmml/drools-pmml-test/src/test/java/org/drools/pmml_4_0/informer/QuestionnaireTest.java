@@ -24,6 +24,7 @@ import org.drools.informer.DomainModelAssociation;
 import org.drools.informer.InvalidAnswer;
 import org.drools.informer.Note;
 import org.drools.pmml_4_0.DroolsAbstractPMMLTest;
+import org.drools.runtime.rule.Variable;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -335,7 +336,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
 
     private String getQId(String model, String field) {
-        return (String) getKSession().getQueryResults("getItemId",model+"_"+field,model).iterator().next().get("$id");
+        return (String) getKSession().getQueryResults( "getItemId", model+"_"+field, model, Variable.v ).iterator().next().get("$id");
 
     }
 

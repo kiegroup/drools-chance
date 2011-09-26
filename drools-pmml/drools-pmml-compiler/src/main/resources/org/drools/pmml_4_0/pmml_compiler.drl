@@ -1,5 +1,5 @@
 import org.drools.pmml_4_0.descr.*;
-import org.drools.pmml_4_0.*;
+import org.drools.pmml_4_0.ModelMarker;
 import org.mvel2.templates.*;
 import java.util.Map;
 import java.util.HashMap;
@@ -78,7 +78,7 @@ salience 9999
 when
     $h : Header()
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("pack",utils.getPack());
     applyTemplate("pmml_header.drlt", $h, registry, map, theory);
     retract($h);
@@ -137,7 +137,7 @@ when
     eval( ! utils.isModelBeanDefined(utils.compactUpperCase($n)) )
 then
     utils.addModelBeanDefinition(utils.compactUpperCase($n));
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("fullName",$fld.displayName);
         map.put("name",utils.compactUpperCase($fld.name));
@@ -163,7 +163,7 @@ when
         Value( property != "invalid", property != "missing" ) from $vals
     )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("fullName",$fld.displayName);
         map.put("name",utils.compactUpperCase($fld.name));
@@ -205,7 +205,7 @@ when
     $fld : DataField( $vals : values , $isize : intervals.size > 0,
                       (optype.value == "continuous" || optype.value == "missing") )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("ivals",$fld.intervals);
@@ -225,7 +225,7 @@ when
                         result ( validz )
                       )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("vals",$validz);
@@ -246,7 +246,7 @@ when
                         result( missingz )
                       )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("vals",$missingz);
@@ -267,7 +267,7 @@ when
                         result( invalidz )
                       )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("vals",$invalidz);
@@ -301,7 +301,7 @@ when
     not FieldMarker( name == $n )
 then
 //    String opt = $fld.optype.value;
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("fullName",$fld.displayName);
         map.put("name",utils.compactUpperCase($fld.name));
@@ -340,7 +340,7 @@ when
     $fld : DerivedField( $nc : normContinuous )
     NormContinuous( this == $nc, $mapMissing : mapMissingTo != null )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($nc.field));
@@ -385,7 +385,7 @@ when
     $XMIN : Double() from accumulate ( LinearNorm( $x : orig ) from $tracts, min( $x ) )
     $XMAX : Double() from accumulate ( LinearNorm( $x : orig ) from $tracts, max( $x ) )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($nc.field));
@@ -409,7 +409,7 @@ when
     $YMAX : Double() from accumulate ( LinearNorm( $y : norm ) from $tracts, max( $y ) )
 
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($nc.field));
@@ -429,7 +429,7 @@ when
     TypeOfField( name == $name, $type : dataType )
     NormContinuous( this == $nc,  $tracts : linearNorms , $norms : linearNorms, outliers.value != "asMissingValues" && outliers.value != "asExtremeValues" )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($nc.field));
@@ -464,7 +464,7 @@ when
     $fld : DerivedField( $c : constant )
     Constant( this == $c, $x : value)
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("konst",$x);
@@ -479,7 +479,7 @@ when
     $fld : DerivedField( $ref : fieldRef )
     FieldRef( this == $ref, $f : field)
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($f));
@@ -502,7 +502,7 @@ when
     NormDiscrete( this == $nd, $f : field , $x : value)
     DataField( name == $f, $dataType : dataType )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($f));
@@ -520,7 +520,7 @@ when
     NormDiscrete( this == $nd, $f : field , $x : value)
     DerivedField( name == $f, $dataType : dataType )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($f));
@@ -537,7 +537,7 @@ when
     $fld : DerivedField( $nd : normDiscrete )
     NormDiscrete( this == $nd, $f : field , $m : mapMissingTo != null )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($f));
@@ -569,7 +569,7 @@ when
     $fld : DerivedField( $dx : discretize )
     Discretize( this == $dx, $f : field , $m : mapMissingTo != null , $dataType : dataType)
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($f));
@@ -584,7 +584,7 @@ when
     $fld : DerivedField( $dx : discretize )
     Discretize( this == $dx, $f : field , $m : mapMissingTo == null )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($f));
@@ -597,7 +597,7 @@ when
     $fld : DerivedField( $dx : discretize )
     Discretize( this == $dx, $f : field , $d : defaultValue == null, $bins : discretizeBins )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($f));
@@ -612,7 +612,7 @@ when
     $fld : DerivedField( $dx : discretize )
     Discretize( this == $dx, $f : field , $d : defaultValue != null, $bins : discretizeBins, $dataType : dataType )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($f));
@@ -630,7 +630,7 @@ when
     Discretize( this == $dx, $f : field , $d : defaultValue != null, $bins : discretizeBins, $dataType : dataType )
     $bin : DiscretizeBin( $interval : interval, $x : binValue ) from $bins
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("origField",utils.compactUpperCase($f));
@@ -734,7 +734,7 @@ when
     )
     org.w3c.dom.Element( $tag : tagName == $outColumn, $target : textContent ) from $cells
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("patterns",$fieldRestrMap);
@@ -769,7 +769,7 @@ when
     Aggregate( this == $ag, $func : this.function == "multiset",
                 $groupBy : groupField, $afield : field, $constr : sqlWhere )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("groupBy",$groupBy);
@@ -786,7 +786,7 @@ when
     Aggregate( this == $ag, $func : this.function != "multiset",
                 $groupBy : groupField, $afield : field, $constr : sqlWhere )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("groupBy",$groupBy);
@@ -841,7 +841,7 @@ then
     //System.err.println(">>>>>>>>>>>>>>>>>>>>>>>>>  Built bit " + funExpr);
 
     Map exprFieldList = new java.util.LinkedHashMap();
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("context",utils.context);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("dataType",utils.mapDatatype($fld.dataType));
@@ -1225,7 +1225,7 @@ when
     $fld : MiningField( this memberOf $inputs, usageType.value == "active" )
 then
     //System.err.println("Found Mined Field " + $fld.name );
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("model",utils.context);
     applyTemplate("miningField.drlt", utils, registry, map, theory);
@@ -1250,7 +1250,7 @@ when
                         invalidValueTreatment.value == "asMissing", $val : missingValueReplacement )
     TypeOfField( name == $name, $type : dataType )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("name",utils.compactUpperCase($name));
         map.put("model",utils.context);
         map.put("replacement",utils.format( utils.mapDatatype($type), $val ) );
@@ -1270,7 +1270,7 @@ when
                         $val : missingValueReplacement != null )
     TypeOfField( name == $name, $type : dataType )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("name",utils.compactUpperCase($name));
         map.put("model",utils.context);
         map.put("replacement",utils.format( utils.mapDatatype($type), $val));
@@ -1289,7 +1289,7 @@ when
                         $low : lowValue, $upp : highValue )
     TypeOfField( name == $name, $type : dataType )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("name",utils.compactUpperCase($name));
         map.put("model",utils.context);
         map.put("upp",utils.format(utils.mapDatatype($type),$upp));
@@ -1308,7 +1308,7 @@ when
                         $low : lowValue != null )
     TypeOfField( name == $name, $type : dataType )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("name",utils.compactUpperCase($name));
         map.put("model",utils.context);
         map.put("low",utils.format(utils.mapDatatype($type),$low));
@@ -1327,7 +1327,7 @@ when
                         $upp : highValue != null )
     TypeOfField( name == $name, $type : dataType )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("name",utils.compactUpperCase($name));
         map.put("model",utils.context);
         map.put("upp",utils.format(utils.mapDatatype($type),$upp));
@@ -1341,7 +1341,7 @@ when
     $q: QueryMarker( $name : name, $context : context)
     not QueryMarker( this != $q, name == $name, context == $context )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
              map.put("model",$context);
              map.put("field",$name);
     applyTemplate("neuralOutputQuery.drlt", utils, registry, map, theory);
@@ -1359,7 +1359,7 @@ end
                  $cast : castInteger, $max : max, $min : min, $offset : rescaleConstant, $scale : rescaleFactor  )
     MiningField( name == $field, usageType.value == "predicted")
  then
-     HashMap map = new HashMap();
+     HashMap map = new HashMap(7);
          map.put("model",utils.context);
          map.put("field",utils.compactUpperCase($field));
          map.put("cast",$cast);
@@ -1409,7 +1409,7 @@ end
      eval(! utils.isModelBeanDefined(utils.compactUpperCase($name)) )
  then
     utils.addModelBeanDefinition($name);
-     HashMap map = new HashMap();
+     HashMap map = new HashMap(7);
          map.put("context",utils.context);
          map.put("fullName",$of.displayName);
          map.put("name",utils.compactUpperCase($of.name));
@@ -1436,7 +1436,7 @@ end
      $of : OutputField( $tgt : targetField, $val : value, $name : name, feature == null || feature.value == "predictedValue" )
      $tf : TypeOfField( name == $name, $type : dataType )
  then
-     HashMap map = new HashMap();
+     HashMap map = new HashMap(7);
          map.put("context",utils.context);
          map.put("origField",utils.compactUpperCase($tgt));
          map.put("name",utils.compactUpperCase($name));
@@ -1456,7 +1456,7 @@ end
                         feature == "predictedDisplayValue" )
      $tf : TypeOfField( name == $name, $type : dataType )
  then
-     HashMap map = new HashMap();
+     HashMap map = new HashMap(7);
          map.put("context",utils.context);
          map.put("origField",utils.compactUpperCase($tgt));
          map.put("name",utils.compactUpperCase($name));
@@ -1483,10 +1483,15 @@ end
 
 rule "setupNNs"
 when
-   NeuralNetwork()
+   NeuralNetwork( $name : modelName )
    $stat : ModelStat( neuralNetwork == false )
    eval( ! utils.isModelBeanDefined("Stym") )
 then
+   HashMap map = new HashMap(7);
+        map.put("name", utils.compactUpperCase( $name ) );
+        map.put("type","NeuralNetwork");
+   applyTemplate("modelMark.drlt", null, registry, map, theory);
+
    utils.addModelBeanDefinition("Stym");
    utils.addModelBeanDefinition("Charge");
    utils.addModelBeanDefinition("Synapse");
@@ -1504,8 +1509,7 @@ salience -9
 when
     $net : NeuralNetwork( $name : modelName )
 then
-    System.out.println("Set context, now is " + $name);
-     utils.context = utils.compactUpperCase($name);
+    utils.context = utils.compactUpperCase($name);
 end
 
 
@@ -1519,7 +1523,7 @@ then
     $fld.setName(name);
     insertLogical($fld);
 
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("name",utils.compactUpperCase(name));
         map.put("context",utils.context);
         map.put("index",$id);
@@ -1532,7 +1536,7 @@ dialect "mvel"
 when
     NeuralInput( derivedField != null, $fld : derivedField.name != null)
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("name",utils.compactUpperCase($fld));
         map.put("context",utils.context);
     applyTemplate("updateIOField.drlt", utils, registry, map, theory);
@@ -1543,7 +1547,7 @@ dialect "mvel"
 when
     NeuralInput( derivedField != null, $fld :derivedField.fieldRef != null)
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("name",utils.compactUpperCase($fld.field));
         map.put("context",utils.context);
     applyTemplate("updateIOField.drlt", utils, registry, map, theory);
@@ -1599,7 +1603,7 @@ salience -10
 when
     $n : Neuron( $links : cons, $index : id )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("model",utils.context);
         map.put("index",$index);
         map.put("links",$links);
@@ -1615,7 +1619,7 @@ when
 then
     //System.err.println("CREATE NEURON RULE FOR " + $index + " >> " + $act + "  " + $bias + "  " + $thold);
 
-     HashMap map = new HashMap();
+     HashMap map = new HashMap(7);
         map.put("model",utils.context);
         map.put("index",$index);
         map.put("actFun",$act);
@@ -1634,7 +1638,7 @@ when
     $nl : NeuralLayer( this memberOf $info, $ns : neurons,
                  normalizationMethod != null && normalizationMethod.value == "simplemax")
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("model",utils.context);
         map.put("neurons",$ns);
         map.put("j",utils.nextCount());
@@ -1649,7 +1653,7 @@ when
     $nl : NeuralLayer( this memberOf $info, $ns : neurons,
                  normalizationMethod != null && normalizationMethod.value == "softmax")
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("model",utils.context);
         map.put("neurons",$ns);
         map.put("j",utils.nextCount());
@@ -1667,7 +1671,7 @@ when
 then
     String name = utils.compactUpperCase($nn)+"_"+$id;
 
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("model",utils.context);
         map.put("name",name);
         map.put("index",$id);
@@ -1699,7 +1703,7 @@ end
      String name = utils.compactUpperCase($nn)+"_"+$id;
      insert( new QueryMarker(name,utils.context) );
 
-     HashMap map = new HashMap();
+     HashMap map = new HashMap(7);
          map.put("name",name);
      applyTemplate("confirm.drlt", utils, registry, map, theory);
  end
@@ -1731,7 +1735,7 @@ then
             invertedNC.getLinearNorms().add(inv);
         }
 
-//    HashMap map = new HashMap();
+//    HashMap map = new HashMap(7);
 //        map.put("name",utils.compactUpperCase($field));
 //    applyTemplate("confirm.drlt", utils, registry, map, theory);
 
@@ -1755,7 +1759,7 @@ when
     NormDiscrete( $field : field, $val : value ) from $norm
     TypeOfField( name == $field, $type : dataType )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("model",utils.context);
         map.put("field",utils.compactUpperCase($field));
         map.put("label",$val);
@@ -1882,7 +1886,7 @@ when
     NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName)
     $ms : MiningSchema( this memberOf $info, $fields : miningFields )
 then
-    HashMap map = new HashMap();
+    HashMap map = new HashMap(7);
         map.put("model",utils.context);
         map.put("fields",$fields);
     applyTemplate("neuralClean.drlt", utils, registry, map, theory);

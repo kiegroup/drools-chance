@@ -22,6 +22,7 @@ then
     x.setValue(@{target});
     x.setMissing(false);
     x.setValid(true);
+    x.setName(@{format("string",name)});
     x.setContext($ctx);
   insertLogical(x);
 end
