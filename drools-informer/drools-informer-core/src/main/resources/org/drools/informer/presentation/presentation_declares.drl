@@ -1,0 +1,78 @@
+package org.drools.informer.presentation;
+
+import org.drools.informer.*;
+import org.drools.informer.xml.*;
+
+
+declare GUIAdapter
+    dirty   : boolean
+end
+
+
+declare SurveyTicket
+    sid : String                        @key      // surveyId
+
+    uid : String                            // user Id
+    guiContext : String                     // context : Inbox, Predictive, Diagnostic
+    guiInteractive : boolean                // will the rule logic modify the Q?
+                                            // notice : this is not a prop of the Q, but a prop of the control logic
+
+    questionnaire : Questionnaire           // the actual Questionnaire
+end
+
+
+
+
+
+declare QuestionGUIAdapter extends GUIAdapter
+    questionId : String                 @key
+    questionName : String
+    preLabel : String
+    required : boolean
+    answerType : String
+    currentAnswer : String
+    validationMessage : String
+    suggestedControl : String
+    singleAnswer : String
+    possibleAnswers : java.util.List
+end
+
+
+declare SurveyGUIAdapter extends GUIAdapter
+    surveyId : String                   @key
+    successStatus : String = "true"
+    statusMessage : String = "(ok)"
+    body : String
+    name : String
+    expiresDate : java.util.Date
+    interactive : String
+    language : String
+    contextDesc : String
+    surveyClass : String
+    surveyQuestions : java.util.List
+end
+
+
+
+declare ChangeGUIAdapter extends GUIAdapter
+    surveyId : String                   @key
+    successStatus : String = "true"
+    statusMessage : String = "(ok)"
+    newQuestions : java.util.List
+    deletedQuestions : java.util.List
+    updatedQuestions : java.util.List
+end
+
+
+
+
+
+rule "Fill ticket"
+salience 10000
+when
+    $ticket : SurveyTicket( $sid : sid, questionnaire == null)
+    $quest : Questionnaire( id == $sid )
+then
+    $ticket.setQuestionnaire($quest);
+    update($ticket);
+end

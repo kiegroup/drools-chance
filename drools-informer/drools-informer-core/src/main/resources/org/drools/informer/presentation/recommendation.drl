@@ -1,0 +1,84 @@
+package org.drools.informer.presentation;
+
+import org.drools.informer.*;
+import org.drools.informer.Question.QuestionType;
+import org.drools.informer.MultipleChoiceQuestion.PossibleAnswer;
+
+
+rule "Recomm_Default"
+when
+    $sga : SurveyGUIAdapter( $sid : surveyId, $guiQuestions : surveyQuestions)
+    $q : Question( $qid : id, $qLab : preLabel, $req : required,
+                    $type : answerType == Question.QuestionType.TYPE_TEXT || == Question.QuestionType.TYPE_NUMBER
+                    || == Question.QuestionType.TYPE_DECIMAL || == Question.QuestionType.TYPE_BOOLEAN )
+    $qga : QuestionGUIAdapter( questionId == $qid, suggestedControl == null )
+then
+    $qga.setSuggestedControl("text");
+end
+
+
+rule "Recomm_Date"
+when
+    $sga : SurveyGUIAdapter( $sid : surveyId, $guiQuestions : surveyQuestions)
+    $q : Question( $qid : id, $qLab : preLabel, $req : required, $type : answerType == Question.QuestionType.TYPE_DATE )
+    $qga : QuestionGUIAdapter( questionId == $qid )
+then
+    $qga.setSuggestedControl("date");
+end
+
+
+
+rule "Recomm_Radio"
+dialect "mvel"
+salience -1  //override
+when
+    $sga : SurveyGUIAdapter( $sid : surveyId, $guiQuestions : surveyQuestions)
+    $q : MultipleChoiceQuestion( $qid : id, $qLab : preLabel, $req : required, $type : answerType,
+                   singleAnswer == true,
+                   numOfPossibleAnswers > 0 && numOfPossibleAnswers < 6 )
+    $qga : QuestionGUIAdapter( questionId == $qid )
+then
+    $qga.setSuggestedControl("radio");
+end
+
+
+rule "Recomm_Check"
+when
+    $sga : SurveyGUIAdapter( $sid : surveyId, $guiQuestions : surveyQuestions)
+    $q : MultipleChoiceQuestion( $qid : id, $qLab : preLabel, $req : required, $type : answerType,
+                   singleAnswer == false,
+                   numOfPossibleAnswers > 0 && numOfPossibleAnswers < 6 )
+    $qga : QuestionGUIAdapter( questionId == $qid, suggestedControl == null )
+then
+    $qga.setSuggestedControl("checkbox");
+end
+
+rule "Recomm_DropDown"
+salience -1  //override
+when
+    $sga : SurveyGUIAdapter( $sid : surveyId, $guiQuestions : surveyQuestions)
+    $q : MultipleChoiceQuestion( $qid : id, $qLab : preLabel, $req : required, $type : answerType,
+                   singleAnswer == true,
+                   numOfPossibleAnswers >= 6 )
+    $qga : QuestionGUIAdapter( questionId == $qid )
+then
+    $qga.setSuggestedControl("dropdown");
+end
+
+rule "Recomm_MultiSelect"
+salience -1  //override
+when
+    $sga : SurveyGUIAdapter( $sid : surveyId, $guiQuestions : surveyQuestions)
+    $q : MultipleChoiceQuestion( $qid : id, $qLab : preLabel, $req : required, $type : answerType,
+                   singleAnswer == false,
+                   numOfPossibleAnswers >= 6 )
+    $qga : QuestionGUIAdapter( questionId == $qid )
+then
+    $qga.setSuggestedControl("combobox");
+end
+
+
+
+
+
+

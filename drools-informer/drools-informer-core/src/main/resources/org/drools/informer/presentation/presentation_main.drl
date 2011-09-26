@@ -1,0 +1,12 @@
+package org.drools.informer.presentation;
+
+
+
+rule "LinkSurvey"
+when
+    $ticket : SurveyTicket( $id : sid, questionnaire == null )
+    $quest  : Questionnaire( id == $id )
+then
+    $ticket.setQuestionnaire( $quest );
+    update($ticket);
+end
