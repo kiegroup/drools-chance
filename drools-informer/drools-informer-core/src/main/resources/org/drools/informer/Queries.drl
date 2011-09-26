@@ -19,8 +19,7 @@ query "answeredQuestionsInContext" (String context)
 end
 
 
-
-query "getItemId"( String type, String context )
-    Item( type == type, context == context, $id : id )
+query "getItemId"( String $type, String $context, String $id )
+    Item( $type := type, $context := context, $id := id )
 end
 

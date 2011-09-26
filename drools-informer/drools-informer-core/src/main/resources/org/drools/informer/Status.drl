@@ -5,7 +5,7 @@ import java.util.Set;
 declare Progress
 @role( event )
 @duration( 0 )
-    formId          : String    @key
+    formId          : String
     percentage      : int
 end
 
@@ -27,7 +27,7 @@ end
 
 
 declare Size
-    formId          : String
+    formId          : String        @key
     num             : long
 end
 
@@ -65,25 +65,33 @@ end
 
 
 
-rule "Init Questionnaire Size"
+rule "Questionnaire Size"
 when
     $quest : Questionnaire( $formId : id )
              ?size( $formId, $num ; )
 then
-    insert( new Size( $formId, $num ) );
+    insertLogical( new Size( $formId, $num ) );
 end
 
-rule "Init Questionnaire State"
+rule "Init Questionnaire Status"
 when
     $quest : Questionnaire( $formId : id )
 then
     insert( new ProgressStatus( $formId, 0 ) );
 end
 
+rule "Clear Questionnaire Status"
+when
+    $stat  : ProgressStatus( $formId ; )
+             not Questionnaire( id == $formId )
+then
+    retract( $stat );
+end
+
 
 
 rule "Questionnaire Progress"
-salience -100 // when questionnaire is stable
+salience -1000 // when questionnaire is stable
 when
     $quest : Questionnaire( $formId : id )
              Number( $num : longValue ) from accumulate (
@@ -95,7 +103,8 @@ when
              )
              Size( formId == $formId, $max : num > 0 )
 then
-    insert( new Progress( $formId, (int) Math.round( 100.0*$num/$max ) ) );
+    Progress p = new Progress( $formId, (int) Math.round( 100.0*$num/$max ) );
+    insertLogical( p );
 end
 
 rule "Update Status"

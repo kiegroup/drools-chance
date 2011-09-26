@@ -9,7 +9,9 @@ import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.QueryResults;
+import org.drools.runtime.rule.Variable;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +65,7 @@ public class MultipleSurveyTest {
         QueryResults results = ksession.getQueryResults("activeObjectsInContext", "1");
         assertEquals(2,results.size());
 
-        QueryResults results2 = ksession.getQueryResults("getItemId", "Question 1", "1" );
+        QueryResults results2 = ksession.getQueryResults("getItemId", "Question 1", "1", Variable.v );
         assertEquals(1,results2.size());
 
         String qid = (String) results2.iterator().next().get("$id");

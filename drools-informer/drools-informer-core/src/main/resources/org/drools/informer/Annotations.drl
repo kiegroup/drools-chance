@@ -86,7 +86,7 @@ no-loop
 salience 1
 when
     $o   : ISurveyable( $id : questionnaireId )
-    $k1 : Class() from $o.getClass()
+    $k1  : Class() from $o.getClass()
            Questionable( ) from $k1.getAnnotations()
     $qst : Questionnaire( $ctx : context == $id )
     $fld : Field( $fldName : name, $fldKlass : class ) from $k1.getDeclaredFields()

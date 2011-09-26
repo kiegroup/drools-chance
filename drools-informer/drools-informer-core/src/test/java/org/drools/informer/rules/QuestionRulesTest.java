@@ -55,6 +55,7 @@ public class QuestionRulesTest {
     @Before
     public void setUp() throws Exception {
         KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/Queries.drl"), ResourceType.DRL);
         knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/Question.drl"), ResourceType.DRL);
         if (knowledgeBuilder.hasErrors()) {
             logger.debug(Arrays.toString(knowledgeBuilder.getErrors().toArray()));

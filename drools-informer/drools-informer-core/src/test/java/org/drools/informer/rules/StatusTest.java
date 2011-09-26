@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 
 import static org.junit.Assert.*;
@@ -89,11 +90,15 @@ public class StatusTest {
             knowledgeSession.insert( question5 );
             knowledgeSession.fireAllRules();
 
+            Collection c = knowledgeSession.getObjects();
+
             assertEquals( 0,
                           knowledgeSession.getQueryResults("progress", questionnaire.getId(), Variable.v).iterator().next().get( "$percent" ) );
 
             knowledgeSession.insert(new Answer(question1.getId(), "X"));
             knowledgeSession.fireAllRules();
+
+             c = knowledgeSession.getObjects();
 
             assertEquals( 20,
                           knowledgeSession.getQueryResults("progress", questionnaire.getId(), Variable.v).iterator().next().get( "$percent" ) );

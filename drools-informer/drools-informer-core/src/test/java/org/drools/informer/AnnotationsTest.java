@@ -16,6 +16,8 @@ import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
+
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.io.impl.ByteArrayResource;
@@ -202,7 +204,7 @@ public class AnnotationsTest {
 
         kSession.fireAllRules();
 
-
+        Collection c = kSession.getObjects();
         assertEquals(0,kSession.getObjects().size());
 
 

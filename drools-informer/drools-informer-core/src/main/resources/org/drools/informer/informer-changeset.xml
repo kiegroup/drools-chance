@@ -27,5 +27,6 @@
     <resource type="DRL" source="classpath:org/drools/informer/ReadOnly.drl" />
     <resource type="DRL" source="classpath:org/drools/informer/DomainModel.drl" />
     <resource type="DRL" source="classpath:org/drools/informer/Status.drl" />
+    <resource type="CHANGE_SET" source="classpath:org/drools/informer/presentation/informer_presentation.xml" />
   </add>
 </change-set>

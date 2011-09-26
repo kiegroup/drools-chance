@@ -1,6 +1,7 @@
 
 package org.drools.informer
 
+import org.drools.informer.util.Ans;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -127,4 +128,15 @@ when
 then
     $quest.removeItem( $id );
     update( $quest );
+end
+
+
+
+rule "answer by type"
+when
+    $a : Ans( $val : value, $type : type, $sid : qId )
+    ?getItemId( $type, $sid, $id ; )
+then
+    insert( new Answer( $id, $val ) );
+    retract( $a );
 end
