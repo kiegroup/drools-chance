@@ -1843,9 +1843,37 @@ end
 
 
 
+  //******************************************************************************************************************
+  //     SVM
+  //
+  //******************************************************************************************************************
 
 
 
+rule "SVMRoot"
+when
+    $svm : SupportVectorMachineModel()
+then
+
+end
+
+rule "visitSVM_context"
+salience -9
+when
+    $svm : SupportVectorMachineModel( $name : modelName )
+then
+    System.out.println("Set context, now is " + $name);
+    utils.context = utils.compactUpperCase($name);
+end
+
+rule "SVM_Cleanup"
+salience -20
+when
+    $svm : SupportVectorMachineModel( )
+then
+    utils.context = null;
+    retract($svm);
+end
 
 
 
@@ -1928,7 +1956,6 @@ when
     $df : DataField()
     not PMML()
 then
-    System.out.println("Have problems with " + $df.getName());
     retract($df);
 end
 

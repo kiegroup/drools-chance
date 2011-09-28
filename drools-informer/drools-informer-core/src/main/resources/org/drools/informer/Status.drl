@@ -76,6 +76,7 @@ end
 rule "Init Questionnaire Status"
 when
     $quest : Questionnaire( $formId : id )
+             not ProgressStatus( $formId ; )
 then
     insert( new ProgressStatus( $formId, 0 ) );
 end
@@ -115,4 +116,12 @@ when
 then
     $state.setPercentage( $latestPerc );
     update( $state );
+end
+
+rule "Override Progress"
+when
+    $new : Progress( $id : formId )
+    $old : Progress( formId == $id, this != $new )
+then
+    retract( $old );
 end

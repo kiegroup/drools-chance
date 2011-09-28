@@ -17,10 +17,10 @@ when
                    $lang : defaultLanguage,
                    $type : type
                    )
-    not SurveyGUIAdapter( surveyId == $sid )
+    not SurveyGUIAdapter( itemId == $sid )
 then
     SurveyGUIAdapter qa = new SurveyGUIAdapter();
-        qa.surveyId = $sid;
+        qa.itemId = $sid;
         qa.name = $lab;
         qa.language = $lang;
         qa.surveyClass = $type;
@@ -31,7 +31,7 @@ then
 
 
     ChangeGUIAdapter cga = new ChangeGUIAdapter();
-        cga.surveyId = $sid;
+        cga.itemId = $sid;
 
         cga.newQuestions = new java.util.LinkedList();
         cga.deletedQuestions = new java.util.LinkedList();
@@ -46,13 +46,13 @@ end
 rule "Add_GUI_Questions"
 
 when
-    $sga : SurveyGUIAdapter( $sid : surveyId, $guiQuestions : surveyQuestions)
+    $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
     Questionnaire( id == $sid, itemList contains $qid )
-    not QuestionGUIAdapter( questionId == $qid ) from $guiQuestions
+    not QuestionGUIAdapter( itemId == $qid ) from $guiQuestions
 then
     QuestionGUIAdapter qga = new QuestionGUIAdapter();
-        qga.setQuestionId($qid);
+        qga.setItemId($qid);
         qga.setQuestionName($qName);
         qga.setPreLabel($qLab);
         qga.setRequired($req);
@@ -71,7 +71,7 @@ rule "Synch_GUI_Questions"
 
 when
     $q   : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
-    $qga : QuestionGUIAdapter( questionId == $qid )
+    $qga : QuestionGUIAdapter( itemId == $qid )
 then
     $qga.setCurrentAnswer( $q.getLastAnswer() );
     $qga.setValidationMessage( $q.getPostLabel() );
@@ -80,10 +80,10 @@ end
 rule "Init_MultipleChoice"
 salience 100
 when
-    $sga : SurveyGUIAdapter( $sid : surveyId, $guiQuestions : surveyQuestions)
+    $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $qst : MultipleChoiceQuestion( $qid : id, $poss : possibleAnswers, $single : singleAnswer )
            Questionnaire( id == $sid, itemList contains $qid )
-    $qga : QuestionGUIAdapter( questionId == $qid, $possAnswers : possibleAnswers == null )
+    $qga : QuestionGUIAdapter( itemId == $qid, $possAnswers : possibleAnswers == null )
 then
     $qga.setPossibleAnswers(new java.util.LinkedList());
     update($qga);
@@ -94,10 +94,10 @@ end
 
 rule "Add_MultipleOptions"
 when
-    $sga : SurveyGUIAdapter( $sid : surveyId, $guiQuestions : surveyQuestions)
+    $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $qst : MultipleChoiceQuestion( $qid : id, $poss : possibleAnswers, $single : singleAnswer )
            Questionnaire( id == $sid, itemList contains $qid )
-    $qga : QuestionGUIAdapter( questionId == $qid, $possAnswers : possibleAnswers != null )
+    $qga : QuestionGUIAdapter( itemId == $qid, $possAnswers : possibleAnswers != null )
     $pa  : MultipleChoiceQuestion.PossibleAnswer( $key : label, $val : value, this not memberOf $possAnswers ) from $poss
 then
     $qga.setSingleAnswer(""+$single);
@@ -115,7 +115,7 @@ end
 rule "On Some Delete"
 salience -1000
 when
-    $cga : ChangeGUIAdapter( $sid : surveyId )
+    $cga : ChangeGUIAdapter( $sid : itemId )
     $cc : ChangeCollector()
     Questionnaire( id == $sid )
     $xo : ItemId( $xid : id ) from $cc.getDelete()
@@ -127,11 +127,11 @@ end
 rule "On Some Change"
 salience -1000
 when
-    $cga : ChangeGUIAdapter( $sid : surveyId )
+    $cga : ChangeGUIAdapter( $sid : itemId )
     $cc : ChangeCollector()
     Questionnaire( id == $sid )
     $xo : Question( $qid : id ) from $cc.getUpdate()
-    $qga : QuestionGUIAdapter( questionId == $qid )
+    $qga : QuestionGUIAdapter( itemId == $qid )
 then
     $cga.getUpdatedQuestions().add($qga);
 end
@@ -139,12 +139,12 @@ end
 rule "On Some New"
 salience -1000
 when
-    $cga : ChangeGUIAdapter( $sid : surveyId )
+    $cga : ChangeGUIAdapter( $sid : itemId )
     $cc : ChangeCollector()
     Questionnaire( id == $sid )
     $xo : Question( $qid : id ) from $cc.getCreateList()
-    $sga : SurveyGUIAdapter( surveyId == $sid)
-    $qga : QuestionGUIAdapter( questionId == $qid ) from $sga.getSurveyQuestions()
+    $sga : SurveyGUIAdapter( itemId == $sid)
+    $qga : QuestionGUIAdapter( itemId == $qid ) from $sga.getSurveyQuestions()
 then
     $cga.getNewQuestions().add($qga);
 end

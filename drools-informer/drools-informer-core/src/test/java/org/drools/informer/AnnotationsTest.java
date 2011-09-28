@@ -196,7 +196,7 @@ public class AnnotationsTest {
             fail();
         }
 
-
+       Collection k = kSession.getObjects();
 
 
         kSession.retract(kSession.getFactHandle(p1));

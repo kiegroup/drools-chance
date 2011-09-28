@@ -553,6 +553,17 @@ then
 end
 
 
+ //------------------------------------------------------------------------------------------------------------//
+
+
+rule "visitSVM"
+salience -10
+when
+    $net : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries, $name : modelName)
+    $o : Object() from $info
+then
+    insertLogical($o);
+end
 
 
 
