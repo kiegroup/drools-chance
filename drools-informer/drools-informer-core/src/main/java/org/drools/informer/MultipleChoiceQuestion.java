@@ -203,8 +203,8 @@ public class MultipleChoiceQuestion extends Question {
 
     private void addPossibleAnswer(String value) {
         StringTokenizer st = new StringTokenizer(value,"=");
-        String val = st.nextToken();
-        String label = st.hasMoreTokens() ? st.nextToken() : val;
+        String val = st.nextToken().trim().replace("\"","");
+        String label = st.hasMoreTokens() ? st.nextToken().trim().replace("\"","") : val;
         PossibleAnswer pa = new PossibleAnswer(val,label);
         insertPossibleAnswer(pa,possibleAnswers.size());
     }

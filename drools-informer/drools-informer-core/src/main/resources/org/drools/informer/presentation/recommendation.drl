@@ -6,6 +6,7 @@ import org.drools.informer.MultipleChoiceQuestion.PossibleAnswer;
 
 
 rule "Recomm_Default"
+salience 10
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $q : Question( $qid : id, $qLab : preLabel, $req : required,
