@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class PMML4Wrapper {
 
-	private String pack;
+	private static String pack;
 
     private static int counter = 0;
 
@@ -86,11 +86,11 @@ public class PMML4Wrapper {
         this.resolver = resolver;
     }
 
-    public String getPack() {
+    public static String getPack() {
 		return pack;
 	}
-	public void setPack(String pack) {
-		this.pack = pack;
+	public static void setPack(String packageName) {
+        pack = packageName;
 	}
 
 

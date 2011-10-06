@@ -25,6 +25,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
     private static final String source4 = "org/drools/pmml_4_0/test_ann_HEART.xml";
     private static final String source5 = "org/drools/pmml_4_0/test_ann_mixed_simple.xml";
     private static final String source6 = "org/drools/pmml_4_0/mock_ptsd.pmml";
+    private static final String source7 = "org/drools/pmml_4_0/mock_cold.pmml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 
 
@@ -60,6 +61,25 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
     }
 
+
+
+    @Test
+    public void testCold() throws Exception {
+        setKSession(getModelSession(source7,VERBOSE));
+        setKbase(getKSession().getKnowledgeBase());
+
+        getKSession().fireAllRules();  //init model
+
+        getKSession().getWorkingMemoryEntryPoint("in_Temp").insert(28.0);
+
+        getKSession().fireAllRules();
+
+        Thread.sleep(200);
+        System.err.println(reportWMObjects(getKSession()));
+
+        Assert.assertEquals( 0.44, queryDoubleField("Cold", "MockCold" ), 1e-6 );
+
+    }
 
 
     @Test
