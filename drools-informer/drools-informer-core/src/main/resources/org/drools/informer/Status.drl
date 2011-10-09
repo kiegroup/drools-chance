@@ -45,6 +45,7 @@ end
 
 
 query size( String $formId, long $num )
+    $quest : Group( id == $formId )
     Set( $num := size ) from accumulate (
                    $q : Question( $qid : id )
                     and
@@ -124,4 +125,20 @@ when
     $old : Progress( formId == $id, this != $new )
 then
     retract( $old );
+end
+
+rule "Clean status events"
+when
+    $p : Progress( $id : formId )
+    not  Questionnaire( id == $id )
+then
+    retract( $p );
+end
+
+rule "Clean status"
+when
+    $p : ProgressStatus( $id : formId )
+    not  Questionnaire( id == $id )
+then
+    retract( $p );
 end

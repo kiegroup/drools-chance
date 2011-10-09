@@ -63,6 +63,17 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
 
+
+     @Test
+    public void testANNCompilation() throws Exception {
+        setKSession(getModelSession(source3,VERBOSE));
+        setKbase(getKSession().getKnowledgeBase());
+
+
+    }
+
+
+
     @Test
     public void testCold() throws Exception {
         setKSession(getModelSession(source7,VERBOSE));

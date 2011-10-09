@@ -11,7 +11,7 @@ when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $q : Question( $qid : id, $qLab : preLabel, $req : required,
                     $type : answerType == Question.QuestionType.TYPE_TEXT || == Question.QuestionType.TYPE_NUMBER
-                    || == Question.QuestionType.TYPE_DECIMAL || == Question.QuestionType.TYPE_BOOLEAN )
+                    || == Question.QuestionType.TYPE_DECIMAL )
     $qga : QuestionGUIAdapter( itemId == $qid, suggestedControl == null )
 then
     $qga.setSuggestedControl("text");
@@ -25,6 +25,16 @@ when
     $qga : QuestionGUIAdapter( itemId == $qid )
 then
     $qga.setSuggestedControl("date");
+end
+
+
+rule "Recomm_Bool"
+when
+    $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions )
+    $q : Question( $qid : id, $qLab : preLabel, $req : required, $type : answerType == Question.QuestionType.TYPE_BOOLEAN )
+    $qga : QuestionGUIAdapter( itemId == $qid, suggestedControl == null )
+then
+    $qga.setSuggestedControl("button");
 end
 
 

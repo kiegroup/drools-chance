@@ -2,6 +2,7 @@ package org.drools.informer.presentation;
 
 import org.drools.informer.xml.*;
 import org.drools.informer.*;
+import org.drools.informer.MultipleChoiceQuestion.PossibleAnswer;
 
 
 rule "Create_GUI_Adapter"
@@ -101,6 +102,21 @@ end
 
 
 
+
+
+
+
+rule "BooleanQuestions"
+when
+    $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
+    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType == Question.QuestionType.TYPE_BOOLEAN )
+    $qga : QuestionGUIAdapter( itemId == $qid, possibleAnswers == null)
+then
+    $qga.setPossibleAnswers( new java.util.ArrayList() );
+    $qga.getPossibleAnswers().add( new PossibleAnswer("true", "Yes") );
+    $qga.getPossibleAnswers().add( new PossibleAnswer("false", "No") );
+    update($qga);
+end
 
 
 

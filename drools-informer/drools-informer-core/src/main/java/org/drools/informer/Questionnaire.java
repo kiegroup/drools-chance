@@ -241,6 +241,10 @@ public class Questionnaire extends Group {
         return availableItems.toArray(new String[availableItems.size()]);
 	}
 
+    public int getNumAvailableItems() {
+        return availableItems.size();
+    }
+
     public List<String> getAvailableItemList() {
         return availableItems;
 	}
