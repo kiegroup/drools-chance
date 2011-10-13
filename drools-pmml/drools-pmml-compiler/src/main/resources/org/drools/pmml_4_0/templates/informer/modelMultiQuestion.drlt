@@ -18,6 +18,7 @@ then
         quest.setContext(@{format("string",model)});
         quest.setAnswerType(@{mapDatatypeToQuestion(dataType)});
         quest.setPreLabel("Please insert " + @{format("string",name)});
+        quest.setSingleAnswer(true);
 
         quest.setPossibleAnswers({
             @foreach{ val : valid }

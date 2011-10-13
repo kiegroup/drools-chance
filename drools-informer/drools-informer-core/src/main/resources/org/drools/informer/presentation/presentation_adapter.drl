@@ -214,3 +214,14 @@ then
     $cga.getDeletedQuestions().clear();
     $cga.getNewQuestions().clear();
 end
+
+
+
+rule "Progress"
+when
+    $cga : ChangeGUIAdapter( $sid : itemId )
+    ProgressStatus( $sid, $perc ; )
+then
+    $cga.setProgress( $perc );
+    $cga.setDirty( true );
+end

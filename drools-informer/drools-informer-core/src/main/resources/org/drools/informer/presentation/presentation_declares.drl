@@ -6,7 +6,7 @@ import org.drools.informer.xml.*;
 
 declare GUIAdapter
     itemId : String                 @key
-    dirty   : boolean
+    dirty  : boolean
 end
 
 
@@ -59,6 +59,7 @@ declare ChangeGUIAdapter extends GUIAdapter
 //    surveyId : String                   @key
     successStatus : String = "true"
     statusMessage : String = "(ok)"
+    progress      : int
     newQuestions : java.util.List
     deletedQuestions : java.util.List
     updatedQuestions : java.util.List
