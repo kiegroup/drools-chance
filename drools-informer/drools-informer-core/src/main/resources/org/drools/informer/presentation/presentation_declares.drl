@@ -35,6 +35,7 @@ declare QuestionGUIAdapter extends GUIAdapter
     suggestedControl : String
     singleAnswer : String
     possibleAnswers : java.util.List
+    action : String
     successType : String
 end
 

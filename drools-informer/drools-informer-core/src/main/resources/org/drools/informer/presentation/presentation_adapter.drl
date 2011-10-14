@@ -5,6 +5,49 @@ import org.drools.informer.*;
 import org.drools.informer.MultipleChoiceQuestion.PossibleAnswer;
 
 
+
+rule "Link Survey"
+when
+    $ticket : SurveyTicket( $id : sid, questionnaire == null )
+    $quest  : Questionnaire( id == $id )
+then
+    $ticket.setQuestionnaire( $quest );
+    update($ticket);
+end
+
+
+rule "Bind Survey"
+no-loop
+when
+    $quest  : Questionnaire( $id : id )
+    not SurveyTicket( sid == $id )
+then
+    SurveyTicket ticket = new SurveyTicket( $id );
+        ticket.setQuestionnaire( $quest );
+    insert( ticket );
+end
+
+rule "Clean ticket"
+no-loop
+when
+    $t : SurveyTicket( questionnaire != null, $qid : questionnaire.id )
+    not  Questionnaire( id == $qid )
+then
+    retract( $t );
+end
+
+
+rule "Clean adapters"
+when
+    $gui : GUIAdapter( $id : itemId )
+    not    Item( id == $id )
+then
+    retract( $gui );
+end
+
+
+
+
 rule "Create_GUI_Adapter"
 dialect "mvel"
 no-loop
@@ -100,7 +143,15 @@ then
     $qga.setSuccessType( "invalid" );
 end
 
-
+rule "Final_GUI_Questions"
+when
+    $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
+    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type, $last : lastAnswer != null, finalAnswer == true )
+    Questionnaire( id == $sid, itemList contains $qid )
+    $qga : QuestionGUIAdapter( itemId == $qid )
+then
+    $qga.setAction( "disable" );
+end
 
 
 

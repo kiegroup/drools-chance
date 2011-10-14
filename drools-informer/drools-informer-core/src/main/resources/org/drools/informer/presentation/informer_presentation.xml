@@ -2,7 +2,6 @@
   xs:schemaLocation='http://drools.org/drools-5.0/change-set http://anonsvn.jboss.org/repos/labs/labs/jbossrules/trunk/drools-api/src/main/resources/change-set-1.0.0.xsd'>
 	<add>
     <resource type="DRL" source="classpath:org/drools/informer/presentation/presentation_declares.drl" />
-    <resource type="DRL" source="classpath:org/drools/informer/presentation/presentation_main.drl" />
     <resource type="DRL" source="classpath:org/drools/informer/presentation/presentation_adapter.drl" />
     <resource type="DRL" source="classpath:org/drools/informer/presentation/recommendation.drl" />
 	</add>
