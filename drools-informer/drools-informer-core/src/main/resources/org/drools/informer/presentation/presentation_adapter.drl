@@ -124,7 +124,7 @@ end
 rule "Missing_GUI_Questions"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
-    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type, $last : lastAnswer == null )
+    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
     Questionnaire( id == $sid, itemList contains $qid )
     $qga : QuestionGUIAdapter( itemId == $qid )
     not InvalidAnswer( questionId == $qid )
@@ -135,7 +135,7 @@ end
 rule "Invalid_GUI_Questions"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
-    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type, $last : lastAnswer != null )
+    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
     Questionnaire( id == $sid, itemList contains $qid )
     $qga : QuestionGUIAdapter( itemId == $qid )
     InvalidAnswer( questionId == $qid )
@@ -255,16 +255,16 @@ then
 end
 
 
-rule "Action_Request_setSurvey_init1"
-salience 10
-when
-    ChangeCollector()
-    $cga : ChangeGUIAdapter()
-then
-    $cga.getUpdatedQuestions().clear();
-    $cga.getDeletedQuestions().clear();
-    $cga.getNewQuestions().clear();
-end
+//rule "Action_Request_setSurvey_init1"
+//salience 10
+//when
+//    ChangeCollector()
+//    $cga : ChangeGUIAdapter()
+//then
+//    $cga.getUpdatedQuestions().clear();
+//    $cga.getDeletedQuestions().clear();
+//    $cga.getNewQuestions().clear();
+//end
 
 
 
@@ -273,6 +273,27 @@ when
     $cga : ChangeGUIAdapter( $sid : itemId )
     ProgressStatus( $sid, $perc ; )
 then
-    $cga.setProgress( $perc );
+    $cga.setTasksProgress( $perc );
     $cga.setDirty( true );
 end
+
+
+
+rule "Invalidations"
+when
+    InvalidAnswer( $qid : questionId )
+then
+    System.out.println( "INVALIDATE ! " + $qid );
+    insert( new QuestionInvalidate( $qid ) );
+end
+
+rule "Finalizations"
+when
+    Question( $qid : id, finalAnswer == true )
+then
+    System.out.println( "FINALIZE ! " + $qid );
+    insert( new QuestionFinalize( $qid ) );
+end
+
+
+

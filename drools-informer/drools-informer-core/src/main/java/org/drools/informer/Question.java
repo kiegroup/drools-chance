@@ -450,7 +450,11 @@ public class Question extends Item {
 		} else if (basicAnswerType.equals(QuestionType.TYPE_DECIMAL)) {
 			setDecimalAnswer(new BigDecimal(answerValue));
 		} else if (basicAnswerType.equals(QuestionType.TYPE_BOOLEAN)) {
-			setBooleanAnswer(new Boolean(answerValue));
+            if ( "true".equalsIgnoreCase( answerValue ) || "false".equalsIgnoreCase( answerValue ) ) {
+			    setBooleanAnswer(new Boolean(answerValue));
+            } else {
+                throw new ParseException("Unable to parse " + answerValue + " as boolean" , -1);
+            }
 		} else if (basicAnswerType.equals(QuestionType.TYPE_DATE)) {
 			setDateAnswer(answerValue);
 		} else if (basicAnswerType.equals(QuestionType.TYPE_LIST)) {

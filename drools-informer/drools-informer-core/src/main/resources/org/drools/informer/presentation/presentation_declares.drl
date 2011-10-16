@@ -60,13 +60,29 @@ declare ChangeGUIAdapter extends GUIAdapter
 //    surveyId : String                   @key
     successStatus : String = "true"
     statusMessage : String = "(ok)"
-    progress      : int
+    tasksProgress : int
     newQuestions : java.util.List
     deletedQuestions : java.util.List
     updatedQuestions : java.util.List
 end
 
 
+
+declare QuestionUpdate
+    questionId  : String
+end
+
+declare QuestionInvalidate extends QuestionUpdate
+end
+
+declare QuestionFinalize extends QuestionUpdate
+end
+
+
+query questionUpdate( QuestionUpdate $update, QuestionGUIAdapter $adapter )
+    $update  := QuestionUpdate( $qid : questionId )
+    $adapter := QuestionGUIAdapter( itemId == $qid )
+end
 
 
 
