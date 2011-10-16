@@ -284,7 +284,7 @@ when
     InvalidAnswer( $qid : questionId )
 then
     System.out.println( "INVALIDATE ! " + $qid );
-    insert( new QuestionInvalidate( $qid ) );
+    insertLogical( new QuestionInvalidate( $qid ) );
 end
 
 rule "Finalizations"
@@ -292,7 +292,7 @@ when
     Question( $qid : id, finalAnswer == true )
 then
     System.out.println( "FINALIZE ! " + $qid );
-    insert( new QuestionFinalize( $qid ) );
+    insertLogical( new QuestionFinalize( $qid ) );
 end
 
 
