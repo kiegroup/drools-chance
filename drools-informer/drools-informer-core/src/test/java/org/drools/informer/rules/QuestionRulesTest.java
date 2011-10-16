@@ -296,7 +296,7 @@ public class QuestionRulesTest {
                             System.err.println(o);
 
             assertEquals("x", fQuest.getLastAnswer());
-            assertFalse(questionnaire.getItemList().contains(fQuest.getId()));
+            assertTrue(questionnaire.getItemList().contains(fQuest.getId()));
             assertEquals("y", mQuest.getLastAnswer());
             assertTrue(questionnaire.getItemList().contains(mQuest.getId()));
 

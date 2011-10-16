@@ -12,7 +12,7 @@ rule "Model_Question_ReBinding_@{model}_@{name}"
 dialect "mvel"
 no-loop
 when
-    $quest: Question( $id : id, $type : type == "@{model+"_"+name}" )
+    $quest: Question( $id : id, $type : type == "@{model+"_"+name}", lastAnswer != null )
     $bean : @{name}( context == @{format("string",context)} )
     $assoc : DomainModelAssociation( questionId == $id, object != $bean )
 then

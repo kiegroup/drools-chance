@@ -120,15 +120,15 @@ then
 end
 
 
-rule "removeFinalQuestions"
-no-loop
-when
-    $q          : Question( $id : id, finalAnswer == true, lastAnswer != null )
-    $quest      : Questionnaire( items contains $id )
-then
-    $quest.removeItem( $id );
-    update( $quest );
-end
+//rule "removeFinalQuestions"
+//no-loop
+//when
+//    $q          : Question( $id : id, finalAnswer == true, lastAnswer != null )
+//    $quest      : Questionnaire( items contains $id )
+//then
+//    $quest.removeItem( $id );
+//    update( $quest );
+//end
 
 
 

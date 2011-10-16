@@ -16,7 +16,7 @@ no-loop
 salience 200
 when
     $quest: Question( $id : id, type == "@{model+"_"+name}" )
-    $ans  : Answer( questionId == $id, $val : value )
+    $ans  : Answer( questionId == $id, $val : value != "null" && != "" )
     not @{name}( context == @{ctx} )
 then
     @{name} x = new @{name}();
