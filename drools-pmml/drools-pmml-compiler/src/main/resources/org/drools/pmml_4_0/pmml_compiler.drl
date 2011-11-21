@@ -15,7 +15,7 @@ global PMML4Wrapper utils;
 
  function void applyTemplate(String templateName, Object context, TemplateRegistry registry, Map vars, StringBuilder builder) {
     CompiledTemplate template = (CompiledTemplate) registry.getNamedTemplate(templateName);
-    builder.append(TemplateRuntime.execute(template, context, vars));
+    builder.append( TemplateRuntime.execute(template, context, vars) );
  }
 
 
@@ -127,6 +127,8 @@ then
     insert( new FieldMarker($n,$t) );
     insertLogical( new TypeOfField($n,$t) );
 end
+
+
 
 rule "processDataField_define"
 dialect "mvel"
@@ -1229,6 +1231,27 @@ then
         map.put("name",utils.compactUpperCase($fld.name));
         map.put("model",utils.context);
     applyTemplate("miningField.drlt", utils, registry, map, theory);
+end
+
+rule "Create IO Trait"
+dialect "mvel"
+salience -10
+when
+    MiningSchema( $miningFields : miningFields )
+    $fields : java.util.Map() from accumulate (
+            MiningField( this memberOf $miningFields, $name : name, usageType.value == "active" )
+            and
+            TypeOfField( $n : name == $name, $type : dataType )
+         ,
+        init( Map map = new HashMap(); ),
+        action( map.put( $n, $type ) ),
+        result( map )
+    )
+then
+    HashMap map = new HashMap(7);
+        map.put("context",utils.context);
+        map.put("fields", $fields );
+    applyTemplate("ioTrait.drlt", utils, registry, map, theory);
 end
 
 

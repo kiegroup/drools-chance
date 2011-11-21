@@ -61,6 +61,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "global/dataDefinition/ioTypeDeclare.drlt",
             "global/dataDefinition/updateIOField.drlt",
             "global/dataDefinition/inputFromEP.drlt",
+            "global/dataDefinition/ioTrait.drlt",
 
             "global/manipulation/confirm.drlt",
             "global/manipulation/mapMissingValues.drlt",
