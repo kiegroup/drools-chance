@@ -193,7 +193,7 @@ end
 
 rule "processDataField_interValidation_fixRight"
 salience 999
-dialect "java"
+dialect "mvel"
 when
     $fld : DataField( $ivals : intervals )
     $i : Interval( rightMargin == null ) from $ivals
@@ -205,7 +205,7 @@ rule "processDataField_interValidation"
 dialect "mvel"
 when
     $fld : DataField( $vals : values , $isize : intervals.size > 0,
-                      (optype.value == "continuous" || optype.value == "missing") )
+                      optype.value == "continuous" || optype.value == "missing" )
 then
     HashMap map = new HashMap(7);
         map.put("context",utils.context);
@@ -1244,7 +1244,7 @@ when
             TypeOfField( $n : name == $name, $type : dataType )
          ,
         init( Map map = new HashMap(); ),
-        action( map.put( $n, $type ) ),
+        action( map.put( utils.compactUpperCase( $n ), $type ) ),
         result( map )
     )
 then
