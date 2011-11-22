@@ -19,7 +19,6 @@ package org.drools.chance.distribution.fuzzy.linguistic;
 import org.drools.chance.common.IImperfectField;
 import org.drools.chance.common.ImperfectField;
 import org.drools.chance.common.ImperfectHistoryField;
-import org.drools.chance.common.StrategyFactory;
 import org.drools.chance.degree.IDegree;
 import org.drools.chance.distribution.IDistribution;
 import org.drools.chance.distribution.IDistributionStrategies;
@@ -90,14 +89,15 @@ public class LinguisticImperfectField<T extends ILinguistic, K extends Number> i
 
 
     public String toString() {
-        return innerField.toString();
+        return "(L)" + innerField.toString();
     }
 
 
 
     public K defuzzify() {
-        return subStrats.toCrispValue(
+        K ans = subStrats.toCrispValue(
                 ((ShapedFuzzyPartition)innerField.getCurrent()).asInducedPossibilityDistribution());
+        return ans;
     }
 
 

@@ -17,6 +17,7 @@
 package org.drools.chance.builder;
 
 import org.drools.chance.common.ImperfectField;
+import org.drools.chance.distribution.IDistribution;
 import org.drools.factmodel.AnnotationDefinition;
 import org.drools.factmodel.BuildUtils;
 import org.drools.factmodel.ClassDefinition;
@@ -52,7 +53,11 @@ public class ChanceBeanBuilder extends ChanceBuilder {
             }
 
 
-            return super.buildClass(classDef);
+            byte[] code = super.buildClass(classDef);
+
+            finalizeCreation( classDef );
+
+            return code;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,6 +65,26 @@ public class ChanceBeanBuilder extends ChanceBuilder {
     }
 
 
+
+
+    protected void finalizeCreation(ClassDefinition klass) {
+
+        Collection<FieldDefinition> originalFields = new HashSet<FieldDefinition>( klass.getFieldsDefinitions() );
+
+        for ( FieldDefinition field : originalFields ) {
+            if ( field instanceof ImperfectFieldDefinition ) {
+                FieldDefinition fieldDistr = new VirtualFieldDefinition();
+                    fieldDistr.setName( field.getName() + "Distr" );
+                    fieldDistr.setTypeName( IDistribution.class.getName() );
+                    fieldDistr.setInherited( field.isInherited() );
+
+                klass.addField(fieldDistr);
+            }
+        }
+
+
+
+    }
 
 
 
@@ -97,6 +122,7 @@ public class ChanceBeanBuilder extends ChanceBuilder {
         Type[] params = new Type[fieldDefs.size()];
         int index = 0;
         for ( FieldDefinition field : fieldDefs ) {
+            if ( field instanceof  VirtualFieldDefinition ) continue;
             params[index++] = Type.getType( BuildUtils.getTypeDescriptor(field.getTypeName()) );
         }
 
@@ -133,6 +159,8 @@ public class ChanceBeanBuilder extends ChanceBuilder {
                     l1,
                     0 );
             for ( FieldDefinition field : classDef.getFieldsDefinitions() ) {
+                if ( field instanceof  VirtualFieldDefinition ) continue;
+
                 Label l11 = new Label();
                 mv.visitLabel( l11 );
                 mv.visitLocalVariable( field.getName(),
@@ -172,6 +200,9 @@ public class ChanceBeanBuilder extends ChanceBuilder {
 
         initImperfectFields( classDef, mv );
 
+        defaultConstructorInitValues( mv, classDef );
+
+
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKESPECIAL, BuildUtils.getInternalType( classDef.getName() ), "synchFields", "()V");
 
@@ -198,6 +229,7 @@ public class ChanceBeanBuilder extends ChanceBuilder {
     @Override
     protected void buildGettersAndSetters(ClassWriter cw, ClassDefinition classDef) {
         for ( FieldDefinition fld : classDef.getFieldsDefinitions() ) {
+            if ( fld instanceof  VirtualFieldDefinition ) continue;
             if ( ! fld.isInherited() ) {
                 if ( fld instanceof ImperfectFieldDefinition ) {
                     ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) fld;

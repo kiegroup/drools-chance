@@ -16,6 +16,7 @@
 
 package org.drools.chance.distribution.fuzzy.linguistic;
 
+import de.lab4inf.fuzzy.FuzzyAlphaCutPartition;
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.IDegree;
 import org.drools.chance.distribution.IDistribution;
@@ -77,7 +78,9 @@ public class LinguisticPossibilityDistributionStrategy<T extends Number> impleme
     }
 
     public Number toCrispValue(IDistribution<Number> dist) {
-        return ((LinguisticPossibilityDistribution) dist).getPartition().defuzzyfy();
+        FuzzyAlphaCutPartition part = ((LinguisticPossibilityDistribution) dist).getPartition();
+        Number crisp = part.defuzzyfy();
+        return crisp;
     }
 
     public Number toCrispValue(IDistribution<Number> dist, String strategy) {

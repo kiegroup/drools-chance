@@ -58,9 +58,9 @@ public class ImperfectHistoryFieldTest {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        StrategyFactory.register(factory.getImp_Kind(), factory.getImp_Model(), factory);
+        ChanceStrategyFactory.register(factory.getImp_Kind(), factory.getImp_Model(), factory);
 
-        iifS=new ImperfectHistoryField<String>(StrategyFactory.buildStrategies(factory.getImp_Kind(), factory.getImp_Model(),null,null),2);
+        iifS=new ImperfectHistoryField<String>(ChanceStrategyFactory.buildStrategies(factory.getImp_Kind(), factory.getImp_Model(), null, null),2);
     }
 
     @Test

@@ -17,39 +17,39 @@
 package org.drools.chance.common;
 
 
+import org.drools.chance.common.fact.Weight;
 import org.drools.chance.distribution.IDistribution;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
 import org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartitionStrategyFactory;
 import org.drools.chance.distribution.probability.dirichlet.DirichletDistributionStrategyFactory;
 import org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategyFactory;
-import org.drools.common.DefaultFactHandle;
-import org.drools.runtime.rule.WorkingMemoryEntryPoint;
 
 
 /**
  * Desired target for the generated Handle class, given the class Bean
  * and assuming its two fields "field" and "age" have been tagged as @Imperfect
  */
+@Deprecated
 public class Bean_HandleGen  {
 
 
 	// an "history field" for every @Imperfect field in the managed bean
 	private IImperfectField<String> field = new ImperfectField<String>(
-												StrategyFactory.<String>buildStrategies(
-														"probability",
-														"discrete",
-                                                        "simple", 
+												ChanceStrategyFactory.<String>buildStrategies(
+                                                        "probability",
+                                                        "discrete",
+                                                        "simple",
                                                         String.class)
 												);
 
     // an "history field" for every @Imperfect field in the managed bean
 //	private IImperfectField<Integer> age;
     private IImperfectField<Integer> age = new ImperfectHistoryField<Integer>(
-															StrategyFactory.<Integer>buildStrategies(
-														"probability",
-														"dirichlet",
-                                                        "simple",
-                                                        Integer.class),
+															ChanceStrategyFactory.<Integer>buildStrategies(
+                                                                    "probability",
+                                                                    "dirichlet",
+                                                                    "simple",
+                                                                    Integer.class),
                                                 Integer.valueOf("3"),
                                                 "18/0.02, 19/0.01, 20/0.04"
 												);
@@ -60,14 +60,14 @@ public class Bean_HandleGen  {
 
 //    private IImperfectField<Weight> body;
 	private IImperfectField<Weight> body = new LinguisticImperfectField<Weight,Double>(
-			StrategyFactory.<Weight>buildStrategies(
-					"fuzzy",
-					"linguistic",
+			ChanceStrategyFactory.<Weight>buildStrategies(
+                    "fuzzy",
+                    "linguistic",
                     "simple",
                     Weight.class),
-            StrategyFactory.<Double>buildStrategies(
-					"possibility",
-					"linguistic",
+            ChanceStrategyFactory.<Double>buildStrategies(
+                    "possibility",
+                    "linguistic",
                     "simple",
                     Double.class),
             Integer.valueOf("3"),
@@ -88,6 +88,7 @@ public class Bean_HandleGen  {
     // Inherited constructors
     public Bean_HandleGen(Bean b) {
         setObject(b);
+
 
         age.setValue( new DirichletDistributionStrategyFactory<Integer>().buildStrategies( "simple", Integer.class).parse( "18/0.02, 19/0.01, 20/0.04" ),
                       false );
@@ -226,11 +227,15 @@ public class Bean_HandleGen  {
 	public Double getWeight() {
 		return object.getWeight();
 	}
+
+    private IImperfectField getBodyDx() {
+        return null;
+    }
 	
 	public void setWeight(Double w) {
-	    IDistribution dist = ((LinguisticImperfectField<Weight,Double>) body).fuzzify(w);
-		body.setValue(dist,false);
-        object.setBody(body.getCrisp());
+	    IDistribution dist = ((LinguisticImperfectField<Weight,Double>) getBodyDx()).fuzzify(w);
+		getBodyDx().setValue( dist, false );
+        setBody( (Weight) getBodyDx().getCrisp() );
 		
 		object.setWeight(w);
 	}
@@ -300,12 +305,14 @@ public class Bean_HandleGen  {
 	
 	
 	
-	
+
+    public void synchFields2() {
+    }
 	
 	
 
     public String toString() {
-        return "Bean_Imp : \n"
+        return "BeanImp : \n"
                 + "\t field = " + getField() + "\n"
                 + "\t age = " + getAge() + "\n"
 //                + "\t body = " + getBody() + "\n"

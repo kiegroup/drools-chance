@@ -21,6 +21,7 @@ import org.drools.factmodel.ClassDefinition;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class ImperfectRegistry {
 
     private static ImperfectRegistry instance;

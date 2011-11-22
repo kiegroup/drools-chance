@@ -14,36 +14,41 @@
  * limitations under the License.
  */
 
-package org.drools.chance.common;
+package org.drools.chance.common.fact;
 
 import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTrapez;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
-import de.lab4inf.fuzzy.pszshape.FuzzyP;
-import de.lab4inf.fuzzy.pszshape.FuzzyS;
 import org.drools.chance.distribution.fuzzy.linguistic.ILinguistic;
 
-public enum Weight implements ILinguistic<Double> {
-	
-	SLIM("slim", new FuzzyTriangle(-100,0,100)),
-	
-	FAT("fat", new FuzzyTriangle(0,100,200));
-	
-	
+public enum Price implements ILinguistic<Integer> {
 
-	
+	INEXPENSIVE("inexpensive", new FuzzyTrapez(0,0,20,30)),
+
+	CHEAP("cheap", new FuzzyTriangle(20,30,40)),
+
+    REASONABLE("reasonable", new FuzzyTriangle(30,40,50)),
+
+    EXPENSIVE("expensive", new FuzzyTriangle(40,50,60)),
+
+    BLOODY_HELL("bloody_hell", new FuzzyTrapez(50,60,100,100));
+
+
+
+
+
 	private final String label;
 	private final FuzzySet set;
-	
-	
-	
-	Weight(String lab, FuzzySet set) {
+
+
+
+	Price(String lab, FuzzySet set) {
 		this.label = lab;
 		this.set = set;
 	}
 
 	public ILinguistic parse(String label) {
-		return Weight.valueOf(label);
+		return Price.valueOf(label);
 	}
 	
 

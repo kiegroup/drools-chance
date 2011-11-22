@@ -44,32 +44,32 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * Basic constructor
      * @param strategies a reference to the Strategy class with the logic for handling this field's distribution
      */
-       public AbstractImperfectField(IDistributionStrategies<T> strategies){
-           this.strategies = strategies;
-       }
+    public AbstractImperfectField(IDistributionStrategies<T> strategies){
+        this.strategies = strategies;
+    }
 
 
     /**
      * "By value" setter. Creates a (degenerate) distribution with full degree assigned to the value
      * @param value the value used to create a degenerate distribution
      */
-       public void setValue(T value) {
-           setValue(strategies.toDistribution(value));
-       }
+    public void setValue(T value) {
+        setValue(strategies.toDistribution(value));
+    }
 
 
-         public void setValue(T value, boolean update) {
-           setValue(strategies.toDistribution(value),update);
-       }
+    public void setValue(T value, boolean update) {
+        setValue(strategies.toDistribution(value),update);
+    }
 
 
     /**
      * Setter. Overrides the previous distribution, if any)
      * @param dist A distribution over a bean's field domain
      */
-       public void setValue(IDistribution<T> dist) {
-           setValue(dist, isSet());
-       }
+    public void setValue(IDistribution<T> dist) {
+        setValue(dist, isSet());
+    }
 
     /**
      * Setter
@@ -77,13 +77,13 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * @param update if true, the new distribution dist will be merged with the current distribution, according to
      * this instance's strategies. If false, the new distribution will override the previous one.
      */
-       public abstract void setValue(IDistribution<T> dist, boolean update);
+    public abstract void setValue(IDistribution<T> dist, boolean update);
 
     /**
      * Predicate.
      * @return true if the current field has already been set, or is still to be initialized
      */
-     public abstract boolean isSet();
+    public abstract boolean isSet();
 
 
     /**
@@ -92,9 +92,9 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * The value returned belongs to the same domain the distribution is defined on (e.g. an IDistribution<String> will
      * return a String when crispified)
      */
-       public T getCrisp(){
-           return strategies.toCrispValue(getCurrent());
-       }
+    public T getCrisp(){
+        return strategies.toCrispValue(getCurrent());
+    }
 
 
     /**
@@ -106,32 +106,32 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * 0 corresponds to the current value.
      * @throws IndexOutOfBoundsException
      */
-       public abstract IDistribution<T> getPast(int time) throws IndexOutOfBoundsException;
+    public abstract IDistribution<T> getPast(int time) throws IndexOutOfBoundsException;
 
 
     /**
      * @return the current distribution for this field
      */
-       public abstract IDistribution<T> getCurrent();
+    public abstract IDistribution<T> getCurrent();
 
 
     /**
      * Getter
      * @return the current Strategies used to manipulate this field's distribution
      */
-       public IDistributionStrategies<T> getStrategies() {
-           return strategies;
-       }
+    public IDistributionStrategies<T> getStrategies() {
+        return strategies;
+    }
 
-       /**
-        * Setter.
-        * Do not change the strategy at runtime, unless you REALLY
-        * know what you're doing. So, no public API for this
-        * @param factory the new Strategies used to manipulate this field's distribution
-        */
-       protected void setStrategies(IDistributionStrategies<T> factory) {
-           this.strategies = factory;
-       }
+    /**
+     * Setter.
+     * Do not change the strategy at runtime, unless you REALLY
+     * know what you're doing. So, no public API for this
+     * @param factory the new Strategies used to manipulate this field's distribution
+     */
+    protected void setStrategies(IDistributionStrategies<T> factory) {
+        this.strategies = factory;
+    }
 
 
     /**
@@ -139,9 +139,9 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * Convenience method that calls "setValue" with update set to true
      * @param fieldBit the new distribution to merge with the current one
      */
-       public void update(IDistribution<T> fieldBit) {
-           this.setValue(strategies.merge(getCurrent(), fieldBit),true);
-       }
+    public void update(IDistribution<T> fieldBit) {
+        this.setValue( fieldBit, true );
+    }
 
     /**
      * updates the current distribution, by converting the provided value into a (degenerate) distribution
@@ -149,7 +149,7 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * (In many cases, this operation could still return a degenerate distribution centered on value)
      * @param value the value to merge with the current distribution
      */
-       public void update(T value) {
-           this.update(strategies.toDistribution(value));
-       }
+    public void update(T value) {
+        this.update(strategies.toDistribution(value));
+    }
 }

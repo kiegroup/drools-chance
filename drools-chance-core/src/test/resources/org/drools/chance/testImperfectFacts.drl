@@ -1,91 +1,105 @@
 
+package org.drools.chance.test;
+
 import org.drools.chance.common.Bean;
 import org.drools.chance.builder.ChanceFactory;
 import org.drools.chance.builder.ImperfectRegistry;
 import org.drools.chance.builder.Imperfect;
 
-import org.drools.chance.common.Weight;
+import org.drools.chance.common.fact.Weight;
+import org.drools.chance.common.fact.Price;
 
 
-declare Imperson
-	name    : String    //= "john/0.3, philip/0.7"
+
+declare Cheese
+    name    : String   @key
+end
+
+
+declare LegacyBean
+    @Traitable
+    name    : String
+    weight  : Double
+end
+
+
+
+
+declare BeanImp
+	name    : String    = "john/0.3, philip/0.7"
 	                @Imperfect( kind="probability", type="discrete", degree="simple" )
 
-	age     : Integer   //= "18/0.02, 19/0.01, 20/0.04"
+	flag    : Boolean    = "true/0.75, false/0.25"
+	                @Imperfect( kind="probability", type="discrete", degree="simple" )
+
+	age     : Integer   = "18/0.02, 19/0.01, 20/0.04"
 	                @Imperfect( kind="probability", type="dirichlet", degree="simple" )
 
-//    body    : Weight    //= "SLIM/0.5, FAT/0.5"
-//                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="weight" )
-//
-//    weight  : Double
+    body    : Weight    = "SLIM/0.6, FAT/0.4"
+                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="weight" )
+
+    weight  : Double
+
+    likes   : Cheese    = "cheddar/0.6"
+                    @Imperfect( kind="probability", type="basic", degree="simple" )
 
 end
 
-declare Bean
-@typesafe( false )
+
+
+declare ImpTrait
+    @format( trait )
+    @typesafe( false )
+
+	name    : String
+	                @Imperfect( kind="probability", type="discrete", degree="simple" )
+
+	flag    : Boolean
+	                @Imperfect( kind="probability", type="discrete", degree="simple" )
+
+	age     : Integer
+	                @Imperfect( kind="probability", type="dirichlet", degree="simple" )
+
+    body    : Weight
+                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="weight" )
+
+    weight  : Double
+
+
+    price   : Price
+                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="bucks" )
+
+    bucks   : Integer
+
+
+    likes   : Cheese
+                    @Imperfect( kind="probability", type="basic", degree="simple" )
 end
+
 
 
 rule "Init"
-when
-then
-    Bean b = new Bean();
-    b.setWeight(80.0);
-    b.setAge( 19 );
-    b.setName("john");
-    insert( b );
-end
-
-
-rule "Wrap"
-no-loop
-salience 10
-when
-    $b : Bean()
-then
-    System.out.println( $b );
-
-    ChanceFactory builder = new ChanceFactory( drools.getKnowledgeRuntime().getKnowledgeBase() );
-    ImperfectRegistry.getInstance().registerImperfectWrapperClass( $b.getClass() );
-    Object imp = builder.asImperfectFact( $b );
-
-    retract( $b );
-    insert( imp );
+ when
+ then
+     LegacyBean b = new LegacyBean( "joe", 65.0 );
+     ImpTrait imp = don( b, ImpTrait.class );
 end
 
 
 
-rule "Wrapped"
-no-loop
+rule "Init II"
 when
-    $b : Bean( $a : age, $x : this.ageValue, $dist : this.ageDistr )
+
 then
-    System.out.println( "Wrapped  >> " + $b ) ;
-    System.out.println( "Age is " + $b.getAge() );
-    System.out.println( "AgeValue is " + $x );
-    System.out.println( "AgeValue is " + $dist );
-
-    $b.setWeight( 22.0 );
-
-    System.out.println( "After diet  >> " + $b ) ;
-
-
-    System.out.println( "After rejuvenation  >> " + $b ) ;
-
+    insert( new BeanImp( ) );
 end
 
-
-//rule "Init II"
-//when
-//then
-//    insert( new Imperson( "john", 18, Weight.SLIM, 35.0 ) );
-//end
-//
-//rule "Wrap II"
-//when
-//    $b : Imperson()
-//then
-//    System.out.println( " >> " + $b );
-//
-//end
+rule "Test"
+when
+    BeanImp( $n : name, $nd : nameDistr, $nv : nameValue )
+then
+    System.out.println( $n );
+    System.out.println( $nd );
+    System.out.println( $nv );
+end
 

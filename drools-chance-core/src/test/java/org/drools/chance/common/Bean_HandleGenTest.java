@@ -16,16 +16,11 @@
 
 package org.drools.chance.common;
 
+import org.drools.chance.common.fact.Weight;
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.IDistributionStrategyFactory;
 
-import org.drools.chance.distribution.fuzzy.linguistic.LinguisticPossibilityDistributionStrategyFactory;
-import org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartitionStrategyFactory;
-import org.drools.chance.distribution.probability.dirichlet.DirichletDistributionStrategyFactory;
-import org.drools.chance.distribution.probability.discrete.DiscreteDistribution;
-import org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategy;
-import org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategyFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,18 +31,18 @@ public class Bean_HandleGenTest {
     @Before
     public void setUp() throws Exception {
         IDistributionStrategyFactory factory = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategyFactory").newInstance();
-        StrategyFactory.register(factory.getImp_Kind(), factory.getImp_Model(), factory);
+        ChanceStrategyFactory.register(factory.getImp_Kind(), factory.getImp_Model(), factory);
 
 
         IDistributionStrategyFactory factory2 = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.dirichlet.DirichletDistributionStrategyFactory").newInstance();
-        StrategyFactory.register(factory2.getImp_Kind(), factory2.getImp_Model(), factory2);
+        ChanceStrategyFactory.register(factory2.getImp_Kind(), factory2.getImp_Model(), factory2);
 
         
         IDistributionStrategyFactory factory3 = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartitionStrategyFactory").newInstance();
-        StrategyFactory.register(factory3.getImp_Kind(), factory3.getImp_Model(), factory3);
+        ChanceStrategyFactory.register(factory3.getImp_Kind(), factory3.getImp_Model(), factory3);
 
         IDistributionStrategyFactory factory4 = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.fuzzy.linguistic.LinguisticPossibilityDistributionStrategyFactory").newInstance();
-        StrategyFactory.register(factory4.getImp_Kind(), factory3.getImp_Model(), factory4);
+        ChanceStrategyFactory.register(factory4.getImp_Kind(), factory3.getImp_Model(), factory4);
 
         
         DegreeTypeRegistry.getSingleInstance().registerDegreeType("simple",SimpleDegree.class);

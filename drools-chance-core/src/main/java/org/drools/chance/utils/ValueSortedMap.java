@@ -48,7 +48,7 @@ public class ValueSortedMap<K, V> implements Map<K, V>
      * up in this map, and the result of the comparison of the
      * values will be returned.
      */
-    private Map<K, V> lookupMap = new HashMap<K, V>();
+    private Map<K, V> lookupMap = new HashMap<K, V>(3);
 
     /**
      * The class performing the actual comparison of the keys.

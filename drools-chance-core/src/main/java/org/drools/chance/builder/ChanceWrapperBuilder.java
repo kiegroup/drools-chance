@@ -27,6 +27,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 
+
+@Deprecated
 public class ChanceWrapperBuilder extends ChanceBuilder {
 
 

@@ -17,33 +17,25 @@
 package org.drools.chance.common;
 
 
-import org.drools.chance.builder.Imperfect;
+import org.drools.chance.common.fact.Weight;
 
 /**
  * Generic Bean with two fields, provided for reference
  */
+@Deprecated
 public class Bean {
 
 
-
-
-    @Imperfect( kind="probability", type="discrete", degree="simple")  // init "john/0.3, philip/0.7"
 	private String name;
 
 
-
-    @Imperfect( kind="probability", type="dirichlet", degree="simple" )  // init "18/0.02, 19/0.01, 20/0.04"
 	private Integer age;
 
 
-
-    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="weight" )  // init "SLIM/0.5, FAT/0.5"
     private Weight body;
 
 
 	private Double weight;
-//
-//
 
 	public Bean (){
 		

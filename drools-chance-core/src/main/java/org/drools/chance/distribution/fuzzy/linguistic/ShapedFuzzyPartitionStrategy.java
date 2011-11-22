@@ -164,7 +164,19 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
     }
 
     public IDistribution<ILinguistic> merge(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ShapedFuzzyPartition part1 = (ShapedFuzzyPartition) current;
+        ShapedFuzzyPartition part2 = (ShapedFuzzyPartition) newBit;
+
+        Iterator<ILinguistic<Number>> iter = part2.iterator();
+        while ( iter.hasNext() ) {
+            ILinguistic<Number> ling = iter.next();
+            IDegree deg = part2.getDegree( ling );
+
+            part1.reshape( ling, part1.getDegree( ling ).max( deg ) );
+        }
+
+        return part1;
+
     }
 
     public IDistribution<ILinguistic> merge(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit, String strategy) {
@@ -176,7 +188,20 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
     }
 
     public IDistribution<ILinguistic> mergeAsNew(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ShapedFuzzyPartition part1 = (ShapedFuzzyPartition) current;
+        ShapedFuzzyPartition part2 = (ShapedFuzzyPartition) newBit;
+        ShapedFuzzyPartition ansPt = (ShapedFuzzyPartition) createEmptyPartition();
+
+        Iterator<ILinguistic<Number>> iter = ansPt.iterator();
+        while ( iter.hasNext() ) {
+            ILinguistic<Number> ling = iter.next();
+            IDegree deg1 = part1.getDegree( ling );
+            IDegree deg2 = part2.getDegree( ling );
+
+            part1.reshape( ling, deg1.max( deg2 ) );
+        }
+
+        return ansPt;
     }
 
     public IDistribution<ILinguistic> mergeAsNew(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit, String strategy) {

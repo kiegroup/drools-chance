@@ -16,9 +16,14 @@
 
 package org.drools.chance.builder;
 
+import org.drools.base.ClassFieldAccessor;
+import org.drools.base.FieldAccessor;
 import org.drools.chance.common.ImperfectField;
+import org.drools.core.util.StringUtils;
 import org.drools.factmodel.AnnotationDefinition;
+import org.drools.factmodel.ClassDefinition;
 import org.drools.factmodel.FieldDefinition;
+import org.drools.reteoo.builder.BuildUtils;
 
 public class ImperfectFieldDefinition extends FieldDefinition {
 
@@ -27,10 +32,17 @@ public class ImperfectFieldDefinition extends FieldDefinition {
     private String degreeType;
     private String support;
 
+
     private int history;
 
+    private ClassDefinition klassDef;
+
+    public void setClassDefinition(ClassDefinition classDef) {
+        klassDef = classDef;
+    }
+
     public ImperfectFieldDefinition(String name, String type) {
-        super( name, type );
+        super( name , type );
     }
 
 
@@ -74,6 +86,23 @@ public class ImperfectFieldDefinition extends FieldDefinition {
         this.support = support;
     }
 
+
+
+    public Class< ? > getType() {
+
+        String prefix = "boolean".equals( getTypeName() ) ? "is" : "get";
+        String name = prefix + getName().substring(0,1).toUpperCase() + getName().substring(1) + "Value";
+
+        try {
+            return klassDef.getDefinedClass().getMethod( name ).getReturnType();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            return Object.class;
+        }
+    }
+
+
+
     public static ImperfectFieldDefinition fromField( FieldDefinition field, AnnotationDefinition ia ) {
 
         ImperfectFieldDefinition ifldDef = new ImperfectFieldDefinition( field.getName(), field.getTypeName() );
@@ -86,7 +115,13 @@ public class ImperfectFieldDefinition extends FieldDefinition {
         if ( ia.getValues().containsKey( "support" ) ) {
             ifldDef.setSupport( (String) ia.getValues().get("support").getValue() );
         }
+        if ( ! StringUtils.isEmpty( field.getInitExpr() ) ) {
+            ifldDef.setInitExpr( field.getInitExpr().replace( "\"","" ) );
+        }
         return ifldDef;
 
     }
+
+
+
 }

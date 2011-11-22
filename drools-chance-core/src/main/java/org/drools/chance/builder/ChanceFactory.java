@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+@Deprecated
 public class ChanceFactory implements Opcodes {
 
 
@@ -250,47 +251,6 @@ public class ChanceFactory implements Opcodes {
         }
         return ifs;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -44,6 +44,7 @@ import org.mvel2.asm.*;
  * Generates and caches "customized" handles for specific classes,
  * returns the most appropriate handle for a given object
  */
+@Deprecated
 public  class  ImperfectFactHandleFactory extends AbstractFactHandleFactory implements Opcodes {
 
 
