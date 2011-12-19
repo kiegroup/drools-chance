@@ -1,0 +1,318 @@
+package org.drools.informer.interaction;
+
+
+import org.drools.informer.generator.Surveyable;
+
+import org.drools.informer.generator.annotations.Questionable;
+import org.drools.informer.generator.annotations.QuestionMark;
+import org.drools.informer.generator.annotations.AllowedAnswers;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+
+
+
+
+    declare Surveyable end
+
+    declare Task
+
+        taskId              : String    = java.util.UUID.randomUUID().toString()   @key
+
+        description         : String
+
+        actor               : String
+
+        state               : String    = "Created"
+
+        lastChange          : Date      = new java.util.Date()
+
+        persistent          : boolean   = false
+
+    end
+
+    declare InteractiveTask extends Task
+
+        surveyableState     : boolean   = false
+
+        surveyableStateFId  : String
+
+        surveyableTx        : boolean   = true
+
+        surveyableTxFId     : String
+
+    end
+
+
+    declare TaskStateTransitionMap
+
+        reachableStates     : Map = new java.util.HashMap()
+
+        allowedTransitions  : Map = new java.util.HashMap()
+
+    end
+
+    declare AllowedTransition
+
+        oldState            : String
+
+        event               : String
+
+        newState            : String
+
+        multiOwner          : boolean
+
+    end
+
+    declare TaskStateTransition
+    @role(event)
+    @timestamp(timestamp)
+
+        taskId              : String
+
+        type                : String
+
+        owner               : String
+
+        timestamp           : Date
+
+    end
+
+
+    query transition( String $oldState, String $tx, String $newState, boolean $multi )
+        AllowedTransition( $oldState, $tx, $newState, $multi ; )
+    end
+
+    query taskInfo( String $taskId, String $descr, String $actor, String $state, Date $lastChange, boolean $persistent )
+        Task( $taskId, $descr, $actor, $state, $lastChange, $persistent ; )
+    end
+
+
+
+
+
+
+
+
+
+
+    declare TaskStateHolder extends Surveyable
+        @Questionable( label = "Task", language = "EN" )
+
+        questionnaireId     : String    = java.util.UUID.randomUUID().toString()   @key
+
+        taskId              : String
+
+        state               : String
+                @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Status ", required = false )
+                @AllowedAnswers( values = { "Created"  } )
+    end
+
+    declare TaskTransitionHolder extends Surveyable
+        @Questionable( label = "Transition", language = "EN" )
+
+        questionnaireId     : String    = java.util.UUID.randomUUID().toString()   @key
+
+        taskId              : String
+
+        transition          : String
+                @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Transition ", required = false )
+                @AllowedAnswers( values = { "Activate" } )
+
+    end
+
+
+
+
+
+
+
+
+
+
+
+    rule "Init Transitions"
+    when
+
+    then
+        insert( new AllowedTransition( "Created", "Activate", "Ready", true ) );
+
+        insert( new AllowedTransition( "Ready", "Forward", "Ready", true ) );
+        insert( new AllowedTransition( "Ready", "Claim", "Reserved", true ) );
+        insert( new AllowedTransition( "Ready", "Delegate", "Reserved", true ) );
+
+        insert( new AllowedTransition( "Ready", "Start", "InProgress", false ) );
+        insert( new AllowedTransition( "Reserved", "Start", "InProgress", true ) );
+
+        insert( new AllowedTransition( "InProgress", "Suspend", "Suspended", false ) );
+        insert( new AllowedTransition( "Suspended", "Resume", "InProgress", false ) );
+
+        insert( new AllowedTransition( "InProgress", "Stop", "Reserved", false ) );
+        insert( new AllowedTransition( "InProgress", "Delegate", "Reserved", true ) );
+
+        insert( new AllowedTransition( "InProgress", "Revoke", "Ready", true ) );
+        insert( new AllowedTransition( "InProgress", "Forward", "Ready", true ) );
+
+        insert( new AllowedTransition( "InProgress", "Complete", "Completed", false ) );
+        insert( new AllowedTransition( "InProgress", "Fail", "Failed", false ) );
+
+        insert( new AllowedTransition( "Created", "Cancel", "Aborted", false ) );
+        insert( new AllowedTransition( "Ready", "Cancel", "Aborted", false) );
+        insert( new AllowedTransition( "InProgress", "Cancel", "Aborted", false ) );
+        insert( new AllowedTransition( "Reserved", "Cancel", "Aborted", false ) );
+
+        insert( new AllowedTransition( "Completed", null, "Completed", false ) );
+
+        insert( new TaskStateTransitionMap() );
+    end
+
+
+    rule "Assemble state transition matrix I"
+    salience 100
+    when
+        $tst            : TaskStateTransitionMap( $rx : reachableStates )
+        $initialStates  : Set() from accumulate( AllowedTransition( $s ; ), collectSet( $s ) )
+        $initialState   : String() from $initialStates
+        $reachables     : Set() from accumulate( AllowedTransition( $initialState, $x, $finalState ; ), collectSet( $finalState ) )
+    then
+        $rx.put( $initialState, $reachables );
+    end
+
+    rule "Assemble state transition matrix II"
+    salience 100
+    when
+        $tst            : TaskStateTransitionMap( $ax : allowedTransitions )
+        $initialStates  : Set() from accumulate( AllowedTransition( $s ; ), collectSet( $s ) )
+        $initialState   : String() from $initialStates
+        $transitions    : Set() from accumulate( AllowedTransition( $initialState, $transition, $x ; ), collectSet( $transition ) )
+    then
+        $ax.put( $initialState, $transitions );
+    end
+
+
+
+
+
+
+
+rule "Transitions"
+when
+    $t      : Task( $tid := taskId, $oldState := state )
+    $tx     : TaskStateTransition( $tid, $tran, $owner, $time ; )
+              ?transition( $oldState, $tran, $newState, $multi ; )
+then
+    System.out.println( " Trasition detected " + $tran +" into state " + $newState );
+    retract( $tx );
+    modify ( $t ) {
+        setState( $newState ),
+        setActor( $owner ),
+        setLastChange( $time ),
+        setState( $newState );
+    }
+end
+
+rule "Allowed States"
+no-loop
+when
+    $task   : Task( $tid : taskId, $s : state != null )
+              TaskStateHolder( $xid, $tid ; )
+    $tst    : TaskStateTransitionMap( reachableStates[ $s ] != null )
+              getItem( "state", $xid, $states ; )
+then
+    ( (MultipleChoiceQuestion) $states ).setPossibleAnswersByValue( (Set) $tst.getReachableStates().get( $s ) );
+    update( $states );
+end
+
+rule "Allowed Transitions"
+no-loop
+when
+    $task   : Task( $tid : taskId, $s : state != null )
+              TaskTransitionHolder( $xid, $tid ; )
+    $tst    : TaskStateTransitionMap( allowedTransitions[ $s ] != null )
+              getItem( "transition", $xid, $tranx ; )
+then
+    ( (MultipleChoiceQuestion) $tranx ).setPossibleAnswersByValue( (Set) $tst.getAllowedTransitions().get( $s ) );
+    update( $tranx );
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rule "Create State Qs"
+when
+    $t :  InteractiveTask( $tid : taskId, surveyableState == true )
+    not   TaskStateHolder( taskId == $tid )
+then
+    TaskStateHolder holder = new TaskStateHolder( );
+        holder.setTaskId( $tid );
+        $t.setSurveyableStateFId( holder.getQuestionnaireId() );
+    System.out.println( ">>>>>>>>>>>" +  holder );
+    insert( holder );
+end
+
+rule "Create Tx Qs"
+when
+    $t :  InteractiveTask( $tid : taskId, surveyableTx == true )
+    not   TaskTransitionHolder( taskId == $tid )
+then
+    TaskTransitionHolder holder = new TaskTransitionHolder( );
+        holder.setTaskId( $tid );
+        $t.setSurveyableTxFId( holder.getQuestionnaireId() );
+    System.out.println( ">>>>>>>>>>>" +  holder );
+    insert( holder );
+end
+
+
+rule "Clear State Qs"
+when
+    $t : TaskStateHolder( $tid : taskId )
+    not  InteractiveTask( $tid == taskId )
+then
+    retract( $t );
+end
+
+rule "Clear Tx Qs"
+when
+    $t : TaskTransitionHolder( $tid : taskId )
+    not InteractiveTask( $tid == taskId )
+then
+    retract( $t );
+end
+
+
+
+rule "Answer tx"
+when
+    $holder : TaskTransitionHolder( $tid : taskId, $newState : transition != null )
+    ?taskInfo( $tid, $descr, $owner, $state, $lastChange, $persistent ; )
+then
+    insert( new TaskStateTransition( $tid, $newState, $owner, new Date() ) );
+end
+
+
+
+
+

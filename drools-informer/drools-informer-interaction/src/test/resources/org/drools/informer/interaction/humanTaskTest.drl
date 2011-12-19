@@ -1,0 +1,67 @@
+package org.drools.informer.interaction;
+
+import org.drools.informer.MultipleChoiceQuestion;
+import org.drools.informer.MultipleChoiceQuestion.PossibleAnswer;
+
+
+    query possibleStateAnswers( String $xid, List $answers )
+        getItemId( "state", $xid, $qid ; )
+        MultipleChoiceQuestion( $qid := id,  $ans := possibleAnswers )
+        $answers := List(  ) from accumulate( PossibleAnswer( $x : value ) from $ans, collectList( $x ) )
+    end
+
+    query possibleTransitionsAnswers( String $xid, List $answers )
+        getItemId( "transition", $xid, $qid ; )
+        MultipleChoiceQuestion( $qid := id,  $ans := possibleAnswers )
+        $answers := List(  ) from accumulate( PossibleAnswer( $x : value ) from $ans, collectList( $x ) )
+    end
+
+
+
+
+rule "Init Test"
+when
+then
+    Task t = new InteractiveTask();
+        t.setActor( "dsotty" );
+    insert( t );
+end
+
+rule "Transit"
+when
+    $t : Task( $tid : taskId )
+    $s : String()
+then
+    retract( $s );
+    insert( new TaskStateTransition( $tid, $s, "dsotty", new Date() ) );
+end
+
+
+
+
+
+
+
+
+rule "Log Available States"
+salience -1000
+when
+    Task( $tid : taskId, $state : state )
+    TaskStateHolder( taskId == $tid, $xid : questionnaireId )
+    possibleStateAnswers( $xid, $ans ; )
+then
+    System.out.println( "Task S [" + $state + "] >>>>>>>>>>>>>>>>> " + ", " + $ans );
+end
+
+rule "Log Available Transitions"
+salience -1000
+when
+    Task( $tid : taskId, $state : state )
+    TaskTransitionHolder( taskId == $tid, $xid : questionnaireId )
+    possibleTransitionsAnswers( $xid, $ans ; )
+then
+    System.out.println( "Task X [" + $state + "] >>>>>>>>>>>>>>>>> " + ", " + $ans );
+end
+
+
+

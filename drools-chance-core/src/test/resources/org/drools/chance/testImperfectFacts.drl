@@ -78,7 +78,7 @@ end
 
 
 
-rule "Init"
+rule "Init I"
  when
  then
      LegacyBean b = new LegacyBean( "joe", 65.0 );
@@ -94,12 +94,4 @@ then
     insert( new BeanImp( ) );
 end
 
-rule "Test"
-when
-    BeanImp( $n : name, $nd : nameDistr, $nv : nameValue )
-then
-    System.out.println( $n );
-    System.out.println( $nd );
-    System.out.println( $nv );
-end
 

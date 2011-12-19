@@ -17,6 +17,7 @@
 package org.drools.chance.degree;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
 public  class DegreeTypeRegistry {
@@ -40,20 +41,13 @@ public  class DegreeTypeRegistry {
 
     public boolean registerDegreeType(String name,Class degreeType){
 
-//        try {
-//            strConstructorTable.put(name, degreeType.getConstructor(String.class));
-            degreeTable.put( name, degreeType);
-            return true;
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
+        degreeTable.put( name, degreeType);
+        return true;
 
     }
 
 
     public Constructor getConstructorByString(String name) {
-//        return strConstructorTable.get(name);
         try {
             return degreeTable.get(name).getConstructor(String.class);
         } catch (NoSuchMethodException e) {
@@ -64,5 +58,38 @@ public  class DegreeTypeRegistry {
     public Class<? extends IDegree> getDegreeClass( String name ) {
         return degreeTable.get( name );
     }
+
+
+    public IDegree buildDegree( String name, double val ) {
+        try {
+            return degreeTable.get( name ).getConstructor( double.class ).newInstance( val );
+        } catch (NoSuchMethodException e) {
+
+        } catch (InvocationTargetException e) {
+
+        } catch (InstantiationException e) {
+
+        } catch (IllegalAccessException e) {
+
+        }
+        return null;
+    }
+
+    public IDegree buildDegree( String name, String val ) {
+        try {
+            return degreeTable.get( name ).getConstructor( String.class ).newInstance( val );
+        } catch (NoSuchMethodException e) {
+
+        } catch (InvocationTargetException e) {
+
+        } catch (InstantiationException e) {
+
+        } catch (IllegalAccessException e) {
+
+        }
+        return null;
+    }
+
+
 
 }

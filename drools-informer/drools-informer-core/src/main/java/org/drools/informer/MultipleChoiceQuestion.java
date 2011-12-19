@@ -184,10 +184,26 @@ public class MultipleChoiceQuestion extends Question {
 		if (possibleAnswers == null) {
 			this.possibleAnswers = null;
 		} else {
-			setPossibleAnswers((PossibleAnswer[]) Arrays.asList(possibleAnswers).toArray(new PossibleAnswer[] {}));
+			setPossibleAnswers( Arrays.asList(possibleAnswers).toArray(new PossibleAnswer[] {}));
 		}
 	}
 
+
+    public void setPossibleAnswersByValue(Collection<String> possibleAnswers) {
+		if (possibleAnswers == null) {
+			this.possibleAnswers = null;
+		} else {
+			this.possibleAnswers = new ArrayList<PossibleAnswer>();
+            for ( String s : possibleAnswers ) {
+                if ( s != null ) {
+                    if ( s.contains(",") ) {
+                        throw new IllegalArgumentException("Possible Answers with comma in values are not allowed :" + s);
+                    }
+                    this.possibleAnswers.add( new PossibleAnswer( s, s ) );
+                }
+            }
+		}
+	}
 
 
     public void setPossibleAnswersByValue(String[] possibleAnswers) {

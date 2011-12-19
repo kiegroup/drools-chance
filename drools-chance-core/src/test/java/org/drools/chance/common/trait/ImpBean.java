@@ -18,8 +18,9 @@ public interface ImpBean {
     public void setNameDistr( IDistribution<String> x );
     public void setNameValue( String x );
 
-    public void updateName( IDistribution<String> x );
-    public void updateName( String x );
+    public void updateName( IImperfectField<String> x  );
+    public void updateNameDistr( IDistribution<String> x );
+    public void updateNameValue( String x );
 
     
     
@@ -32,8 +33,9 @@ public interface ImpBean {
     public void setFlagDistr( IDistribution<Boolean> x );
     public void setFlagValue( Boolean x );
 
-    public void updateFlag( IDistribution<Boolean> x );
-    public void updateFlag( Boolean x ); 
+    public void updateFlag( IImperfectField<Boolean> x );
+    public void updateFlagDistr( IDistribution<Boolean> x );
+    public void updateFlagValue( Boolean x );
     
     
     

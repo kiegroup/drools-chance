@@ -23,6 +23,7 @@ import org.drools.chance.distribution.IDistributionStrategyFactory;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -59,6 +60,7 @@ public class Bean_HandleGenTest {
 
 
     @Test
+    @Ignore
     public  void testHandle() throws Exception {
 
 

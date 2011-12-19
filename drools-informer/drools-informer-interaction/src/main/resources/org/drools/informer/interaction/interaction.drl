@@ -1,0 +1,293 @@
+package org.drools.informer.interaction;
+
+
+import org.drools.base.DroolsQuery;
+import org.drools.expectations.*;
+import org.drools.informer.generator.*;
+import org.drools.informer.*;
+
+
+import java.util.List;
+
+
+import org.drools.informer.Progress;
+
+
+
+
+
+
+
+
+declare InteractionTicket
+    id              : String
+    interactions    : List      // <Interaction>
+    source          : Object
+end
+
+declare TicketActor
+    interactionId   : String   @key
+    ticketId        : String
+    actorId         : String
+end
+
+
+declare Interaction
+    type            : String
+    bodyTemplateId  : String
+    receivers       : List      // <String>
+    channels        : List
+end
+
+
+declare FormMarker
+    ticketId        : String
+    type            : String
+    formId          : String
+end
+
+declare Alert
+@role( event )
+    ticketId        : String
+    destination     : String
+    formId          : String
+    bodyTemplateId  : String
+    channel         : String
+end
+
+
+
+
+
+query formMarker( String $ticketId, String $type, String $formId )
+    FormMarker( $ticketId, $type, $formId ; )
+end
+
+query owner( String $formId, String $user )
+    Alert( $ticket, $user, $formId ; )
+end
+
+query ticket( String $className, String $formId, InteractionTicket $ticket )
+    $ticket := InteractionTicket( id == $formId )
+end
+
+
+query conversationForms( String $ticketId, String $actorId, List $formIds, List $bodies, List $channels )
+    accumulate (
+                 Alert( $ticketId, $actorId, $formId, $body, $channel; ),
+                 $formIds  : collectList( $formId ),
+                 $bodies   : collectList( $body ),
+                 $channels : collectList( $channel )
+               )
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rule "Open interaction"
+salience 999
+when
+    $ticket : InteractionTicket( $id : id,
+                                 $inters : interactions )
+    $inter : Interaction( /*receivers.size > 0*/ ) from $inters
+then
+//    System.out.println( "Inserting interaction " + $inter + " for ticket " + $ticket );
+    insertLogical( $inter );
+end
+
+rule "Interactions"
+when
+    $ticket : InteractionTicket( $ticketId : id,
+                                 $inters : interactions )
+    Interaction( $type : type, this memberOf $inters, receivers.size > 0, $receiver : receivers[0], $body : bodyTemplateId, $channel : channels[0] )
+    formMarker( $ticketId, $type, $formId ; )
+then
+//    System.out.println(" Form is ready " + $formId );
+    insert( new Alert( $ticketId, (String) $receiver, $formId, $body, (String) $channel ) );
+end
+
+rule "System Interactions"
+when
+    $ticket : InteractionTicket( $ticketId : id,
+                                 $inters : interactions )
+    Interaction( $type : type, this memberOf $inters, receivers.size == 0 )
+    formMarker( $ticketId, $type, $formId ; )
+then
+//    System.out.println(" Form is ready " + $formId + " of type " + $type );
+end
+
+
+rule "Alerts"
+no-loop
+salience 1000
+when
+    $al     : Alert( $ticketId, $dest, $formId ; )
+              not TicketActor( $convoId, $ticketId, $dest ; )
+then
+    System.out.println( " ******************************* " + $al );
+    System.out.println( " ************************leads to TicketActor( Convoid, " + $ticketId +" , " + $dest + ") " );
+    insert( new TicketActor( java.util.UUID.randomUUID().toString(), $ticketId, $dest ) );
+end
+
+
+rule "Clean actors"
+when
+    $tk : TicketActor( $convoId, $ticketId, $dest ; )
+    not   Alert( ticketId == $ticketId )
+then
+    System.out.println( "REMOVAL OF ACTOR!");
+    retract( $tk );
+end
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//rule "Escalation"
+//when
+//    $ticket : InteractionTicket( $id : id,
+//                                 $inters : interactions )
+//    $inter : Interaction( $type, $receivers ;)
+//    FormMarker( $id, $type, $formId ; )
+//    $al : Alert( $id, $dest, $formId ; destination memberOf $receivers )
+//check
+//        expect org.drools.informer.Progress( $formId, 100 ; this after[0,1s] $al )
+//            onFulfill {
+//
+//            }
+//            onViolation {
+//                System.err.println( $dest + " did not answer " + $formId );
+//                retract( $al );
+//                $receivers.remove( $dest );
+//                update( $inter );
+//            }
+//
+//        or
+//
+//        expect org.drools.informer.Cancel( $formId ; this after[0,1] $al )
+//            onFulfill {
+//                retract( $al );
+//            }
+//
+//        or
+//
+//        expect org.drools.informer.Failure( $formId ; this after[0,1] $al )
+//            onFulfill {
+//                retract( $al );
+//            }
+//end
+//
+
+
+
+
+
+
+
+//
+
+
+
+
+//rule "Start"
+//when
+//    Progress( $formId, 0 ; )
+//    ?owner( $formId, $user ; )
+//    $taskService : TaskService() from HumanTaskServiceLookup.getInstance().lookup();
+//then
+//    System.out.println( "********************** START HUMAN TASK " + $formId + " FOR USER " +$user + " using " + $taskService );
+//end
+//
+//rule "Complete"
+//when
+//    Progress( $formId, 100 ; )
+//    ?owner( $formId, $user ; )
+//    $taskService : TaskService() from HumanTaskServiceLookup.getInstance().lookup();
+//then
+//    System.out.println( "********************** COMPLETE HUMAN TASK " + $formId + " FOR USER " +$user + " using " + $taskService );
+//end
+
+//rule "Cancel"
+//    org.drools.informer.Cancel( $formId ; )
+//    ?owner( $formId, $user ; )
+//when
+//    // cancel HT
+//then
+//
+//end
+//
+//rule "Fail"
+//    org.drools.informer.Failure( $formId ; )
+//    ?owner( $formId, $user ; )
+//when
+//    // cancel HT
+//then
+
+
+
+
+
+rule "Initialize/query forms"
+when
+    DroolsQuery( name == "formMarker", $args : elements )
+    not FormMarker( $args[0], $args[1] ; )
+then
+//    System.out.println(" Query " + java.util.Arrays.asList($args) );
+
+//    System.out.println(" Will create a form for " + $args[0] + " / " + $args[1] );
+    String formId = java.util.UUID.randomUUID().toString();
+
+    ISurveyable form = FormRegistry.create( $args[1].toString(), formId );
+    insert( form );
+
+    insert( new FormMarker( $args[0].toString(),
+                            $args[1].toString(),
+                            formId ) );
+end
+
+
+rule "Clear query forms"
+when
+    $f : FormMarker( $ticketId, $type$, $formId ; )
+    not  Surveyable( questionnaireId == $formId )
+then
+//    System.out.println(" Kill orphan formmarker " + $f );
+    retract( $f );
+end
+
+
+rule "Clear orphan tickets"
+when
+    $tkt : InteractionTicket( $id : id )
+    not    FormMarker( ticketId == $id )
+then
+//    System.out.println(" Kill orphan ticekt " + $tkt );
+    retract( $tkt );
+end
+
+
+
+
+
+

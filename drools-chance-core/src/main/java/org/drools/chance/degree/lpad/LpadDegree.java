@@ -96,6 +96,11 @@ public class LpadDegree implements IDegree {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public IDegree fromString(String val) {
+        //TODO
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public int compareTo(IDegree iDegree) {
         return asSimpleDegree().compareTo(iDegree);
     }

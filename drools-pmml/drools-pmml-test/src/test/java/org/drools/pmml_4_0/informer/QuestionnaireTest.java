@@ -214,7 +214,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         FactType lenp = getKbase().getFactType("org.drools.pmml_4_0.test", "PetalLength");
 
         Collection c = getKSession().getObjects(new ClassObjectFilter(nump.getFactClass()));
-        assertEquals(2,c.size());
+        assertEquals(1,c.size());
 
         Iterator i1 = c.iterator();
         while (i1.hasNext()) {
@@ -225,7 +225,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
 
         Collection d = getKSession().getObjects(new ClassObjectFilter(lenp.getFactClass()));
-        assertEquals(2, d.size());
+        assertEquals(1, d.size());
 
         Iterator i2 = d.iterator();
         while (i2.hasNext()) {
@@ -267,7 +267,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
 
         Collection c = getKSession().getObjects(new ClassObjectFilter(nump.getFactClass()));
-        assertEquals(2,c.size());
+        assertEquals(1,c.size());
 
         Iterator i1 = c.iterator();
         while (i1.hasNext()) {
@@ -290,7 +290,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         System.err.println(reportWMObjects(getKSession()));
 
         c = getKSession().getObjects(new ClassObjectFilter(nump.getFactClass()));
-        assertEquals(2,c.size());
+        assertEquals(1,c.size());
 
         i1 = c.iterator();
         while (i1.hasNext()) {
@@ -326,7 +326,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         FactType type = getKbase().getFactType(packageName,"PetalNumber");
         checkFirstDataFieldOfTypeStatus(type,false,false,"Neupre",5);
 
-        assertEquals(1, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
+        assertEquals(4, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
 
         assertEquals(0,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
@@ -379,7 +379,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
 
         checkFirstDataFieldOfTypeStatus(petalNumType,false,false,"Neupre",4);
-        assertEquals(1, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
+        assertEquals(6, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
         assertEquals(2, getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
 
@@ -398,7 +398,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neupre",40);
 
-        assertEquals(0, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
+        assertEquals(5, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
         assertEquals(4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
         checkFirstDataFieldOfTypeStatus(out,true,false,"Neupre",60);
@@ -413,19 +413,19 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         Answer ans2 = new Answer(getQId("Neupre","PetalNumber"),"-7");
         getKSession().insert(ans2);
 
-       getKSession().fireAllRules();
+        getKSession().fireAllRules();
 
 
         System.err.println(reportWMObjects(getKSession()));
 
 
-        checkFirstDataFieldOfTypeStatus(petalNumType,false,false,"Neupre",-7);
+        checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neupre",40);
 
-        assertEquals(1, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
-        assertEquals(3,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
+        assertEquals(6, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
+        assertEquals(4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
         checkFirstDataFieldOfTypeStatus(out,true,false,"Neupre",60);
-        assertEquals(0, getKSession().getObjects(new ClassObjectFilter(sepalType.getFactClass())).size());
+        assertEquals(1, getKSession().getObjects(new ClassObjectFilter(sepalType.getFactClass())).size());
 
 
 
@@ -444,7 +444,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neupre",44);
 
-        assertEquals(0, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
+        assertEquals(5, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
         assertEquals(4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
         checkFirstDataFieldOfTypeStatus(out,true,false,"Neupre",61);

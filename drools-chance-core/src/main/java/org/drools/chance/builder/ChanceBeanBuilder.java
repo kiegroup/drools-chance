@@ -79,6 +79,14 @@ public class ChanceBeanBuilder extends ChanceBuilder {
                     fieldDistr.setInherited( field.isInherited() );
 
                 klass.addField(fieldDistr);
+
+
+                FieldDefinition fieldValue = new VirtualFieldDefinition();
+                    fieldValue.setName( field.getName() + "Value" );
+                    fieldValue.setTypeName( field.getTypeName() );
+                    fieldValue.setInherited( field.isInherited() );
+
+                klass.addField(fieldValue);
             }
         }
 

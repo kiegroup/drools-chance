@@ -1,25 +1,54 @@
 
 package org.drools.informer
 
+
+
+query "getQuestionnaire" ( String $context, Questionnaire $quest )
+    $quest := Questionnaire( context == $context )
+end
+
+query "getAssociation"( Object $obj, String $prop )
+    $quest : DomainModelAssociation( object == $obj, property == $prop )
+end
+
+query "getAssociations"( Object $obj )
+    $quest : DomainModelAssociation( object == $obj )
+end
+
+
 query "activeObjects"
-	object : InformerObject(active == true);
+	object : InformerObject(active == true)
 end
 
 query "activeObjectsInContext" (String context)
-	object : InformerObject( active == true, context == context );
+	object : InformerObject( active == true, context == context )
 end
-
-
-query "answeredQuestions"
-	question : Question(answered == true);
-end
-
-query "answeredQuestionsInContext" (String context)
-	question : Question(answered == true, context == context);
-end
-
 
 query "getItemId"( String $type, String $context, String $id )
     Item( $type := type, $context := context, $id := id )
 end
 
+query "getItem"( String $type, String $context, Item $item )
+    $item := Item( $type := type, $context := context )
+end
+
+query "erroneousAnswers"
+	$ea : InvalidAnswer(  )
+end
+
+query "missingAnswers"
+	$ma : InvalidAnswer( type == "missing" )
+end
+
+query "invalidAnswers"
+	$ia : InvalidAnswer( type == "invalid" )
+end
+
+
+query "answeredQuestions"
+	question : Question( answered == true )
+end
+
+query "answeredQuestionsInContext" (String context)
+	question : Question(answered == true, context == context)
+end

@@ -711,13 +711,63 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
 
 
 
+
+
+        {
+            mv = cw.visitMethod( ACC_PUBLIC,
+                    setter.replace( "set", "update" ),
+                    "(Lorg/drools/chance/common/IImperfectField;)V",
+                    "(Lorg/drools/chance/common/IImperfectField<" + BuildUtils.getTypeDescriptor( ifld.getTypeName() ) + ">;)V",
+                    null);
+            int stack = 2;
+            mv.visitCode();
+
+
+            getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+            mv.visitVarInsn(ASTORE, 2);
+
+
+            mv.visitVarInsn(ALOAD, 2);
+            mv.visitVarInsn(ALOAD, 1);
+            mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "getCurrent", "()Lorg/drools/chance/distribution/IDistribution;");
+            mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "update", "(Lorg/drools/chance/distribution/IDistribution;)V");
+
+
+            mv.visitVarInsn(ALOAD, 0);
+            prepareSetTargetValue( mv, wrapperName, core.getName(), ifld, softField);
+            mv.visitVarInsn(ALOAD, 2);
+            mv.visitMethodInsn( INVOKEINTERFACE,
+                    "org/drools/chance/common/IImperfectField",
+                    "getCrisp",
+                    "()Ljava/lang/Object;");
+            stack += setTargetValue( mv, wrapperName, core.getName(), ifld, softField );
+
+
+            if ( isLinguistic( ifld ) ) {
+                updateSupportField( mv, ifld, wrapperName, lingTarget );
+            }
+
+
+
+            mv.visitInsn(RETURN);
+            mv.visitMaxs( 2 + stack, 3 );
+            mv.visitEnd();
+        }
+
+
+
+
         {
             mv = cw.visitMethod( ACC_PUBLIC,
                     setter + "Value",
                     "(" + BuildUtils.getTypeDescriptor( ifld.getTypeName() ) + ")V",
                     null, null);
             mv.visitCode();
+
             int stack = getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+            mv.visitVarInsn(ASTORE, 2);
+
+            mv.visitVarInsn(ALOAD, 2);
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(ICONST_0);
             mv.visitMethodInsn( INVOKEINTERFACE,
@@ -727,7 +777,7 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
 
             mv.visitVarInsn(ALOAD, 0);
             prepareSetTargetValue( mv, wrapperName, core.getName(), ifld, softField);
-            getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+            mv.visitVarInsn(ALOAD, 2);
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
                     "getCrisp",
@@ -740,9 +790,12 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
             }
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs( 2 + stack + stack2, 2);
+            mv.visitMaxs( 2 + stack + stack2, 3);
             mv.visitEnd();
         }
+
+
+
 
         {
             mv = cw.visitMethod( ACC_PUBLIC,
@@ -750,7 +803,13 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
                     "(" + BuildUtils.getTypeDescriptor( ifld.getTypeName() ) + ")V",
                     null, null);
             mv.visitCode();
-            int stack = getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+
+            getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+            mv.visitVarInsn(ASTORE, 2);
+
+
+            mv.visitVarInsn(ALOAD, 2);
+//            int stack = getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
             mv.visitVarInsn(ALOAD, 1);
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -759,7 +818,8 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
 
             mv.visitVarInsn(ALOAD, 0);
             prepareSetTargetValue( mv, wrapperName, core.getName(), ifld, softField );
-            getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+//            getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+            mv.visitVarInsn(ALOAD, 2);
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
                     "getCrisp",
@@ -772,9 +832,12 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
             }
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs( 2 + stack + stack2, 2);
+            mv.visitMaxs( 3  + stack2, 3);
             mv.visitEnd();
         }
+
+
+
 
 
 
@@ -785,7 +848,13 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
                     "(Lorg/drools/chance/distribution/IDistribution<" +BuildUtils.getTypeDescriptor( ifld.getTypeName() ) +">;)V",
                     null);
             mv.visitCode();
+
+
             int stack = getTargetDistField( mv, ifld, wrapperName, core.getName(), softField);
+            mv.visitVarInsn(ASTORE, 2);
+
+
+            mv.visitVarInsn(ALOAD, 2);
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(ICONST_0);
             mv.visitMethodInsn( INVOKEINTERFACE,
@@ -793,9 +862,10 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
                     "setValue",
                     "(Lorg/drools/chance/distribution/IDistribution;Z)V");
 
+
             mv.visitVarInsn(ALOAD, 0);
             prepareSetTargetValue(mv, wrapperName, core.getName(), ifld, softField);
-            getTargetDistField(mv, ifld, wrapperName, core.getName(), softField);
+            mv.visitVarInsn(ALOAD, 2);
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
                     "getCrisp",
@@ -807,7 +877,7 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
             }
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(2 + stack + stack2, 2);
+            mv.visitMaxs(2 + stack + stack2, 3);
             mv.visitEnd();
         }
 
@@ -823,7 +893,13 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
                     null);
             mv.visitCode();
 
-            int stack = getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+            getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+            mv.visitVarInsn(ASTORE, 2);
+
+
+
+
+            mv.visitVarInsn(ALOAD, 2);
             mv.visitVarInsn(ALOAD, 1);
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -834,7 +910,7 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
 
             mv.visitVarInsn(ALOAD, 0);
             prepareSetTargetValue( mv, wrapperName, core.getName(), ifld, softField );
-            getTargetDistField( mv, ifld, wrapperName, core.getName(), softField );
+            mv.visitVarInsn(ALOAD, 2);
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
                     "getCrisp",
@@ -847,7 +923,7 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
             }
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs( stack2 + stack + 2, 2 );
+            mv.visitMaxs( stack2 + 3, 3 );
             mv.visitEnd();
         }
 
@@ -951,6 +1027,8 @@ public class ChanceTripleProxyBuilder extends TraitTripleProxyClassBuilderImpl {
         }
 
     }
+
+
 
 
 

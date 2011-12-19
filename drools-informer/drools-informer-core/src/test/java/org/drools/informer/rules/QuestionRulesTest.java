@@ -21,8 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 
-import org.drools.ClassObjectFilter;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -31,6 +31,7 @@ import org.drools.builder.ResourceType;
 import org.drools.informer.*;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.QueryResultsRow;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ public class QuestionRulesTest {
     private static final Logger logger = LoggerFactory.getLogger(QuestionRulesTest.class);
 
     private KnowledgeBase knowledgeBase;
+    private Collection<?> invalidAnswers;
 
     /**
      * @throws Exception
@@ -154,10 +156,10 @@ public class QuestionRulesTest {
             assertEquals(456L, question6.getAnswer());
             assertEquals(null, question7.getAnswer());
             assertEquals(null, question8.getAnswer());
-            Collection<?> invalidAnswers = new ArrayList(knowledgeSession.getObjects(new ClassObjectFilter(InvalidAnswer.class)));
+            Collection<?> invalidAnswers = getInvalidAnswers(knowledgeSession);
             assertEquals(2, invalidAnswers.size());
             assertTrue(invalidAnswers.contains(new InvalidAnswer(question6.getId(), "This is not a valid number")));
-            assertTrue(invalidAnswers.contains(new InvalidAnswer(question7.getId(), "This is not a valid date")));
+            assertTrue(invalidAnswers.contains(new InvalidAnswer(question7.getId(), "This is not a valid value")));
         } catch (ParseException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -184,14 +186,14 @@ public class QuestionRulesTest {
             knowledgeSession.insert(question2);
             knowledgeSession.insert(question3);
             knowledgeSession.fireAllRules();
-            Collection<?> invalidAnswers = new ArrayList(knowledgeSession.getObjects(new ClassObjectFilter(InvalidAnswer.class)));
+            Collection<?> invalidAnswers = getInvalidAnswers(knowledgeSession);
             assertEquals(2, invalidAnswers.size());
             assertTrue(invalidAnswers.contains(new InvalidAnswer(question1.getId(), "You must answer this question")));
             assertTrue(invalidAnswers.contains(new InvalidAnswer(question2.getId(), "You must answer this question")));
             knowledgeSession.insert(answer1);
             knowledgeSession.fireAllRules();
             assertFalse(knowledgeSession.getObjects().contains(answer1));
-            invalidAnswers = new ArrayList(knowledgeSession.getObjects(new ClassObjectFilter(InvalidAnswer.class)));
+            invalidAnswers = getInvalidAnswers(knowledgeSession);
             assertEquals(1, invalidAnswers.size());
             assertTrue(invalidAnswers.contains(new InvalidAnswer(question2.getId(), "You must answer this question")));
         } finally {
@@ -304,5 +306,14 @@ public class QuestionRulesTest {
             knowledgeSession.dispose();
         }
 
+    }
+
+    public Collection<?> getInvalidAnswers(StatefulKnowledgeSession knowledgeSession) {
+        ArrayList invalids = new ArrayList();
+        Iterator<QueryResultsRow> iter = knowledgeSession.getQueryResults("invalidAnswers").iterator();
+        while ( iter.hasNext() ) {
+            invalids.add( iter.next().get( "$ia" ) );
+        }
+        return invalids;
     }
 }

@@ -121,26 +121,26 @@ then
     $qga.setSuccessType( "valid" );
 end
 
-rule "Missing_GUI_Questions"
-when
-    $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
-    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
-    Questionnaire( id == $sid, itemList contains $qid )
-    $qga : QuestionGUIAdapter( itemId == $qid )
-    not InvalidAnswer( questionId == $qid )
-then
-    $qga.setSuccessType( "missing" );
-end
+//rule "Missing_GUI_Questions"
+//when
+//    $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
+//    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
+//    Questionnaire( id == $sid, itemList contains $qid )
+//    $qga : QuestionGUIAdapter( itemId == $qid )
+//    not InvalidAnswer( questionId == $qid )
+//then
+//    $qga.setSuccessType( "missing" );
+//end
 
-rule "Invalid_GUI_Questions"
+rule "InvalidOrMissing_GUI_Questions"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
     Questionnaire( id == $sid, itemList contains $qid )
     $qga : QuestionGUIAdapter( itemId == $qid )
-    InvalidAnswer( questionId == $qid )
+    InvalidAnswer( questionId == $qid, $failType : type )
 then
-    $qga.setSuccessType( "invalid" );
+    $qga.setSuccessType( $failType );
 end
 
 rule "Final_GUI_Questions"
@@ -281,15 +281,15 @@ end
 
 rule "Invalidations"
 when
-    InvalidAnswer( $qid : questionId )
+    InvalidAnswer( $qid : questionId, $msg : reason, $type : type != "missing" )
 then
-    System.out.println( "INVALIDATE ! " + $qid );
+    System.out.println( "INVALIDATE ! " + $qid + " due to " + $type );
     insertLogical( new QuestionInvalidate( $qid ) );
 end
 
 rule "Finalizations"
 when
-    Question( $qid : id, finalAnswer == true )
+    Question( $qid : id, finalAnswer == true, answered == true )
 then
     System.out.println( "FINALIZE ! " + $qid );
     insertLogical( new QuestionFinalize( $qid ) );

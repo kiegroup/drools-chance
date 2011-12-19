@@ -17,12 +17,26 @@
 package org.drools.informer.generator;
 
 
-import java.io.Serializable;
-
 public abstract class Surveyable implements ISurveyable {
 
     public abstract String getQuestionnaireId();
 
     public abstract void setQuestionnaireId( String id );
+
+
+    protected boolean surveyEnabled = true;
+
+    public void enableSurvey() {
+        surveyEnabled = false;
+    }
+
+    public void disableSurvey() {
+        surveyEnabled = false;
+    }
+
+    public boolean isSurveyEnabled() {
+        return surveyEnabled;
+    }
+
 
 }

@@ -79,6 +79,10 @@ public class FuzzyNumberDegree implements IDegree {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public IDegree fromString(String number) {
+        //TODO
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
     public IntervalDegree asIntervalDegree() {
 		// TODO Auto-generated method stub

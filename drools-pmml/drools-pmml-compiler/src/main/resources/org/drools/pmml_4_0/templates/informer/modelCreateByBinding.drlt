@@ -15,23 +15,23 @@ rule "Model_Create_ReBinding_@{model}_@{name}"
 no-loop
 salience 200
 when
-    $quest: Question( $id : id, type == "@{model+"_"+name}" )
-    $ans  : Answer( questionId == $id, $val : value != "null" && != "" )
+    $quest: Question( $id : id, type == "@{model+"_"+name}", context == @{ctx} )
+    $ans  : Answer( questionId == $id, $val : value != "null" && != "" && != null )
     not @{name}( context == @{ctx} )
 then
     @{name} x = new @{name}();
         x.setMissing(false);
         x.setValid(false);
-        x.setContext(null);
+        x.setContext( @{ctx} );
         x.setName(@{format("string",name)});
 
 	BeanUtils.setProperty(x, "value", $val);
+    System.out.println(" REBINDING OF " + x + " from " + $ans );
 
     insert(x);
-
-
-
 end
+
+
 @end{}
 
 

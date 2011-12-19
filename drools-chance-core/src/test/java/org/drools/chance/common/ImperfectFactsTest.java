@@ -34,6 +34,7 @@ import org.drools.factmodel.traits.TraitFactory;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -44,12 +45,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 
+@Deprecated
 public class ImperfectFactsTest {
 
 
 
 
     @Test
+     @Ignore
     public void testImpFactGeneration() {
 
 

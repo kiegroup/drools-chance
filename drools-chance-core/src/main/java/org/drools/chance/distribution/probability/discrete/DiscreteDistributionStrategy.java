@@ -18,11 +18,7 @@ package org.drools.chance.distribution.probability.discrete;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.IDegree;
@@ -194,16 +190,29 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
 
 
     public IDistribution<T> newDistribution() {
-        return new DiscreteDistribution<T>();
+        if ( Boolean.class.equals( domainType ) ) {
+            return createUniformDistribution( (Collection<T>) Arrays.asList( Boolean.TRUE, Boolean.FALSE ) );
+        } else {
+            return new DiscreteDistribution<T>();
+        }
+
 
 	}
 
 	public IDistribution<T> newDistribution(Set<T> focalElements) {
-		return new DiscreteDistribution<T>();
+		return createUniformDistribution( focalElements );
+	}
+
+    private IDistribution<T> createUniformDistribution( Collection<T> focalElements) {
+        DiscreteDistribution<T> ret = new DiscreteDistribution<T>();
+                for( Iterator<? extends T> currIt = focalElements.iterator(); currIt.hasNext() ; ) {
+                    ret.put( currIt.next(), DegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 1.0 / focalElements.size()) );
+                }
+        return ret;
 	}
 
     public IDistribution<T> newDistribution(Map<? extends T, ? extends IDegree> elements) {
-        DiscreteDistribution<T> ret=new DiscreteDistribution<T>();
+        DiscreteDistribution<T> ret = new DiscreteDistribution<T>();
         for( Iterator<? extends T> currIt = elements.keySet().iterator(); currIt.hasNext() ;) {
               T temp=currIt.next();
             ret.put(temp,elements.get(temp));

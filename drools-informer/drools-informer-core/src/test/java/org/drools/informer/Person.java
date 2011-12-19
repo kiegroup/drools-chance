@@ -45,6 +45,19 @@ public class Person implements ISurveyable {
         return questionnaireId;
     }
 
+    private boolean surv = true;
+
+    public void enableSurvey() {
+        surv = true;
+    }
+
+    public void disableSurvey() {
+        surv = false;
+    }
+
+    public boolean isSurveyEnabled() {
+        return surv;
+    }
 
 
     public Person(String id, String name, int age) {

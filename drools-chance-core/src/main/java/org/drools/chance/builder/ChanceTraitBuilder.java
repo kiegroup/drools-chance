@@ -120,6 +120,13 @@ public class ChanceTraitBuilder extends TraitClassBuilderImpl {
                     fieldDistr.setInherited( field.isInherited() );
 
                 trait.addField( fieldDistr );
+
+                FieldDefinition fieldValue = new VirtualFieldDefinition();
+                    fieldValue.setName( field.getName() + "Value" );
+                    fieldValue.setTypeName( field.getTypeName() );
+                    fieldValue.setInherited( field.isInherited() );
+
+                trait.addField(fieldValue);
             }
         }
 

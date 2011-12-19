@@ -8,5 +8,13 @@ public interface ISurveyable extends Serializable {
 
     public String getQuestionnaireId();
 
+    public void enableSurvey();
+
+    public void disableSurvey();
+
+    public boolean isSurveyEnabled();
+
+
+
 
 }

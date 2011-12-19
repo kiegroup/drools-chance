@@ -100,7 +100,7 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
     }
 
     public String getNameValue() {
-        return getCore().getName(); //TODO?
+        return getCore().getName();
     }
 
     public String getNameCore() {
@@ -113,16 +113,14 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
     }
 
     public void setNameDistr(IDistribution<String> x) {
-        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_Dist" ) );
-        fld.setValue( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_Dist" ) ).getValue();
+        fld.setValue( x, false );
         getCore().setName( fld.getCrisp() );
     }
 
     public void setNameValue(String x) {
-        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_Dist" ) );
-        fld.setValue( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_Dist" ) ).getValue();
+        fld.setValue( x, false );
         getCore().setName( fld.getCrisp() );
     }
 
@@ -130,19 +128,29 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         getCore().setName(x);
     }
 
-    public void updateName(IDistribution<String> x) {
-        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_Dist" ) );
-        fld.update( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+
+
+
+    public void updateName(IImperfectField<String> x) {
+        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_Dist" ) ).getValue();
+        fld.update( x.getCurrent() );
         getCore().setName( fld.getCrisp() );
     }
 
-    public void updateName(String x) {
-        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_Dist" ) );
+    public void updateNameDistr(IDistribution<String> x) {
+        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_Dist" ) ).getValue();
         fld.update( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
         getCore().setName( fld.getCrisp() );
     }
+
+    public void updateNameValue(String x) {
+        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_Dist" ) ).getValue();
+        fld.update( x );
+        getCore().setName( fld.getCrisp() );
+    }
+
+
+
 
 
 
@@ -170,22 +178,21 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         return (Boolean) store.get( propertyKey( "flag") ).getValue();
     }
 
+
     public void setFlag(IImperfectField<Boolean> x) {
         store.put( property( "flag_Dist", x ) );
         store.put( property( "flag", x.getCrisp() ) );
     }
 
     public void setFlagDistr(IDistribution<Boolean> x) {
-        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_Dist" ) );
+        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_Dist" ) ).getValue();
         fld.setValue( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
         store.put( property( "flag", fld.getCrisp() ) );
     }
 
     public void setFlagValue(Boolean x) {
-        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_Dist" ) );
+        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_Dist" ) ).getValue();
         fld.setValue( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
         store.put( property( "flag", fld.getCrisp() ) );
     }
 
@@ -193,17 +200,21 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         store.put( property( "flag", x ) );
     }
 
-    public void updateFlag(IDistribution<Boolean> x) {
-        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_Dist" ) );
-        fld.update( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+    public void updateFlag(IImperfectField<Boolean> x) {
+        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_Dist" ) ).getValue();
+        fld.update( x.getCurrent() );
         store.put( property( "flag", fld.getCrisp() ) );
     }
 
-    public void updateFlag(Boolean x) {
-        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_Dist" ) );
+    public void updateFlagDistr(IDistribution<Boolean> x) {
+        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_Dist" ) ).getValue();
         fld.update( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+        store.put( property( "flag", fld.getCrisp() ) );
+    }
+
+    public void updateFlagValue(Boolean x) {
+        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_Dist" ) ).getValue();
+        fld.update( x );
         store.put( property( "flag", fld.getCrisp() ) );
     }
 

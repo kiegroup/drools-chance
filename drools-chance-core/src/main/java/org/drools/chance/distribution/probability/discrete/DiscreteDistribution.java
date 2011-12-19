@@ -28,6 +28,7 @@ import org.drools.chance.utils.ValueSortedMap;
 public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution<T> {
 
 	private ValueSortedMap<T, IDegree> valueSorMap = new ValueSortedMap<T, IDegree>();
+    private IDegree falze;
 
 	public DiscreteDistribution() {
 		super();
@@ -38,12 +39,19 @@ public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution
 		Iterator<T> vIter = values.iterator();
 		Iterator<IDegree> dIter = probabilities.iterator();
 
-		while (vIter.hasNext())
-			valueSorMap.put(vIter.next(), dIter.next());
+		while (vIter.hasNext()) {
+			put(vIter.next(), dIter.next());
+        }
+
+
 	}
 
 	public void put(T value, IDegree prob) {
 		valueSorMap.put(value, prob);
+
+        if ( falze == null ) {
+            falze = prob.False();
+        }
 	}
 
 	public T getBest() {
@@ -51,7 +59,8 @@ public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution
 	}
 
 	public IDegree getDegree(T value) {
-		return valueSorMap.get(value);
+		IDegree deg =  valueSorMap.get(value);
+        return deg != null ? deg : falze;
 	}
 
 	public Number domainSize() {

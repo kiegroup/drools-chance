@@ -17,7 +17,7 @@ end
 
 rule "copy answers from the underlying domain model to the questions"
 no-loop
-salience 7
+salience 6
 when
 	$question : Question(questionId : id, answerType != null, ans : answer, $last : lastAnswer )
 	association : DomainModelAssociation(questionId == questionId, lastAnswer == $last, object : object)
@@ -62,6 +62,8 @@ when
 	$question : Question(questionId : id, answerType != null, answer : answer != null);
 	association : DomainModelAssociation(questionId == questionId, object : object, property : property, lastAnswer != answer);
 then
+//    System.out.println("Updating " + $question + " from  " + association );
+    retract(object);
 	Class propertyClass = PropertyUtils.getPropertyType(object, property);
 	Object propertyValue = DomainModelSupport.answerToObject($question.getBasicAnswerType(), answer, propertyClass);
 	Object oldPropertyValue = PropertyUtils.getProperty(object, property);
@@ -69,12 +71,14 @@ then
 
 	association.setLastAnswer(answer);
 
-	update(association);
-	update(object);
+    insert(object);
+    update(association);
+
 end
 
 
 rule "Cleanup ununsed associations"
+salience 8
 when
     $assoc : DomainModelAssociation( $id : questionId, $obj : object )
     (not Question( id == $id )

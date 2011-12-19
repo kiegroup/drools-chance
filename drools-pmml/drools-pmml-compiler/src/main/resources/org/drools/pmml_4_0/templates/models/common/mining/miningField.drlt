@@ -12,7 +12,7 @@
 @declare{'miningFieldRule'}
 rule "miningField_@{model}_@{name}"
 when
- $src : @{name}( $m : missing, $v : valid, $x : value, context == null )
+    $src : @{name}( $m : missing, $v : valid, $x : value, context == null )
 then
   @{name} x = new @{name}();
     x.setValue($x);

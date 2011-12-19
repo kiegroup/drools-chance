@@ -33,26 +33,6 @@ public class LegacyBean extends Entity {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        LegacyBean that = (LegacyBean) o;
-
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (weight != null ? !weight.equals(that.weight) : that.weight != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (weight != null ? weight.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "LegacyBean{" +
                 "weight=" + weight +

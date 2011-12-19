@@ -138,4 +138,12 @@ public interface IDegree extends Comparable<IDegree> {
     public IDegree fromConst(double val);
 
 
+    /**
+     * (instance) factory method: creates a new degree from a simple value.
+     * @param val
+     * @return  A degree such that this.asSimpleDegree().getValue() == val
+     */
+    public IDegree fromString(String val);
+
+
 }

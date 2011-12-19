@@ -124,6 +124,10 @@ public class SimpleDegree implements IDegree {
        return new SimpleDegree(number);
     }
 
+    public IDegree fromString(String number) {
+       return new SimpleDegree( Double.parseDouble( number ) );
+    }
+
 
     public SimpleDegree(double degree) {
         if (degree < 0 || degree > 1)

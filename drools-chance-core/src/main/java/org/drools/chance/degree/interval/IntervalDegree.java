@@ -249,5 +249,11 @@ public class IntervalDegree implements IDegree {
         return new IntervalDegree(number,number);
     }
 
+    public IDegree fromString(String val) {
+        val = val.replace("[","").replace("]","");
+        int pos = val.indexOf(",");
+        return new IntervalDegree( Double.parseDouble( val.substring( 0, pos - 1 ) ), Double.parseDouble( val.substring( pos + 1 ) ) );
+    }
+
 
 }

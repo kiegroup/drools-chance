@@ -24,7 +24,7 @@ end
 rule "retract all prior validation errors when a new answer is given"
 salience 4 # before: "copy new answers into the corresponding questions"
 when
-	Answer(questionId : questionId);
+	Answer( questionId : questionId )
 	$invalidAnswer : InvalidAnswer( questionId == questionId )
 then
 	retract($invalidAnswer);
@@ -33,33 +33,54 @@ end
 
 
 
+rule "Convert blank string and 'null' string to real null"
+salience 31
+when
+    $a : Answer( value == "" || value == "null" )
+then
+    modify ( $a ) {
+        setValue( null );
+    }
+end
+
+
+rule "Unanswer questions"
+salience 30 # before: "discard invalid multiple choice answers"
+when
+	$answer     : Answer( questionId : questionId, answerValue : value == null );
+	$question   : Question( id == questionId, finalAnswer == false, $basicAnswerType : basicAnswerType  )
+then
+//    System.out.println( "UNANSWER ! " );
+	retract( $answer );
+	$question.fit( null, $basicAnswerType );
+//	System.out.println( "UNANSWER ! GAVE " + $question.isAnswered() );
+	update( $question );
+end
+
+
 
 
 rule "copy new answers into the corresponding questions"
 salience 30 # before: "discard invalid multiple choice answers"
 when
-	answer      : Answer(questionId : questionId, answerValue : value);
-	$question   : Question(id == questionId, basicAnswerType : basicAnswerType,
+	answer      : Answer( questionId : questionId, answerValue : value != null );
+	$question   : Question( id == questionId, basicAnswerType : basicAnswerType,
 	                    finalAnswer == false || lastAnswer == null )
 then
 	retract(answer);
-	// Convert blank string and "null" string to real null
-	// TODO should we really be handling "null" - see TOHU-3
-	if (answerValue != null && (answerValue.equals("") || answerValue.equals("null"))) {
-		answerValue = null;
-	}
+
 	try {
 	    $question.fit(answerValue,basicAnswerType);
 		update($question);
 	} catch (NumberFormatException e) {
 		InvalidAnswer invalidAnswer = new InvalidAnswer(questionId,
-		                                                "invalidDataType",
+		                                                "invalid",
 		                                                "This is not a valid number");
 		insert(invalidAnswer);
 	} catch (ParseException e) {
 		InvalidAnswer invalidAnswer = new InvalidAnswer(questionId,
-		                                                "invalidDataType",
-		                                                "This is not a valid date");
+		                                                "invalid",
+		                                                "This is not a valid value");
 		insert(invalidAnswer);
 	}
 end
@@ -67,11 +88,15 @@ end
 rule "discard invalid multiple choice answers"
 salience 20 # before: "copy question answers to the underlying domain model"
 when
-	$question   : MultipleChoiceQuestion(answered == true, $answers : answerItems != null, $possibleAnswers : possibleAnswers)
+	$question   : MultipleChoiceQuestion( questionId : id, answered == true, $answers : answerItems != null, $possibleAnswers : possibleAnswers )
 	$s          : String() from $answers
                 not PossibleAnswer( value == $s ) from $possibleAnswers
 then
 	$question.setAnswer(null);
+	InvalidAnswer invalidAnswer = new InvalidAnswer( questionId,
+		                                                "invalid",
+		                                                $answers + " is not a possible answer ");
+	insertLogical( invalidAnswer );
 	update($question);
 end
 
@@ -93,9 +118,29 @@ when
 	$question   : Question( required == true, answered == false );
 then
 	InvalidAnswer invalidAnswer = new InvalidAnswer($question.getId(), "You must answer this question");
-	invalidAnswer.setType("nonDisplayed");
+	invalidAnswer.setType("invalid");
 	insertLogical(invalidAnswer);
 end
+
+rule "questions missing answers"
+salience -1 # after: any rules that create questions
+when
+	$question   : Question( required == false, answered == false );
+then
+	InvalidAnswer invalidAnswer = new InvalidAnswer($question.getId(), "You must answer this question");
+	invalidAnswer.setType("missing");
+	insertLogical(invalidAnswer);
+end
+
+rule "invalid ansewer severity"
+salience 1000
+when
+    $hig : InvalidAnswer( $qid : questionId, type == "invalid" )
+    $low : InvalidAnswer( questionId == $qid, type == "missing" )
+then
+    retract( $low );
+end
+
 
 
 rule "has invalid answers"

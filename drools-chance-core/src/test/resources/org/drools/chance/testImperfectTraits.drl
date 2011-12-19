@@ -8,8 +8,8 @@ import org.drools.chance.distribution.IDistribution;
 import org.drools.chance.common.IImperfectField;
 
 
-import org.drools.chance.common.Weight;
-import org.drools.chance.common.Price;
+import org.drools.chance.common.fact.Weight;
+import org.drools.chance.common.fact.Price;
 
 
 global java.util.List list;

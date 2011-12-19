@@ -16,6 +16,7 @@
 
 package org.drools.chance.builder;
 
+import com.sun.org.apache.bcel.internal.generic.ICONST;
 import org.drools.RuntimeDroolsException;
 import org.drools.factmodel.BuildUtils;
 import org.drools.factmodel.ClassDefinition;
@@ -1053,23 +1054,84 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                     "Lorg/drools/chance/common/IImperfectField;");
 
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitFieldInsn(GETFIELD, BuildUtils.getInternalType( wrapperName ), "core", BuildUtils.getTypeDescriptor( core ) );
+
+            prepareSetTargetValue( mv, wrapperName, core );
+
+
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitFieldInsn( GETFIELD,
-                    BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName()+"_Dist",
+            mv.visitFieldInsn(GETFIELD,
+                    BuildUtils.getInternalType(wrapperName),
+                    ifld.getName() + "_Dist",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "getCrisp", "()Ljava/lang/Object;");
-            mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType( ifld.getTypeName() ) );
-            mv.visitMethodInsn( INVOKEVIRTUAL,
-                    BuildUtils.getInternalType( core ),
-                    setter,
-                    "(" + BuildUtils.getTypeDescriptor( ifld.getTypeName() ) + ")V" );
+            mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType(ifld.getTypeName()));
+
+            setTargetValue( mv, core, ifld );
+
 
             mv.visitInsn(RETURN);
             mv.visitMaxs(3, 2);
             mv.visitEnd();
         }
+
+
+
+
+
+
+
+
+        {
+            mv = cw.visitMethod( ACC_PUBLIC,
+                    setter.replace( "set", "update" ),
+                    "(Lorg/drools/chance/common/IImperfectField;)V",
+                    "(Lorg/drools/chance/common/IImperfectField<" + BuildUtils.getTypeDescriptor( ifld.getTypeName() )+ ">;)V",
+                    null);
+            mv.visitCode();
+
+
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitFieldInsn( GETFIELD,
+                    BuildUtils.getInternalType( wrapperName ),
+                    ifld.getName()+"_Dist",
+                    "Lorg/drools/chance/common/IImperfectField;");
+            mv.visitVarInsn(ALOAD, 1);
+            mv.visitMethodInsn( INVOKEINTERFACE,
+                        "org/drools/chance/common/IImperfectField",
+                        "getCurrent",
+                        "()Lorg/drools/chance/distribution/IDistribution;");
+            mv.visitMethodInsn( INVOKEINTERFACE,
+                    "org/drools/chance/common/IImperfectField",
+                    "update",
+                    "(Lorg/drools/chance/distribution/IDistribution;)V");
+
+
+
+            mv.visitVarInsn(ALOAD, 0);
+
+            prepareSetTargetValue( mv, wrapperName, core );
+
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitFieldInsn(GETFIELD,
+                    BuildUtils.getInternalType(wrapperName),
+                    ifld.getName() + "_Dist",
+                    "Lorg/drools/chance/common/IImperfectField;");
+            mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "getCrisp", "()Ljava/lang/Object;");
+            mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType(ifld.getTypeName()));
+
+            setTargetValue( mv, core, ifld );
+
+
+            mv.visitInsn(RETURN);
+            mv.visitMaxs(2, 2);
+            mv.visitEnd();
+        }
+
+
+
+
+
+
 
 
 
@@ -1080,10 +1142,12 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                     "("+BuildUtils.getTypeDescriptor( ifld.getTypeName() ) +")V",
                     null, null);
             mv.visitCode();
+
             mv.visitVarInsn(ALOAD, 0);
             prepareSetTargetValue( mv, wrapperName, core );
             mv.visitVarInsn(ALOAD, 1);
             setTargetValue( mv, core, ifld );
+
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
@@ -1118,23 +1182,30 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                     "org/drools/chance/common/IImperfectField",
                     "setValue",
                     "(Ljava/lang/Object;Z)V");
+
+
+
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitFieldInsn(GETFIELD, BuildUtils.getInternalType( wrapperName ), "core", BuildUtils.getTypeDescriptor( core ) );
+            prepareSetTargetValue( mv, wrapperName, core );
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
                     ifld.getName()+"_Dist",
                     "Lorg/drools/chance/common/IImperfectField;");
-            mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "getCrisp", "()Ljava/lang/Object;");
+            mv.visitMethodInsn( INVOKEINTERFACE,
+                    "org/drools/chance/common/IImperfectField",
+                    "getCrisp",
+                    "()Ljava/lang/Object;");
             mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType( ifld.getTypeName() ) );
-            mv.visitMethodInsn( INVOKEVIRTUAL,
-                    BuildUtils.getInternalType( core ),
-                    setter,
-                    "(" + BuildUtils.getTypeDescriptor( ifld.getTypeName() ) + ")V" );
+            setTargetValue( mv, core, ifld );
+
             mv.visitInsn(RETURN);
             mv.visitMaxs(3, 2);
             mv.visitEnd();
         }
+
+
+
 
         {
             mv = cw.visitMethod( ACC_PUBLIC,
@@ -1149,11 +1220,13 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                     ifld.getName()+"_Dist",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
-            mv.visitInsn(ICONST_1);
+            mv.visitInsn(ICONST_0);
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
                     "setValue",
                     "(Lorg/drools/chance/distribution/IDistribution;Z)V");
+
+
             mv.visitVarInsn(ALOAD, 0);
             prepareSetTargetValue( mv, wrapperName, core );
             mv.visitVarInsn(ALOAD, 0);
@@ -1174,7 +1247,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
 
         {
             mv = cw.visitMethod( ACC_PUBLIC,
-                    setter.replace("set","update"),
+                    setter.replace("set","update")+"Distr",
                     "(Lorg/drools/chance/distribution/IDistribution;)V",
                     "(Lorg/drools/chance/distribution/IDistribution<" + BuildUtils.getTypeDescriptor( ifld.getTypeName() ) + ">;)V",
                     null);
@@ -1189,6 +1262,8 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                     "org/drools/chance/common/IImperfectField",
                     "update",
                     "(Lorg/drools/chance/distribution/IDistribution;)V");
+
+
             mv.visitVarInsn(ALOAD, 0);
             prepareSetTargetValue( mv, wrapperName, core );
             mv.visitVarInsn(ALOAD, 0);
@@ -1202,6 +1277,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                     "()Ljava/lang/Object;");
             mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType( ifld.getTypeName() ) );
             setTargetValue( mv, core, ifld );
+
             mv.visitInsn(RETURN);
             mv.visitMaxs(2, 2);
             mv.visitEnd();

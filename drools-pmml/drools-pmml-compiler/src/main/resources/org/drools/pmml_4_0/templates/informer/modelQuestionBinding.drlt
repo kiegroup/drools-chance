@@ -24,15 +24,9 @@ then
         assoc.setProperty("value");
         assoc.setLastAnswer($val);
 
-    System.out.println("Binding " + $bean + " using " + assoc );
-
-
-
+        System.out.println("Binding " + $bean + " using " + assoc );
         System.out.println("Insert @ssociation " + assoc);
     insert(assoc);
-
-
-
 
 end
 @end{}

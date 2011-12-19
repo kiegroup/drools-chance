@@ -2,30 +2,29 @@ package org.drools.informer;
 
 
 import org.drools.KnowledgeBase;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.informer.generator.annotations.QuestionMark;
+import org.drools.KnowledgeBaseFactory;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentConfiguration;
 import org.drools.agent.KnowledgeAgentFactory;
+import org.drools.builder.KnowledgeBuilder;
+import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.common.InternalFactHandle;
+import org.drools.informer.generator.annotations.QuestionMark;
 import org.drools.io.Resource;
 import org.drools.io.impl.ChangeSetImpl;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
+import org.drools.runtime.rule.Variable;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.io.impl.ByteArrayResource;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.*;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class AnnotationsTest {
@@ -43,9 +42,9 @@ public class AnnotationsTest {
         ChangeSetImpl changeSet = new ChangeSetImpl();
         ClassPathResource res1 = new ClassPathResource("org/drools/informer/informer-changeset.xml");
         res1.setResourceType(ResourceType.CHANGE_SET);
-        ClassPathResource res3 = new ClassPathResource("org/drools/informer/annotation_tests.drl");
-        res3.setResourceType(ResourceType.DRL);
-        changeSet.setResourcesAdded(Arrays.asList((Resource) res1, res3));
+//        ClassPathResource res3 = new ClassPathResource("org/drools/informer/annotation_tests.drl");
+//        res3.setResourceType(ResourceType.DRL);
+        changeSet.setResourcesAdded(Arrays.asList((Resource) res1));
 
         kAgent.applyChangeSet(changeSet);
 
@@ -60,21 +59,21 @@ public class AnnotationsTest {
         Person p2 = new Person("0002","alan",35);
         assertTrue(p1.getClass().getDeclaredField("birthDate").getAnnotations()[0] instanceof QuestionMark );
         assertEquals(1, p1.getClass().getDeclaredField("birthDate").getAnnotations().length);
-        
+
         kSession.insert(p1);
         kSession.insert(p2);
         kSession.fireAllRules();
 
-        assertEquals(1, kSession.getQueryResults("questionnaire", p1.getQuestionnaireId()).size());
-        assertEquals(1, kSession.getQueryResults("questionnaire",p2.getQuestionnaireId()).size());
+        assertEquals(1, kSession.getQueryResults("getQuestionnaire", p1.getQuestionnaireId(), Variable.v).size());
+        assertEquals(1, kSession.getQueryResults("getQuestionnaire",p2.getQuestionnaireId(), Variable.v).size());
 
-        assertEquals(1, kSession.getQueryResults("question", p1.getQuestionnaireId(), "name").size());
-        assertEquals(1, kSession.getQueryResults("question", p1.getQuestionnaireId(), "age").size());
-        assertEquals(1, kSession.getQueryResults("question", p1.getQuestionnaireId(), "hobbies").size());
-        assertEquals(1, kSession.getQueryResults("question", p1.getQuestionnaireId(), "luckyNumbers").size());
+        assertEquals(1, kSession.getQueryResults("getItem", "name", p1.getQuestionnaireId(), Variable.v ).size());
+        assertEquals(1, kSession.getQueryResults("getItem", "age", p1.getQuestionnaireId(), Variable.v ).size());
+        assertEquals(1, kSession.getQueryResults("getItem", "hobbies", p1.getQuestionnaireId(), Variable.v ).size());
+        assertEquals(1, kSession.getQueryResults("getItem", "luckyNumbers", p1.getQuestionnaireId(), Variable.v ).size());
 
-        assertEquals(5, kSession.getQueryResults("associations", p1).size());
-        assertEquals(5, kSession.getQueryResults("associations", p2).size());
+        assertEquals(5, kSession.getQueryResults("getAssociations", p1).size());
+        assertEquals(5, kSession.getQueryResults("getAssociations", p2).size());
 
 
         Answer ans = new Answer("age",p1.getQuestionnaireId(),"44");
@@ -196,7 +195,7 @@ public class AnnotationsTest {
             fail();
         }
 
-       Collection k = kSession.getObjects();
+        Collection k = kSession.getObjects();
 
 
         kSession.retract(kSession.getFactHandle(p1));
@@ -229,6 +228,64 @@ public class AnnotationsTest {
 
 
 
+
+    }
+
+
+
+
+
+
+    @Test
+    public void testDisableQuestionnaire() {
+
+        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+
+        ClassPathResource res1 = new ClassPathResource("org/drools/informer/informer-changeset.xml");
+        kBuilder.add(res1, ResourceType.CHANGE_SET);
+        assertFalse( kBuilder.hasErrors() );
+
+        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
+        kBase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+
+        StatefulKnowledgeSession kSession = kBase.newStatefulKnowledgeSession();
+
+
+        Person p1 = new Person("0001",null,18);
+        p1.disableSurvey();
+
+        FactHandle handle = kSession.insert(p1);
+        kSession.fireAllRules();
+
+        assertEquals(1, kSession.getObjects().size());
+
+        p1.enableSurvey();
+        assertTrue( p1.isSurveyEnabled() );
+
+        kSession.update( handle, p1 );
+        kSession.fireAllRules();
+
+        assertEquals(1, kSession.getQueryResults("getQuestionnaire", p1.getQuestionnaireId(), Variable.v ).size());
+        assertEquals(1, kSession.getQueryResults("getItem", "age", p1.getQuestionnaireId(), Variable.v ).size());
+        Answer ans = new Answer("age",p1.getQuestionnaireId(),"44");
+        kSession.insert(ans);
+        kSession.fireAllRules();
+        assertEquals(44,p1.getAge());
+
+        handle = kSession.getFactHandle( p1 );
+
+        p1.disableSurvey();
+        assertFalse(p1.isSurveyEnabled());
+        assertTrue( kSession.getObjects().contains( p1 ));
+
+        kSession.update( handle, p1 );
+        kSession.fireAllRules();
+
+        assertEquals(1, kSession.getObjects().size());
+
+//        for ( Object o : kSession.getObjects() ) {
+//            System.err.println( o );
+//        }
 
     }
 

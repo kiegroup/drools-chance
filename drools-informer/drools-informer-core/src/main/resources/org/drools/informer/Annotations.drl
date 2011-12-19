@@ -54,7 +54,7 @@ end
 rule "SurveyableMarker"
 salience 100
 when
-    ISurveyable( $id : questionnaireId )
+    ISurveyable( $id : questionnaireId, surveyEnabled == true )
     not SurveyableMarker( id == $id )
 then
     insert( new SurveyableMarker($id) );
@@ -64,7 +64,7 @@ end
 
 rule "Questionnaire_Auto"
 when
-    $o   : ISurveyable( $id : questionnaireId )
+    $o   : ISurveyable( $id : questionnaireId, surveyEnabled == true )
     $k1  : Class( $name : name ) from $o.getClass()
     $ann : Questionable(
                             $lab : label,
@@ -88,7 +88,7 @@ dialect "mvel"
 no-loop
 salience 1
 when
-    $o   : ISurveyable( $id : questionnaireId )
+    $o   : ISurveyable( $id : questionnaireId, surveyEnabled == true )
     $k1  : Class() from $o.getClass()
            Questionable( ) from $k1.getAnnotations()
     $qst : Questionnaire( $ctx : context == $id )
@@ -126,7 +126,7 @@ dialect "mvel"
 no-loop
 salience 1
 when
-    $o   : ISurveyable( $id : questionnaireId )
+    $o   : ISurveyable( $id : questionnaireId, surveyEnabled == true )
     $k1  : Class() from $o.getClass()
            Questionable( ) from $k1.getAnnotations()
     $qst : Questionnaire( $ctx : context == $id  )
@@ -167,7 +167,7 @@ rule "Whens"
 no-loop
 salience 1
 when
-    $o   : ISurveyable( $id : questionnaireId )
+    $o   : ISurveyable( $id : questionnaireId, surveyEnabled == true )
     $k1  : Class() from $o.getClass()
            Questionable( ) from $k1.getAnnotations()
     eval ( kAgent != null )
@@ -209,7 +209,7 @@ rule "Clean Rules"
 salience -999
 when
     $rh : ResourceHolder( $id : id, $res : res )
-    not ISurveyable( questionnaireId == $id )
+    not ISurveyable( questionnaireId == $id, surveyEnabled == true  )
     eval ( kAgent != null )
 then
     ChangeSetImpl changeSet = new ChangeSetImpl();
@@ -223,8 +223,8 @@ rule "Cleanup"
 salience -100
 when
     SurveyableMarker( $id : id )
-    not ISurveyable( questionnaireId == $id )
-    $obj : InformerObject( context == $id )
+    not ISurveyable( questionnaireId == $id, surveyEnabled == true )
+    $obj : InformerObject( context == $id  )
 then
     retract( $obj );
 end
@@ -233,7 +233,7 @@ rule "Cleanup_final"
 salience -110
 when
     $marker : SurveyableMarker( $id : id )
-    not ISurveyable( questionnaireId == $id )
+    not ISurveyable( questionnaireId == $id, surveyEnabled == true  )
 then
     retract( $marker );
 end
