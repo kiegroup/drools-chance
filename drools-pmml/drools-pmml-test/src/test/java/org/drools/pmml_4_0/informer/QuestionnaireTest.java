@@ -1,17 +1,17 @@
 /*
  * Copyright 2011 JBoss Inc
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.drools.pmml_4_0.informer;
@@ -25,8 +25,6 @@ import org.drools.informer.InvalidAnswer;
 import org.drools.informer.Note;
 import org.drools.pmml_4_0.DroolsAbstractPMMLTest;
 import org.drools.runtime.rule.Variable;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -57,39 +55,39 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(2.2);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(2.2);
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(5);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(5);
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
 
 
-        FactType nump = getKbase().getFactType("org.drools.pmml_4_0.test","PetalNumber");
-        FactType lenp = getKbase().getFactType("org.drools.pmml_4_0.test","PetalLength");
+        FactType feat1 = getKbase().getFactType("org.drools.pmml_4_0.test","Feat1");
+        FactType feat2 = getKbase().getFactType("org.drools.pmml_4_0.test","Feat2");
 
 
         Collection c = getKSession().getObjects(new ClassObjectFilter(DomainModelAssociation.class));
         Iterator iter = c.iterator();
         assertEquals(2, c.size());
         DomainModelAssociation dma1 = (DomainModelAssociation) iter.next();
-        if (dma1.getObject().getClass().equals(nump.getFactClass())) {
-            assertEquals(5,nump.get(dma1.getObject(),"value"));
-        } else if (dma1.getObject().getClass().equals(lenp.getFactClass())) {
-            assertEquals(2.2,lenp.get(dma1.getObject(),"value"));
+        if (dma1.getObject().getClass().equals(feat2.getFactClass())) {
+            assertEquals(5,feat2.get(dma1.getObject(),"value"));
+        } else if (dma1.getObject().getClass().equals(feat1.getFactClass())) {
+            assertEquals(2.2,feat1.get(dma1.getObject(),"value"));
         }
 
         DomainModelAssociation dma2 = (DomainModelAssociation) iter.next();
-        if (dma2.getObject().getClass().equals(nump.getFactClass())) {
-            assertEquals(5,nump.get(dma2.getObject(),"value"));
-        } else if (dma2.getObject().getClass().equals(lenp.getFactClass())) {
-            assertEquals(2.2,lenp.get(dma2.getObject(),"value"));
+        if (dma2.getObject().getClass().equals(feat2.getFactClass())) {
+            assertEquals(5,feat2.get(dma2.getObject(),"value"));
+        } else if (dma2.getObject().getClass().equals(feat1.getFactClass())) {
+            assertEquals(2.2,feat1.get(dma2.getObject(),"value"));
         }
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(2.5);
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(6);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(2.5);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(6);
         getKSession().fireAllRules();
 
 
@@ -102,10 +100,10 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         while (iter.hasNext()) {
             DomainModelAssociation dma = (DomainModelAssociation) iter.next();
 
-            if (dma.getObject().getClass().equals(nump.getFactClass())) {
-                assertEquals(6,nump.get(dma.getObject(),"value"));
-            } else if (dma.getObject().getClass().equals(lenp.getFactClass())) {
-                Object val = lenp.get(dma.getObject(),"value");
+            if (dma.getObject().getClass().equals(feat2.getFactClass())) {
+                assertEquals(6,feat2.get(dma.getObject(),"value"));
+            } else if (dma.getObject().getClass().equals(feat1.getFactClass())) {
+                Object val = feat1.get(dma.getObject(),"value");
                 System.out.println("Check " + val);
                 assertTrue((val.equals(new Double(2.2)) || val.equals(new Double(2.5))));
             }
@@ -199,8 +197,8 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         getKSession().fireAllRules();
 
 
-        String qid1 = getQId("IRIS_MLP","PetalLength");
-        String qid2 = getQId("IRIS_MLP","PetalNumber");
+        String qid1 = getQId("Test_MLP","Feat1");
+        String qid2 = getQId("Test_MLP","Feat2");
 
         Answer ans1 = new Answer(qid1,"2.5");
         Answer ans2 = new Answer(qid2,"5");
@@ -210,28 +208,28 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        FactType nump = getKbase().getFactType("org.drools.pmml_4_0.test", "PetalNumber");
-        FactType lenp = getKbase().getFactType("org.drools.pmml_4_0.test", "PetalLength");
+        FactType feat1 = getKbase().getFactType("org.drools.pmml_4_0.test", "Feat1");
+        FactType feat2 = getKbase().getFactType("org.drools.pmml_4_0.test", "Feat2");
 
-        Collection c = getKSession().getObjects(new ClassObjectFilter(nump.getFactClass()));
+        Collection c = getKSession().getObjects(new ClassObjectFilter(feat2.getFactClass()));
         assertEquals(1,c.size());
 
-        Iterator i1 = c.iterator();
-        while (i1.hasNext()) {
-            Object o = i1.next();
-            if (nump.get(o,"context") != null)
-                assertEquals(5, nump.get(o,"value"));
+        Iterator i2 = c.iterator();
+        while (i2.hasNext()) {
+            Object o = i2.next();
+            if (feat2.get(o,"context") != null)
+                assertEquals(5, feat2.get(o,"value"));
         }
 
 
-        Collection d = getKSession().getObjects(new ClassObjectFilter(lenp.getFactClass()));
+        Collection d = getKSession().getObjects(new ClassObjectFilter(feat1.getFactClass()));
         assertEquals(1, d.size());
 
-        Iterator i2 = d.iterator();
-        while (i2.hasNext()) {
-            Object o = i2.next();
-            if (lenp.get(o,"context") != null)
-                assertEquals(2.5, lenp.get(o,"value"));
+        Iterator i1 = d.iterator();
+        while (i1.hasNext()) {
+            Object o = i1.next();
+            if (feat1.get(o,"context") != null)
+                assertEquals(2.5, feat1.get(o,"value"));
         }
 
 
@@ -250,12 +248,13 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         setKbase(getKSession().getKnowledgeBase());
 
 
-        FactType nump = getKbase().getFactType("org.drools.pmml_4_0.test","PetalNumber");
+        FactType feat1 = getKbase().getFactType("org.drools.pmml_4_0.test","Feat1");
+        FactType feat2 = getKbase().getFactType("org.drools.pmml_4_0.test","Feat2");
 
         getKSession().fireAllRules();
 
-        String qid1 = getQId("IRIS_MLP","PetalLength");
-        String qid2 = getQId("IRIS_MLP","PetalNumber");
+        String qid1 = getQId("Test_MLP","Feat1");
+        String qid2 = getQId("Test_MLP","Feat2");
 
         Answer ans1 = new Answer(qid1,"2.5");
         Answer ans2 = new Answer(qid2,"-7");
@@ -266,14 +265,14 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         getKSession().fireAllRules();
 
 
-        Collection c = getKSession().getObjects(new ClassObjectFilter(nump.getFactClass()));
+        Collection c = getKSession().getObjects(new ClassObjectFilter(feat2.getFactClass()));
         assertEquals(1,c.size());
 
-        Iterator i1 = c.iterator();
-        while (i1.hasNext()) {
-            Object o = i1.next();
-            if (nump.get(o,"context") != null)
-                assertEquals(5, nump.get(o,"value"));               // due to invalid as missing, and missing replaced by 5
+        Iterator i2 = c.iterator();
+        while (i2.hasNext()) {
+            Object o = i2.next();
+            if (feat2.get(o,"context") != null)
+                assertEquals(5, feat2.get(o,"value"));               // due to invalid as missing, and missing replaced by 5
         }
 
 
@@ -289,14 +288,14 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         getKSession().fireAllRules();
         System.err.println(reportWMObjects(getKSession()));
 
-        c = getKSession().getObjects(new ClassObjectFilter(nump.getFactClass()));
+        c = getKSession().getObjects(new ClassObjectFilter(feat2.getFactClass()));
         assertEquals(1,c.size());
 
-        i1 = c.iterator();
-        while (i1.hasNext()) {
-            Object o = i1.next();
-            if (nump.get(o,"context") != null)
-                assertEquals(6, nump.get(o,"value"));
+        i2 = c.iterator();
+        while (i2.hasNext()) {
+            Object o = i2.next();
+            if (feat2.get(o,"context") != null)
+                assertEquals(6, feat2.get(o,"value"));
         }
 
 
@@ -316,15 +315,15 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(5);
+        getKSession().getWorkingMemoryEntryPoint("in_PetalNum").insert(5);
 
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
 
 
-        FactType type = getKbase().getFactType(packageName,"PetalNumber");
-        checkFirstDataFieldOfTypeStatus(type,false,false,"Neupre",5);
+        FactType type = getKbase().getFactType(packageName,"Feat2");
+        checkFirstDataFieldOfTypeStatus(type,false,false,"Neuiris",5);
 
         assertEquals(4, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
 
@@ -357,19 +356,19 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
     public void testMultipleModels() throws Exception {
         setKSession(getModelSession(new String[] {source,source2},VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
-        FactType petalNumType = getKbase().getFactType(packageName,"PetalNumber");
+        FactType petalNumType = getKbase().getFactType(packageName,"Feat2");
         FactType out = getKbase().getFactType(packageName,"OutSepLen");
-        FactType sepalType = getKbase().getFactType(packageName,"SEPALLEN");
+        FactType sepalType = getKbase().getFactType(packageName,"SepalLen");
 
 
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(4);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(4);
 
-        getKSession().getWorkingMemoryEntryPoint("in_PETALWID").insert(10);
-        getKSession().getWorkingMemoryEntryPoint("in_SEPALWID").insert(33);
-        getKSession().getWorkingMemoryEntryPoint("in_SPECIES").insert("virginica");
+        getKSession().getWorkingMemoryEntryPoint("in_PetalWid").insert(1);
+        getKSession().getWorkingMemoryEntryPoint("in_SepalWid").insert(30);
+        getKSession().getWorkingMemoryEntryPoint("in_Species").insert("virginica");
 
 
         getKSession().fireAllRules();
@@ -378,7 +377,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
 
 
-        checkFirstDataFieldOfTypeStatus(petalNumType,false,false,"Neupre",4);
+        checkFirstDataFieldOfTypeStatus(petalNumType,false,false,"Neuiris",4);
         assertEquals(6, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
         assertEquals(2, getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
@@ -387,7 +386,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         System.out.println("\n\n\n\n\n\n\n\n Before 2 \n");
 
 
-        Answer ans1 = new Answer(getQId("Neupre","PetalNumber"),"40");
+        Answer ans1 = new Answer(getQId("Neuiris","Feat2"),"40");
         getKSession().insert(ans1);
         getKSession().fireAllRules();
 
@@ -396,13 +395,13 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
 
 
-        checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neupre",40);
+        checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neuiris",40);
 
         assertEquals(5, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
         assertEquals(4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
-        checkFirstDataFieldOfTypeStatus(out,true,false,"Neupre",60);
-        checkFirstDataFieldOfTypeStatus(sepalType,true,false,"Neupre",60);
+        checkFirstDataFieldOfTypeStatus(out,true,false,"Neuris",42);
+        checkFirstDataFieldOfTypeStatus(sepalType,true,false,"Neuiris",42);
 
 
 
@@ -410,7 +409,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         System.out.println("\n\n\n\n\n\n\n\n Before 3 \n");
 
 
-        Answer ans2 = new Answer(getQId("Neupre","PetalNumber"),"-7");
+        Answer ans2 = new Answer(getQId("Neuiris","Feat2"),"-7");
         getKSession().insert(ans2);
 
         getKSession().fireAllRules();
@@ -419,12 +418,12 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         System.err.println(reportWMObjects(getKSession()));
 
 
-        checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neupre",40);
+        checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neuiris",40);
 
         assertEquals(6, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
         assertEquals(4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
-        checkFirstDataFieldOfTypeStatus(out,true,false,"Neupre",60);
+        checkFirstDataFieldOfTypeStatus(out,true,false,"Neuiris",42);
         assertEquals(1, getKSession().getObjects(new ClassObjectFilter(sepalType.getFactClass())).size());
 
 
@@ -437,18 +436,18 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 //
 //
 //
-        Answer ans3 = new Answer(getQId("Neupre","PetalNumber"),"44");
+        Answer ans3 = new Answer(getQId("Neuiris","Feat2"),"101");
         getKSession().insert(ans3);
 
         getKSession().fireAllRules();
 
-        checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neupre",44);
+        checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neuiris",101);
 
         assertEquals(5, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
         assertEquals(4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
-        checkFirstDataFieldOfTypeStatus(out,true,false,"Neupre",61);
-        checkFirstDataFieldOfTypeStatus(sepalType,true,false,"Neupre",61);
+        checkFirstDataFieldOfTypeStatus(out,true,false,"Neuiris",23);
+        checkFirstDataFieldOfTypeStatus(sepalType,true,false,"Neuiris",23);
 
 //               System.err.println(reportWMObjects(getKSession()));
 

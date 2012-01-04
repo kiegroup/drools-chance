@@ -31,6 +31,7 @@ public class SVMTest extends DroolsAbstractPMMLTest {
 
 
     @Test
+    @Ignore
     public void testSVM() throws Exception {
         setKSession(getModelSession(source1,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());

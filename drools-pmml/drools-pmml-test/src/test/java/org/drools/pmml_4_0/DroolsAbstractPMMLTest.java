@@ -1,8 +1,22 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.drools.pmml_4_0;
 
 
-
-import static org.junit.Assert.*;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.RuleBaseConfiguration;
@@ -18,7 +32,13 @@ import org.drools.runtime.rule.FactHandle;
 import org.drools.runtime.rule.QueryResults;
 
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.PriorityQueue;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 
 public abstract class DroolsAbstractPMMLTest {
@@ -54,9 +74,9 @@ public abstract class DroolsAbstractPMMLTest {
 
     protected StatefulKnowledgeSession getModelSession(String[] pmmlSources, boolean verbose) {
 
-		KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
 
-		kbuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/informer-changeset.xml"), ResourceType.CHANGE_SET);
+        kbuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/informer-changeset.xml"), ResourceType.CHANGE_SET);
 
 
 
@@ -78,23 +98,21 @@ public abstract class DroolsAbstractPMMLTest {
         }
 
 
-		KnowledgeBuilderErrors errors = kbuilder.getErrors();
-		if (errors.size() > 0) {
-			for (KnowledgeBuilderError error: errors) {
-				System.err.println(error);
-			}
-			throw new IllegalArgumentException("Could not parse knowledge.");
-		}
+        KnowledgeBuilderErrors errors = kbuilder.getErrors();
+        if (errors.size() > 0) {
+            for (KnowledgeBuilderError error: errors) {
+                System.err.println(error);
+            }
+            throw new IllegalArgumentException("Could not parse knowledge.");
+        }
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
-            conf.setEventProcessingMode(EventProcessingOption.STREAM);
-            //conf.setConflictResolver(LifoConflictResolver.getInstance());
-		KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase(conf);
-		kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
-		return kbase.newStatefulKnowledgeSession();
+        conf.setEventProcessingMode(EventProcessingOption.STREAM);
+        //conf.setConflictResolver(LifoConflictResolver.getInstance());
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase(conf);
+        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
+        return kbase.newStatefulKnowledgeSession();
 
-	}
-
-
+    }
 
 
 
@@ -103,16 +121,18 @@ public abstract class DroolsAbstractPMMLTest {
 
 
 
-     protected StatefulKnowledgeSession getSession(String theory) {
+
+
+    protected StatefulKnowledgeSession getSession(String theory) {
         KnowledgeBase kbase = readKnowledgeBase(new ByteArrayInputStream(theory.getBytes()));
         return kbase != null ? kbase.newStatefulKnowledgeSession() : null;
-     }
+    }
 
-     protected void refreshKSession() {
-         if (getKSession() != null)
-             getKSession().dispose();
-         setKSession(getKbase().newStatefulKnowledgeSession());
-     }
+    protected void refreshKSession() {
+        if (getKSession() != null)
+            getKSession().dispose();
+        setKSession(getKbase().newStatefulKnowledgeSession());
+    }
 
 
 
@@ -126,24 +146,24 @@ public abstract class DroolsAbstractPMMLTest {
     }
 
     private static KnowledgeBase readKnowledgeBase(List<InputStream> theory) {
-		KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-		for (InputStream is : theory)
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        for (InputStream is : theory)
             kbuilder.add(ResourceFactory.newInputStreamResource(is), ResourceType.DRL);
-		KnowledgeBuilderErrors errors = kbuilder.getErrors();
-		if (errors.size() > 0) {
-			for (KnowledgeBuilderError error: errors) {
-				System.err.println(error);
-			}
-			throw new IllegalArgumentException("Could not parse knowledge.");
-		}
+        KnowledgeBuilderErrors errors = kbuilder.getErrors();
+        if (errors.size() > 0) {
+            for (KnowledgeBuilderError error: errors) {
+                System.err.println(error);
+            }
+            throw new IllegalArgumentException("Could not parse knowledge.");
+        }
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
-            conf.setEventProcessingMode(EventProcessingOption.STREAM);
-            conf.setAssertBehaviour(RuleBaseConfiguration.AssertBehaviour.EQUALITY);
-            //conf.setConflictResolver(LifoConflictResolver.getInstance());
-		KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase(conf);
-		kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
-		return kbase;
-	}
+        conf.setEventProcessingMode(EventProcessingOption.STREAM);
+        conf.setAssertBehaviour(RuleBaseConfiguration.AssertBehaviour.EQUALITY);
+        //conf.setConflictResolver(LifoConflictResolver.getInstance());
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase(conf);
+        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
+        return kbase;
+    }
 
     public String reportWMObjects(StatefulKnowledgeSession session) {
         PriorityQueue<String> queue = new PriorityQueue<String>();
@@ -159,8 +179,8 @@ public abstract class DroolsAbstractPMMLTest {
 
         }
         String ans = " ---------------- WM " + session.getObjects().size() + " --------------\n";
-            while (! queue.isEmpty())
-               ans += queue.poll();
+        while (! queue.isEmpty())
+            ans += queue.poll();
         ans += " ---------------- END WM -----------\n";
         return ans;
     }
@@ -174,27 +194,27 @@ public abstract class DroolsAbstractPMMLTest {
 
 
 
-	private void dump(String s, OutputStream ostream) {
-		// write to outstream
-		Writer writer = null;
-		try {
-			writer = new OutputStreamWriter(ostream, "UTF-8");
-			writer.write(s);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
+    private void dump(String s, OutputStream ostream) {
+        // write to outstream
+        Writer writer = null;
+        try {
+            writer = new OutputStreamWriter(ostream, "UTF-8");
+            writer.write(s);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
                 if (writer != null) {
                     writer.flush();
                 }
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
 
@@ -226,20 +246,20 @@ public abstract class DroolsAbstractPMMLTest {
 
 
 
-    protected void checkFirstDataFieldOfTypeStatus(FactType type,boolean valid, boolean missing, String ctx, Object... target) {
+    protected void checkFirstDataFieldOfTypeStatus(FactType type, boolean valid, boolean missing, String ctx, Object... target) {
         Class<?> klass = type.getFactClass();
         Iterator iter = getKSession().getObjects(new ClassObjectFilter(klass)).iterator();
         Object obj = iter.next();
-            if (ctx == null) {
-                while (type.get(obj,"context") != null && iter.hasNext())
-                    obj = iter.next();
-            } else {
-                while ( (! ctx.equals(type.get(obj,"context"))) && iter.hasNext())
-                    obj = iter.next();
-            }
-                    assertEquals(target[0], type.get(obj, "value"));
-                    assertEquals(valid, type.get(obj, "valid"));
-                    assertEquals(missing, type.get(obj, "missing"));
+        if (ctx == null) {
+            while (type.get(obj,"context") != null && iter.hasNext())
+                obj = iter.next();
+        } else {
+            while ( (! ctx.equals(type.get(obj,"context"))) && iter.hasNext())
+                obj = iter.next();
+        }
+        assertEquals(target[0], type.get(obj, "value"));
+        assertEquals(valid, type.get(obj, "valid"));
+        assertEquals(missing, type.get(obj, "missing"));
 
     }
 
@@ -265,6 +285,21 @@ public abstract class DroolsAbstractPMMLTest {
         assertEquals(1, results.size());
 
         return (String) results.iterator().next().get("result");
+    }
+
+
+    public Double getDoubleFieldValue( FactType type ) {
+        Class<?> klass = type.getFactClass();
+        Iterator iter = getKSession().getObjects(new ClassObjectFilter(klass)).iterator();
+        Object obj = iter.next();
+        return (Double) type.get( obj, "value" );
+    }
+
+    public Object getFieldValue( FactType type ) {
+        Class<?> klass = type.getFactClass();
+        Iterator iter = getKSession().getObjects(new ClassObjectFilter(klass)).iterator();
+        Object obj = iter.next();
+        return type.get( obj, "value" );
     }
 
 

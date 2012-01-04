@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Copyright 2011 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<PMML version="4.0" xsi:schemaLocation="http://www.dmg.org/PMML-4_0 http://www.dmg.org/v4-0/pmml-4-0.xsd" xmlns="http://www.dmg.org/PMML-4_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Header description="Mock PTSD Model" copyright="JBoss"/>
+
+    <DataDictionary numberOfFields="5">
+        <DataField dataType="string" name="gender" optype="categorical" displayName="Patient Gender">
+            <Value value="female"/>
+            <Value value="male"/>
+        </DataField>
+        <DataField dataType="string" name="deployments" optype="categorical" displayName="Number of Deployments">
+            <Value value="0"/>
+            <Value value="1"/>
+            <Value value="2+"/>
+        </DataField>
+        <DataField dataType="string" name="alcohol" optype="categorical" displayName="Alcoholic">
+            <Value value="yes"/>
+            <Value value="no"/>
+        </DataField>
+        <DataField dataType="double" name="age" optype="continuous" displayName="Age">
+            <Interval closure="closedClosed" leftMargin="0" rightMargin="100" />
+        </DataField>
+        <DataField dataType="double" name="risk" optype="continuous" displayName="PTSD Risk Factor"/>
+    </DataDictionary>
+
+    <TransformationDictionary>
+        <DerivedField dataType="double" name="IsMale" optype="categorical">
+            <NormDiscrete field="gender" method="indicator" value="male"/>
+        </DerivedField>
+        <DerivedField dataType="double" name="IsFemale" optype="categorical">
+            <NormDiscrete field="gender" method="indicator" value="female"/>
+        </DerivedField>
+    </TransformationDictionary>
+
+
+    <NeuralNetwork activationFunction="identity" algorithmName="neuralNetwork" functionName="regression" modelName="Mock PTSD">
+        <MiningSchema>
+            <MiningField name="gender"/>
+            <MiningField name="deployments"/>
+            <MiningField name="alcohol"/>
+            <MiningField name="age" />
+            <MiningField name="risk" usageType="predicted"/>
+        </MiningSchema>
+        <Output>
+            <OutputField name="PTSD" targetField="risk"/>
+        </Output>
+
+        <NeuralInputs>
+            <NeuralInput id="0">
+                <DerivedField optype="continuous" dataType="double">
+                    <FieldRef field="IsMale"/>
+                </DerivedField>
+            </NeuralInput>
+            <NeuralInput id="1">
+                <DerivedField dataType="double" optype="continuous">
+                    <FieldRef field="IsFemale"/>
+                </DerivedField>
+            </NeuralInput>
+
+            <NeuralInput id="2">
+                <DerivedField dataType="double" optype="continuous">
+                    <NormDiscrete field="deployments" value="0"/>
+                </DerivedField>
+            </NeuralInput>
+            <NeuralInput id="3">
+                <DerivedField dataType="double" optype="continuous">
+                    <NormDiscrete field="deployments" value="1"/>
+                </DerivedField>
+            </NeuralInput>
+            <NeuralInput id="4">
+                <DerivedField dataType="double" optype="continuous">
+                    <NormDiscrete field="deployments" value="2+"/>
+                </DerivedField>
+            </NeuralInput>
+
+            <NeuralInput id="5">
+                <DerivedField dataType="double" optype="continuous">
+                    <NormDiscrete field="alcohol" method="indicator" value="yes"/>
+                </DerivedField>
+            </NeuralInput>
+            <NeuralInput id="6">
+                <DerivedField dataType="double" optype="continuous">
+                    <NormDiscrete field="alcohol" method="indicator" value="no"/>
+                </DerivedField>
+            </NeuralInput>
+
+
+            <NeuralInput id="7">
+                <DerivedField dataType="double" optype="continuous">
+                    <FieldRef field="age"/>
+                </DerivedField>
+            </NeuralInput>
+
+        </NeuralInputs>
+
+
+        <NeuralLayer>
+            <Neuron bias="0" id="8">
+                <Con from="0" weight="0.1"/>
+                <Con from="1" weight="0"/>
+                <Con from="2" weight="0"/>
+                <Con from="3" weight="0.05"/>
+                <Con from="4" weight="0.1"/>
+                <Con from="5" weight="0.1"/>
+                <Con from="6" weight="0"/>
+                <Con from="7" weight="0.001"/>
+            </Neuron>
+        </NeuralLayer>
+        <NeuralLayer>
+            <Neuron bias="0.0" id="9">
+                <Con from="8" weight="1.0"/>
+            </Neuron>
+        </NeuralLayer>
+
+
+
+        <NeuralOutputs>
+            <NeuralOutput outputNeuron="9">
+                <DerivedField dataType="double" optype="continuous">
+                    <FieldRef field="risk"/>
+                </DerivedField>
+            </NeuralOutput>
+        </NeuralOutputs>
+    </NeuralNetwork>
+</PMML>

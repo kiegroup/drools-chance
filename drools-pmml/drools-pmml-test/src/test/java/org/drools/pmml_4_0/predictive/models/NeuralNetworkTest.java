@@ -1,3 +1,19 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.drools.pmml_4_0.predictive.models;
 
 
@@ -18,16 +34,21 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = false;
     private static final String source1 = "org/drools/pmml_4_0/test_ann_regression.xml";
+
+    //
+    private static final String source3 = "org/drools/pmml_4_0/test_miningSchema.xml";
     private static final String source2 = "org/drools/pmml_4_0/test_ann_iris.xml";
+
     private static final String source22 = "org/drools/pmml_4_0/test_ann_iris_v2.xml";
     private static final String source23 = "org/drools/pmml_4_0/test_ann_iris_prediction.xml";
-    private static final String source3 = "org/drools/pmml_4_0/test_miningSchema.xml";
-    private static final String source4 = "org/drools/pmml_4_0/test_ann_HEART.xml";
-    private static final String source5 = "org/drools/pmml_4_0/test_ann_mixed_simple.xml";
+    private static final String source4 = "org/drools/pmml_4_0/test_ann_mixed_inputs2.xml";
+
     private static final String source6 = "org/drools/pmml_4_0/mock_ptsd.pmml";
     private static final String source7 = "org/drools/pmml_4_0/mock_cold.pmml";
+
     private static final String packageName = "org.drools.pmml_4_0.test";
 
+    private static final String smartVent = "org/drools/pmml_4_0/smartvent.xml";
 
 
 
@@ -64,7 +85,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
 
-     @Test
+    @Test
     public void testANNCompilation() throws Exception {
         setKSession(getModelSession(source3,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
@@ -76,7 +97,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testCold() throws Exception {
-        setKSession(getModelSession(source7,VERBOSE));
+        setKSession(getModelSession(source7,true));
         setKbase(getKSession().getKnowledgeBase());
 
         getKSession().fireAllRules();  //init model
@@ -135,30 +156,37 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         Assert.assertEquals(21, getNumAssertedSynapses());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(2.2);
-        getKSession().getWorkingMemoryEntryPoint("in_PetalWidth").insert(4.1);
-        getKSession().getWorkingMemoryEntryPoint("in_SepalLength").insert(2.3);
-        getKSession().getWorkingMemoryEntryPoint("in_SepalWidth").insert(1.8);
+        getKSession().getWorkingMemoryEntryPoint("in_PetalLen").insert(2.2);
+        getKSession().getWorkingMemoryEntryPoint("in_PetalWid").insert(4.1);
+        getKSession().getWorkingMemoryEntryPoint("in_SepalLen").insert(2.3);
+        getKSession().getWorkingMemoryEntryPoint("in_SepalWid").insert(1.8);
         getKSession().fireAllRules();
 
 
         System.err.println(reportWMObjects(getKSession()));
 
 
+        FactType t7 = getKbase().getFactType( packageName, "Test_MLP_7" );
+        FactType t8 = getKbase().getFactType( packageName, "Test_MLP_8" );
+        FactType t9 = getKbase().getFactType( packageName, "Test_MLP_9" );
+
+        FactType s1 = getKbase().getFactType( packageName, "Cspecies_virginica" );
+
         Assert.assertEquals(0.001,
-                truncN(queryDoubleField("IRIS_MLP_7", "IRIS_MLP"), 3));
-        Assert.assertEquals(0.281,
-                truncN(queryDoubleField("IRIS_MLP_8", "IRIS_MLP"), 3));
-        Assert.assertEquals(0.717,
-                truncN(queryDoubleField("IRIS_MLP_9", "IRIS_MLP"), 3));
+                truncN(getDoubleFieldValue( t7 ), 3));
+        Assert.assertEquals(0.290,
+                truncN(getDoubleFieldValue( t8 ), 3));
+        Assert.assertEquals(0.716,
+                truncN(getDoubleFieldValue( t9 ), 3));
 
-        Assert.assertEquals("Iris_virginica",
-                queryStringField("NSPECIES_Iris_virginica", "IRIS_MLP"));
-        Assert.assertEquals("Iris_setosa",
-                queryStringField("NSPECIES_Iris_setosa", "IRIS_MLP"));
-        Assert.assertEquals("Iris_versicolor",
-                queryStringField("NSPECIES_Iris_versicolor", "IRIS_MLP"));
+//        Assert.assertEquals("virginica",
+//                getFieldValue("Cspecies_virginica", "Test_MLP"));
+//        Assert.assertEquals("Test_setosa",
+//                getFieldValue("Cspecies_setosa", "Test_MLP"));
+//        Assert.assertEquals("Test_versicolor",
+//                getFieldValue("Cspecies_versicolor", "Test_MLP"));
 
+        fail( "TODO Implement confidence");
 
     }
 
@@ -177,29 +205,35 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         Assert.assertEquals(12, getNumAssertedSynapses());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_PETALLEN").insert(40);
-        getKSession().getWorkingMemoryEntryPoint("in_PETALWID").insert(10);
-        getKSession().getWorkingMemoryEntryPoint("in_SEPALLEN").insert(44);
-        getKSession().getWorkingMemoryEntryPoint("in_SEPALWID").insert(33);
+        getKSession().getWorkingMemoryEntryPoint("in_PetalLen").insert(101);
+        getKSession().getWorkingMemoryEntryPoint("in_PetalWid").insert(1);
+        getKSession().getWorkingMemoryEntryPoint("in_SepalLen").insert(151);
+        getKSession().getWorkingMemoryEntryPoint("in_SepalWid").insert(30);
         getKSession().fireAllRules();
 
 
         System.err.println(reportWMObjects(getKSession()));
 
+        FactType t4 = getKbase().getFactType( packageName, "Test_MLP_0" );
+        FactType t5 = getKbase().getFactType( packageName, "Test_MLP_1" );
+        FactType t6 = getKbase().getFactType( packageName, "Test_MLP_2" );
 
-        Assert.assertEquals(0.001,
-                truncN(queryDoubleField("IRIS_MLP_7", "IRIS_MLP"), 3));
-        Assert.assertEquals(0.281,
-                truncN(queryDoubleField("IRIS_MLP_8", "IRIS_MLP"), 3));
-        Assert.assertEquals(0.717,
-                truncN(queryDoubleField("IRIS_MLP_9", "IRIS_MLP"), 3));
 
-        Assert.assertEquals("Iris_virginica",
-                queryStringField("NSPECIES_Iris_virginica", "IRIS_MLP"));
-        Assert.assertEquals("Iris_setosa",
-                queryStringField("NSPECIES_Iris_setosa", "IRIS_MLP"));
-        Assert.assertEquals("Iris_versicolor",
-                queryStringField("NSPECIES_Iris_versicolor", "IRIS_MLP"));
+        Assert.assertEquals(1.542,
+                truncN(getDoubleFieldValue(t4), 3));
+        Assert.assertEquals(0.0,
+                truncN(getDoubleFieldValue(t5), 3));
+        Assert.assertEquals(3.0,
+                truncN(getDoubleFieldValue(t6), 3));
+
+//        Assert.assertEquals("Iris_virginica",
+//                queryStringField("NSPECIES_Iris_virginica", "IRIS_MLP"));
+//        Assert.assertEquals("Iris_setosa",
+//                queryStringField("NSPECIES_Iris_setosa", "IRIS_MLP"));
+//        Assert.assertEquals("Iris_versicolor",
+//                queryStringField("NSPECIES_Iris_versicolor", "IRIS_MLP"));
+
+        fail( "TODO Implement confidence");
 
 
     }
@@ -217,16 +251,16 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         Assert.assertEquals(6, getNumAssertedSynapses());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(40);
-        getKSession().getWorkingMemoryEntryPoint("in_PETALWID").insert(10);
-        getKSession().getWorkingMemoryEntryPoint("in_SPECIES").insert("virginica");
-        getKSession().getWorkingMemoryEntryPoint("in_SEPALWID").insert(33);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(101);
+        getKSession().getWorkingMemoryEntryPoint("in_PetalWid").insert(2);
+        getKSession().getWorkingMemoryEntryPoint("in_Species").insert("virginica");
+        getKSession().getWorkingMemoryEntryPoint("in_SepalWid").insert(30);
         getKSession().fireAllRules();
 
 
         System.err.println(reportWMObjects(getKSession()));
 
-        Assert.assertEquals(60.0, queryIntegerField("OutSepLen", "Neupre"));
+        Assert.assertEquals(24.0, queryIntegerField("OutSepLen", "Neuiris"));
 
     }
 
@@ -241,16 +275,16 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         setKbase(getKSession().getKnowledgeBase());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(4);
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(3.5);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(4);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(3.5);
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
 
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Out2"),
-                true, false,"IRIS_MLP",1.0);
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Out1"),
-                true, false,"IRIS_MLP",0.0);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"MockOutput2"),
+                true, false,"Test_MLP",1.0);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"MockOutput1"),
+                true, false,"Test_MLP",0.0);
 
     }
 
@@ -270,19 +304,19 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         Assert.assertEquals(81, getNumAssertedSynapses());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(83.0);
-        getKSession().getWorkingMemoryEntryPoint("in_Ca").insert(1.0);
-        getKSession().getWorkingMemoryEntryPoint("in_Chol").insert(5.0);
-        getKSession().getWorkingMemoryEntryPoint("in_Cp").insert("asympt");
-        getKSession().getWorkingMemoryEntryPoint("in_Exang").insert("yes");
-        getKSession().getWorkingMemoryEntryPoint("in_Fbs").insert("t");
-        getKSession().getWorkingMemoryEntryPoint("in_Oldpeak").insert(1.0);
-        getKSession().getWorkingMemoryEntryPoint("in_Restecg").insert("normal");
-        getKSession().getWorkingMemoryEntryPoint("in_Sex").insert("male");
-        getKSession().getWorkingMemoryEntryPoint("in_Slope").insert("flat");
-        getKSession().getWorkingMemoryEntryPoint("in_Thal").insert("normal");
-        getKSession().getWorkingMemoryEntryPoint("in_Thalach").insert(3.3);
-        getKSession().getWorkingMemoryEntryPoint("in_Trestbps").insert(2.5);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(83.0);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(1.0);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat3").insert(5.0);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat4").insert("asympt");
+        getKSession().getWorkingMemoryEntryPoint("in_Feat5").insert("yes");
+        getKSession().getWorkingMemoryEntryPoint("in_Feat6").insert("t");
+        getKSession().getWorkingMemoryEntryPoint("in_Feat7").insert(1.0);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat8").insert("normal");
+        getKSession().getWorkingMemoryEntryPoint("in_Feat9").insert("male");
+        getKSession().getWorkingMemoryEntryPoint("in_Feat10").insert("flat");
+        getKSession().getWorkingMemoryEntryPoint("in_Feat11").insert("normal");
+        getKSession().getWorkingMemoryEntryPoint("in_Feat12").insert(3.3);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat13").insert(2.5);
 
 
         getKSession().fireAllRules();
@@ -305,17 +339,17 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(2.2);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(2.2);
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(5);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(5);
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
 
         FactType out1 = getKbase().getFactType("org.drools.pmml_4_0.test","Out1");
         FactType out2 = getKbase().getFactType("org.drools.pmml_4_0.test","Out2");
-        FactType nump = getKbase().getFactType("org.drools.pmml_4_0.test","PetalNumber");
+        FactType nump = getKbase().getFactType("org.drools.pmml_4_0.test","Feat2");
 
         assertEquals(1,getKSession().getObjects(new ClassObjectFilter(out1.getFactClass())).size());
         assertEquals(1,getKSession().getObjects(new ClassObjectFilter(out2.getFactClass())).size());
@@ -323,8 +357,8 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(2.5);
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(6);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(2.5);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(6);
         getKSession().fireAllRules();
 
 
@@ -340,22 +374,36 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
 
-    @Test      @Ignore
-    public void testSimpleMixed() throws Exception {
-        setKSession(getModelSession(source5, VERBOSE));
+
+
+    @Test
+    public void testSmartVent() throws Exception {
+        setKSession(getModelSession(smartVent,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
 
-
         getKSession().fireAllRules();  //init model
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Domicile").insert("urban");
-        getKSession().fireAllRules();  //init model
+        getKSession().getWorkingMemoryEntryPoint("in_PIP").insert(28.0);
+        getKSession().getWorkingMemoryEntryPoint("in_PEEP").insert(5.0);
+        getKSession().getWorkingMemoryEntryPoint("in_RATE").insert(30.0);
+        getKSession().getWorkingMemoryEntryPoint("in_IT").insert(0.4);
+        getKSession().getWorkingMemoryEntryPoint("in_Ph").insert(7.281);
+        getKSession().getWorkingMemoryEntryPoint("in_CO2").insert(39.3);
+        getKSession().getWorkingMemoryEntryPoint("in_PaO2").insert(126.0);
+        getKSession().getWorkingMemoryEntryPoint("in_FIO2").insert(100.0);
 
+        getKSession().fireAllRules();
 
+        Thread.sleep(200);
         System.err.println(reportWMObjects(getKSession()));
 
-        fail("TODO");
+
+        assertEquals( 24.0, queryDoubleField("Out_sPIP", "SmartVent"), 0.5 );
+        assertEquals( 5, queryDoubleField("Out_sPEEP", "SmartVent"), 0.1 );
+        assertEquals( 30, queryDoubleField("Out_sRATE", "SmartVent"), 0.5 );
+        assertEquals( 0.4, queryDoubleField("Out_sIT", "SmartVent"), 0.05 );
+        assertEquals( -1, queryDoubleField("Out_sFIO2", "SmartVent"), 0.05 );
 
     }
 

@@ -1,19 +1,26 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.drools.pmml_4_0.predictive;
 
 
 import org.drools.pmml_4_0.DroolsAbstractPMMLTest;
-import org.junit.Before;
 import org.junit.Test;
 
 
-/**
- * Created by IntelliJ IDEA.
- * User: davide
- * Date: 11/12/10
- * Time: 10:11 PM
- *
- * PMML Test : Focus on the DataDictionary section
- */
 public class MiningSchemaTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = false;
@@ -32,16 +39,16 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(2.2);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(2.2);
             getKSession().fireAllRules();
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalLength"),
-                                            true, false,"IRIS_MLP",2.2);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat1"),
+                                            true, false,"Test_MLP",2.2);
             refreshKSession();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(5);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(5);
             getKSession().fireAllRules();
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalNumber"),
-                                            true, false,"IRIS_MLP",5);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat2"),
+                                            true, false,"Test_MLP",5);
     }
 
 
@@ -52,16 +59,16 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
         setKbase(getKSession().getKnowledgeBase());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(0.24);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(0.24);
             getKSession().fireAllRules();
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalLength"),
-                                            true, false,"IRIS_MLP",1.0);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat1"),
+                                            true, false,"Test_MLP",1.0);
            refreshKSession();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(999.9);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(999.9);
             getKSession().fireAllRules();
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalLength"),
-                                            true, false,"IRIS_MLP",6.9);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat1"),
+                                            true, false,"Test_MLP",6.9);
 
 
 
@@ -76,25 +83,25 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
 
 
         //invalid as missing
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(-37.0);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(-37.0);
             getKSession().fireAllRules();
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalLength"),
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat1"),
                                             false,false,null,-37.0);
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalLength"),
-                                            true, false,"IRIS_MLP",3.95);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat1"),
+                                            true, false,"Test_MLP",3.95);
             refreshKSession();
 
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(-1);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(-1);
             getKSession().fireAllRules();
 
             System.err.println(reportWMObjects(getKSession()));
 
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalNumber"),
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat2"),
                                             false,false,null,-1);
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalNumber"),
-                                            true, false,"IRIS_MLP",5);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat2"),
+                                            true, false,"Test_MLP",5);
 
     }
 
@@ -106,15 +113,15 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
         setKbase(getKSession().getKnowledgeBase());
 
 
-       getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(0);
+       getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(0);
             getKSession().fireAllRules();
 
             System.err.println(reportWMObjects(getKSession()));
 
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalNumber"),
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat2"),
                                             false,true,null,0);
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"PetalNumber"),
-                                            true, false,"IRIS_MLP",5);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat2"),
+                                            true, false,"Test_MLP",5);
 
     }
 

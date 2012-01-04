@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+  ~ Copyright 2011 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<PMML version="4.0" xmlns="http://www.dmg.org/PMML-4_0">
+    <Header copyright="JBoss" />
+    <DataDictionary numberOfFields="3">
+      <DataField name="x" optype="continuous" dataType="double" />
+      <DataField name="y" optype="continuous" dataType="double" />
+      <DataField name="z" optype="categorical" dataType="string">
+        <Value value="no" />
+        <Value value="yes" />
+      </DataField>
+    </DataDictionary>
+    <SupportVectorMachineModel modelName="SVM XOR Model" algorithmName="supportVectorMachine"
+             functionName="classification" svmRepresentation="SupportVectors">
+      <MiningSchema>
+        <MiningField name="x" />
+        <MiningField name="y" />
+        <MiningField name="z" usageType="predicted" />
+      </MiningSchema>
+      <RadialBasisKernelType gamma="1.0" description="Radial basis kernel type" />
+      <VectorDictionary numberOfVectors="4">
+        <VectorFields numberOfFields="2">
+          <FieldRef field="x"/>
+          <FieldRef field="y"/>
+        </VectorFields>
+        <VectorInstance id="vec1">
+          <REAL-SparseArray n="2" />
+        </VectorInstance>
+        <VectorInstance id="vec2">
+          <REAL-SparseArray n="2">
+            <Indices>2</Indices>
+            <REAL-Entries>1.0</REAL-Entries>
+          </REAL-SparseArray>
+        </VectorInstance>
+        <VectorInstance id="vec3">
+          <REAL-SparseArray n="2">
+            <Indices>1</Indices>
+            <REAL-Entries>1.0</REAL-Entries>
+          </REAL-SparseArray>
+        </VectorInstance>
+        <VectorInstance id="vec4">
+          <REAL-SparseArray n="2">
+            <Indices>1 2</Indices>
+            <REAL-Entries>1.0 1.0</REAL-Entries>
+          </REAL-SparseArray>
+        </VectorInstance>
+      </VectorDictionary>
+      <SupportVectorMachine targetCategory="no" alternateTargetCategory="yes">
+        <SupportVectors numberOfAttributes="2" numberOfSupportVectors="4">
+          <SupportVector vectorId="vec1" />
+          <SupportVector vectorId="vec2" />
+          <SupportVector vectorId="vec3" />
+          <SupportVector vectorId="vec4" />
+        </SupportVectors>
+        <Coefficients absoluteValue="0" numberOfCoefficients="4">
+          <Coefficient value="-1.0" />
+          <Coefficient value="1.0" />
+          <Coefficient value="1.0" />
+          <Coefficient value="-1.0" />
+        </Coefficients>
+      </SupportVectorMachine>
+    </SupportVectorMachineModel>
+  </PMML>
+
+

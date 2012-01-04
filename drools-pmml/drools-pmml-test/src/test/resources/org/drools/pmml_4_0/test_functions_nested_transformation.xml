@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Copyright 2011 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<PMML version="4.0" xsi:schemaLocation="http://www.dmg.org/PMML-4_0 http://www.dmg.org/v4-0/pmml-4-0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.dmg.org/PMML-4_0">
+  <Header copyright="JBoss"/>
+  <DataDictionary>
+    <DataField dataType="double" name="Age" optype="continuous">
+      <Value property="missing" value="-1"/>
+    </DataField>
+  </DataDictionary>
+  <TransformationDictionary>
+    <DefineFunction dataType="integer" name="myFun" optype="continuous">
+      <ParameterField dataType="integer" name="A"/>
+      <ParameterField dataType="integer" name="B"/>
+      <Apply function="sum">
+        <Constant dataType="integer">10</Constant>
+        <FieldRef field="A"/>
+        <FieldRef field="B"/>
+      </Apply>
+    </DefineFunction>
+    <DerivedField dataType="double" name="MappedAge" optype="continuous">
+      <Apply function="sum">
+        <Constant dataType="integer">10</Constant>
+        <Constant dataType="integer">20</Constant>
+        <Aggregate field="Age" function="sum"/>
+        <MapValues dataType="double" defaultValue="3" outputColumn="out">
+          <FieldColumnPair column="in1" field="Age"/>
+          <InlineTable>
+            <row>
+              <in1>10</in1>
+              <out>45.5</out>
+            </row>
+          </InlineTable>
+        </MapValues>
+        <Discretize dataType="double" defaultValue="2.3" field="Age" mapMissingTo="-99.0">
+          <DiscretizeBin binValue="2.4">
+            <Interval closure="closedClosed" leftMargin="15" rightMargin="100"/>
+          </DiscretizeBin>
+        </Discretize>
+        <NormContinuous field="Age" mapMissingTo="789" outliers="asIs">
+          <LinearNorm norm="0" orig="0"/>
+          <LinearNorm norm="1" orig="100"/>
+        </NormContinuous>
+        <NormDiscrete field="Age" mapMissingTo="-999.0" method="indicator" value="10"/>
+      </Apply>
+    </DerivedField>
+  </TransformationDictionary>
+</PMML>
