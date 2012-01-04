@@ -1,11 +1,11 @@
 /*
- * Copyright 2009 Solnet Solutions Limited (http://www.solnetsolutions.co.nz/)
+ * Copyright 2011 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,18 +34,6 @@ import org.drools.informer.domain.questionnaire.conditions.PageElementCondition;
 import org.drools.informer.domain.questionnaire.framework.ListEntryTuple;
 import org.drools.informer.write.questionnaire.helpers.CopyrightWriter;
 
-/**
- * Write out an {@link Application} object to a drl file.
- * 
- *   Will also include Global Impact (see {@link Question}) definitions,
- *   the logic associated with conditional table entry items and 
- *   files that were to be included, based on the Spreadsheet's list of files to include.
- *   
- *   A file in the import directory called <code>Copyright.drl</code> will be included at the top
- *   of the drl file.
- * 
- * @author Derek Rendall
- */
 public class ApplicationTemplate {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationTemplate.class);
