@@ -1,0 +1,855 @@
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: xml: <http://www.w3.org/XML/1998/namespace>
+Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Prefix: dc: <http://purl.org/dc/elements/1.1/>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+
+
+Ontology: <http://org.drools.conyard.owl>
+
+
+AnnotationProperty: rdfs:comment
+
+    
+Datatype: rdf:PlainLiteral
+
+    
+Datatype: xsd:string
+
+    
+Datatype: xsd:dateTime
+
+    
+Datatype: xsd:float
+
+    
+ObjectProperty: <http://org.drools.conyard.owl#protectsAgainst>
+
+    Domain: 
+        <http://org.drools.conyard.owl#DPI>
+    
+    Range: 
+        <http://org.drools.conyard.owl#Danger>
+    
+    
+ObjectProperty: <http://org.drools.conyard.owl#storedIn>
+
+    Characteristics: 
+        Asymmetric,
+        Irreflexive
+    
+    Domain: 
+        <http://org.drools.conyard.owl#Equipment>
+    
+    Range: 
+        <http://org.drools.conyard.owl#Site>
+    
+    
+ObjectProperty: <http://org.drools.conyard.owl#isDenotedBy>
+
+    Domain: 
+        <http://org.drools.conyard.owl#CodedConcept>
+    
+    Range: 
+        <http://org.drools.conyard.owl#Expression>
+    
+    
+ObjectProperty: <http://org.drools.conyard.owl#involves>
+
+    Characteristics: 
+        Asymmetric,
+        Irreflexive
+    
+    Domain: 
+        <http://org.drools.conyard.owl#Activity>
+    
+    Range: 
+        <http://org.drools.conyard.owl#Person>
+    
+    InverseOf: 
+        <http://org.drools.conyard.owl#participatesIn>
+    
+    
+ObjectProperty: <http://org.drools.conyard.owl#requires>
+
+    Characteristics: 
+        Asymmetric,
+        Irreflexive
+    
+    Domain: 
+        <http://org.drools.conyard.owl#Activity>
+    
+    Range: 
+        <http://org.drools.conyard.owl#Equipment>
+    
+    
+ObjectProperty: <http://org.drools.conyard.owl#participatesIn>
+
+    Characteristics: 
+        Asymmetric,
+        Irreflexive
+    
+    Domain: 
+        <http://org.drools.conyard.owl#Person>
+    
+    Range: 
+        <http://org.drools.conyard.owl#Activity>
+    
+    InverseOf: 
+        <http://org.drools.conyard.owl#involves>
+    
+    
+ObjectProperty: <http://org.drools.conyard.owl#hasSite>
+
+    Characteristics: 
+        Asymmetric,
+        Irreflexive
+    
+    Domain: 
+        <http://org.drools.conyard.owl#ConstructionYard>
+    
+    Range: 
+        <http://org.drools.conyard.owl#Site>
+    
+    InverseOf: 
+        <http://org.drools.conyard.owl#locatedAt>
+    
+    
+ObjectProperty: <http://org.drools.conyard.owl#endangersWith>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Dangerous>
+    
+    Range: 
+        <http://org.drools.conyard.owl#Danger>
+    
+    
+ObjectProperty: <http://org.drools.conyard.owl#locatedAt>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Site>
+    
+    Range: 
+        <http://org.drools.conyard.owl#ConstructionYard>
+    
+    InverseOf: 
+        <http://org.drools.conyard.owl#hasSite>
+    
+    
+DataProperty: <http://org.drools.conyard.owl#radius>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Site>
+    
+    Range: 
+        xsd:float
+    
+    
+DataProperty: <http://org.drools.conyard.owl#hasCode>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Expression>
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://org.drools.conyard.owl#centerX>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Site>
+    
+    Range: 
+        xsd:float
+    
+    
+DataProperty: <http://org.drools.conyard.owl#centerY>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Site>
+    
+    Range: 
+        xsd:float
+    
+    
+DataProperty: <http://org.drools.conyard.owl#startsOn>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Activity>
+    
+    Range: 
+        xsd:dateTime
+    
+    
+DataProperty: <http://org.drools.conyard.owl#endsOn>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Activity>
+    
+    Range: 
+        xsd:dateTime
+    
+    
+DataProperty: <http://org.drools.conyard.owl#hasLabel>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Expression>
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://org.drools.conyard.owl#hasVocabulary>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Expression>
+    
+    Range: 
+        xsd:string
+    
+    
+Class: <http://org.drools.conyard.owl#Activity>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Entity>
+         and (<http://org.drools.conyard.owl#involves> min 1 <http://org.drools.conyard.owl#Person>)
+         and (<http://org.drools.conyard.owl#requires> min 0 <http://org.drools.conyard.owl#Equipment>)
+         and (<http://org.drools.conyard.owl#endsOn> exactly 1 xsd:dateTime)
+         and (<http://org.drools.conyard.owl#startsOn> exactly 1 xsd:dateTime)
+    
+    
+Class: <http://org.drools.conyard.owl#TestFall>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#isDenotedBy> some 
+            ((<http://org.drools.conyard.owl#hasCode> value "3_fall")
+             and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem"))
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Fall>
+         and <http://org.drools.conyard.owl#TestVocabulary>
+    
+    
+Class: <http://org.drools.conyard.owl#FrostProtection>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#protectsAgainst> some <http://org.drools.conyard.owl#Frost>
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#DPI>
+    
+    
+Class: <http://org.drools.conyard.owl#High>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#Dangerous>
+         and (<http://org.drools.conyard.owl#endangersWith> some <http://org.drools.conyard.owl#Fall>)
+    
+    
+Class: <http://org.drools.conyard.owl#FireProtection>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#DPI>
+         and (<http://org.drools.conyard.owl#protectsAgainst> some <http://org.drools.conyard.owl#Fire>)
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#DPI>
+    
+    
+Class: <http://org.drools.conyard.owl#ConstructionIronBarsZ>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#endangersWith> some 
+            (<http://org.drools.conyard.owl#Danger>
+             and (<http://org.drools.conyard.owl#isDenotedBy> some 
+                (<http://org.drools.conyard.owl#Expression>
+                 and (<http://org.drools.conyard.owl#hasCode> value "4_frost")
+                 and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem")))),
+        <http://org.drools.conyard.owl#IronBar>
+    
+    
+Class: <http://org.drools.conyard.owl#Crane>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#endangersWith> some <http://org.drools.conyard.owl#Fall>,
+        <http://org.drools.conyard.owl#Vehicle>
+    
+    
+Class: <http://org.drools.conyard.owl#GrinderBrandX>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Grinder>,
+        <http://org.drools.conyard.owl#endangersWith> some 
+            (<http://org.drools.conyard.owl#Danger>
+             and (<http://org.drools.conyard.owl#isDenotedBy> some 
+                (<http://org.drools.conyard.owl#Expression>
+                 and (<http://org.drools.conyard.owl#hasCode> value "2_explosion")
+                 and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem"))))
+    
+    
+Class: <http://org.drools.conyard.owl#Labourer>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Worker>
+    
+    
+Class: <http://org.drools.conyard.owl#BeltBrandX>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Belt>,
+        <http://org.drools.conyard.owl#protectsAgainst> some 
+            (<http://org.drools.conyard.owl#Danger>
+             and (<http://org.drools.conyard.owl#isDenotedBy> some 
+                ((<http://org.drools.conyard.owl#hasCode> value "fall_C")
+                 and (<http://org.drools.conyard.owl#hasVocabulary> value "anotherCS"))))
+    
+    
+Class: <http://org.drools.conyard.owl#Mason>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Worker>
+    
+    
+Class: <http://org.drools.conyard.owl#IronInstallation>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Activity>
+         and (<http://org.drools.conyard.owl#involves> some <http://org.drools.conyard.owl#Mason>)
+         and (<http://org.drools.conyard.owl#requires> some <http://org.drools.conyard.owl#IronBar>)
+         and (<http://org.drools.conyard.owl#requires> some <http://org.drools.conyard.owl#WeldingTorch>)
+         and (<http://org.drools.conyard.owl#involves> min 1 <http://org.drools.conyard.owl#Smith>)
+         and (<http://org.drools.conyard.owl#involves> min 2 <http://org.drools.conyard.owl#Labourer>)
+         and (<http://org.drools.conyard.owl#requires> min 1 <http://org.drools.conyard.owl#Grinder>)
+         and (<http://org.drools.conyard.owl#requires> exactly 1 <http://org.drools.conyard.owl#Crane>)
+         and (<http://org.drools.conyard.owl#involves> max 4 <http://org.drools.conyard.owl#Smith>)
+    
+    
+Class: <http://org.drools.conyard.owl#Stair>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Tool>
+    
+    
+Class: <http://org.drools.conyard.owl#GlovesBrandX>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#protectsAgainst> some 
+            (<http://org.drools.conyard.owl#Danger>
+             and (<http://org.drools.conyard.owl#isDenotedBy> some 
+                ((<http://org.drools.conyard.owl#hasCode> value "heat_AB")
+                 and (<http://org.drools.conyard.owl#hasVocabulary> value "anotherCS")))),
+        <http://org.drools.conyard.owl#Gloves>
+    
+    
+Class: <http://org.drools.conyard.owl#ChemPaintY>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#endangersWith> some 
+            (<http://org.drools.conyard.owl#Danger>
+             and (<http://org.drools.conyard.owl#isDenotedBy> some 
+                (<http://org.drools.conyard.owl#Expression>
+                 and (<http://org.drools.conyard.owl#hasCode> value "2_explosion")
+                 and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem")))),
+        <http://org.drools.conyard.owl#Paint>
+    
+    
+Class: <http://org.drools.conyard.owl#Cold>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#Dangerous>
+         and (<http://org.drools.conyard.owl#endangersWith> some <http://org.drools.conyard.owl#Frost>)
+    
+    
+Class: <http://org.drools.conyard.owl#TestFire>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#isDenotedBy> some 
+            ((<http://org.drools.conyard.owl#hasCode> value "1_fire")
+             and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem"))
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Fire>
+         and <http://org.drools.conyard.owl#TestVocabulary>
+    
+    
+Class: <http://org.drools.conyard.owl#WallRaising>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Activity>,
+        <http://org.drools.conyard.owl#involves> only <http://org.drools.conyard.owl#Mason>,
+        <http://org.drools.conyard.owl#requires> only <http://org.drools.conyard.owl#Bricks>,
+        <http://org.drools.conyard.owl#involves> min 3 <http://org.drools.conyard.owl#Mason>
+    
+    
+Class: <http://org.drools.conyard.owl#Supervisor>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Person>
+    
+    
+Class: <http://org.drools.conyard.owl#TestExplosion>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#isDenotedBy> some 
+            ((<http://org.drools.conyard.owl#hasCode> value "2_explosion")
+             and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem"))
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Explosion>
+         and <http://org.drools.conyard.owl#TestVocabulary>
+    
+    
+Class: <http://org.drools.conyard.owl#CodedConcept>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Meta>
+         and (<http://org.drools.conyard.owl#isDenotedBy> min 1 <http://org.drools.conyard.owl#Expression>)
+    
+    
+Class: <http://org.drools.conyard.owl#Concrete>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Material>
+    
+    
+Class: <http://org.drools.conyard.owl#AnotherExplosion>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#isDenotedBy> some 
+            ((<http://org.drools.conyard.owl#hasCode> value "expl_B")
+             and (<http://org.drools.conyard.owl#hasVocabulary> value "anotherCS"))
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#AnotherVocabulary>
+         and <http://org.drools.conyard.owl#Explosion>
+    
+    
+Class: <http://org.drools.conyard.owl#FallProtection>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#DPI>
+         and (<http://org.drools.conyard.owl#protectsAgainst> some <http://org.drools.conyard.owl#Fall>)
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#DPI>
+    
+    
+Class: <http://org.drools.conyard.owl#DPI>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Device>
+    
+    
+Class: <http://org.drools.conyard.owl#AnotherVocabulary>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Meta>
+    
+    
+Class: <http://org.drools.conyard.owl#Painting>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Activity>
+         and (<http://org.drools.conyard.owl#involves> some <http://org.drools.conyard.owl#Labourer>)
+         and (<http://org.drools.conyard.owl#requires> some <http://org.drools.conyard.owl#Paint>)
+         and (<http://org.drools.conyard.owl#requires> exactly 1 <http://org.drools.conyard.owl#Stair>)
+    
+    
+Class: <http://org.drools.conyard.owl#TestFrost>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#isDenotedBy> some 
+            ((<http://org.drools.conyard.owl#hasCode> value "4_frost")
+             and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem"))
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Frost>
+         and <http://org.drools.conyard.owl#TestVocabulary>
+    
+    
+Class: <http://org.drools.conyard.owl#Paint>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Material>
+    
+    
+Class: <http://org.drools.conyard.owl#Equipment>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Entity>
+         and (<http://org.drools.conyard.owl#storedIn> min 1 <http://org.drools.conyard.owl#Site>)
+    
+    
+Class: <http://org.drools.conyard.owl#Explosive>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#Dangerous>
+         and (<http://org.drools.conyard.owl#endangersWith> some <http://org.drools.conyard.owl#Explosion>)
+    
+    
+Class: <http://org.drools.conyard.owl#TestVocabulary>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Meta>
+    
+    
+Class: <http://org.drools.conyard.owl#AnotherBurning>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#isDenotedBy> some 
+            ((<http://org.drools.conyard.owl#hasCode> value "burn_AA")
+             and (<http://org.drools.conyard.owl#hasVocabulary> value "anotherCS"))
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#AnotherFire>
+    
+    
+Class: <http://org.drools.conyard.owl#Meta>
+
+    
+Class: <http://org.drools.conyard.owl#Truck>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Vehicle>
+    
+    
+Class: <http://org.drools.conyard.owl#Vehicle>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Device>
+    
+    
+Class: <http://org.drools.conyard.owl#StairBrandX>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Stair>,
+        <http://org.drools.conyard.owl#endangersWith> some 
+            (<http://org.drools.conyard.owl#Danger>
+             and (<http://org.drools.conyard.owl#isDenotedBy> some 
+                (<http://org.drools.conyard.owl#Expression>
+                 and (<http://org.drools.conyard.owl#hasCode> value "3_fall")
+                 and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem"))))
+    
+    
+Class: <http://org.drools.conyard.owl#Explosion>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Danger>
+    
+    
+Class: owl:Thing
+
+    
+Class: <http://org.drools.conyard.owl#AnotherFall>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#isDenotedBy> some 
+            ((<http://org.drools.conyard.owl#hasCode> value "fall_C")
+             and (<http://org.drools.conyard.owl#hasVocabulary> value "anotherCS"))
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#AnotherVocabulary>
+         and <http://org.drools.conyard.owl#Fall>
+    
+    
+Class: <http://org.drools.conyard.owl#Dangerous>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Meta>
+    
+    
+Class: <http://org.drools.conyard.owl#Danger>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#CodedConcept>
+    
+    
+Class: <http://org.drools.conyard.owl#Guest>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Person>
+    
+    
+Class: <http://org.drools.conyard.owl#Worker>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Person>
+    
+    
+Class: <http://org.drools.conyard.owl#Gloves>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#DPI>,
+        <http://org.drools.conyard.owl#protectsAgainst> some <http://org.drools.conyard.owl#Frost>
+    
+    
+Class: <http://org.drools.conyard.owl#Fire>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Danger>
+    
+    
+Class: <http://org.drools.conyard.owl#AnotherFrost>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#isDenotedBy> some 
+            ((<http://org.drools.conyard.owl#hasCode> value "frost_D")
+             and (<http://org.drools.conyard.owl#hasVocabulary> value "anotherCS"))
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#AnotherVocabulary>
+         and <http://org.drools.conyard.owl#Frost>
+    
+    
+Class: <http://org.drools.conyard.owl#Material>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Equipment>
+    
+    
+Class: <http://org.drools.conyard.owl#Hammer>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Tool>
+    
+    
+Class: <http://org.drools.conyard.owl#Belt>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#DPI>
+    
+    
+Class: <http://org.drools.conyard.owl#IronBar>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Material>
+    
+    
+Class: <http://org.drools.conyard.owl#Site>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Entity>
+         and (<http://org.drools.conyard.owl#centerX> exactly 1 xsd:float)
+         and (<http://org.drools.conyard.owl#centerY> exactly 1 xsd:float)
+         and (<http://org.drools.conyard.owl#radius> exactly 1 xsd:float)
+    
+    
+Class: <http://org.drools.conyard.owl#AnotherFire>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#AnotherVocabulary>
+         and <http://org.drools.conyard.owl#Fire>
+    
+    
+Class: <http://org.drools.conyard.owl#Fiery>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#Dangerous>
+         and (<http://org.drools.conyard.owl#endangersWith> some <http://org.drools.conyard.owl#Fire>)
+    
+    
+Class: <http://org.drools.conyard.owl#Intruder>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Person>
+    
+    
+Class: <http://org.drools.conyard.owl#Entity>
+
+    Annotations: 
+        rdfs:comment "abstract"^^xsd:string
+    
+    
+Class: <http://org.drools.conyard.owl#Pipes>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Material>
+    
+    
+Class: <http://org.drools.conyard.owl#ConstructionYard>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Entity>
+         and (<http://org.drools.conyard.owl#hasSite> min 0 <http://org.drools.conyard.owl#Site>)
+    
+    
+Class: <http://org.drools.conyard.owl#Expression>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Meta>
+         and (<http://org.drools.conyard.owl#hasCode> exactly 1 xsd:string)
+         and (<http://org.drools.conyard.owl#hasLabel> exactly 1 xsd:string)
+         and (<http://org.drools.conyard.owl#hasVocabulary> exactly 1 xsd:string)
+    
+    
+Class: <http://org.drools.conyard.owl#Person>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Entity>
+    
+    
+Class: <http://org.drools.conyard.owl#Bricks>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Material>
+    
+    
+Class: <http://org.drools.conyard.owl#Device>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Equipment>
+    
+    
+Class: <http://org.drools.conyard.owl#Grinder>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Tool>
+    
+    
+Class: <http://org.drools.conyard.owl#WeldingTorchBrandX>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#endangersWith> some 
+            (<http://org.drools.conyard.owl#Danger>
+             and (<http://org.drools.conyard.owl#isDenotedBy> some 
+                (<http://org.drools.conyard.owl#Expression>
+                 and (<http://org.drools.conyard.owl#hasCode> value "1_fire")
+                 and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem")))),
+        <http://org.drools.conyard.owl#WeldingTorch>
+    
+    
+Class: <http://org.drools.conyard.owl#Fall>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Danger>
+    
+    
+Class: <http://org.drools.conyard.owl#Manager>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Person>
+    
+    
+Class: <http://org.drools.conyard.owl#AnotherHeat>
+
+    EquivalentTo: 
+        <http://org.drools.conyard.owl#isDenotedBy> some 
+            ((<http://org.drools.conyard.owl#hasCode> value "heat_AB")
+             and (<http://org.drools.conyard.owl#hasVocabulary> value "anotherCS"))
+    
+    SubClassOf: 
+        <http://org.drools.conyard.owl#AnotherFire>
+    
+    
+Class: <http://org.drools.conyard.owl#HammerBrandX>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Hammer>
+    
+    
+Class: <http://org.drools.conyard.owl#WeldingTorch>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Tool>
+    
+    
+Class: <http://org.drools.conyard.owl#Tool>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Device>
+    
+    
+Class: <http://org.drools.conyard.owl#Smith>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Worker>
+    
+    
+Class: <http://org.drools.conyard.owl#Frost>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Danger>
+    
+    
+Individual: <http://org.drools.conyard.owl#explosionXP>
+
+    Types: 
+        <http://org.drools.conyard.owl#Expression>
+    
+    Facts:  
+     <http://org.drools.conyard.owl#hasCode>  "2_explosion"^^xsd:string,
+     <http://org.drools.conyard.owl#hasLabel>  "Kaboom!"^^xsd:string,
+     <http://org.drools.conyard.owl#hasVocabulary>  "testCodeSystem"^^xsd:string
+    
+    
+Individual: <http://org.drools.conyard.owl#test>
+
+    Types: 
+        <http://org.drools.conyard.owl#Danger>
+    
+    Facts:  
+     <http://org.drools.conyard.owl#isDenotedBy>  <http://org.drools.conyard.owl#fireXP>
+    
+    
+Individual: <http://org.drools.conyard.owl#fireXP>
+
+    Types: 
+        <http://org.drools.conyard.owl#Expression>
+    
+    Facts:  
+     <http://org.drools.conyard.owl#hasVocabulary>  "testCodeSystem"^^xsd:string,
+     <http://org.drools.conyard.owl#hasLabel>  "Beware of Fire"^^xsd:string,
+     <http://org.drools.conyard.owl#hasCode>  "1_fire"^^xsd:string
+    
+    
+Individual: <http://org.drools.conyard.owl#explosion>
+
+    Types: 
+        <http://org.drools.conyard.owl#Explosion>
+    
+    
+Individual: <http://org.drools.conyard.owl#flame>
+
+    Types: 
+        <http://org.drools.conyard.owl#Fire>
+    
+    
+Individual: <http://org.drools.conyard.owl#fall>
+
+    Types: 
+        <http://org.drools.conyard.owl#Fall>
+    
+    
+Individual: <http://org.drools.conyard.owl#frost>
+
+    Types: 
+        <http://org.drools.conyard.owl#Frost>
+    
+    
+Individual: <http://org.drools.conyard.owl#fallXP>
+
+    Types: 
+        <http://org.drools.conyard.owl#Expression>
+    
+    Facts:  
+     <http://org.drools.conyard.owl#hasVocabulary>  "testCodeSystem"^^xsd:string,
+     <http://org.drools.conyard.owl#hasCode>  "3_fall"^^xsd:string,
+     <http://org.drools.conyard.owl#hasLabel>  "No Jump Allowed"^^xsd:string
+    
+    
+Individual: <http://org.drools.conyard.owl#frostXP>
+
+    Types: 
+        <http://org.drools.conyard.owl#Expression>
+    
+    Facts:  
+     <http://org.drools.conyard.owl#hasCode>  "4_frost"^^xsd:string,
+     <http://org.drools.conyard.owl#hasLabel>  "Brrrr"^^xsd:string,
+     <http://org.drools.conyard.owl#hasVocabulary>  "testCodeSystem"^^xsd:string
+    
+    
+DisjointClasses: 
+    <http://org.drools.conyard.owl#Guest>,<http://org.drools.conyard.owl#Intruder>,<http://org.drools.conyard.owl#WeldingTorchBrandX>,<http://org.drools.conyard.owl#Worker>
+

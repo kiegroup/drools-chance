@@ -1,0 +1,13 @@
+
+declare K1
+	as neg neg C()
+	and neg ( D() or E() )
+end
+
+declare K2
+	as neg neg neg Prop some (neg C())
+end
+
+declare K3
+	as neg C()
+end

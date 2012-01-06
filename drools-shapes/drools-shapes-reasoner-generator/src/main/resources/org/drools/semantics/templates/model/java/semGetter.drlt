@@ -1,0 +1,97 @@
+@comment{
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+}
+
+
+@declare{'semGetter'}
+
+    // signature
+    //@Transient
+    //@javax.xml.bind.annotation.XmlTransient
+    public
+        @if{ ! isCollection }  @{ typeName }
+        @else{}                java.util.List<@{ typeName }>
+        @end{}
+            @{ getter }() {
+
+        //return value
+        @if{ ! isCollection }
+            @{ typeName } ans = null;
+        @else{}
+            java.util.List<@{ typeName }> ans = new java.util.ArrayList<@{ typeName }>();
+        @end{}
+
+        @if{ max == null || max > 0 }
+        // get what we can
+        @if{ ! isCollection }
+           // we need to fill in one item at most
+           @if{ isBaseCollection }
+               for ( Object o : @{baseGetter}() ) {
+                   if ( o instanceof @{typeName} ) { ans = (@{typeName}) o; }
+                   break;
+               }
+           @else{}
+             if ( @{baseGetter}() instanceof @{typeName} ) { ans = (@{typeName}) @baseGetter(); }
+           @end{}
+        @else{}
+            // we need to find as many items
+           @if{ isBaseCollection }
+               for ( Object o : @{baseGetter}() ) {
+                   if ( o instanceof @{typeName} ) { ans.add( (@{typeName}) o ); }
+               }
+           @else{}
+               if ( @{baseGetter}() instanceof @{typeName} ) { ans.add( (@{typeName}) @baseGetter() ); }
+           @end{}
+        @end{}
+
+
+        @if{ max == 1 && ! isCollection }
+            if ( ans == null ) {
+                ans = @{ skolem( typeName ) };
+            }
+        @else{}
+            @if{ isCollection }
+               if ( ans.size() < @{ min } ) {
+                  int base = ans.size();
+                  for ( int j = base; j <= @{ min }; j++ ) {
+                        ans.add( @{ skolem( typeName ) } );
+                  }
+               }
+            @end{}
+            @if{ isCollection and max != null }
+               if ( ans.size() > @{ max } ) {
+                   throw new RuntimeException(" TODO : Semantic Inconsistency, found " + ans.size() + " @{typeName} when up to @{max} were expected" );
+               }
+            @end{}
+        @end{}
+
+
+
+
+        @end{}
+        return ans;
+    //method ends here
+    }
+@end{}
+
+@includeNamed{'semGetter'}
+
+
+
+
+

@@ -1,0 +1,142 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ package org.drools.semantics.lang.dl
+
+import org.drools.base.DroolsQuery;
+import org.semanticweb.owlapi.model.*;
+import org.drools.semantics.builder.model.*;
+import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.*;
+import org.drools.semantics.lang.dl.templates.*;
+import org.drools.semantics.builder.DLFactory;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.io.InputStream;
+import java.io.IOException;
+import org.mvel2.templates.*;
+
+
+global OntoModel latticeModel;
+
+
+
+declare Mark
+	arg			: SubConceptOf	@key
+end
+
+
+
+
+
+
+query subConceptOf( SubConceptOf $link, String $sub, String $sup )
+    $link := SubConceptOf( $sub, "subConceptOf", $sup ; )
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+    Remove redundancies, marking useless edges
+*/
+rule "Prune"
+salience -10000
+when
+	$l : SubConceptOf( $i : subject, $j : object != "<Thing>" )
+
+	    $x1 : SubConceptOf( subject == $i , $o : object != $j, object != "<Thing>", enabled == true )
+
+		$x2 : SubConceptOf( subject == $o, object == $j, object != "<Thing>", enabled == true )
+
+    not Mark( $l ; )
+    not SubConceptOf( subject == $j, object == $o )
+then
+    System.err.println( " ******************* RETRACT " + $l + " thanks to " + $x1 + " and " + $x2 );
+	Mark m = new Mark( $l );
+
+	insert(m);
+end
+
+
+/**
+    Clear marked edges
+*/
+rule "Clear"
+salience -100000
+when
+	$sc : SubConceptOf()
+	$m1 : Mark( arg == $sc )
+then
+    System.err.println( " ******************* REALLY RETRACT " + $sc );
+    latticeModel.removeSubConceptOf( $sc );
+	retract($sc);
+	retract($m1);
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//rule "Cleanup"
+//salience -99999
+//when
+//    $b : Blocker()
+//then
+//    retract( $b );
+//end
+
+
+
+
+
+
+
+
+

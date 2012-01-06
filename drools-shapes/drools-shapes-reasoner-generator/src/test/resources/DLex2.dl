@@ -1,0 +1,25 @@
+
+declare ComplexClass
+	as neg Class1()
+	and ( Class2()
+          or
+          Class3()
+        )
+    and ( neg Class2()
+		  or Class3() ) 
+    and HasLastProp some ( Class6() or Class7() )
+    and HasAllProp all Class8()
+
+//  WARN : DRL v5 does not support complex forall     
+//  and HasAnotherProp all ( Class5()
+//    						 and
+//    						 HasLastProp some ( Class6() or Class7() )
+//    						 )	    
+end
+
+
+declare SimpleClass
+	as Class1()
+end
+
+

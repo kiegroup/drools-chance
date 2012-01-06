@@ -1,0 +1,28 @@
+Prefix: : <_>
+
+Ontology: <http://jboss.org/drools/semantics/Diamond>
+
+Class: Top
+    EquivalentTo:  C0
+
+Class: Left
+	EquivalentTo:  Top and C1
+
+Class: Right
+	EquivalentTo:  Top and C2
+
+Class: Low
+	EquivalentTo:  Top and C1 and C2
+
+Class: Bottom
+	EquivalentTo:  Top and C1 and C2 and C3
+
+
+Class: C0
+
+Class: C1
+
+Class: C2
+
+Class: C3
+

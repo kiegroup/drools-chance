@@ -1,0 +1,48 @@
+Prefix: : <_>
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+
+Ontology: <http://jboss.org/drools/semantics/Example6>
+
+
+DataProperty: zimple1
+    Domain: Test or Test2 or Test3
+    Range: xsd:int
+
+DataProperty: zimple2
+    Domain: Test or Test2
+    Range: xsd:int
+
+
+DataProperty: zimple3
+    Domain: Test
+    Range: xsd:int
+
+
+Datatype: xsd:int
+
+
+Class: Fact
+
+Class: Test3
+
+Class: Test
+
+    SubClassOf:
+        zimple1 max 1 xsd:int,
+        zimple2 only xsd:int,
+        zimple3 only xsd:int,
+        Fact
+
+
+Class: Test2
+
+    SubClassOf:
+        zimple2 only xsd:int,
+        zimple1 only xsd:int
+
+
+
+
+
+
+

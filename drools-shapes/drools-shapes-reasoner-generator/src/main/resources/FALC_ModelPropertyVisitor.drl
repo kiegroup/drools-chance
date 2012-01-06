@@ -1,0 +1,321 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ package org.drools.semantics.lang.dl
+
+import org.drools.base.DroolsQuery;
+import org.semanticweb.owlapi.model.*;
+import org.drools.semantics.builder.model.*;
+import org.drools.semantics.builder.*;
+import org.drools.semantics.lang.dl.templates.*;
+import org.drools.semantics.builder.DLFactory;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.io.InputStream;
+import java.io.IOException;
+import org.mvel2.templates.*;
+
+
+
+global OntoModel propertyModel;
+
+
+declare Domain
+    domain      : String
+    property    : IRI
+end
+
+declare Range
+    range       : String
+    property    : IRI
+end
+
+declare PrimitiveMapping
+    datatypeIri : IRI
+    dataType    : String
+    concept     : String
+end
+
+
+
+
+
+query subConceptOf( SubConceptOf $link, String $sub, String $sup )
+    $link := SubConceptOf( $sub, "subConceptOf", $sup ; )
+end
+
+
+
+query primitive( String $src, String $tgt )
+    PrimitiveMapping( $src, $tgt ; )
+end
+
+rule "Map Primitives"
+salience 9999
+when
+then
+    IRI i1 = IRI.create("http://www.w3.org/2001/XMLSchema#string");
+    insert( new PrimitiveMapping( i1, i1.toQuotedString(), "java.lang.String" ) );
+
+    IRI i2 = IRI.create("http://www.w3.org/2001/XMLSchema#dateTime");
+    insert( new PrimitiveMapping( i2, i2.toQuotedString(), "java.util.Date" ) );
+
+    IRI i3 = IRI.create("http://www.w3.org/2001/XMLSchema#int");
+    insert( new PrimitiveMapping( i3, i3.toQuotedString(), "java.lang.Integer" ) );
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/** Tooling rule TODO? **/
+rule "Check domains from subclassOf"
+salience 99999
+when
+    $context : OWLOntology( )
+	$klass   : OWLClass( $type : IRI )
+	$rest    : OWLQuantifiedDataRestriction( $prop : property ) from $klass.getSuperClasses( $context )
+	           OWLProperty( this == $prop )
+	           not OWLClass( this == $klass ) from $prop.getDomains( $context )
+then
+//    $prop.getDomains( $context ).add( $klass );
+    System.out.println(" @@@@@@ WARNING ADDED " + $klass + " to Property " + $prop + " DOMAIN " );
+    Domain dom = new Domain( $klass.toString(), $rest.getProperty().asOWLDataProperty().getIRI() );
+    System.out.println( dom );
+    insert( dom );
+
+end
+
+rule "Check ranges from subclassOf"
+salience 99999
+when
+    $context : OWLOntology( )
+	$klass   : OWLClass( $type : IRI )
+	$rest    : OWLQuantifiedDataRestriction( $prop : property, $filler : filler.IRI ) from $klass.getSuperClasses( $context )
+	           not OWLClass( this == $filler, $iri : IRI ) from $prop.getRanges( $context )
+
+then
+//    $prop.getRanges( $context ).add( $klass );
+    System.out.println(" @@@@@@ WARNING ADDED " + $filler + " to Property " + $prop + " RANGE " );
+//    update( $prop );
+    Range ran = new Range( $filler.toQuotedString(), $rest.getProperty().asOWLDataProperty().getIRI() );
+    System.out.println( ran );
+    insert( ran );
+end
+
+
+
+
+
+
+rule "Relations_Build"
+when
+    $prop : OWLProperty( $iri : IRI )
+    $dom  : Domain( $domIri, $iri ; )
+    $ran  : Range( $ranIri, $iri ; )
+then
+    retract ( $prop );
+    DLUtils utils = DLUtils.getInstance();
+    PropertyRelation rel = new PropertyRelation( $domIri.toString(),
+                                                 $iri.toQuotedString(),
+                                                 $ranIri.toString(),
+                                                 utils.buildLowCaseNameFromIri( $iri ) );
+    propertyModel.addProperty( rel );
+    insert( rel );
+end
+
+
+
+rule "Relations Domain Simple"
+when
+    $ctx  : OWLOntology()
+    $prop : OWLProperty( $iri : IRI )
+    $domx : OWLClassExpression( classExpressionLiteral == true ) from $prop.getDomains( $ctx )
+then
+    Domain dom = new Domain( $domx.toString(), $iri );
+    System.err.println( "DOMAIN S : "  + dom );
+    insert( dom );
+end
+
+rule "Relations Domain Simple Visit"
+when
+    $ctx  : OWLOntology()
+    $prop : OWLProperty( $iri : IRI )
+    $domx : OWLClassExpression( classExpressionLiteral == true ) from $prop.getDomains( $ctx )
+    not     Concept( $domx.toString() ; )
+then
+    insert( $domx );
+end
+
+
+rule "Relations Domain Complex"
+when
+    $onto : OWLOntology()
+    $prop : OWLProperty( $iri : IRI )
+    $domx : OWLClassExpression( classExpressionLiteral == false ) from $prop.getDomains( $onto )
+then
+    OWLDataFactory factory = $onto.getOWLOntologyManager().getOWLDataFactory();
+    DLUtils utils = DLUtils.getInstance();
+        OWLClass domClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( $prop.toString() ) + "Domain" ) );
+
+    Domain dom = new Domain( domClass.toString(), $iri );
+    System.err.println( "DOMAIN C: "  + dom );
+
+    insert( dom );
+    insert( domClass );
+end
+
+
+rule "Relations Domain Complex Visit"
+when
+    $onto : OWLOntology()
+    $prop : OWLProperty( $iri : IRI )
+    $domx : OWLClassExpression( classExpressionLiteral == false ) from $prop.getDomains( $onto )
+    not     Concept( $domx.toString() ; )
+then
+    insert( $domx );
+end
+
+
+
+rule "Relations Range Simple"
+when
+    $ctx  : OWLOntology()
+    $prop : OWLProperty( $iri : IRI )
+    $ranx : OWLClassExpression( classExpressionLiteral == true ) from $prop.getRanges( $ctx )
+then
+    Range ran = new Range( $ranx.toString(), $iri );
+    System.err.println( "RANGE S : "  + ran );
+    insert( ran );
+end
+
+rule "Relations Range Simple Visit"
+when
+    $ctx  : OWLOntology()
+    $prop : OWLProperty( $iri : IRI )
+    $ranx : OWLClassExpression( classExpressionLiteral == true ) from $prop.getRanges( $ctx )
+    not     Concept( $ranx.toString() ; )
+then
+    insert( $ranx );
+end
+
+
+rule "Relations Range Complex"
+when
+    $onto : OWLOntology()
+    $prop : OWLProperty( $iri : IRI )
+    $ranx : OWLClassExpression( classExpressionLiteral == false ) from $prop.getRanges( $onto )
+then
+    OWLDataFactory factory = $onto.getOWLOntologyManager().getOWLDataFactory();
+    DLUtils utils = DLUtils.getInstance();
+        OWLClass ranClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( $prop.toString() ) + "Range" ) );
+
+    Range ran = new Range( ranClass.toString(), $iri );
+    System.err.println( "RANGE C: "  + ran );
+
+    insert( ran );
+    insert( ranClass );
+
+    insert( $ranx );
+end
+
+rule "Relations Range Complex Visit"
+when
+    $onto : OWLOntology()
+    $prop : OWLProperty( $iri : IRI )
+    $ranx : OWLClassExpression( classExpressionLiteral == false ) from $prop.getRanges( $onto )
+    not     Concept( $ranx.toString() ; )
+then
+    insert( $ranx );
+end
+
+
+
+
+rule "Data Relations Range "
+when
+    $ctx  : OWLOntology()
+    $prop : OWLProperty( $iri : IRI )
+    $ranx : OWLDataRange( ) from $prop.getRanges( $ctx )
+    $type : OWLDatatype( $typeIri : IRI ) from $ranx.asOWLDatatype()
+then
+    System.err.println("ALERT: WILL TRY TO MAP RANGE " + $typeIri +" for prop " + $prop);
+    insert( new Range( $typeIri.toQuotedString(), $iri ) );
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rule "Build Concepts : Obj Relations"
+salience -10000
+when
+    $pro : PropertyRelation( $iri, $pred, $iri2 ; )
+    $dom : Concept( $iri ; $props : properties, properties[ $pro ] == null )
+    $ran : Concept( $iri2 ; )
+then
+    $props.put( $pro, $ran );
+    update ( $dom );
+    System.err.println(" >>>>>>>>>> PROPERTY " + $pred +  " into " + $dom);
+end
+
+rule "Build Concepts : Data Relations"
+salience -10000
+when
+    $pro : PropertyRelation( $iri, $pred, $typeName ; )
+    $dom : Concept( $iri ; $props : properties, properties[ $pro ] == null )
+    $pri : PrimitiveMapping( $typeIri, $typeName, $target ; )
+then
+    System.err.println("Using simple c" + $pro);
+    $props.put( $pro, new Concept( $typeName, $target ) );
+    update ( $dom );
+end
+
+
+
+
+
+
+
+
+
+
+
+

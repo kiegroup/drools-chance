@@ -1,0 +1,77 @@
+@comment{
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+}
+
+@declare{'conceptTypeDeclare'}
+package @{package};
+
+import com.clarkparsia.empire.annotation.RdfsClass;
+import com.clarkparsia.empire.annotation.Namespaces;
+import com.clarkparsia.empire.annotation.RdfProperty;
+
+
+// @{iri}
+
+@RdfsClass( value="tns:@{name}" )
+@Namespaces({ "tns", "http://@{package}#" })
+public interface @{name}__Type extends com.clarkparsia.empire.SupportsRdfId
+                                 @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{ compactUpperCase( sup.name ) }__Type @end{','} @end{}
+{
+
+@if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }
+    @code{ prop = properties[ propKey ] }
+
+    @if{ prop.restricted == false }
+    // @{prop.property}   --    @{prop.maxCard}   --- @{prop.name}
+    @RdfProperty("tns:@{prop.name}")
+    public
+        @if{ prop.maxCard == 1 }
+            @{ map( prop.target.name, false ) }@if{ !prop.target.primitive }__Type@end{}
+        @else{}
+            java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }__Type@end{}>
+        @end{}
+        @if{ prop.target.name.equals("xsd:boolean") && prop.maxCard == 1 }
+            is@{ compactUpperCase(prop.name) }();
+        @else{}
+            get@{ compactUpperCase(prop.name) }();
+        @end{}
+
+    // @{prop.property}
+    public void set@{ compactUpperCase(prop.name) }(
+        @if{ prop.maxCard == 1 }
+            @{ map( prop.target.name, false ) }@if{ !prop.target.primitive }__Type@end{}
+        @else{}
+            java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }__Type@end{}>
+        @end{}
+        value );
+
+  @end{}  @end{}  @end{}
+
+
+
+
+}
+
+@end{}
+
+@includeNamed{'conceptTypeDeclare'}
+
+
+
+
+

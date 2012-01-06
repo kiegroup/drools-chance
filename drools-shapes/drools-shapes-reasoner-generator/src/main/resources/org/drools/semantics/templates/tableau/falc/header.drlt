@@ -1,0 +1,364 @@
+@comment{
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+}
+
+@declare{'FALC_header'}
+
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.drools.semantics.lang.dl;
+
+
+
+import java.util.Arrays;
+import java.util.*;
+import org.drools.KnowledgeBase;
+import java.util.List;
+import org.drools.runtime.StatefulKnowledgeSession;
+import choco.cp.solver.CPSolver;
+import choco.cp.model.CPModel;
+import choco.kernel.model.variables.*;
+import choco.kernel.model.variables.real.RealVariable;
+import choco.kernel.model.variables.integer.IntegerVariable;
+
+
+
+// All tableau rules have negative salience!
+
+
+
+query "q_mock" ( String mid )
+	$m : Mock ( id == mid)
+end
+
+query "q_subsumption" ( String sub, String sup )
+	$sc : SubClassOf( subject == sub , object == sup )
+	Degree( subject == $sc , $tau : tau , $phi : phi )
+end
+
+query "q_subsumptionAll" (  )
+	$sc : SubClassOf( $sub : subject , $sup : object )
+	Degree( subject == $sc , $tau : tau , $phi : phi )
+end
+
+query "q_recognition" ( Object o, String klass )
+	$type : Type( subject == o , object == klass )
+	Degree( subject == $type , $tau : tau , $phi : phi )
+end
+
+
+
+
+
+rule "Init_Recognition_Problem"
+//agenda-group "Tableau"
+salience -2
+when
+	$test : RecognitionTest( $subj : subject != null, $klass : targetClass, 
+							 $prob : problem , $tau : tau  )
+then
+	System.out.println("About to solve rec goal : " + $test);
+	
+	RealVariable Xneg = $prob.getXNeg();
+	
+	HypoType type = new HypoType($subj, $klass, $tau, $test);	//negated!
+	Degree deg = new Degree(type, Xneg );
+	
+//	System.out.println(type.toFullString());
+//	System.out.println(deg);
+	
+	insertLogical(deg);
+	insertLogical(type);
+			
+end
+
+
+
+
+rule "Init_Subsumption_Problem"
+//agenda-group "Tableau"
+salience -2
+when
+	$test : SubsumptionTest( $sub : subClass, $sup : superClass != $sub, 
+							 $prob : problem , $tau : tau )
+then
+//	System.out.println("About to solve sub goal : " + $test);
+	
+	RealVariable Xneg = $prob.getXNeg();
+	Mock mock = new Mock("M");
+	
+	
+	HypoType typeA = new HypoType(mock, $sub, false, $test);	//positive!?
+	HypoType typeB = new HypoType(mock, $sup, false, $test);	//positive!?	
+	
+//	IntegerVariable xB = ConstraintFactory.newBooleanVariable("x_"+typeB.getLabel(),$prob);
+//	IntegerVariable xA = ConstraintFactory.newBooleanVariable("x_"+typeA.getLabel(),$prob);
+
+//	RealVariable xB = ConstraintFactory.newBooleanRealVariable("x_"+typeB.getLabel(),$prob);
+//    RealVariable xA = ConstraintFactory.newBooleanRealVariable("x_"+typeA.getLabel(),$prob);
+
+    RealVariable xB = ConstraintFactory.newUnitIntervalVariable("x_"+typeB.getLabel(),$prob);
+    RealVariable xA = ConstraintFactory.newUnitIntervalVariable("x_"+typeA.getLabel(),$prob);
+
+
+//	System.out.println(xA + " vs " + xB + " // " + $tau);
+
+		if ($tau) {
+			ConstraintFactory.addImplicationConstraint(xA,xB,Xneg,$prob);
+		} else {
+//		    RealVariable xNA = ConstraintFactory.newBooleanRealVariable("xN_"+typeA.getLabel(),$prob);
+            RealVariable xNA = ConstraintFactory.newUnitIntervalVariable("xN_"+typeA.getLabel(),$prob);
+		    ConstraintFactory.addComplementConstraint(xA,xNA,$prob);
+		 	ConstraintFactory.addImplicationConstraint(xB,xNA,Xneg,$prob);
+		}
+	
+	Degree degA = new Degree(typeA, xA );
+	Degree degB = new Degree(typeB, xB );
+	
+	insertLogical(typeA);
+	insertLogical(degA);
+	insertLogical(typeB);
+	insertLogical(degB);
+	
+			
+end
+
+
+rule "Init_Trivial_Subsumption_Problem"
+//agenda-group "Tableau"
+salience -2
+when
+	$test : SubsumptionTest( $sub : subClass, $sup : superClass == $sub )
+then
+	retract($test);
+	SubClassOf sc = new SubClassOf($sub,$sup);	
+	Degree deg = new Degree(sc,1.0,1.0);
+		
+	insert(sc);
+	insert(deg);	
+end
+
+
+
+
+
+
+rule "Type"
+salience -10
+when
+	$test : RecognitionTest( $subj : subject, $klass : targetClass, $prob : problem )
+	$type : HypoType( goal == $test , $xlab : label , $s : subject , $o : object, negated==false)	
+	$degr : Degree( subject == $type , $l : value != null ) 
+then
+	System.out.println(" Rule Type 1 " + $l);
+		
+	RealVariable x = ConstraintFactory.newUnitIntervalVariable("x_"+$xlab,$prob);
+	if (! x.equals($l)) {
+		ConstraintFactory.addLBConstraint(x,$l,$prob);
+	}
+end
+ 
+
+rule "Type_Neg"
+//agenda-group "Tableau"
+salience -20
+when
+	$test : DLTest( $prob : problem )
+	$type : HypoType( goal == $test , $xlab : label , negated == true )
+	$degr : Degree( subject == $type , $l : value != null )
+then
+	System.out.println(" Rule Type 2 : --A" + $type + " // " + $l);
+		
+	RealVariable x = ConstraintFactory.newUnitIntervalVariable("x_"+$xlab,$prob);
+	if (! x.equals($l)) {
+		ConstraintFactory.addUBConstraint(x,$l,$prob);		
+	}
+end
+
+
+
+
+
+rule "Type_Collect"
+//agenda-group "Tableau"
+salience -10
+when
+	$test : DLTest( $prob : problem )
+	$type : HypoType( goal == $test , $xlab : label , $s : subject , $o : object, $neg : negated )
+	$oldT : Type( subject == $s , object == $o )
+	$oldD : Degree( subject == $oldT , $tau : tau != null, $phi : phi != null ) 
+then
+	System.out.println(" Rule Type 1 , recover data " + $oldT + " bound " +$tau + " : " + $phi);
+	if ($phi - $tau < 1e-6) {	
+		// due to imperfect roundings, tau may seem to be > phi when they are actually ==
+		$tau = $tau - 1e-6;
+	}	
+		
+	RealVariable v1 = ConstraintFactory.newUnitIntervalVariable("nX_"+$xlab,1.0-$phi,1.0-$tau,$prob);
+	RealVariable v2 =	ConstraintFactory.newUnitIntervalVariable("x_"+$xlab,$tau,$phi,$prob);
+	ConstraintFactory.addComplementConstraint(v2,v1,$prob);
+
+end
+
+
+
+rule "Property_Collect"
+//agenda-group "Tableau"
+salience -50
+when
+	$test : DLTest( $prob : problem )
+	$prop : HypoProperty( goal == $test , $xlab : label , $s : subject , $p : predicate , $o : object )
+	$oldP : Property( subject == $s , object == $o , predicate == $p )
+	$oldD : Degree( subject == $oldP , $tau : tau != null, $phi : phi != null )	
+then
+	System.out.println(" Rule Type 5 (R), recover data " + $oldP + " bound " + $tau + " : " + $phi);
+		
+	ConstraintFactory.newUnitIntervalVariable("x_"+$xlab, $tau, $phi, $prob);
+end
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+rule "Cleanup_Sub"
+//agenda-group "Solver"
+salience -200
+when 
+	$test : SubsumptionTest( $sub : subClass , $sup : superClass , 
+							 $p : problem , $tau :tau )
+then
+//	System.out.println("\n\n");
+//	System.out.println("-----------------------------------------------------------");
+//	System.out.println($p);
+//	System.out.println("-----------------------------------------------------------");
+
+    double x = $p.solve( );
+
+//	System.out.println(res);
+//	System.out.println("-----------------------------------------------------------" +$sub + " vs " + $sup );
+
+	SubClassOf sc = new SubClassOf($sub,$sup);
+	Degree deg;
+	if ($tau == true) {
+		deg = new Degree( sc, x, 1.0 );
+	} else {
+	    deg = new Degree( sc, 0.0, 1.0 - x );
+//		deg = new Degree(sc,0.0,x.doubleValue());
+    }
+
+
+
+	insert(sc);
+	insert(deg);
+
+	retract($test);
+end
+
+
+
+rule "Cleanup_Rec"
+//agenda-group "Solver"
+salience -200
+when 
+	$test : RecognitionTest( $sub : subject , $tgt : targetClass , 
+							 $p : problem , $tau :tau )
+then
+//	System.out.println("\n\n");
+//	System.out.println("-----------------------------------------------------------");
+//	System.out.println($p);
+//	System.out.println("-----------------------------------------------------------");
+
+
+    double x = $p.solve( );
+	
+	
+//	System.out.println(res);
+//	System.out.println("-----------------------------------------------------------");
+	
+
+
+	Type type = new Type($sub,$tgt);
+	Degree deg;
+	if ($tau == true)
+		deg = new Degree( type, x ,1.0 );
+	else	
+		deg = new Degree( type, 0.0, 1.0 - x );
+
+
+
+	insert(type);
+	insert(deg);
+	
+	
+	retract($test);
+end
+
+
+
+
+
+rule "Merge"
+when
+	$t : Type()
+	$d1 : Degree( subject == $t, $tau1 : tau, $phi1 : phi )
+	$d2 : Degree( subject == $t, this != $d1, $tau2 : tau, $phi2 : phi)
+then
+	$d1.setTau(Math.max($tau1,$tau2));
+	$d1.setPhi(Math.min($phi1,$phi2));
+	retract($d2);
+end
+
+rule "Merge2"
+when
+	$t : SubClassOf( )
+	$d1 : Degree( subject == $t, $tau1 : tau, $phi1 : phi )
+	$d2 : Degree( subject == $t, this != $d1, $tau2 : tau, $phi2 : phi)
+then
+	$d1.setTau(Math.max($tau1,$tau2));
+	$d1.setPhi(Math.min($phi1,$phi2));
+	retract($d2);
+end
+
+@end{}
+
+@includeNamed{'FALC_header'}
+
+

@@ -1,0 +1,160 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ package org.drools.semantics.lang.dl
+
+import org.drools.semantics.lang.dl.Mock;
+import org.drools.semantics.lang.dl.RecognitionGoal;
+
+
+ 
+
+
+
+//
+//
+rule "Debug_user"
+salience 100
+when
+then
+	System.err.println("Rule 0 : MAIN RuleSet started, generating facts....");
+	System.err.println("Rule 0 : After a LOONG reasoning");
+	System.err.println("Rule 0 : Generate a mock of type Klass with some degree");
+	Mock mock = new Mock("m01");
+		Type t = new Type(mock,"<_Alias>");
+		Degree d = new Degree(t,0.45,0.9);
+
+		Type t2 = new Type(mock,"<_Human>");
+		Degree d2 = new Degree(t2,0.9,0.95);
+
+		Type t3 = new Type(mock,"<_Employee>");
+		Degree d3 = new Degree(t3,0.4,0.9);
+
+		Type t4 = new Type(mock,"<_Robot>");
+		Degree d4 = new Degree(t4,0.4,0.45);
+		Type t5 = new Type(mock,"<_Golem>");
+		Degree d5 = new Degree(t5,0.3,0.51);
+
+//		M
+
+        Mock mock2 = new Mock("m02>");
+		Property p1 = new Property("<_HasStudent>",mock,mock2);
+		Degree dp1 = new Degree(p1,0.7,0.8);
+
+			Type tp1 = new Type(mock2,"<_Male>");
+			Degree dtp1 = new Degree(tp1,0.42,0.43);
+			Type tp11 = new Type(mock2,"<_Robot>");
+			Degree dtp11 = new Degree(tp11,0.8,0.9);
+
+		Mock mock3 = new Mock("m03>");
+		Property p2 = new Property("<_HasStudent>",mock,mock3);
+		Degree dp2 = new Degree(p2,0.5,0.6);
+
+			Type tp2 = new Type(mock3,"<_Male>");
+			Degree dtp2 = new Degree(tp2,0.1,0.32);
+			Type tp21 = new Type(mock3,"<_Golem>");
+			Degree dtp21 = new Degree(tp21,0.73,0.86);
+
+//
+	insert(mock);
+	insert(t);
+	insert(d);
+
+	insert(t2);
+	insert(d2);
+	insert(t3);
+	insert(d3);
+
+	insert(t4);
+	insert(d4);
+	insert(t5);
+	insert(d5);
+
+	insert(mock2);
+	insert(p1);
+	insert(dp1);
+
+	insert(tp1);
+	insert(dtp1);
+	insert(tp11);
+	insert(dtp11);
+
+
+	insert(mock3);
+	insert(p2);
+	insert(dp2);
+
+	insert(tp2);
+	insert(dtp2);
+	insert(tp21);
+	insert(dtp21);
+end
+
+
+
+rule "Test_Recognition_step1"
+salience 10
+when
+	$mock : Mock( id == "m01" );
+	$goal : RecognitionGoal( $tgtClass : targetClass )
+then
+	System.err.println("Is " + $mock + " a TAU member of klass <<" + $tgtClass + ">> ?? ");	
+	RecognitionTest test = new RecognitionTest($mock, $goal);
+	insert(test);			
+end
+
+rule "Test_Recognition_step2"
+salience 9
+when
+	$mock : Mock( id == "m01" );
+	$goal : RecognitionGoal( $tgtClass : targetClass )
+	not RecognitionTest( subject == $mock, targetClass  == $tgtClass )
+then
+	System.err.println("Is " + $mock + " a PHI member of klass <<" + $tgtClass + ">> ?? ");
+	retract($goal);
+
+	RecognitionTest testNeg = new RecognitionTest($mock, $goal.negate());
+	insert(testNeg);
+end
+
+
+
+
+rule "Test_Subsumption_step1"
+salience 10
+when
+	$goal : SubsumptionGoal( $sub : subClass , $sup : superClass )
+then
+	System.out.println("Is " + $sub + " a TAU subConcept of klass <<" + $sup + ">> ?? ");
+	SubsumptionTest test = new SubsumptionTest($goal);
+	insert(test);	 
+end
+
+
+rule "Test_Subsumption_step2"
+salience 9
+when
+	$goal : SubsumptionGoal( $sub : subClass , $sup : superClass )
+	not SubsumptionTest( subClass == $sub, superClass == $sup )
+then
+	System.out.println("Is " + $sub + " a PHI subConcept of klass <<" + $sup + ">> ?? ");
+	retract($goal);	
+	SubsumptionTest testNeg = new SubsumptionTest($goal.negate());
+	insert(testNeg); 
+end
+
+
+

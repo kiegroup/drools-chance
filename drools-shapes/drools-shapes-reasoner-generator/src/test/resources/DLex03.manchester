@@ -1,0 +1,27 @@
+Prefix: : <_>
+
+
+Ontology: <http://jboss.org/drools/semantics/Example03>
+
+
+Class: Alive
+    EquivalentTo: Human or Living
+
+Class: Being
+    EquivalentTo: Man or Alien
+
+Class: Earthling
+    EquivalentTo: Man or not Alien
+
+Class: Inhuman
+    EquivalentTo: not Man
+
+Class: Rock
+    EquivalentTo: not ( Human or Living )
+
+Class: Man
+    EquivalentTo: not ( not Human or not Living )
+
+Class: Human
+Class: Living
+Class: Alien

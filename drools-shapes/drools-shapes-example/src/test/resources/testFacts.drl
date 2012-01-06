@@ -1,0 +1,31 @@
+package test; 
+
+import http.org.drools.conyard.owl.*;
+
+global java.util.List ans;
+                
+declare Manager
+    @format( trait )
+end
+
+declare IronInstallation
+    @format( trait )
+end
+
+
+
+rule "Check type"
+when
+    $p : Painting()
+then
+    ans.add("type");
+end
+
+
+rule "Check nested properties and types"
+when
+    $p : Painting( $stair : requiresStair )
+    $s : Stair__Type( stairLength == 10 ) from $stair
+then
+    ans.add("nestedProperties");
+end

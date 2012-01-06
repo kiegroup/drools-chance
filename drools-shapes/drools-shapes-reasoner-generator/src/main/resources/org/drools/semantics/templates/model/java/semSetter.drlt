@@ -1,0 +1,79 @@
+@comment{
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+}
+
+
+@declare{'semGetter'}
+    @code{  }
+
+    // signature
+    public void @{ setter }(
+        @if{ ! isCollection }  @{ typeName }
+        @else{}                java.util.List<@{ typeName }>
+        @end{}
+        x ) {
+
+        @if{ max == 1 && ! isCollection }
+            if ( x == null ) {
+                x = @{ skolem( typeName ) };
+            }
+        @else{}
+            @if{ isCollection }
+                if ( x.size() < @{ min } ) {
+                    int base = x.size();
+                    for ( int j = base; j <= @{ min }; j++ ) {
+                        x.add( @{ skolem( typeName ) } );
+                    }
+                }
+            @end{}
+            @if{ isCollection and max != null }
+                if ( x.size() > @{ max } ) {
+                    throw new RuntimeException(" TODO : Semantic Inconsistency, found " + x.size() + " @{typeName} when up to @{max} were expected" );
+                }
+            @end{}
+        @end{}
+
+        @if{ ! isBaseCollection }
+            @if{ isCollection }
+                @{ baseSetter }( x.get(0) );
+            @else{}
+                @{ baseSetter }( x );
+            @end{}
+        @else{}
+            java.util.Collection removals = new java.util.ArrayList();
+            for ( Object o : @{ baseGetter }() ) {
+                if ( o instanceof @{ typeName } ) { removals.add( o ); }
+            }
+            @{ baseGetter }().removeAll( removals );
+
+                @if{ isCollection }
+                    @{ baseGetter }().addAll( x );
+                @else{}
+                    @{ baseGetter }().add( x );
+                @end{}
+        @end{}
+
+    }
+@end{}
+
+@includeNamed{'semGetter'}
+
+
+
+
+

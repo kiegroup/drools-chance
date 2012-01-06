@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2011 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<bindings xmlns="http://java.sun.com/xml/ns/jaxb"
+          xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+          xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+          xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+          xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector"
+          xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+          xmlns:annox="http://annox.dev.java.net"
+          xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
+          xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+          version="2.1"
+          extensionBindingPrefixes="xjc annox inheritance ci" >
+  <bindings schemaLocation="@{modelName}.xsd" node="/xsd:schema">
+
+    <globalBindings localScoping="toplevel" >
+      <serializable/>
+      <xjc:simple/>
+      <xjc:treatRestrictionLikeNewType/>
+
+      <javaType name= "java.util.Date" xmlType="xsd:date" printMethod="org.drools.semantics.builder.DLUtils.marshalDate" parseMethod="org.drools.semantics.builder.DLUtils.unmarshalDate"/>
+      <javaType name= "java.util.Date" xmlType="xsd:dateTime" printMethod="org.drools.semantics.builder.DLUtils.marshalDate" parseMethod="org.drools.semantics.builder.DLUtils.unmarshalDate"/>
+      <javaType name= "java.util.Date" xmlType="xsd:time" printMethod="org.drools.semantics.builder.DLUtils.marshalDate" parseMethod="org.drools.semantics.builder.DLUtils.unmarshalDate"/>
+    </globalBindings>
+
+    @code{ targetElement = ''; if (flat) targetElement='complexType'; else targetElement='complexType'; }
+
+    <bindings node="//xsd:@{targetElement}[@name='Thing']">
+      <inheritance:extends>org.drools.semantics.builder.model.RdfIdAble</inheritance:extends>
+    </bindings>
+
+
+    @foreach{ concept : concepts }
+    <bindings node="//xsd:@{targetElement}[@name='@{concept.name}']">
+        <class name="@{concept.name}Impl"/>
+        <inheritance:implements>@{package}.@{concept.name}</inheritance:implements>
+        @if{ flat && concept.name != "Thing" } <inheritance:extends>org.drools.semantics.builder.model.RdfIdAble</inheritance:extends> @end{}
+        <annox:annotate>
+          <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfsClass" value="tns:@{concept.name}" />
+          <annox:annotate annox:class="com.clarkparsia.empire.annotation.Namespaces" value="tns http://@{package}#" />
+          <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="@{concept.name}Impl"/>
+        </annox:annotate>
+        <ci:code><![CDATA[
+          @{ extra_code[ concept.name ] }
+        ]]></ci:code>
+
+        @foreach{ propKey : properties[ concept.name ].keySet }
+
+            @code{ prop = properties[ concept.name ][ propKey ] }
+
+            @code{ nodeType = ''; if ( prop.target.primitive &&
+                                       prop.maxCard <= 1 )
+                                       nodeType='attribute';
+                                       else
+                                       nodeType='element'; }
+
+            <bindings node=".//xsd:@{nodeType}[@name='@{prop.name}']">
+                <jxb:property generateIsSetMethod="true" name="@{prop.name}" >
+                    @if{ "element".equals(nodeType) && ! prop.target.primitive }
+                        <jxb:baseType name="@{package}.@{prop.target.name}__Type" />
+                    @end{}
+                </jxb:property>
+
+                <annox:annotate>
+                    <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="tns:@{prop.name}" />
+                </annox:annotate>
+            </bindings>
+
+
+        @end{}
+    </bindings>
+    @end{}
+
+
+  </bindings>
+</bindings>

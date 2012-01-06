@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2011 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-shapes</artifactId>
+        <version>5.4.0-SNAPSHOT</version>
+    </parent>
+
+    <name>Drools :: Shapes Example</name>
+
+    <groupId>org.drools</groupId>
+    <artifactId>drools-shapes-example</artifactId>
+    <version>${drools.version}</version>
+    <properties>
+        <drools.version>5.4.0-SNAPSHOT</drools.version>
+    </properties>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-shapes-reasoner-generator</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jvnet.hyperjaxb3</groupId>
+            <artifactId>hyperjaxb3</artifactId>
+            <version>0.5.6</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.hyperjaxb3</groupId>
+            <artifactId>maven-hyperjaxb3-plugin</artifactId>
+            <version>0.5.6</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.clarkparsia</groupId>
+            <artifactId>Empire-core</artifactId>
+            <version>0.7</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.clarkparsia</groupId>
+            <artifactId>Empire-sesame2</artifactId>
+            <version>0.7</version>
+        </dependency>
+
+
+
+
+        <!--dependency>
+            <groupId>com.hp.hpl.jena</groupId>
+            <artifactId>jena</artifactId>
+            <version>2.6.4</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.hp.hpl.jena</groupId>
+            <artifactId>sdb</artifactId>
+            <version>1.3.4</version>
+            <type>jar</type>
+        </dependency-->
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>3.3.2.GA</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>3.3.2.GA</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb2-value-constructor</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <repositories>
+        <repository>
+            <id>aduna</id>
+            <name>Aduna Software</name>
+            <url>http://repo.aduna-software.org/maven2/releases/</url>
+        </repository>
+    </repositories>
+
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>include-generated-sources</id>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${pom.basedir}/target/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-shapes-generator-plugin</artifactId>
+                <version>${drools.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>cast</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputDirectory>${pom.basedir}/target</outputDirectory>
+                    <ontology>${pom.basedir}/src/main/resources/conyard.manchester.owl</ontology>
+                    <modelName>conyard</modelName>
+                    <delegateInference>true</delegateInference>
+                    <generateInterfaces>true</generateInterfaces>
+                    <generateInterfaceJar>true</generateInterfaceJar>
+                    <generateTraitDRL>true</generateTraitDRL>
+                    <generateDefaultImplClasses>true</generateDefaultImplClasses>
+                    <preserveInheritanceInImpl>false</preserveInheritanceInImpl>
+                </configuration>
+            </plugin>
+
+
+
+
+            <plugin>
+                <groupId>org.jvnet.hyperjaxb3</groupId>
+                <artifactId>maven-hyperjaxb3-plugin</artifactId>
+                <version>0.5.6</version>
+                <configuration>
+                    <extension>true</extension>
+                    <args>
+                        <arg>-extension</arg>
+                        <arg>-Xannotate</arg>
+                        <arg>-Xinheritance</arg>
+                        <arg>-XtoString</arg>
+                        <arg>-Xcopyable</arg>
+                        <arg>-Xmergeable</arg>
+                        <arg>-Xvalue-constructor</arg>
+                        <arg>-Xfluent-api</arg>
+                        <arg>-Xinject-code</arg>
+                    </args>
+                    <removeOldOutput>true</removeOldOutput>
+                    <bindingDirectory>${pom.basedir}/target/generated-sources</bindingDirectory>
+                    <schemaDirectory>${pom.basedir}/target/generated-sources</schemaDirectory>
+                    <persistenceXml>src/main/resources/persistence-template.xml</persistenceXml>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.clarkparsia</groupId>
+                        <artifactId>Empire-core</artifactId>
+                        <version>0.7</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jvnet.jaxb2_commons</groupId>
+                        <artifactId>jaxb2-value-constructor</artifactId>
+                        <version>3.0</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.jvnet.jaxb2_commons</groupId>
+                        <artifactId>jaxb2-fluent-api</artifactId>
+                        <version>3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-jdk14</artifactId>
+                        <version>1.5.8</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                        <version>1.5.8</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
