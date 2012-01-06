@@ -315,7 +315,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNum").insert(5);
+        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(5);
 
         getKSession().fireAllRules();
 
