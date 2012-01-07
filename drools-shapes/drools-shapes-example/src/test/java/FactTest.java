@@ -43,7 +43,7 @@ public class FactTest {
     private static Unmarshaller unmarshaller;
 
     private static Painting painting;
-    private static Person__Type pers;
+    private static Person pers;
     private static Site site;
 
 
@@ -78,7 +78,7 @@ public class FactTest {
 
         painting.getInvolves().add( factory.createPersonImpl() );
 
-        painting.setInvolvesLabourer( Arrays.asList( ((Labourer__Type) factory.createLabourerImpl() ) ) );
+        painting.setInvolvesLabourers( Arrays.asList( ((Labourer) factory.createLabourerImpl() ) ) );
 
         
         Paint paint = factory.createPaintImpl();
@@ -88,14 +88,14 @@ public class FactTest {
         site.setCenterY( 20 );
         site.setRadius( 100 );
         paint.setStoredIn(site);
-        painting.setRequiresPaint( Arrays.asList( (Paint__Type) paint ) );
+        painting.setRequiresPaints( Arrays.asList( (Paint) paint ) );
 
         painting.getRequires().add( new EquipmentImpl() );
         
         
         pers = new LabourerImpl();
-//        p.setParticipatesIn( Arrays.asList( (Activity__Type) painting ) );
-        painting.setInvolvesLabourer( Arrays.asList( (Labourer__Type) pers ) );
+//        p.setParticipatesIn( Arrays.asList( (Activity) painting ) );
+        painting.setInvolvesLabourers( Arrays.asList( (Labourer) pers ) );
     }
 
 
@@ -223,11 +223,11 @@ public class FactTest {
 
         persist( painting, em );
 
-        Painting__Type p2 = (Painting__Type) refreshOnJPA( painting, painting.getRdfId(), em );
+        Painting p2 = (Painting) refreshOnJPA( painting, painting.getRdfId(), em );
 
         assertTrue( p2 instanceof Painting );
         assertTrue( p2 instanceof PaintingImpl );
-        assertEquals( 10, ((Stair__Type) ((Painting)p2).getRequiresStair()).getStairLength() );
+        assertEquals( 10, ((Stair) ((Painting)p2).getRequiresStair()).getStairLength() );
 
         p2.setHasComment(" Change my mind ");
         ((Painting)p2).getRequiresStair().setStairLength(6);

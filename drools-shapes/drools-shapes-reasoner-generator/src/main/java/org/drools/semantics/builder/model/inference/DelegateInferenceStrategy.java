@@ -181,6 +181,12 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
                 processSuperClass( sup, con, hierarchicalModel );
             }
+            
+//            for ( PropertyRelation prop : con.getProperties().values() ) {
+//                if ( prop.isRestricted() && ( prop.getMaxCard() == null || prop.getMaxCard() > 1 ) ) {
+//                    prop.setName( prop.getName() + "s" );
+//                }
+//            }
         }
 
     }
@@ -336,7 +342,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         }
 
         boolean inherited = false;
-        String restrictedPropIri = propIri.replace(">", target.getName()+">");
+        String restrictedSuffix = target.getName()+ "s" ;
+        String restrictedPropIri = propIri.replace (">", restrictedSuffix + ">" );
         PropertyRelation rel = con.getProperties().get( propIri );
         if ( rel == null ) {
             rel = con.getProperties().get( restrictedPropIri );
@@ -359,15 +366,19 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 dirty = true;
             }
             if ( max != null && ( rel.getMaxCard() == null || max < rel.getMaxCard() ) ) {
-                rel.setMaxCard( max );
+                rel.setMaxCard( max );  
+                if ( max == 1 ) {
+                    restrictedSuffix = target.getName();
+                    restrictedPropIri = propIri.replace (">", restrictedSuffix + ">" );
+                }
                 dirty = true;
             }
             if ( dirty && inherited ) {
                 rel.setRestricted( true );
                 rel.setSubject( con.getName() );
-                rel.setName( rel.getName() + target.getName() );
+                rel.setName( rel.getName() + restrictedSuffix );
                 rel.setProperty( restrictedPropIri );
-                con.addProperty( restrictedPropIri, props.get( propIri ) + target.getName(), rel );
+                con.addProperty( restrictedPropIri, props.get( propIri ) + restrictedSuffix, rel );
                 return rel;
             } else {
                 // not really a restriction, so keep the parent's

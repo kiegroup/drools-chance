@@ -230,7 +230,7 @@ public class DLUtils {
             } else if ( "xsd:unsignedInt".equals( dataType ) ) {
                 return "null";
             } else {
-                return "new " + dataType.replace("__Type","Impl") + "()";
+                return "new " + dataType + "Impl()";
             }
     
         }

@@ -111,7 +111,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
                     boolean isCollection = prop.getMaxCard() == null || prop.getMaxCard() > 1;
                     boolean isBaseCollection = prop.getBaseProperty().getMaxCard() == null || prop.getBaseProperty().getMaxCard() > 1;
-                    String typeName = DLUtils.map( prop.getTarget().getName(), false) + ( ! prop.getTarget().isPrimitive() ? "__Type" : "" );
+                    String typeName = DLUtils.map( prop.getTarget().getName(), false);
                     boolean isSimpleBoolean = prop.getTarget().getName().equals("xsd:boolean") && ! isCollection;
                     boolean isBaseSimpleBoolean = prop.getBaseProperty().getTarget().getName().equals("xsd:boolean") && ! isBaseCollection;
 

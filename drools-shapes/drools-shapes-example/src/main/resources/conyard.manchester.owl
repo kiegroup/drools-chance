@@ -43,15 +43,6 @@ Datatype: xsd:float
 Datatype: rdfs:Literal
 
     
-ObjectProperty: <http://org.drools.conyard.owl#protectsAgainst>
-
-    Domain: 
-        <http://org.drools.conyard.owl#DPI>
-    
-    Range: 
-        <http://org.drools.conyard.owl#Danger>
-    
-    
 ObjectProperty: <http://org.drools.conyard.owl#storedIn>
 
     Characteristics: 
@@ -63,6 +54,15 @@ ObjectProperty: <http://org.drools.conyard.owl#storedIn>
     
     Range: 
         <http://org.drools.conyard.owl#Site>
+    
+    
+ObjectProperty: <http://org.drools.conyard.owl#protectsAgainst>
+
+    Domain: 
+        <http://org.drools.conyard.owl#DPI>
+    
+    Range: 
+        <http://org.drools.conyard.owl#Danger>
     
     
 ObjectProperty: <http://org.drools.conyard.owl#isDenotedBy>
@@ -201,15 +201,6 @@ DataProperty: <http://org.drools.conyard.owl#startsOn>
         xsd:dateTime
     
     
-DataProperty: <http://org.drools.conyard.owl#endsOn>
-
-    Domain: 
-        <http://org.drools.conyard.owl#Activity>
-    
-    Range: 
-        xsd:dateTime
-    
-    
 DataProperty: <http://org.drools.conyard.owl#stairLength>
 
     Domain: 
@@ -219,19 +210,28 @@ DataProperty: <http://org.drools.conyard.owl#stairLength>
         xsd:int
     
     
-DataProperty: <http://org.drools.conyard.owl#hasLabel>
+DataProperty: <http://org.drools.conyard.owl#endsOn>
 
     Domain: 
-        <http://org.drools.conyard.owl#Expression>
+        <http://org.drools.conyard.owl#Activity>
     
     Range: 
-        xsd:string
+        xsd:dateTime
     
     
 DataProperty: <http://org.drools.conyard.owl#hasComment>
 
     Domain: 
         <http://org.drools.conyard.owl#Activity>
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://org.drools.conyard.owl#hasLabel>
+
+    Domain: 
+        <http://org.drools.conyard.owl#Expression>
     
     Range: 
         xsd:string
@@ -244,17 +244,6 @@ DataProperty: <http://org.drools.conyard.owl#hasVocabulary>
     
     Range: 
         xsd:string
-
-    
-Class: <http://org.drools.conyard.owl#Activity>
-
-    SubClassOf: 
-        <http://org.drools.conyard.owl#Entity>
-         and (<http://org.drools.conyard.owl#involves> min 1 <http://org.drools.conyard.owl#Person>)
-         and (<http://org.drools.conyard.owl#requires> min 0 <http://org.drools.conyard.owl#Equipment>)
-         and (<http://org.drools.conyard.owl#endsOn> exactly 1 xsd:dateTime)
-         and (<http://org.drools.conyard.owl#startsOn> exactly 1 xsd:dateTime),
-        <http://org.drools.conyard.owl#hasComment> exactly 1 xsd:string
     
     
 Class: <http://org.drools.conyard.owl#TestFall>
@@ -267,6 +256,17 @@ Class: <http://org.drools.conyard.owl#TestFall>
     SubClassOf: 
         <http://org.drools.conyard.owl#Fall>
          and <http://org.drools.conyard.owl#TestVocabulary>
+    
+    
+Class: <http://org.drools.conyard.owl#Activity>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Entity>
+         and (<http://org.drools.conyard.owl#involves> min 1 <http://org.drools.conyard.owl#Person>)
+         and (<http://org.drools.conyard.owl#requires> min 0 <http://org.drools.conyard.owl#Equipment>)
+         and (<http://org.drools.conyard.owl#endsOn> exactly 1 xsd:dateTime)
+         and (<http://org.drools.conyard.owl#startsOn> exactly 1 xsd:dateTime),
+        <http://org.drools.conyard.owl#hasComment> exactly 1 xsd:string
     
     
 Class: <http://org.drools.conyard.owl#FrostProtection>
@@ -332,6 +332,13 @@ Class: <http://org.drools.conyard.owl#Labourer>
         <http://org.drools.conyard.owl#Worker>
     
     
+Class: <http://org.drools.conyard.owl#SpecialInspection>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Inspection>,
+        <http://org.drools.conyard.owl#requires> exactly 1 <http://org.drools.conyard.owl#Equipment>
+    
+    
 Class: <http://org.drools.conyard.owl#BeltBrandX>
 
     SubClassOf: 
@@ -341,12 +348,6 @@ Class: <http://org.drools.conyard.owl#BeltBrandX>
              and (<http://org.drools.conyard.owl#isDenotedBy> some 
                 ((<http://org.drools.conyard.owl#hasCode> value "fall_C")
                  and (<http://org.drools.conyard.owl#hasVocabulary> value "anotherCS"))))
-    
-    
-Class: <http://org.drools.conyard.owl#Mason>
-
-    SubClassOf: 
-        <http://org.drools.conyard.owl#Worker>
     
     
 Class: <http://org.drools.conyard.owl#IronInstallation>
@@ -363,11 +364,10 @@ Class: <http://org.drools.conyard.owl#IronInstallation>
          and (<http://org.drools.conyard.owl#involves> max 4 <http://org.drools.conyard.owl#Smith>)
     
     
-Class: <http://org.drools.conyard.owl#Stair>
+Class: <http://org.drools.conyard.owl#Mason>
 
     SubClassOf: 
-        <http://org.drools.conyard.owl#stairLength> exactly 1 xsd:int,
-        <http://org.drools.conyard.owl#Tool>
+        <http://org.drools.conyard.owl#Worker>
     
     
 Class: <http://org.drools.conyard.owl#GlovesBrandX>
@@ -391,6 +391,13 @@ Class: <http://org.drools.conyard.owl#ChemPaintY>
                  and (<http://org.drools.conyard.owl#hasCode> value "2_explosion")
                  and (<http://org.drools.conyard.owl#hasVocabulary> value "testCodeSystem")))),
         <http://org.drools.conyard.owl#Paint>
+    
+    
+Class: <http://org.drools.conyard.owl#Stair>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#stairLength> exactly 1 xsd:int,
+        <http://org.drools.conyard.owl#Tool>
     
     
 Class: <http://org.drools.conyard.owl#Cold>
@@ -418,6 +425,7 @@ Class: <http://org.drools.conyard.owl#WallRaising>
         <http://org.drools.conyard.owl#Activity>,
         <http://org.drools.conyard.owl#involves> only <http://org.drools.conyard.owl#Mason>,
         <http://org.drools.conyard.owl#requires> only <http://org.drools.conyard.owl#Bricks>,
+        <http://org.drools.conyard.owl#requires> exactly 1 <http://org.drools.conyard.owl#Bricks>,
         <http://org.drools.conyard.owl#involves> min 3 <http://org.drools.conyard.owl#Mason>
     
     
@@ -610,6 +618,14 @@ Class: <http://org.drools.conyard.owl#Guest>
         <http://org.drools.conyard.owl#Person>
     
     
+Class: <http://org.drools.conyard.owl#Inspection>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Activity>,
+        <http://org.drools.conyard.owl#involves> max 1 <http://org.drools.conyard.owl#Person>,
+        <http://org.drools.conyard.owl#requires> max 3 <http://org.drools.conyard.owl#Equipment>
+    
+    
 Class: <http://org.drools.conyard.owl#Worker>
 
     SubClassOf: 
@@ -765,12 +781,6 @@ Class: <http://org.drools.conyard.owl#Fall>
         <http://org.drools.conyard.owl#Danger>
     
     
-Class: <http://org.drools.conyard.owl#Manager>
-
-    SubClassOf: 
-        <http://org.drools.conyard.owl#Person>
-    
-    
 Class: <http://org.drools.conyard.owl#AnotherHeat>
 
     EquivalentTo: 
@@ -780,6 +790,12 @@ Class: <http://org.drools.conyard.owl#AnotherHeat>
     
     SubClassOf: 
         <http://org.drools.conyard.owl#AnotherFire>
+    
+    
+Class: <http://org.drools.conyard.owl#Manager>
+
+    SubClassOf: 
+        <http://org.drools.conyard.owl#Person>
     
     
 Class: <http://org.drools.conyard.owl#HammerBrandX>
@@ -823,15 +839,6 @@ Individual: <http://org.drools.conyard.owl#explosionXP>
      <http://org.drools.conyard.owl#hasVocabulary>  "testCodeSystem"^^xsd:string
     
     
-Individual: <http://org.drools.conyard.owl#test>
-
-    Types: 
-        <http://org.drools.conyard.owl#Danger>
-    
-    Facts:  
-     <http://org.drools.conyard.owl#isDenotedBy>  <http://org.drools.conyard.owl#fireXP>
-    
-    
 Individual: <http://org.drools.conyard.owl#fireXP>
 
     Types: 
@@ -841,6 +848,15 @@ Individual: <http://org.drools.conyard.owl#fireXP>
      <http://org.drools.conyard.owl#hasVocabulary>  "testCodeSystem"^^xsd:string,
      <http://org.drools.conyard.owl#hasLabel>  "Beware of Fire"^^xsd:string,
      <http://org.drools.conyard.owl#hasCode>  "1_fire"^^xsd:string
+    
+    
+Individual: <http://org.drools.conyard.owl#test>
+
+    Types: 
+        <http://org.drools.conyard.owl#Danger>
+    
+    Facts:  
+     <http://org.drools.conyard.owl#isDenotedBy>  <http://org.drools.conyard.owl#fireXP>
     
     
 Individual: <http://org.drools.conyard.owl#explosion>

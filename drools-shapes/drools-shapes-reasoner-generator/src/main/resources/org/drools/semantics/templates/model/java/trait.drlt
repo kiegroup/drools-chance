@@ -17,22 +17,57 @@
 
 }
 
-@declare{'conceptDeclare'}
+@declare{'conceptTypeDeclare'}
 package @{package};
+
+import com.clarkparsia.empire.annotation.RdfsClass;
+import com.clarkparsia.empire.annotation.Namespaces;
+import com.clarkparsia.empire.annotation.RdfProperty;
 
 
 // @{iri}
 
-public interface @{name} extends @{name}__Type, @{name}__Datatype
+@RdfsClass( value="tns:@{name}" )
+@Namespaces({ "tns", "http://@{package}#" })
+public interface @{name} extends com.clarkparsia.empire.SupportsRdfId
+                                 @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{ compactUpperCase( sup.name ) } @end{','} @end{}
 {
+
+@if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }
+    @code{ prop = properties[ propKey ] }
+
+
+    // @{prop.property}   --    @{prop.maxCard}   --- @{prop.name}
+    @RdfProperty("tns:@{prop.name}")
+    public
+        @if{ prop.maxCard == 1 }
+            @{ map( prop.target.name, false ) }@if{ !prop.target.primitive }@end{}
+        @else{}
+            java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
+        @end{}
+        @if{ prop.target.name.equals("xsd:boolean") && prop.maxCard == 1 }
+            is@{ compactUpperCase(prop.name) }();
+        @else{}
+            get@{ compactUpperCase(prop.name) }();
+        @end{}
+
+    // @{prop.property}
+    public void set@{ compactUpperCase(prop.name) }(
+        @if{ prop.maxCard == 1 }
+            @{ map( prop.target.name, false ) }@if{ !prop.target.primitive }@end{}
+        @else{}
+            java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
+        @end{}
+        value );
+
+  @end{}  @end{}
+
+
+
 
 }
 
 @end{}
 
-@includeNamed{'conceptDeclare'}
-
-
-
-
+@includeNamed{'conceptTypeDeclare'}
 

@@ -41,9 +41,7 @@ public class DLTemplateManager {
             "model/drl/trait.drlt"
     };
     protected static final String[] NAMED_TEMPLATES_JAVA = new String[] {
-            "model/java/trait.drlt",
-            "model/java/dataTrait.drlt",
-            "model/java/typeTrait.drlt"
+            "model/java/trait.drlt"
     };
     protected static final String[] ACCESSOR_TEMPLATES_JAVA = new String[] {
             "model/java/semGetter.drlt",

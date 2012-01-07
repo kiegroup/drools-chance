@@ -72,7 +72,7 @@
             <bindings node=".//xsd:@{nodeType}[@name='@{prop.name}']">
                 <jxb:property generateIsSetMethod="true" name="@{prop.name}" >
                     @if{ "element".equals(nodeType) && ! prop.target.primitive }
-                        <jxb:baseType name="@{package}.@{prop.target.name}__Type" />
+                        <jxb:baseType name="@{package}.@{prop.target.name}" />
                     @end{}
                 </jxb:property>
 

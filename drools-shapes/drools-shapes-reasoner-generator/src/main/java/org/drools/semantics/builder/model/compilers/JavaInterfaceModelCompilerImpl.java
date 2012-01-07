@@ -33,8 +33,6 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
     
 
     private String templateName = "trait.drlt";
-    private String dataTemplateName = "dataTrait.drlt";
-    private String typeTemplateName = "typeTrait.drlt";
 
     private TemplateRegistry registry = DLTemplateManager.getDataModelRegistry(ModelFactory.CompileTarget.JAVA);
 
@@ -45,9 +43,7 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
 
     public void compile( String name, Object context, Map<String, Object> params ) {
         CompiledTemplate template = registry.getNamedTemplate(templateName);
-        CompiledTemplate dataTemplate = registry.getNamedTemplate(dataTemplateName);
-        CompiledTemplate typeTemplate = registry.getNamedTemplate(typeTemplateName);
-        
+
         if ( getMode().equals( Mode.FLAT ) ) {
             getModel().flatten();
         } else {
@@ -55,8 +51,7 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
         }
 
         getModel().addTrait(name, TemplateRuntime.execute(template, context, params).toString().trim());
-        getModel().addTrait(name+"__Datatype", TemplateRuntime.execute(dataTemplate, context, params).toString().trim());
-        getModel().addTrait(name + "__Type", TemplateRuntime.execute(typeTemplate, context, params).toString().trim());
+
 
     }
 
