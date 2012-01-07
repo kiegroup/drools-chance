@@ -368,25 +368,25 @@ public class DL_99_ModelTest {
 
 
         assertTrue( checkProperty( painting, pack, "involves", "Person", 1, null ) );
-        assertTrue( checkProperty( painting, pack, "involvesLabourer", "Labourer", 1, null ) );
+        assertTrue( checkProperty( painting, pack, "involvesLabourers", "Labourer", 1, null ) );
         assertTrue( checkProperty( painting, pack, "requires", "Equipment", 0, null ) );
-        assertTrue( checkProperty( painting, pack, "requiresPaint", "Paint", 1, null ) );
+        assertTrue( checkProperty( painting, pack, "requiresPaints", "Paint", 1, null ) );
         assertTrue( checkProperty( painting, pack, "requiresStair", "Stair", 1, 1 ) );
 
 
         assertEquals( 12, ironInst.getProperties().size() );
-        assertTrue( checkProperty( ironInst, pack, "involvesMason", "Mason", 1, null ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresWeldingTorch", "WeldingTorch", 1, null ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresIronBar", "IronBar", 1, null ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresGrinder", "Grinder", 1, null ) );
+        assertTrue( checkProperty( ironInst, pack, "involvesMasons", "Mason", 1, null ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresWeldingTorchs", "WeldingTorch", 1, null ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresIronBars", "IronBar", 1, null ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresGrinders", "Grinder", 1, null ) );
         assertTrue( checkProperty( ironInst, pack, "requiresCrane", "Crane", 1, 1 ) );
-        assertTrue( checkProperty( ironInst, pack, "involvesSmith", "Smith", 1, 4 ) );
+        assertTrue( checkProperty( ironInst, pack, "involvesSmiths", "Smith", 1, 4 ) );
         assertTrue( checkProperty( ironInst, pack, "involves", "Person", 1, null ) );
-        assertTrue( checkProperty( ironInst, pack, "involvesLabourer", "Labourer", 2, null ) );
+        assertTrue( checkProperty( ironInst, pack, "involvesLabourers", "Labourer", 2, null ) );
         assertTrue( checkProperty( ironInst, pack, "requires", "Equipment", 0, null ) );
 
-        assertTrue( checkProperty( wallRais, pack, "involvesMason", "Mason", 3, null ) );
-        assertTrue( checkProperty( wallRais, pack, "requiresBricks", "Bricks", 0, null ) );
+        assertTrue( checkProperty( wallRais, pack, "involvesMasons", "Mason", 3, null ) );
+        assertTrue( checkProperty( wallRais, pack, "requiresBrickss", "Bricks", 0, null ) );
 
 //
     }
