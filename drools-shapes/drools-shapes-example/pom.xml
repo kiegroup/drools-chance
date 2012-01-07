@@ -56,11 +56,12 @@
             <version>0.5.6</version>
         </dependency>
 
-
+	<!-- Empire can be found here: https://github.com/mhgrove/Empire -->
         <dependency>
             <groupId>com.clarkparsia</groupId>
             <artifactId>Empire-core</artifactId>
             <version>0.7</version>
+	    <scope>provided</scope>
         </dependency>
 
 
@@ -68,6 +69,7 @@
             <groupId>com.clarkparsia</groupId>
             <artifactId>Empire-sesame2</artifactId>
             <version>0.7</version>
+	    <scope>provided</scope>
         </dependency>
 
 

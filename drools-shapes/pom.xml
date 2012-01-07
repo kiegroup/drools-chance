@@ -40,6 +40,22 @@
     <module>drools-shapes-example</module>
   </modules>
 
+<repositories>
+    <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
+    <repository>
+      <id>berkeleybop</id>
+      <name>Berkeleybop</name>
+      <url>http://code.berkeleybop.org/maven/repository</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+    </repository>
+</repositories>
 
 
 </project>
