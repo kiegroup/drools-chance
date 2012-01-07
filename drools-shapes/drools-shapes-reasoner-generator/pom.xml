@@ -225,6 +225,15 @@
             <id>choco-repository</id>
             <name>Choco Repository</name>
             <url>http://www.emn.fr/z-info/choco-solver/mvn/repository/</url>
+
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
         </repository>
     </repositories>
 

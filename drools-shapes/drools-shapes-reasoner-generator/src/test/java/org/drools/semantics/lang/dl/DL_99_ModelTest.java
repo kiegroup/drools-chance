@@ -234,6 +234,7 @@ public class DL_99_ModelTest {
     @Test
     public void testFullKMR2XSDModelGeneration() {
         String source = "kmr2" + File.separator + "kmr2_miniExample.manchester";
+//        String source = "kmr2/KMR_Ontology.ttl";
         Resource res = ResourceFactory.newClassPathResource( source );
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
@@ -265,7 +266,7 @@ public class DL_99_ModelTest {
         compiler.setMode(ModelCompiler.Mode.FLAT);
         SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-//        xsdModel.stream( System.out );
+        xsdModel.stream( System.out );
 //        xsdModel.streamBindings( System.out );
 
 
@@ -306,7 +307,7 @@ public class DL_99_ModelTest {
     @Test
     public void testConyardComplexModelGeneration() {
 
-        Resource res = ResourceFactory.newClassPathResource( "conyard.manchester.owl" );
+        Resource res = ResourceFactory.newClassPathResource( "conyard.ttl" );
         factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
         OntoModel results = factory.buildModel( "conyard", res );
 

@@ -181,7 +181,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
                 processSuperClass( sup, con, hierarchicalModel );
             }
-            
+
 //            for ( PropertyRelation prop : con.getProperties().values() ) {
 //                if ( prop.isRestricted() && ( prop.getMaxCard() == null || prop.getMaxCard() > 1 ) ) {
 //                    prop.setName( prop.getName() + "s" );
@@ -336,14 +336,22 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
 
+    private String createSuffix(String name, boolean plural) {
+            String type = DLUtils.map( name, true );
+            if ( type.indexOf(".") >= 0 ) {
+                type = type.substring( type.lastIndexOf(".") + 1 );
+            }
+            return type + ( plural ? "s" : "" );
+        }
+
     private PropertyRelation extractProperty( Concept con, String propIri, Concept target, Integer min, Integer max ) {
         if ( target == null ) {
             System.err.println( "WARNING : Null target for property " + propIri );
         }
 
         boolean inherited = false;
-        String restrictedSuffix = target.getName()+ "s" ;
-        String restrictedPropIri = propIri.replace (">", restrictedSuffix + ">" );
+        String restrictedSuffix = createSuffix( target.getName(), true );
+        String restrictedPropIri = propIri.replace(">", restrictedSuffix + ">");
         PropertyRelation rel = con.getProperties().get( propIri );
         if ( rel == null ) {
             rel = con.getProperties().get( restrictedPropIri );
@@ -356,7 +364,13 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         if ( rel != null ) {
             boolean dirty = false;
+            if ( target.getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" ) || target.getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>") ) {
+                target = rel.getTarget();
+                restrictedSuffix = createSuffix( target.getName(), true );
+                restrictedPropIri = propIri.replace (">", restrictedSuffix + ">" );
+            }
             if ( ! rel.getTarget().equals( target ) ) {
+                //TODO FIXME : check that target is really restrictive!
                 rel.setTarget( target );
                 rel.setObject( target.getIri() );
                 dirty = true;
@@ -366,9 +380,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 dirty = true;
             }
             if ( max != null && ( rel.getMaxCard() == null || max < rel.getMaxCard() ) ) {
-                rel.setMaxCard( max );  
+                rel.setMaxCard( max );
                 if ( max == 1 ) {
-                    restrictedSuffix = target.getName();
+                    restrictedSuffix = createSuffix( target.getName(), false );
                     restrictedPropIri = propIri.replace (">", restrictedSuffix + ">" );
                 }
                 dirty = true;
@@ -670,7 +684,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             for ( OWLClassExpression dom : op.getDomains( ontoDescr ) ) {
                 if ( dom.isAnonymous() ) {
-                    OWLClass domain = factory.getOWLClass(IRI.create( typeName + "Domain") );
+                    OWLClass domain = factory.getOWLClass( IRI.create( DLUtils.capitalize( typeName ) + "Domain") );
                     System.out.println("REPLACED ANON DOMAIN " + op + " with " + domain + ", was " + dom);
                     ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLDeclarationAxiom( domain ) ) );
                     ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLEquivalentClassesAxiom( domain, dom ) ) );
@@ -711,7 +725,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             for ( OWLClassExpression dom : dp.getDomains( ontoDescr ) ) {
                 if ( dom.isAnonymous() ) {
-                    OWLClass domain = factory.getOWLClass(IRI.create( typeName + "Domain") );
+                    OWLClass domain = factory.getOWLClass( IRI.create( DLUtils.capitalize( typeName ) + "Domain" ) );
                     System.out.println("INFO : REPLACED ANON DOMAIN " + dp + " with " + domain + ", was " + dom);
                     ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLDeclarationAxiom( domain ) ) );
                     ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLEquivalentClassesAxiom( domain, dom ) ) );
@@ -753,7 +767,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             for ( OWLClassExpression ran : op.getRanges(ontoDescr) ) {
                 if ( ran.isAnonymous() ) {
-                    OWLClass range = factory.getOWLClass(IRI.create( typeName + "Range") );
+                    OWLClass range = factory.getOWLClass( IRI.create( DLUtils.capitalize( typeName ) + "Range" ) );
                     System.out.println("INFO : REPLACED ANON RANGE " + op + " with " + range + ", was " + ran );
                     ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLDeclarationAxiom( range ) ) );
                     ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLEquivalentClassesAxiom( range, ran ) ) );
@@ -1313,6 +1327,13 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             if ( (ax instanceof InferredEquivalentClassAxiomGenerator ) ) {
                 reasoner.removeGenerator( ax );
             }
+            if ( (ax instanceof InferredSubDataPropertyAxiomGenerator ) ) {
+                reasoner.removeGenerator( ax );
+            }
+            if ( (ax instanceof InferredEquivalentDataPropertiesAxiomGenerator ) ) {
+                reasoner.removeGenerator( ax );
+            }
+
         }
     }
 

@@ -173,7 +173,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     }
 
     private String map( Concept tgt ) {
-        if ( "Thing".equals(tgt.getName() ) ) return "xsd:anyType";
+//        if ( "Thing".equals(tgt.getName() ) ) return "xsd:anyType";
         return tgt.isPrimitive() ? tgt.getName() : "tns:" + tgt.getName();
     }
 
