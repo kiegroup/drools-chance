@@ -1,0 +1,271 @@
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: xml: <http://www.w3.org/XML/1998/namespace>
+Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Prefix: dc: <http://purl.org/dc/elements/1.1/>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+
+
+Ontology: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl>
+
+
+ObjectProperty: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild>
+
+    Characteristics:
+        Asymmetric,
+        Irreflexive
+
+    Domain:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>
+
+    Range:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>
+
+    InverseOf:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasParent>
+
+
+ObjectProperty: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasWife>
+
+    SubPropertyOf:
+        owl:topObjectProperty
+
+    Characteristics:
+        Asymmetric,
+        Irreflexive
+
+    Domain:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>
+
+    Range:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Woman>
+
+    InverseOf:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasHusband>
+
+
+ObjectProperty: owl:topObjectProperty
+
+
+ObjectProperty: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#attends>
+
+    SubPropertyOf:
+        owl:topObjectProperty
+
+    Domain:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>
+
+    Range:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Institute>
+
+
+ObjectProperty: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasParent>
+
+    Characteristics:
+        Asymmetric,
+        Irreflexive
+
+    Domain:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>
+
+    Range:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>
+
+    InverseOf:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild>
+
+
+ObjectProperty: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasHusband>
+
+    SubPropertyOf:
+        owl:topObjectProperty
+
+    Characteristics:
+        Asymmetric,
+        Irreflexive
+
+    Domain:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Woman>
+
+    Range:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>
+
+    InverseOf:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasWife>
+
+
+Class: owl:Thing
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#ParentWithManyChildren>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> min 3 owl:Thing)
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Mother>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>
+         and <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Woman>
+
+    SubClassOf:
+        owl:Thing
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#LearningInstitute>
+
+    SubClassOf:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Institute>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Institute>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Momd>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> some <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Momd>)
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> only <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Momd>)
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Mos>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> some <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>)
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> only <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>)
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#MotherWithManyChildren>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Mother>
+         and <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#ParentWithManyChildren>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Woman>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Female>
+         and <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Grandmother>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Mother>
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> some <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>)
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Grandfather>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Father>
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> some <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>)
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> only <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>)
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#FatherWithManyChildren>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Father>
+         and <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#ParentWithManyChildren>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Student>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#attends> some <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#LearningInstitute>)
+
+    SubClassOf:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Husband>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasWife> some <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Woman>)
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasWife> only <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Woman>)
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasWife> max 1 owl:Thing)
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Male>
+         and <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>
+
+    SubClassOf:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Male>
+
+    DisjointWith:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Female>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> some <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>)
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasChild> only <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>)
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Person>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Female>
+
+    DisjointWith:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Male>
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Wife>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Woman>
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasHusband> some <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>)
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasHusband> only <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>)
+         and (<http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#hasHusband> max 1 owl:Thing)
+
+
+Class: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Father>
+
+    EquivalentTo:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>
+         and <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Parent>
+
+    SubClassOf:
+        owl:Thing
+
+
+Individual: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#f1>
+
+    Types:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Father>
+
+
+Individual: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#mark>
+
+    Types:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Student>
+
+
+Individual: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#school1>
+
+    Types:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#LearningInstitute>
+
+
+Individual: <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#c1>
+
+    Types:
+        <http://www.semanticweb.org/ontologies/2011/11/Ontology1323565293307.owl#Man>

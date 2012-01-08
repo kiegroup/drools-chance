@@ -1,0 +1,1547 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix : <http://org.drools.conyard.owl#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://org.drools.conyard.owl> .
+
+<http://org.drools.conyard.owl> rdf:type owl:Ontology .
+
+
+#################################################################
+#
+#    Annotation properties
+#
+#################################################################
+
+
+rdfs:comment rdf:type owl:AnnotationProperty .
+
+
+
+:abstract rdf:type owl:AnnotationProperty ;
+          
+          rdfs:range xsd:boolean ;
+          
+          rdfs:domain owl:Thing .
+
+
+
+
+
+#################################################################
+#
+#    Datatypes
+#
+#################################################################
+
+
+###  http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral
+
+rdf:PlainLiteral rdf:type rdfs:Datatype .
+
+
+
+###  http://www.w3.org/2000/01/rdf-schema#Literal
+
+rdfs:Literal rdf:type rdfs:Datatype .
+
+
+
+###  http://www.w3.org/2001/XMLSchema#boolean
+
+xsd:boolean rdf:type rdfs:Datatype .
+
+
+
+###  http://www.w3.org/2001/XMLSchema#dateTime
+
+xsd:dateTime rdf:type rdfs:Datatype .
+
+
+
+###  http://www.w3.org/2001/XMLSchema#float
+
+xsd:float rdf:type rdfs:Datatype .
+
+
+
+###  http://www.w3.org/2001/XMLSchema#int
+
+xsd:int rdf:type rdfs:Datatype .
+
+
+
+###  http://www.w3.org/2001/XMLSchema#string
+
+xsd:string rdf:type rdfs:Datatype .
+
+
+
+
+
+#################################################################
+#
+#    Object Properties
+#
+#################################################################
+
+
+###  http://org.drools.conyard.owl#endangersWith
+
+:endangersWith rdf:type owl:ObjectProperty ;
+               
+               rdfs:range :Danger ;
+               
+               rdfs:domain :Dangerous .
+
+
+
+###  http://org.drools.conyard.owl#hasSite
+
+:hasSite rdf:type owl:AsymmetricProperty ,
+                  owl:IrreflexiveProperty ,
+                  owl:ObjectProperty ;
+         
+         rdfs:domain :ConstructionYard ;
+         
+         rdfs:range :Site ;
+         
+         owl:inverseOf :locatedAt .
+
+
+
+###  http://org.drools.conyard.owl#involves
+
+:involves rdf:type owl:AsymmetricProperty ,
+                   owl:IrreflexiveProperty ,
+                   owl:ObjectProperty ;
+          
+          rdfs:domain :Activity ;
+          
+          rdfs:range :Person ;
+          
+          owl:inverseOf :participatesIn .
+
+
+
+###  http://org.drools.conyard.owl#isDenotedBy
+
+:isDenotedBy rdf:type owl:ObjectProperty ;
+             
+             rdfs:domain :CodedConcept ;
+             
+             rdfs:range :Expression .
+
+
+
+###  http://org.drools.conyard.owl#locatedAt
+
+:locatedAt rdf:type owl:ObjectProperty ;
+           
+           rdfs:range :ConstructionYard ;
+           
+           rdfs:domain :Site .
+
+
+
+###  http://org.drools.conyard.owl#participatesIn
+
+:participatesIn rdf:type owl:AsymmetricProperty ,
+                         owl:IrreflexiveProperty ,
+                         owl:ObjectProperty ;
+                
+                rdfs:range :Activity ;
+                
+                rdfs:domain :Person .
+
+
+
+###  http://org.drools.conyard.owl#protectsAgainst
+
+:protectsAgainst rdf:type owl:ObjectProperty ;
+                 
+                 rdfs:domain :DPI ;
+                 
+                 rdfs:range :Danger .
+
+
+
+###  http://org.drools.conyard.owl#requires
+
+:requires rdf:type owl:AsymmetricProperty ,
+                   owl:IrreflexiveProperty ,
+                   owl:ObjectProperty ;
+          
+          rdfs:domain :Activity ;
+          
+          rdfs:range :Equipment .
+
+
+
+###  http://org.drools.conyard.owl#storedIn
+
+:storedIn rdf:type owl:AsymmetricProperty ,
+                   owl:IrreflexiveProperty ,
+                   owl:ObjectProperty ;
+          
+          rdfs:domain :Equipment ;
+          
+          rdfs:range :Site .
+
+
+
+
+
+#################################################################
+#
+#    Data properties
+#
+#################################################################
+
+
+###  http://org.drools.conyard.owl#centerX
+
+:centerX rdf:type owl:DatatypeProperty ;
+         
+         rdfs:domain :Site ;
+         
+         rdfs:range xsd:float .
+
+
+
+###  http://org.drools.conyard.owl#centerY
+
+:centerY rdf:type owl:DatatypeProperty ;
+         
+         rdfs:domain :Site ;
+         
+         rdfs:range xsd:float .
+
+
+
+###  http://org.drools.conyard.owl#endsOn
+
+:endsOn rdf:type owl:DatatypeProperty ;
+        
+        rdfs:domain :Activity ;
+        
+        rdfs:range xsd:dateTime .
+
+
+
+###  http://org.drools.conyard.owl#hasCode
+
+:hasCode rdf:type owl:DatatypeProperty ;
+         
+         rdfs:domain :Expression ;
+         
+         rdfs:range xsd:string .
+
+
+
+###  http://org.drools.conyard.owl#hasComment
+
+:hasComment rdf:type owl:DatatypeProperty ;
+            
+            rdfs:domain :Activity ;
+            
+            rdfs:range xsd:string .
+
+
+
+###  http://org.drools.conyard.owl#hasLabel
+
+:hasLabel rdf:type owl:DatatypeProperty ;
+          
+          rdfs:domain :Expression ;
+          
+          rdfs:range xsd:string .
+
+
+
+###  http://org.drools.conyard.owl#hasVocabulary
+
+:hasVocabulary rdf:type owl:DatatypeProperty ;
+               
+               rdfs:domain :Expression ;
+               
+               rdfs:range xsd:string .
+
+
+
+###  http://org.drools.conyard.owl#radius
+
+:radius rdf:type owl:DatatypeProperty ;
+        
+        rdfs:domain :Site ;
+        
+        rdfs:range xsd:float .
+
+
+
+###  http://org.drools.conyard.owl#stairLength
+
+:stairLength rdf:type owl:DatatypeProperty ;
+             
+             rdfs:domain :Stair ;
+             
+             rdfs:range xsd:int .
+
+
+
+###  http://org.drools.conyard.owl#startsOn
+
+:startsOn rdf:type owl:DatatypeProperty ;
+          
+          rdfs:domain :Activity ;
+          
+          rdfs:range xsd:dateTime .
+
+
+
+
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+
+###  http://org.drools.conyard.owl#Activity
+
+:Activity rdf:type owl:Class ;
+          
+          rdfs:subClassOf [ rdf:type owl:Restriction ;
+                            owl:onProperty :hasComment ;
+                            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                            owl:onDataRange xsd:string
+                          ] ,
+                          [ rdf:type owl:Class ;
+                            owl:intersectionOf ( :Entity
+                                                 [ rdf:type owl:Restriction ;
+                                                   owl:onProperty :involves ;
+                                                   owl:onClass :Person ;
+                                                   owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                 ]
+                                                 [ rdf:type owl:Restriction ;
+                                                   owl:onProperty :requires ;
+                                                   owl:onClass :Equipment ;
+                                                   owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                                                 ]
+                                                 [ rdf:type owl:Restriction ;
+                                                   owl:onProperty :endsOn ;
+                                                   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                   owl:onDataRange xsd:dateTime
+                                                 ]
+                                                 [ rdf:type owl:Restriction ;
+                                                   owl:onProperty :startsOn ;
+                                                   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                   owl:onDataRange xsd:dateTime
+                                                 ]
+                                               )
+                          ] .
+
+
+
+###  http://org.drools.conyard.owl#AnotherBurning
+
+:AnotherBurning rdf:type owl:Class ;
+                
+                owl:equivalentClass [ rdf:type owl:Restriction ;
+                                      owl:onProperty :isDenotedBy ;
+                                      owl:someValuesFrom [ rdf:type owl:Class ;
+                                                           owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                                  owl:onProperty :hasCode ;
+                                                                                  owl:hasValue "burn_AA"
+                                                                                ]
+                                                                                [ rdf:type owl:Restriction ;
+                                                                                  owl:onProperty :hasVocabulary ;
+                                                                                  owl:hasValue "anotherCS"
+                                                                                ]
+                                                                              )
+                                                         ]
+                                    ] ;
+                
+                rdfs:subClassOf :AnotherFire .
+
+
+
+###  http://org.drools.conyard.owl#AnotherExplosion
+
+:AnotherExplosion rdf:type owl:Class ;
+                  
+                  owl:equivalentClass [ rdf:type owl:Restriction ;
+                                        owl:onProperty :isDenotedBy ;
+                                        owl:someValuesFrom [ rdf:type owl:Class ;
+                                                             owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                                    owl:onProperty :hasCode ;
+                                                                                    owl:hasValue "expl_B"
+                                                                                  ]
+                                                                                  [ rdf:type owl:Restriction ;
+                                                                                    owl:onProperty :hasVocabulary ;
+                                                                                    owl:hasValue "anotherCS"
+                                                                                  ]
+                                                                                )
+                                                           ]
+                                      ] ;
+                  
+                  rdfs:subClassOf [ rdf:type owl:Class ;
+                                    owl:intersectionOf ( :AnotherVocabulary
+                                                         :Explosion
+                                                       )
+                                  ] .
+
+
+
+###  http://org.drools.conyard.owl#AnotherFall
+
+:AnotherFall rdf:type owl:Class ;
+             
+             owl:equivalentClass [ rdf:type owl:Restriction ;
+                                   owl:onProperty :isDenotedBy ;
+                                   owl:someValuesFrom [ rdf:type owl:Class ;
+                                                        owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                               owl:onProperty :hasCode ;
+                                                                               owl:hasValue "fall_C"
+                                                                             ]
+                                                                             [ rdf:type owl:Restriction ;
+                                                                               owl:onProperty :hasVocabulary ;
+                                                                               owl:hasValue "anotherCS"
+                                                                             ]
+                                                                           )
+                                                      ]
+                                 ] ;
+             
+             rdfs:subClassOf [ rdf:type owl:Class ;
+                               owl:intersectionOf ( :AnotherVocabulary
+                                                    :Fall
+                                                  )
+                             ] .
+
+
+
+###  http://org.drools.conyard.owl#AnotherFire
+
+:AnotherFire rdf:type owl:Class ;
+             
+             rdfs:subClassOf [ rdf:type owl:Class ;
+                               owl:intersectionOf ( :AnotherVocabulary
+                                                    :Fire
+                                                  )
+                             ] .
+
+
+
+###  http://org.drools.conyard.owl#AnotherFrost
+
+:AnotherFrost rdf:type owl:Class ;
+              
+              owl:equivalentClass [ rdf:type owl:Restriction ;
+                                    owl:onProperty :isDenotedBy ;
+                                    owl:someValuesFrom [ rdf:type owl:Class ;
+                                                         owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                                owl:onProperty :hasCode ;
+                                                                                owl:hasValue "frost_D"
+                                                                              ]
+                                                                              [ rdf:type owl:Restriction ;
+                                                                                owl:onProperty :hasVocabulary ;
+                                                                                owl:hasValue "anotherCS"
+                                                                              ]
+                                                                            )
+                                                       ]
+                                  ] ;
+              
+              rdfs:subClassOf [ rdf:type owl:Class ;
+                                owl:intersectionOf ( :AnotherVocabulary
+                                                     :Frost
+                                                   )
+                              ] .
+
+
+
+###  http://org.drools.conyard.owl#AnotherHeat
+
+:AnotherHeat rdf:type owl:Class ;
+             
+             owl:equivalentClass [ rdf:type owl:Restriction ;
+                                   owl:onProperty :isDenotedBy ;
+                                   owl:someValuesFrom [ rdf:type owl:Class ;
+                                                        owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                               owl:onProperty :hasCode ;
+                                                                               owl:hasValue "heat_AB"
+                                                                             ]
+                                                                             [ rdf:type owl:Restriction ;
+                                                                               owl:onProperty :hasVocabulary ;
+                                                                               owl:hasValue "anotherCS"
+                                                                             ]
+                                                                           )
+                                                      ]
+                                 ] ;
+             
+             rdfs:subClassOf :AnotherFire .
+
+
+
+###  http://org.drools.conyard.owl#AnotherVocabulary
+
+:AnotherVocabulary rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf :Meta .
+
+
+
+###  http://org.drools.conyard.owl#Belt
+
+:Belt rdf:type owl:Class ;
+      
+      rdfs:subClassOf :DPI .
+
+
+
+###  http://org.drools.conyard.owl#BeltBrandX
+
+:BeltBrandX rdf:type owl:Class ;
+            
+            rdfs:subClassOf :Belt ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :protectsAgainst ;
+                              owl:someValuesFrom [ rdf:type owl:Class ;
+                                                   owl:intersectionOf ( :Danger
+                                                                        [ rdf:type owl:Restriction ;
+                                                                          owl:onProperty :isDenotedBy ;
+                                                                          owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                               owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                                                                      owl:onProperty :hasCode ;
+                                                                                                                      owl:hasValue "fall_C"
+                                                                                                                    ]
+                                                                                                                    [ rdf:type owl:Restriction ;
+                                                                                                                      owl:onProperty :hasVocabulary ;
+                                                                                                                      owl:hasValue "anotherCS"
+                                                                                                                    ]
+                                                                                                                  )
+                                                                                             ]
+                                                                        ]
+                                                                      )
+                                                 ]
+                            ] .
+
+
+
+###  http://org.drools.conyard.owl#Bricks
+
+:Bricks rdf:type owl:Class ;
+        
+        rdfs:subClassOf :Material .
+
+
+
+###  http://org.drools.conyard.owl#ChemPaintY
+
+:ChemPaintY rdf:type owl:Class ;
+            
+            rdfs:subClassOf :Paint ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :endangersWith ;
+                              owl:someValuesFrom [ rdf:type owl:Class ;
+                                                   owl:intersectionOf ( :Danger
+                                                                        [ rdf:type owl:Restriction ;
+                                                                          owl:onProperty :isDenotedBy ;
+                                                                          owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                               owl:intersectionOf ( :Expression
+                                                                                                                    [ rdf:type owl:Restriction ;
+                                                                                                                      owl:onProperty :hasCode ;
+                                                                                                                      owl:hasValue "2_explosion"
+                                                                                                                    ]
+                                                                                                                    [ rdf:type owl:Restriction ;
+                                                                                                                      owl:onProperty :hasVocabulary ;
+                                                                                                                      owl:hasValue "testCodeSystem"
+                                                                                                                    ]
+                                                                                                                  )
+                                                                                             ]
+                                                                        ]
+                                                                      )
+                                                 ]
+                            ] .
+
+
+
+###  http://org.drools.conyard.owl#CodedConcept
+
+:CodedConcept rdf:type owl:Class ;
+              
+              rdfs:subClassOf [ rdf:type owl:Class ;
+                                owl:intersectionOf ( :Meta
+                                                     [ rdf:type owl:Restriction ;
+                                                       owl:onProperty :isDenotedBy ;
+                                                       owl:onClass :Expression ;
+                                                       owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                     ]
+                                                   )
+                              ] .
+
+
+
+###  http://org.drools.conyard.owl#Cold
+
+:Cold rdf:type owl:Class ;
+      
+      owl:equivalentClass [ rdf:type owl:Class ;
+                            owl:intersectionOf ( :Dangerous
+                                                 [ rdf:type owl:Restriction ;
+                                                   owl:onProperty :endangersWith ;
+                                                   owl:someValuesFrom :Frost
+                                                 ]
+                                               )
+                          ] .
+
+
+
+###  http://org.drools.conyard.owl#Concrete
+
+:Concrete rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Material .
+
+
+
+###  http://org.drools.conyard.owl#ConstructionIronBarsZ
+
+:ConstructionIronBarsZ rdf:type owl:Class ;
+                       
+                       rdfs:subClassOf :IronBar ,
+                                       [ rdf:type owl:Restriction ;
+                                         owl:onProperty :endangersWith ;
+                                         owl:someValuesFrom [ rdf:type owl:Class ;
+                                                              owl:intersectionOf ( :Danger
+                                                                                   [ rdf:type owl:Restriction ;
+                                                                                     owl:onProperty :isDenotedBy ;
+                                                                                     owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                                          owl:intersectionOf ( :Expression
+                                                                                                                               [ rdf:type owl:Restriction ;
+                                                                                                                                 owl:onProperty :hasCode ;
+                                                                                                                                 owl:hasValue "4_frost"
+                                                                                                                               ]
+                                                                                                                               [ rdf:type owl:Restriction ;
+                                                                                                                                 owl:onProperty :hasVocabulary ;
+                                                                                                                                 owl:hasValue "testCodeSystem"
+                                                                                                                               ]
+                                                                                                                             )
+                                                                                                        ]
+                                                                                   ]
+                                                                                 )
+                                                            ]
+                                       ] .
+
+
+
+###  http://org.drools.conyard.owl#ConstructionYard
+
+:ConstructionYard rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf [ rdf:type owl:Class ;
+                                    owl:intersectionOf ( :Entity
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :hasSite ;
+                                                           owl:onClass :Site ;
+                                                           owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                                                         ]
+                                                       )
+                                  ] .
+
+
+
+###  http://org.drools.conyard.owl#Crane
+
+:Crane rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Vehicle ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :endangersWith ;
+                         owl:hasValue :fall
+                       ] .
+
+
+
+###  http://org.drools.conyard.owl#DPI
+
+:DPI rdf:type owl:Class ;
+     
+     rdfs:subClassOf :Device .
+
+
+
+###  http://org.drools.conyard.owl#Danger
+
+:Danger rdf:type owl:Class ;
+        
+        rdfs:subClassOf :CodedConcept .
+
+
+
+###  http://org.drools.conyard.owl#Dangerous
+
+:Dangerous rdf:type owl:Class ;
+           
+           rdfs:subClassOf :Meta .
+
+
+
+###  http://org.drools.conyard.owl#Device
+
+:Device rdf:type owl:Class ;
+        
+        rdfs:subClassOf :Equipment .
+
+
+
+###  http://org.drools.conyard.owl#Entity
+
+:Entity rdf:type owl:Class ;
+        
+        rdfs:comment "abstract"^^xsd:string ;
+        
+        :abstract "true"^^xsd:boolean .
+
+
+
+###  http://org.drools.conyard.owl#Equipment
+
+:Equipment rdf:type owl:Class ;
+           
+           rdfs:subClassOf [ rdf:type owl:Class ;
+                             owl:intersectionOf ( :Entity
+                                                  [ rdf:type owl:Restriction ;
+                                                    owl:onProperty :storedIn ;
+                                                    owl:onClass :Site ;
+                                                    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                  ]
+                                                )
+                           ] .
+
+
+
+###  http://org.drools.conyard.owl#Explosion
+
+:Explosion rdf:type owl:Class ;
+           
+           rdfs:subClassOf :Danger .
+
+
+
+###  http://org.drools.conyard.owl#Explosive
+
+:Explosive rdf:type owl:Class ;
+           
+           owl:equivalentClass [ rdf:type owl:Class ;
+                                 owl:intersectionOf ( :Dangerous
+                                                      [ rdf:type owl:Restriction ;
+                                                        owl:onProperty :endangersWith ;
+                                                        owl:someValuesFrom :Explosion
+                                                      ]
+                                                    )
+                               ] .
+
+
+
+###  http://org.drools.conyard.owl#Expression
+
+:Expression rdf:type owl:Class ;
+            
+            rdfs:subClassOf [ rdf:type owl:Class ;
+                              owl:intersectionOf ( :Meta
+                                                   [ rdf:type owl:Restriction ;
+                                                     owl:onProperty :hasCode ;
+                                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                     owl:onDataRange xsd:string
+                                                   ]
+                                                   [ rdf:type owl:Restriction ;
+                                                     owl:onProperty :hasLabel ;
+                                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                     owl:onDataRange xsd:string
+                                                   ]
+                                                   [ rdf:type owl:Restriction ;
+                                                     owl:onProperty :hasVocabulary ;
+                                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                     owl:onDataRange xsd:string
+                                                   ]
+                                                 )
+                            ] .
+
+
+
+###  http://org.drools.conyard.owl#Fall
+
+:Fall rdf:type owl:Class ;
+      
+      rdfs:subClassOf :Danger .
+
+
+
+###  http://org.drools.conyard.owl#FallProtection
+
+:FallProtection rdf:type owl:Class ;
+                
+                owl:equivalentClass [ rdf:type owl:Class ;
+                                      owl:intersectionOf ( :DPI
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty :protectsAgainst ;
+                                                             owl:someValuesFrom :Fall
+                                                           ]
+                                                         )
+                                    ] ;
+                
+                rdfs:subClassOf :DPI .
+
+
+
+###  http://org.drools.conyard.owl#Fiery
+
+:Fiery rdf:type owl:Class ;
+       
+       owl:equivalentClass [ rdf:type owl:Class ;
+                             owl:intersectionOf ( :Dangerous
+                                                  [ rdf:type owl:Restriction ;
+                                                    owl:onProperty :endangersWith ;
+                                                    owl:someValuesFrom :Fire
+                                                  ]
+                                                )
+                           ] .
+
+
+
+###  http://org.drools.conyard.owl#Fire
+
+:Fire rdf:type owl:Class ;
+      
+      rdfs:subClassOf :Danger .
+
+
+
+###  http://org.drools.conyard.owl#FireProtection
+
+:FireProtection rdf:type owl:Class ;
+                
+                owl:equivalentClass [ rdf:type owl:Class ;
+                                      owl:intersectionOf ( :DPI
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty :protectsAgainst ;
+                                                             owl:someValuesFrom :Fire
+                                                           ]
+                                                         )
+                                    ] ;
+                
+                rdfs:subClassOf :DPI .
+
+
+
+###  http://org.drools.conyard.owl#Frost
+
+:Frost rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Danger .
+
+
+
+###  http://org.drools.conyard.owl#FrostProtection
+
+:FrostProtection rdf:type owl:Class ;
+                 
+                 owl:equivalentClass [ rdf:type owl:Restriction ;
+                                       owl:onProperty :protectsAgainst ;
+                                       owl:someValuesFrom :Frost
+                                     ] ;
+                 
+                 rdfs:subClassOf :DPI .
+
+
+
+###  http://org.drools.conyard.owl#Gloves
+
+:Gloves rdf:type owl:Class ;
+        
+        rdfs:subClassOf :DPI ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :protectsAgainst ;
+                          owl:hasValue :frost
+                        ] .
+
+
+
+###  http://org.drools.conyard.owl#GlovesBrandX
+
+:GlovesBrandX rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Gloves ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :protectsAgainst ;
+                                owl:someValuesFrom [ rdf:type owl:Class ;
+                                                     owl:intersectionOf ( :Danger
+                                                                          [ rdf:type owl:Restriction ;
+                                                                            owl:onProperty :isDenotedBy ;
+                                                                            owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                                 owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                                                                        owl:onProperty :hasCode ;
+                                                                                                                        owl:hasValue "heat_AB"
+                                                                                                                      ]
+                                                                                                                      [ rdf:type owl:Restriction ;
+                                                                                                                        owl:onProperty :hasVocabulary ;
+                                                                                                                        owl:hasValue "anotherCS"
+                                                                                                                      ]
+                                                                                                                    )
+                                                                                               ]
+                                                                          ]
+                                                                        )
+                                                   ]
+                              ] .
+
+
+
+###  http://org.drools.conyard.owl#Grinder
+
+:Grinder rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Tool .
+
+
+
+###  http://org.drools.conyard.owl#GrinderBrandX
+
+:GrinderBrandX rdf:type owl:Class ;
+               
+               rdfs:subClassOf :Grinder ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :endangersWith ;
+                                 owl:someValuesFrom [ rdf:type owl:Class ;
+                                                      owl:intersectionOf ( :Danger
+                                                                           [ rdf:type owl:Restriction ;
+                                                                             owl:onProperty :isDenotedBy ;
+                                                                             owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                                  owl:intersectionOf ( :Expression
+                                                                                                                       [ rdf:type owl:Restriction ;
+                                                                                                                         owl:onProperty :hasCode ;
+                                                                                                                         owl:hasValue "2_explosion"
+                                                                                                                       ]
+                                                                                                                       [ rdf:type owl:Restriction ;
+                                                                                                                         owl:onProperty :hasVocabulary ;
+                                                                                                                         owl:hasValue "testCodeSystem"
+                                                                                                                       ]
+                                                                                                                     )
+                                                                                                ]
+                                                                           ]
+                                                                         )
+                                                    ]
+                               ] .
+
+
+
+###  http://org.drools.conyard.owl#Guest
+
+:Guest rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Person .
+
+
+
+###  http://org.drools.conyard.owl#Hammer
+
+:Hammer rdf:type owl:Class ;
+        
+        rdfs:subClassOf :Tool .
+
+
+
+###  http://org.drools.conyard.owl#HammerBrandX
+
+:HammerBrandX rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Hammer .
+
+
+
+###  http://org.drools.conyard.owl#High
+
+:High rdf:type owl:Class ;
+      
+      owl:equivalentClass [ rdf:type owl:Class ;
+                            owl:intersectionOf ( :Dangerous
+                                                 [ rdf:type owl:Restriction ;
+                                                   owl:onProperty :endangersWith ;
+                                                   owl:someValuesFrom :Fall
+                                                 ]
+                                               )
+                          ] .
+
+
+
+###  http://org.drools.conyard.owl#Intruder
+
+:Intruder rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Person .
+
+
+
+###  http://org.drools.conyard.owl#IronBar
+
+:IronBar rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Material .
+
+
+
+###  http://org.drools.conyard.owl#IronInstallation
+
+:IronInstallation rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf [ rdf:type owl:Class ;
+                                    owl:intersectionOf ( :Activity
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :involves ;
+                                                           owl:someValuesFrom :Mason
+                                                         ]
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :requires ;
+                                                           owl:someValuesFrom :IronBar
+                                                         ]
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :requires ;
+                                                           owl:someValuesFrom :WeldingTorch
+                                                         ]
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :involves ;
+                                                           owl:onClass :Smith ;
+                                                           owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                         ]
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :involves ;
+                                                           owl:onClass :Labourer ;
+                                                           owl:minQualifiedCardinality "2"^^xsd:nonNegativeInteger
+                                                         ]
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :requires ;
+                                                           owl:onClass :Grinder ;
+                                                           owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                         ]
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :requires ;
+                                                           owl:onClass :Crane ;
+                                                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                         ]
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :involves ;
+                                                           owl:onClass :Smith ;
+                                                           owl:maxQualifiedCardinality "4"^^xsd:nonNegativeInteger
+                                                         ]
+                                                       )
+                                  ] .
+
+
+
+###  http://org.drools.conyard.owl#Labourer
+
+:Labourer rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Worker .
+
+
+
+###  http://org.drools.conyard.owl#Manager
+
+:Manager rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Person .
+
+
+
+###  http://org.drools.conyard.owl#Mason
+
+:Mason rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Worker .
+
+
+
+###  http://org.drools.conyard.owl#Material
+
+:Material rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Equipment .
+
+
+
+###  http://org.drools.conyard.owl#Meta
+
+:Meta rdf:type owl:Class .
+
+
+
+###  http://org.drools.conyard.owl#Paint
+
+:Paint rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Material .
+
+
+
+###  http://org.drools.conyard.owl#Painting
+
+:Painting rdf:type owl:Class ;
+          
+          rdfs:subClassOf [ rdf:type owl:Class ;
+                            owl:intersectionOf ( :Activity
+                                                 [ rdf:type owl:Restriction ;
+                                                   owl:onProperty :involves ;
+                                                   owl:someValuesFrom :Labourer
+                                                 ]
+                                                 [ rdf:type owl:Restriction ;
+                                                   owl:onProperty :requires ;
+                                                   owl:someValuesFrom :Paint
+                                                 ]
+                                                 [ rdf:type owl:Restriction ;
+                                                   owl:onProperty :requires ;
+                                                   owl:onClass :Stair ;
+                                                   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                 ]
+                                               )
+                          ] .
+
+
+
+###  http://org.drools.conyard.owl#Person
+
+:Person rdf:type owl:Class ;
+        
+        rdfs:subClassOf :Entity .
+
+
+
+###  http://org.drools.conyard.owl#Pipes
+
+:Pipes rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Material .
+
+
+
+###  http://org.drools.conyard.owl#Site
+
+:Site rdf:type owl:Class ;
+      
+      rdfs:subClassOf [ rdf:type owl:Class ;
+                        owl:intersectionOf ( :Entity
+                                             [ rdf:type owl:Restriction ;
+                                               owl:onProperty :centerX ;
+                                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                               owl:onDataRange xsd:float
+                                             ]
+                                             [ rdf:type owl:Restriction ;
+                                               owl:onProperty :centerY ;
+                                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                               owl:onDataRange xsd:float
+                                             ]
+                                             [ rdf:type owl:Restriction ;
+                                               owl:onProperty :radius ;
+                                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                               owl:onDataRange xsd:float
+                                             ]
+                                           )
+                      ] .
+
+
+
+###  http://org.drools.conyard.owl#Smith
+
+:Smith rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Worker .
+
+
+
+###  http://org.drools.conyard.owl#Stair
+
+:Stair rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Tool ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :stairLength ;
+                         owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                         owl:onDataRange xsd:int
+                       ] .
+
+
+
+###  http://org.drools.conyard.owl#StairBrandX
+
+:StairBrandX rdf:type owl:Class ;
+             
+             rdfs:subClassOf :Stair ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :endangersWith ;
+                               owl:someValuesFrom [ rdf:type owl:Class ;
+                                                    owl:intersectionOf ( :Danger
+                                                                         [ rdf:type owl:Restriction ;
+                                                                           owl:onProperty :isDenotedBy ;
+                                                                           owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                                owl:intersectionOf ( :Expression
+                                                                                                                     [ rdf:type owl:Restriction ;
+                                                                                                                       owl:onProperty :hasCode ;
+                                                                                                                       owl:hasValue "3_fall"
+                                                                                                                     ]
+                                                                                                                     [ rdf:type owl:Restriction ;
+                                                                                                                       owl:onProperty :hasVocabulary ;
+                                                                                                                       owl:hasValue "testCodeSystem"
+                                                                                                                     ]
+                                                                                                                   )
+                                                                                              ]
+                                                                         ]
+                                                                       )
+                                                  ]
+                             ] .
+
+
+
+###  http://org.drools.conyard.owl#Supervisor
+
+:Supervisor rdf:type owl:Class ;
+            
+            rdfs:subClassOf :Person .
+
+
+
+###  http://org.drools.conyard.owl#TestExplosion
+
+:TestExplosion rdf:type owl:Class ;
+               
+               owl:equivalentClass [ rdf:type owl:Restriction ;
+                                     owl:onProperty :isDenotedBy ;
+                                     owl:someValuesFrom [ rdf:type owl:Class ;
+                                                          owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                                 owl:onProperty :hasCode ;
+                                                                                 owl:hasValue "2_explosion"
+                                                                               ]
+                                                                               [ rdf:type owl:Restriction ;
+                                                                                 owl:onProperty :hasVocabulary ;
+                                                                                 owl:hasValue "testCodeSystem"
+                                                                               ]
+                                                                             )
+                                                        ]
+                                   ] ;
+               
+               rdfs:subClassOf [ rdf:type owl:Class ;
+                                 owl:intersectionOf ( :Explosion
+                                                      :TestVocabulary
+                                                    )
+                               ] .
+
+
+
+###  http://org.drools.conyard.owl#TestFall
+
+:TestFall rdf:type owl:Class ;
+          
+          owl:equivalentClass [ rdf:type owl:Restriction ;
+                                owl:onProperty :isDenotedBy ;
+                                owl:someValuesFrom [ rdf:type owl:Class ;
+                                                     owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                            owl:onProperty :hasCode ;
+                                                                            owl:hasValue "3_fall"
+                                                                          ]
+                                                                          [ rdf:type owl:Restriction ;
+                                                                            owl:onProperty :hasVocabulary ;
+                                                                            owl:hasValue "testCodeSystem"
+                                                                          ]
+                                                                        )
+                                                   ]
+                              ] ;
+          
+          rdfs:subClassOf [ rdf:type owl:Class ;
+                            owl:intersectionOf ( :Fall
+                                                 :TestVocabulary
+                                               )
+                          ] .
+
+
+
+###  http://org.drools.conyard.owl#TestFire
+
+:TestFire rdf:type owl:Class ;
+          
+          owl:equivalentClass [ rdf:type owl:Restriction ;
+                                owl:onProperty :isDenotedBy ;
+                                owl:someValuesFrom [ rdf:type owl:Class ;
+                                                     owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                            owl:onProperty :hasCode ;
+                                                                            owl:hasValue "1_fire"
+                                                                          ]
+                                                                          [ rdf:type owl:Restriction ;
+                                                                            owl:onProperty :hasVocabulary ;
+                                                                            owl:hasValue "testCodeSystem"
+                                                                          ]
+                                                                        )
+                                                   ]
+                              ] ;
+          
+          rdfs:subClassOf [ rdf:type owl:Class ;
+                            owl:intersectionOf ( :Fire
+                                                 :TestVocabulary
+                                               )
+                          ] .
+
+
+
+###  http://org.drools.conyard.owl#TestFrost
+
+:TestFrost rdf:type owl:Class ;
+           
+           owl:equivalentClass [ rdf:type owl:Restriction ;
+                                 owl:onProperty :isDenotedBy ;
+                                 owl:someValuesFrom [ rdf:type owl:Class ;
+                                                      owl:intersectionOf ( [ rdf:type owl:Restriction ;
+                                                                             owl:onProperty :hasCode ;
+                                                                             owl:hasValue "4_frost"
+                                                                           ]
+                                                                           [ rdf:type owl:Restriction ;
+                                                                             owl:onProperty :hasVocabulary ;
+                                                                             owl:hasValue "testCodeSystem"
+                                                                           ]
+                                                                         )
+                                                    ]
+                               ] ;
+           
+           rdfs:subClassOf [ rdf:type owl:Class ;
+                             owl:intersectionOf ( :Frost
+                                                  :TestVocabulary
+                                                )
+                           ] .
+
+
+
+###  http://org.drools.conyard.owl#TestVocabulary
+
+:TestVocabulary rdf:type owl:Class ;
+                
+                rdfs:subClassOf :Meta .
+
+
+
+###  http://org.drools.conyard.owl#Tool
+
+:Tool rdf:type owl:Class ;
+      
+      rdfs:subClassOf :Device .
+
+
+
+###  http://org.drools.conyard.owl#Truck
+
+:Truck rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Vehicle .
+
+
+
+###  http://org.drools.conyard.owl#Vehicle
+
+:Vehicle rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Device .
+
+
+
+###  http://org.drools.conyard.owl#WallRaising
+
+:WallRaising rdf:type owl:Class ;
+             
+             rdfs:subClassOf :Activity ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :involves ;
+                               owl:onClass :Mason ;
+                               owl:minQualifiedCardinality "3"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :involves ;
+                               owl:allValuesFrom :Mason
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :requires ;
+                               owl:allValuesFrom :Bricks
+                             ] .
+
+
+
+###  http://org.drools.conyard.owl#WeldingTorch
+
+:WeldingTorch rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Tool .
+
+
+
+###  http://org.drools.conyard.owl#WeldingTorchBrandX
+
+:WeldingTorchBrandX rdf:type owl:Class ;
+                    
+                    rdfs:subClassOf :WeldingTorch ,
+                                    [ rdf:type owl:Restriction ;
+                                      owl:onProperty :endangersWith ;
+                                      owl:someValuesFrom [ rdf:type owl:Class ;
+                                                           owl:intersectionOf ( :Danger
+                                                                                [ rdf:type owl:Restriction ;
+                                                                                  owl:onProperty :isDenotedBy ;
+                                                                                  owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                                       owl:intersectionOf ( :Expression
+                                                                                                                            [ rdf:type owl:Restriction ;
+                                                                                                                              owl:onProperty :hasCode ;
+                                                                                                                              owl:hasValue "1_fire"
+                                                                                                                            ]
+                                                                                                                            [ rdf:type owl:Restriction ;
+                                                                                                                              owl:onProperty :hasVocabulary ;
+                                                                                                                              owl:hasValue "testCodeSystem"
+                                                                                                                            ]
+                                                                                                                          )
+                                                                                                     ]
+                                                                                ]
+                                                                              )
+                                                         ]
+                                    ] .
+
+
+
+###  http://org.drools.conyard.owl#Worker
+
+:Worker rdf:type owl:Class ;
+        
+        rdfs:subClassOf :Person .
+
+
+
+###  http://www.w3.org/2002/07/owl#Thing
+
+owl:Thing rdf:type owl:Class .
+
+
+
+
+
+#################################################################
+#
+#    Individuals
+#
+#################################################################
+
+
+###  http://org.drools.conyard.owl#explosion
+
+:explosion rdf:type :Explosion ,
+                    owl:NamedIndividual .
+
+
+
+###  http://org.drools.conyard.owl#explosionXP
+
+:explosionXP rdf:type :Expression ,
+                      owl:NamedIndividual ;
+             
+             :hasCode "2_explosion"^^xsd:string ;
+             
+             :hasLabel "Kaboom!"^^xsd:string ;
+             
+             :hasVocabulary "testCodeSystem"^^xsd:string .
+
+
+
+###  http://org.drools.conyard.owl#fall
+
+:fall rdf:type :Fall ,
+               owl:NamedIndividual .
+
+
+
+###  http://org.drools.conyard.owl#fallXP
+
+:fallXP rdf:type :Expression ,
+                 owl:NamedIndividual ;
+        
+        :hasCode "3_fall"^^xsd:string ;
+        
+        :hasLabel "No Jump Allowed"^^xsd:string ;
+        
+        :hasVocabulary "testCodeSystem"^^xsd:string .
+
+
+
+###  http://org.drools.conyard.owl#fireXP
+
+:fireXP rdf:type :Expression ,
+                 owl:NamedIndividual ;
+        
+        :hasCode "1_fire"^^xsd:string ;
+        
+        :hasLabel "Beware of Fire"^^xsd:string ;
+        
+        :hasVocabulary "testCodeSystem"^^xsd:string .
+
+
+
+###  http://org.drools.conyard.owl#flame
+
+:flame rdf:type :Fire ,
+                owl:NamedIndividual .
+
+
+
+###  http://org.drools.conyard.owl#frost
+
+:frost rdf:type :Frost ,
+                owl:NamedIndividual .
+
+
+
+###  http://org.drools.conyard.owl#frostXP
+
+:frostXP rdf:type :Expression ,
+                  owl:NamedIndividual ;
+         
+         :hasCode "4_frost"^^xsd:string ;
+         
+         :hasLabel "Brrrr"^^xsd:string ;
+         
+         :hasVocabulary "testCodeSystem"^^xsd:string .
+
+
+
+###  http://org.drools.conyard.owl#test
+
+:test rdf:type :Danger ,
+               owl:NamedIndividual ;
+      
+      :isDenotedBy :fireXP .
+
+
+
+
+
+#################################################################
+#
+#    General axioms
+#
+#################################################################
+
+
+[ rdf:type owl:AllDisjointClasses ;
+  owl:members ( :Guest
+                :Intruder
+                :WeldingTorchBrandX
+                :Worker
+              )
+] .
+
+
+
+
+###  Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net
+
