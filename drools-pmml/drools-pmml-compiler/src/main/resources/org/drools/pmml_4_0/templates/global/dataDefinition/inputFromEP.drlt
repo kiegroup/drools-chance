@@ -48,6 +48,17 @@ then
     retract($in);
     insert(input);
 end
+
+
+rule "OverrideInput_@{name}"
+salience 2
+when
+    $new: @{box(type)}() from entry-point "in_@{name}"
+    $old: @{name}( value != $new )
+then
+    System.err.println(" Overriding previous values " + $old );
+    retract($old);
+end
 @end{}
 
 

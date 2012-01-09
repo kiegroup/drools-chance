@@ -366,7 +366,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
         assertEquals(1,getKSession().getObjects(new ClassObjectFilter(out1.getFactClass())).size());
         assertEquals(1,getKSession().getObjects(new ClassObjectFilter(out2.getFactClass())).size());
-        assertEquals(3,getKSession().getObjects(new ClassObjectFilter(nump.getFactClass())).size());
+        assertEquals(2,getKSession().getObjects(new ClassObjectFilter(nump.getFactClass())).size());
 
 
     }
@@ -404,6 +404,30 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         assertEquals( 30, queryDoubleField("Out_sRATE", "SmartVent"), 0.5 );
         assertEquals( 0.4, queryDoubleField("Out_sIT", "SmartVent"), 0.05 );
         assertEquals( -1, queryDoubleField("Out_sFIO2", "SmartVent"), 0.05 );
+
+
+
+        getKSession().getWorkingMemoryEntryPoint("in_RATE").insert(20.0);
+        getKSession().getWorkingMemoryEntryPoint("in_PaO2").insert(75.0);
+        getKSession().getWorkingMemoryEntryPoint("in_Ph").insert(7.31);
+        getKSession().getWorkingMemoryEntryPoint("in_CO2").insert(37.0);
+        getKSession().getWorkingMemoryEntryPoint("in_IT").insert(0.4);
+        getKSession().getWorkingMemoryEntryPoint("in_PIP").insert(20.0);
+        getKSession().getWorkingMemoryEntryPoint("in_PEEP").insert(4.0);
+        getKSession().getWorkingMemoryEntryPoint("in_FIO2").insert(38.0);
+
+        getKSession().fireAllRules();
+
+        Thread.sleep(200);
+        System.err.println(reportWMObjects(getKSession()));
+
+
+        assertEquals( 18, queryDoubleField("Out_sPIP", "SmartVent"), 0.5 );
+        assertEquals( 4.12, queryDoubleField("Out_sPEEP", "SmartVent"), 0.1 );
+        assertEquals( 19, queryDoubleField("Out_sRATE", "SmartVent"), 0.5 );
+        assertEquals( 0.4, queryDoubleField("Out_sIT", "SmartVent"), 0.05 );
+        assertEquals( -1, queryDoubleField("Out_sFIO2", "SmartVent"), 0.05 );
+
 
     }
 

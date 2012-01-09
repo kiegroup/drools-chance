@@ -96,7 +96,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         c = getKSession().getObjects(new ClassObjectFilter(DomainModelAssociation.class));
         iter = c.iterator();
-        assertEquals(3, c.size());
+        assertEquals(2, c.size());
         while (iter.hasNext()) {
             DomainModelAssociation dma = (DomainModelAssociation) iter.next();
 
