@@ -125,50 +125,50 @@ public class ImpBeanLegacyWrapper extends TripleBasedStruct {
         }
 
 
-        if ( ! store.contains( propertyKey( "name_Dist" ) ) ) {
+        if ( ! store.contains( propertyKey( "name_$$Imp" ) ) ) {
             IImperfectField fld = new ImperfectField(
                     ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", String.class )
             );
-            store.put( property( "name_Dist", fld ) );
+            store.put( property( "name_$$Imp", fld ) );
         }
-        if ( ! store.contains( propertyKey( "flag_Dist" ) ) ) {
+        if ( ! store.contains( propertyKey( "flag_$$Imp" ) ) ) {
             IImperfectField fld = new ImperfectField(
                     ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", Boolean.class )
             );
-            store.put( property( "flag_Dist", fld ) );
+            store.put( property( "flag_$$Imp", fld ) );
         }
-        if ( ! store.contains( propertyKey( "age_Dist" ) ) ) {
+        if ( ! store.contains( propertyKey( "age_$$Imp" ) ) ) {
             IImperfectField fld = new ImperfectField(
                     ChanceStrategyFactory.buildStrategies( "probability", "dirichlet", "simple", Integer.class )
             );
-            store.put( property( "age_Dist", fld ) );
+            store.put( property( "age_$$Imp", fld ) );
         }
-        if ( ! store.contains( propertyKey( "likes_Dist" ) ) ) {
+        if ( ! store.contains( propertyKey( "likes_$$Imp" ) ) ) {
             IImperfectField fld = new ImperfectField(
                     ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", String.class )
             );
-            store.put( property( "likes_Dist", fld ) );
+            store.put( property( "likes_$$Imp", fld ) );
         }
 
 
-        if ( ! store.contains( propertyKey( "body_Dist" ) ) ) {
+        if ( ! store.contains( propertyKey( "body_$$Imp" ) ) ) {
             IImperfectField fld = new LinguisticImperfectField(
                     ChanceStrategyFactory.buildStrategies( "fuzzy", "linguistic", "simple", Weight.class ),
                     ChanceStrategyFactory.buildStrategies( "possibility", "linguistic", "simple", Double.class ),
                     0,
                     null
             );
-            store.put( property( "body_Dist", fld ) );
+            store.put( property( "body_$$Imp", fld ) );
         }
 
-        if ( ! store.contains( propertyKey( "price_Dist" ) ) ) {
+        if ( ! store.contains( propertyKey( "price_$$Imp" ) ) ) {
             IImperfectField fld = new LinguisticImperfectField(
                     ChanceStrategyFactory.buildStrategies( "fuzzy", "linguistic", "simple", Price.class ),
                     ChanceStrategyFactory.buildStrategies( "possibility", "linguistic", "simple", Integer.class ),
                     0,
                     null
             );
-            store.put( property( "price_Dist", fld ) );
+            store.put( property( "price_$$Imp", fld ) );
         }
 
     }

@@ -54,6 +54,13 @@ declare BeanImp
 
     weight  : Double
 
+
+//    price   : Price
+//                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="bucks" )
+
+    bucks   : Integer   = 40
+
+
     likes   : Cheese    = "cheddar/0.6"
                     @Imperfect( kind="probability", type="basic", degree="simple" )
 

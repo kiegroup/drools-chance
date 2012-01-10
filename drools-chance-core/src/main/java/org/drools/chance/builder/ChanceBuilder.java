@@ -88,12 +88,12 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                     mv.visitVarInsn(ALOAD, 0);
                     mv.visitFieldInsn(GETFIELD,
                             BuildUtils.getInternalType( classDef.getClassName() ),
-                            field.getName()+"_Dist",
+                            field.getName()+"_$$Imp",
                             "Lorg/drools/chance/common/IImperfectField;");
                     mv.visitVarInsn(ALOAD, 0);
                     mv.visitFieldInsn(GETFIELD,
                             BuildUtils.getInternalType( classDef.getClassName() ),
-                            field.getName()+"_Dist",
+                            field.getName()+"_$$Imp",
                             "Lorg/drools/chance/common/IImperfectField;");
                     mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "getStrategies", "()Lorg/drools/chance/distribution/IDistributionStrategies;");
                     mv.visitLdcInsn( field.getInitExpr() );
@@ -175,7 +175,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn( GETFIELD,
                                 BuildUtils.getInternalType( wrapperName ),
-                                ifld.getName() + "_Dist",
+                                ifld.getName() + "_$$Imp",
                                 "Lorg/drools/chance/common/IImperfectField;");
                         mv.visitTypeInsn(CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
                         mv.visitVarInsn(ALOAD, 1);
@@ -187,7 +187,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn( GETFIELD,
                                 BuildUtils.getInternalType( wrapperName ),
-                                ifld.getName() + "_Dist",
+                                ifld.getName() + "_$$Imp",
                                 "Lorg/drools/chance/common/IImperfectField;");
                         mv.visitVarInsn(ALOAD, 2);
                         mv.visitInsn(ICONST_0);
@@ -200,7 +200,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn( GETFIELD,
                                 BuildUtils.getInternalType( wrapperName ),
-                                ifld.getName() + "_Dist",
+                                ifld.getName() + "_$$Imp",
                                 "Lorg/drools/chance/common/IImperfectField;");
                         mv.visitMethodInsn( INVOKEINTERFACE,
                                 "org/drools/chance/common/IImperfectField",
@@ -226,7 +226,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn( GETFIELD,
                                 BuildUtils.getInternalType( wrapperName ),
-                                ifld.getName() + "_Dist",
+                                ifld.getName() + "_$$Imp",
                                 "Lorg/drools/chance/common/IImperfectField;");
 
                         getTargetValue( mv, ifld, wrapperName, coreName );
@@ -239,7 +239,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn( GETFIELD,
                                 BuildUtils.getInternalType( wrapperName ),
-                                ifld.getName() + "_Dist",
+                                ifld.getName() + "_$$Imp",
                                 "Lorg/drools/chance/common/IImperfectField;");
                         mv.visitJumpInsn(IFNULL, l5);
                         mv.visitVarInsn(ALOAD, 0);
@@ -248,7 +248,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn( GETFIELD,
                                 BuildUtils.getInternalType( wrapperName ),
-                                ifld.getName() + "_Dist",
+                                ifld.getName() + "_$$Imp",
                                 "Lorg/drools/chance/common/IImperfectField;");
                         mv.visitMethodInsn( INVOKEINTERFACE,
                                 "org/drools/chance/common/IImperfectField",
@@ -263,7 +263,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn( GETFIELD,
                                 BuildUtils.getInternalType( wrapperName ),
-                                ifld.getName() + "_Dist",
+                                ifld.getName() + "_$$Imp",
                                 "Lorg/drools/chance/common/IImperfectField;");
                         mv.visitTypeInsn(CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
                         mv.visitMethodInsn( INVOKEVIRTUAL,
@@ -281,19 +281,19 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                         Label l0 = new Label();
                         mv.visitJumpInsn(IFNULL, l0);
                         mv.visitVarInsn(ALOAD, 0);
-                        mv.visitFieldInsn(GETFIELD, BuildUtils.getInternalType( wrapperName ), ifld.getName()+"_Dist", "Lorg/drools/chance/common/IImperfectField;");
+                        mv.visitFieldInsn(GETFIELD, BuildUtils.getInternalType( wrapperName ), ifld.getName()+"_$$Imp", "Lorg/drools/chance/common/IImperfectField;");
                         getTargetValue( mv, ifld, wrapperName, coreName );
                         mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "setValue", "(Ljava/lang/Object;)V");
                         mv.visitLabel(l0);
 
                         mv.visitVarInsn(ALOAD, 0);
-                        mv.visitFieldInsn(GETFIELD, BuildUtils.getInternalType( wrapperName ), ifld.getName()+"_Dist", "Lorg/drools/chance/common/IImperfectField;");
+                        mv.visitFieldInsn(GETFIELD, BuildUtils.getInternalType( wrapperName ), ifld.getName()+"_$$Imp", "Lorg/drools/chance/common/IImperfectField;");
                         Label l1 = new Label();
                         mv.visitJumpInsn(IFNULL, l1);
                         mv.visitVarInsn(ALOAD, 0);
                         prepareSetTargetValue( mv, wrapperName, coreName );
                         mv.visitVarInsn(ALOAD, 0);
-                        mv.visitFieldInsn(GETFIELD, BuildUtils.getInternalType( wrapperName ), ifld.getName()+"_Dist", "Lorg/drools/chance/common/IImperfectField;");
+                        mv.visitFieldInsn(GETFIELD, BuildUtils.getInternalType( wrapperName ), ifld.getName()+"_$$Imp", "Lorg/drools/chance/common/IImperfectField;");
                         mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "getCrisp", "()Ljava/lang/Object;");
                         mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType( ifld.getTypeName() ) );
                         setTargetValue( mv, coreName, ifld );
@@ -359,7 +359,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
                 }
 
                 FieldVisitor fv = cw.visitField( ACC_PRIVATE,
-                        fld.getName() + "_Dist",
+                        fld.getName() + "_$$Imp",
                         "Lorg/drools/chance/common/IImperfectField;",
                         "Lorg/drools/chance/common/IImperfectField<" + BuildUtils.getTypeDescriptor( fld.getTypeName() ) + ">;",
                         null);
@@ -435,7 +435,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
 
         mv.visitFieldInsn( PUTFIELD,
                 BuildUtils.getInternalType( wrapperName ),
-                ifld.getName()+ "_Dist",
+                ifld.getName()+ "_$$Imp",
                 "Lorg/drools/chance/common/IImperfectField;");
 
     }
@@ -485,7 +485,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
 
         mv.visitFieldInsn(  PUTFIELD,
                 BuildUtils.getInternalType( wrapperName ),
-                ifld.getName()+"_Dist",
+                ifld.getName()+"_$$Imp",
                 "Lorg/drools/chance/common/IImperfectField;");
     }
 
@@ -561,7 +561,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn( ALOAD, 0 );
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ) ,
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitInsn( ARETURN );
             mv.visitMaxs( 1, 1 );
@@ -580,7 +580,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn( ALOAD, 0 );
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ) ,
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -617,7 +617,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 1);
             mv.visitFieldInsn( PUTFIELD,
                     BuildUtils.getInternalType( wrapperName ) ,
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
 
 
@@ -626,7 +626,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn( ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -641,7 +641,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitTypeInsn(CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
             mv.visitMethodInsn( INVOKEVIRTUAL,
@@ -671,7 +671,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(ICONST_0);
@@ -684,7 +684,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ) ,
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitTypeInsn(CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
             mv.visitMethodInsn( INVOKEVIRTUAL,
@@ -711,7 +711,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(ICONST_1);
@@ -724,7 +724,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitTypeInsn( CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField" );
             mv.visitMethodInsn( INVOKEVIRTUAL,
@@ -748,7 +748,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ) ,
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(ICONST_1);
@@ -764,7 +764,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn( ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -779,7 +779,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitTypeInsn(CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
             mv.visitMethodInsn( INVOKEVIRTUAL,
@@ -803,7 +803,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
             mv.visitMethodInsn( INVOKEINTERFACE,
@@ -817,7 +817,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn( ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -831,7 +831,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitTypeInsn(CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
             mv.visitMethodInsn( INVOKEVIRTUAL,
@@ -871,7 +871,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitTypeInsn( CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
             mv.visitVarInsn(ALOAD, 1);
@@ -883,7 +883,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 2);
             mv.visitInsn(ICONST_0);
@@ -896,7 +896,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -920,7 +920,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitTypeInsn(CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
             mv.visitVarInsn(ALOAD, 1);
@@ -932,7 +932,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 2);
             mv.visitInsn(ICONST_1);
@@ -945,7 +945,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -958,7 +958,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitTypeInsn( CHECKCAST, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
             mv.visitMethodInsn( INVOKEVIRTUAL,
@@ -992,7 +992,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitInsn(ARETURN);
             mv.visitMaxs(1, 1);
@@ -1009,7 +1009,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -1050,7 +1050,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 1);
             mv.visitFieldInsn( PUTFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName()+"_Dist",
+                    ifld.getName()+"_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
 
             mv.visitVarInsn(ALOAD, 0);
@@ -1061,7 +1061,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn(GETFIELD,
                     BuildUtils.getInternalType(wrapperName),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "getCrisp", "()Ljava/lang/Object;");
             mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType(ifld.getTypeName()));
@@ -1093,7 +1093,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName()+"_Dist",
+                    ifld.getName()+"_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
             mv.visitMethodInsn( INVOKEINTERFACE,
@@ -1114,7 +1114,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn(GETFIELD,
                     BuildUtils.getInternalType(wrapperName),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/chance/common/IImperfectField", "getCrisp", "()Ljava/lang/Object;");
             mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType(ifld.getTypeName()));
@@ -1151,7 +1151,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName()+"_Dist",
+                    ifld.getName()+"_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(ICONST_0);
@@ -1174,7 +1174,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName()+"_Dist",
+                    ifld.getName()+"_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(ICONST_1);
@@ -1190,7 +1190,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName()+"_Dist",
+                    ifld.getName()+"_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -1217,7 +1217,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName()+"_Dist",
+                    ifld.getName()+"_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(ICONST_0);
@@ -1232,7 +1232,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName() + "_Dist",
+                    ifld.getName() + "_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",
@@ -1255,7 +1255,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName()+"_Dist",
+                    ifld.getName()+"_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitVarInsn(ALOAD, 1);
             mv.visitMethodInsn( INVOKEINTERFACE,
@@ -1269,7 +1269,7 @@ public abstract  class ChanceBuilder extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn( GETFIELD,
                     BuildUtils.getInternalType( wrapperName ),
-                    ifld.getName()+"_Dist",
+                    ifld.getName()+"_$$Imp",
                     "Lorg/drools/chance/common/IImperfectField;");
             mv.visitMethodInsn( INVOKEINTERFACE,
                     "org/drools/chance/common/IImperfectField",

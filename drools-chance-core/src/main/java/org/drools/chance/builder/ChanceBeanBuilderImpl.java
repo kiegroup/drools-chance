@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class ChanceBeanBuilder extends ChanceBuilder {
+public class ChanceBeanBuilderImpl extends ChanceBuilder {
 
 
 

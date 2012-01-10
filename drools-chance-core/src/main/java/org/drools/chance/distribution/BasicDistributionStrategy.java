@@ -38,16 +38,35 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
 
     private Constructor degreeStringConstr = null;
 
+    private IDegree tru;
+    private IDegree fal;
+    private IDegree unk;
+
 
     public BasicDistributionStrategy(String degreeType, Class<T> domainType){
         this.degreeType = degreeType;
         this.domainType = domainType;
+        try {
+            this.tru = DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().True();
+        } catch( Exception e ) {
+            this.tru = SimpleDegree.TRUE;
+        }
+        try {
+            this.fal = DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().False();
+        } catch( Exception e ) {
+            this.fal = SimpleDegree.FALSE;
+        }
+        try {
+            this.unk = DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().Unknown();
+        } catch( Exception e ) {
+            this.unk = new SimpleDegree(0.5);
+        }
     }
 
 
     private Constructor getDegreeStringConstructor() {
         if (degreeStringConstr == null) {
-            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString(degreeType);
+            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType );
         }
         return degreeStringConstr;
     }
@@ -57,27 +76,15 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
 
 
     public IDistribution<T> toDistribution(T value) {
-        try {
-            return new BasicDistribution<T>( value, DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().True() );
-        } catch( Exception e ) {
-            return new BasicDistribution<T>( value, new SimpleDegree(1.0) );
-        }
+        return new BasicDistribution<T>( value, tru );
     }
 
     public IDistribution<T> toDistribution(T value, String strategy) {
-        try {
-            return new BasicDistribution<T>( value, DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().True() );
-        } catch( Exception e ) {
-            return new BasicDistribution<T>( value, new SimpleDegree(1.0) );
-        }
+        return new BasicDistribution<T>( value, tru );
     }
 
     public IDistribution<T> toDistribution(T value, Object... params) {
-        try {
-            return new BasicDistribution<T>( value, DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().True() );
-        } catch( Exception e ) {
-            return new BasicDistribution<T>( value, new SimpleDegree(1.0) );
-        }
+        return new BasicDistribution<T>( value, tru );
     }
 
 
@@ -91,7 +98,7 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
 
             if ( idx < 0 ) {
                 val = domainType.getConstructor(String.class).newInstance( distrAsString.trim() );
-                deg = DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().True();
+                deg = tru;
             } else {
                 val = domainType.getConstructor(String.class).newInstance( distrAsString.substring( 0, idx ) );
                 deg = (IDegree) DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType ).newInstance( distrAsString.substring( idx + 1 ) );
@@ -115,20 +122,16 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
 
 
     public IDistribution<T> newDistribution() {
-        try {
-            return new BasicDistribution<T>( null, DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().False() );
-        } catch( Exception e ) {
-            return new BasicDistribution<T>( null, new SimpleDegree(0.0) );
+        if ( Boolean.class.equals( domainType ) ) {
+            return (IDistribution<T>) new BasicDistribution<Boolean>( true, unk );
+        } else {
+            return new BasicDistribution<T>( null, fal );
         }
     }
 
     public IDistribution<T> newDistribution(Set<T> focalElements) {
         T value = focalElements.iterator().next();
-        try {
-            return new BasicDistribution<T>( value, DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().True() );
-        } catch( Exception e ) {
-            return new BasicDistribution<T>( value, new SimpleDegree(1.0) );
-        }
+        return new BasicDistribution<T>( value, tru );
     }
 
     public IDistribution<T> newDistribution(Map<? extends T, ? extends IDegree> elements) {
@@ -176,15 +179,23 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
         BasicDistribution<T> bit = (BasicDistribution<T>) newBit;
 
         T val = src.getValue();
-        if ( val == null || ! val.equals( bit.getValue() ) ) {
-            src.clear();
-            return src;
+        if ( val == null ) {
+            val = ((BasicDistribution<T>) newBit).getValue();
+            src.set( val, newBit.getDegree( val ) );
+        } else if ( val.equals( bit.getValue() ) ) {
+            IDegree a = src.getDegree(val);
+            IDegree b = bit.getDegree( val );
+            src.setDegree( a.sum( b.mul( a.True().sub( a ) ) ) );
+        } else {
+            IDegree a = src.getDegree(val);
+            IDegree b = bit.getDegree( val );
+            IDegree c = a.mul( b );
+            if ( c.equals( c.False() ) ) {
+                src.set( ((BasicDistribution<T>) newBit).getValue(), c.True() );
+            } else {
+                src.setDegree( c );
+            }
         }
-
-        IDegree a = src.getDegree(val);
-        IDegree b = bit.getDegree( val );
-        src.setDegree( a.sum( b.mul( a.True().sub( a ) ) ) );
-
         return src;
     }
 

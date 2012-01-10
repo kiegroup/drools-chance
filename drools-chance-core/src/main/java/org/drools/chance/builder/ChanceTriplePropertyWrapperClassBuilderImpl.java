@@ -30,13 +30,19 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
 
 
+    protected boolean isSoftField( FieldDefinition field, int index, long mask ) {
+        return ! ( isVirtual( field ) ) && super.isSoftField( field, index, mask );
+    }
 
+    protected boolean isVirtual( FieldDefinition field ) {
+        return field instanceof VirtualFieldDefinition;
+    }
 
     protected int initSoftFields( MethodVisitor mv, String wrapperName, ClassDefinition trait, long mask ) {
         int stackSize = super.initSoftFields( mv, wrapperName, trait, mask );
 
         for ( FieldDefinition field : trait.getFieldsDefinitions() ) {
-            if ( field instanceof VirtualFieldDefinition ) continue;
+            if ( isVirtual( field ) ) continue;
             if ( field instanceof ImperfectFieldDefinition ) {
                 ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
 
@@ -51,8 +57,6 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
                 }
 
-                //TODO : is it needed??
-                initImperfectField( mv, wrapperName, (ImperfectFieldDefinition) field);
             }
         }
         return stackSize;
@@ -83,15 +87,15 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, wrapperName, "store", "Lorg/drools/core/util/TripleStore;");
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitLdcInsn( impField.getName() +"_Dist" );
+        mv.visitLdcInsn( impField.getName() +"_$$Imp" );
 
         mv.visitMethodInsn(INVOKEVIRTUAL, wrapperName, "propertyKey", "(Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
         mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "contains", "(Lorg/drools/core/util/Triple;)Z");
         Label l0 = new Label();
         mv.visitJumpInsn(IFNE, l0);
 
-        
-        
+
+
         mv.visitTypeInsn(NEW, "org/drools/chance/common/ImperfectField");
         mv.visitInsn(DUP);
         mv.visitLdcInsn( impField.getImpKind() );
@@ -102,12 +106,12 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitMethodInsn(INVOKESPECIAL, "org/drools/chance/common/ImperfectField", "<init>", "(Lorg/drools/chance/distribution/IDistributionStrategies;)V");
         mv.visitVarInsn(ASTORE, 1);
 
-        
-        
+
+
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, wrapperName, "store", "Lorg/drools/core/util/TripleStore;");
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitLdcInsn( impField.getName() +"_Dist" );
+        mv.visitLdcInsn( impField.getName() +"_$$Imp" );
         mv.visitVarInsn(ALOAD, 1);
         mv.visitMethodInsn(INVOKEVIRTUAL, wrapperName, "property", "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
         mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "put", "(Lorg/drools/core/util/Triple;)Z");
@@ -128,7 +132,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, wrapperName, "store", "Lorg/drools/core/util/TripleStore;");
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitLdcInsn( impField.getName() +"_Dist" );
+        mv.visitLdcInsn( impField.getName() +"_$$Imp" );
 
         mv.visitMethodInsn(INVOKEVIRTUAL, wrapperName, "propertyKey", "(Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
         mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "contains", "(Lorg/drools/core/util/Triple;)Z");
@@ -140,7 +144,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, wrapperName, "store", "Lorg/drools/core/util/TripleStore;");
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitLdcInsn( impField.getName() +"_Dist" );
+        mv.visitLdcInsn( impField.getName() +"_$$Imp" );
 
 
 

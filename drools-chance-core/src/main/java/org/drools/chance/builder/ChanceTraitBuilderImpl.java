@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-public class ChanceTraitBuilder extends TraitClassBuilderImpl {
+public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
 
 
 

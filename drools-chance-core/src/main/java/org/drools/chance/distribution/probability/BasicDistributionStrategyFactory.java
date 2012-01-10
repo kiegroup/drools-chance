@@ -37,10 +37,9 @@ public class BasicDistributionStrategyFactory<T> implements IDistributionStrateg
 
 
 
-	public <T> IDistributionStrategies buildStrategies(String degreeType, Class<T> domainType) {
-
+    public <T> IDistributionStrategies buildStrategies(String degreeType, Class<T> domainType) {
         return new BasicDistributionStrategy<T>(degreeType, domainType);
-	}
+    }
 
 
 

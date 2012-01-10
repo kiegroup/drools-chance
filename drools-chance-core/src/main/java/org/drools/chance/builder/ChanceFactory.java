@@ -17,23 +17,19 @@
 package org.drools.chance.builder;
 
 import org.drools.KnowledgeBase;
-import org.drools.RuntimeDroolsException;
 import org.drools.common.AbstractRuleBase;
 import org.drools.core.util.asm.ClassFieldInspector;
-import org.drools.factmodel.BuildUtils;
 import org.drools.factmodel.ClassDefinition;
 import org.drools.factmodel.FieldDefinition;
 import org.drools.impl.KnowledgeBaseImpl;
 import org.drools.rule.JavaDialectRuntimeData;
 import org.drools.rule.Package;
 import org.mvel2.asm.*;
-import org.mvel2.asm.Type;
 
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 @Deprecated
@@ -47,7 +43,7 @@ public class ChanceFactory implements Opcodes {
     private AbstractRuleBase ruleBase;
 
     private ChanceWrapperBuilder wrapperBuilder = new ChanceWrapperBuilder();
-    private ChanceBuilder builder = new ChanceBeanBuilder();
+    private ChanceBuilder builder = new ChanceBeanBuilderImpl();
 
 
     public static void reset() {

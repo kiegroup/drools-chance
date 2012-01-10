@@ -64,8 +64,9 @@ public interface ImpBean {
     public void setAgeDistr( IDistribution<Integer> x );
     public void setAgeValue( Integer x );
 
-    public void updateAge( IDistribution<Integer> x );
-    public void updateAge( Integer x ); 
+    public void updateAge( IImperfectField<Integer> x );
+    public void updateAgeDistr( IDistribution<Integer> x );
+    public void updateAgeValue( Integer x );
 
     
     
@@ -113,8 +114,9 @@ public interface ImpBean {
     public void setLikesDistr( IDistribution<Cheese> x );
     public void setLikesValue( Cheese x );
 
-    public void updateLikes( IDistribution<Cheese> x );
-    public void updateLikes( Cheese x ); 
+    public void updateLikes( IImperfectField<Cheese> x );
+    public void updateLikesDistr( IDistribution<Cheese> x );
+    public void updateLikesValue( Cheese x );
 
 
 
@@ -134,6 +136,30 @@ public interface ImpBean {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Cheese cheese = (Cheese) o;
+
+            if (name != null ? !name.equals(cheese.name) : cheese.name != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return name != null ? name.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return "Cheese{" +
+                    "name='" + name + '\'' +
+                    '}';
         }
     }
 }

@@ -33,19 +33,22 @@ public class BasicDistribution<T> implements IProbabilityDistribution<T> {
 
     private T value;
 
-	public BasicDistribution() {
-		super();
-	}
+    public BasicDistribution() {
+        super();
+    }
 
 
     public BasicDistribution( T value, IDegree degree ) {
         this.value = value;
-		this.degree = degree;
-	}
+        this.degree = degree;
+    }
 
 
     public IDegree getDegree( T value ) {
-        if ( value == this.value ) {
+        if ( this.value == null ) {
+            return degree.Unknown();
+        } else if ( value.equals( this.value ) ) {
+            // there was a == here, was it intentional?
             return degree;
         } else {
             return Not.getInstance().eval( degree );
@@ -76,8 +79,7 @@ public class BasicDistribution<T> implements IProbabilityDistribution<T> {
 
 
     public String toString() {
-        return value + "/" + degree;
+        return "(Basic) : {" + value + "/" + degree + "}";
     }
-
 
 }

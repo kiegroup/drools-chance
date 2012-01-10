@@ -21,16 +21,11 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
-import org.drools.chance.builder.ChanceBeanBuilder;
-import org.drools.chance.builder.ChanceTraitBuilder;
+import org.drools.chance.builder.ChanceBeanBuilderImpl;
+import org.drools.chance.builder.ChanceTraitBuilderImpl;
 import org.drools.chance.builder.ChanceTriplePropertyWrapperClassBuilderImpl;
-import org.drools.chance.builder.ChanceTripleProxyBuilder;
-import org.drools.core.util.Entry;
-import org.drools.core.util.TripleStore;
-import org.drools.event.rule.*;
-import org.drools.factmodel.ClassBuilder;
+import org.drools.chance.builder.ChanceTripleProxyBuilderImpl;
 import org.drools.factmodel.ClassBuilderFactory;
-import org.drools.factmodel.traits.TraitFactory;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
@@ -146,10 +141,10 @@ public class ImperfectFactsTest {
     public void testImpTraitGeneration() {
 
         ChanceStrategyFactory.initDefaults();
-        ClassBuilderFactory.setBeanClassBuilderService( new ChanceBeanBuilder() );
+        ClassBuilderFactory.setBeanClassBuilderService( new ChanceBeanBuilderImpl() );
 
-        ClassBuilderFactory.setTraitBuilderService( new ChanceTraitBuilder() );
-        ClassBuilderFactory.setTraitProxyBuilderService( new ChanceTripleProxyBuilder() );
+        ClassBuilderFactory.setTraitBuilderService( new ChanceTraitBuilderImpl() );
+        ClassBuilderFactory.setTraitProxyBuilderService( new ChanceTripleProxyBuilderImpl() );
         ClassBuilderFactory.setPropertyWrapperBuilderService( new ChanceTriplePropertyWrapperClassBuilderImpl() );
 
 
