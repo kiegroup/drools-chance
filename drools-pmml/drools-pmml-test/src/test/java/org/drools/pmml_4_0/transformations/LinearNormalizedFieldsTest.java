@@ -24,14 +24,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-/**
- * Created by IntelliJ IDEA.
- * User: davide
- * Date: 11/12/10
- * Time: 10:11 PM
- *
- * PMML Test : Focus on the DataDictionary section
- */
+
+
 public class LinearNormalizedFieldsTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = false;
