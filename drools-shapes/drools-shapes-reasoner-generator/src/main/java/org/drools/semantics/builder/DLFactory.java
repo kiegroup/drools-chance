@@ -29,7 +29,7 @@ public interface DLFactory {
 
 
     public enum INFERENCE_STRATEGY { INTERNAL, EXTERNAL }
-    public enum SupportedReasoners { HERMIT, PELLET }
+    public enum SupportedReasoners { HERMIT /*, PELLET */ }
 
     public void setInferenceStrategy( INFERENCE_STRATEGY strategy );
     public void setExternalReasoner( SupportedReasoners externalReasoner );
