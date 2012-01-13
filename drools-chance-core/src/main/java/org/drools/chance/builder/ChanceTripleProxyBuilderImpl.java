@@ -35,16 +35,6 @@ import java.util.*;
 public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderImpl {
 
 
-    private Map<FieldDefinition,ImperfectFieldDefinition> supportFields;
-
-
-
-    public void init( ClassDefinition trait ) {
-        super.init( trait );
-
-    }
-
-
 
     protected void buildConstructorCore( ClassWriter cw, MethodVisitor mv, String internalProxy, String internalWrapper, String internalCore, String descrCore, String mixin, Class mixinClass ) {
         super.buildConstructorCore( cw, mv, internalProxy, internalWrapper, internalCore, descrCore, mixin, mixinClass );
@@ -53,63 +43,6 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
         mv.visitMethodInsn(INVOKESPECIAL, internalProxy, "synchFields", "()V");
 
     }
-
-
-    protected void addSupportField( FieldDefinition supportField, ImperfectFieldDefinition fuzzyField ) {
-        if ( supportFields == null ) {
-            supportFields = new HashMap<FieldDefinition, ImperfectFieldDefinition>();
-        }
-        supportFields.put( supportField, fuzzyField );
-    }
-
-    protected FieldDefinition getSupportField( FieldDefinition fuzzyField ) {
-        if ( supportFields == null ) {
-            return null;
-        }
-        for ( FieldDefinition fld : supportFields.keySet() ) {
-            if ( fuzzyField.equals( supportFields.get( fld ) ) ) {
-                return fld;
-            }
-        }
-        return null;
-    }
-
-    protected ImperfectFieldDefinition getFuzzyField( FieldDefinition field ) {
-        if ( supportFields == null ) {
-            return null;
-        }
-        return supportFields.get( field );
-    }
-
-
-    protected FieldDefinition findSupportField(ClassDefinition cdef, ImperfectFieldDefinition ifld) {
-        String target = ifld.getSupport();
-        FieldDefinition tfld = cdef.getField( target );
-        if ( target == null || tfld == null ) {
-            throw new RuntimeDroolsException( " Fuzzy Linguistic Field " + ifld.getName() + " requires a support field, not found " + target );
-        }
-        return  tfld;
-    }
-
-
-
-
-    protected void buildProxyAccessors( long mask, ClassWriter cw, String masterName, ClassDefinition core, Map<String,Method> mixinGetSet) {
-        for ( FieldDefinition field : getTrait().getFieldsDefinitions() ) {
-            if ( field instanceof VirtualFieldDefinition ) continue;
-            if ( field instanceof ImperfectFieldDefinition ) {
-                ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
-                if ( ImperfectFieldDefinition.isLinguistic(ifld) ) {
-                    addSupportField( findSupportField( getTrait(), ifld ), ifld );
-                }
-            }
-        }
-
-        super.buildProxyAccessors( mask, cw, masterName, core, mixinGetSet );
-
-    }
-
-
 
 
 
@@ -166,22 +99,11 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
         }
     }
 
-    private boolean isSupport(FieldDefinition field) {
-        for ( FieldDefinition fld : getTrait().getFieldsDefinitions() ) {
-            if ( fld instanceof ImperfectFieldDefinition &&
-                    ImperfectFieldDefinition.isLinguistic( fld ) &&
-                    ((ImperfectFieldDefinition) fld).getSupportFieldDef().equals( field ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     private void buildSupportFieldAccessors( long mask, ClassWriter cw, String masterName, ClassDefinition core, Map<String, Method> mixinGetSet, FieldDefinition supportField, boolean isSoftField ) {
-        String originalName = supportField.getName();
 
-
-        ImperfectFieldDefinition lingField = supportFields.get( supportField );
+        ImperfectFieldDefinition lingField = findSupportingField( getTrait(), supportField );
         MethodVisitor mv;
 
         {
@@ -307,8 +229,60 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
 
 
+
+
+    /*******************************************************************************************************************
+     *
+     * Synch
+     *
+     *******************************************************************************************************************/
+
+
+
+
+
     protected void buildExtendedMethods(ClassWriter cw, ClassDefinition trait, ClassDefinition core ) {
         buildSynchFields( cw, TraitFactory.getProxyName(trait, core), core.getName(), getTrait() );
+    }
+
+
+
+    protected void buildSynchFields( ClassWriter cw, String proxyName, String coreName, ClassDefinition def ) {
+        {
+            MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "synchFields", "()V", null, null);
+            mv.visitCode();
+
+            boolean hasLinguistic = false;
+            for ( FieldDefinition fld : def.getFieldsDefinitions() ) {
+
+                if ( fld instanceof VirtualFieldDefinition ) continue;
+
+                if ( fld instanceof ImperfectFieldDefinition ) {
+                    ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) fld;
+                    if ( ImperfectFieldDefinition.isLinguistic(ifld) ) {
+
+                        FieldDefinition tfld = ifld.getSupportFieldDef();
+                        System.out.println("Synch ling " + ifld.getName());
+                        synchLinguisticField(mv, ifld, tfld, proxyName, coreName);
+
+                        hasLinguistic = true;
+
+
+
+                    } else {
+                        System.out.println("Synch " + ifld.getName());
+                        synchField(mv, ifld, proxyName);
+                    }
+                }
+
+            }
+
+            mv.visitInsn( RETURN );
+            mv.visitMaxs( 3, hasLinguistic ? 4 : 3 );
+            mv.visitEnd();
+
+        }
+
     }
 
 
@@ -440,67 +414,23 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
                 "(" + BuildUtils.getTypeDescriptor( fld.getTypeName() ) + ")V" );
         mv.visitVarInsn( ALOAD, 0 );
         mv.visitVarInsn( ALOAD, 1 );
-//        mv.visitMethodInsn( INVOKEVIRTUAL,
-//                "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField",
-//                "defuzzify",
-//                "()Ljava/lang/Number;" );
-//        mv.visitTypeInsn(CHECKCAST, "java/lang/Double" );
-//        mv.visitMethodInsn( INVOKEVIRTUAL,
-//                "java/lang/Double",
-//                BuildUtils.numericMorph( tfld.getTypeName() ),
-//                "()" + BuildUtils.unBox( tfld.getTypeName() ) );
-//        mv.visitMethodInsn( INVOKEVIRTUAL,
-//                BuildUtils.getInternalType( proxyName ),
-//                BuildUtils.setterName( tfld.getName(), tfld.getTypeName() ) + "Core",
-//                "(" + BuildUtils.getTypeDescriptor( tfld.getTypeName() ) +")V" );
+
         defuzzifyOnTargetField( mv, proxyName, tfld );
+
         mv.visitLabel( l1 );
     }
 
 
 
 
-    protected void buildSynchFields( ClassWriter cw, String proxyName, String coreName, ClassDefinition def ) {
-        {
-            MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "synchFields", "()V", null, null);
-            mv.visitCode();
 
-            boolean hasLinguistic = false;
-            for ( FieldDefinition fld : def.getFieldsDefinitions() ) {
-
-                if ( fld instanceof VirtualFieldDefinition ) continue;
-
-                if ( fld instanceof ImperfectFieldDefinition ) {
-                    ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) fld;
-                    if ( ImperfectFieldDefinition.isLinguistic(ifld) ) {
-
-                        FieldDefinition tfld = getSupportField( ifld );
-                        System.out.println("Synch ling " + ifld.getName());
-                        synchLinguisticField(mv, ifld, tfld, proxyName, coreName);
-
-                        hasLinguistic = true;
+    /*******************************************************************************************************************
+     *
+     * Accessors
+     *
+     *******************************************************************************************************************/
 
 
-
-                    } else {
-                        System.out.println("Synch " + ifld.getName());
-                        synchField(mv, ifld, proxyName);
-                    }
-                }
-
-            }
-
-            mv.visitInsn( RETURN );
-            mv.visitMaxs( 3, hasLinguistic ? 4 : 3 );
-            mv.visitEnd();
-
-        }
-
-    }
-
-    private boolean mustSkipSynch(FieldDefinition fld) {
-        return fld instanceof VirtualFieldDefinition || fld instanceof DirectAccessFieldDefinition;
-    }
 
 
     protected void buildImperfectGetter(ClassVisitor cw, FieldDefinition ifld, String wrapperName, ClassDefinition core, boolean softField) {
@@ -584,7 +514,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
         FieldDefinition lingTarget = null;
         ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
         if ( ImperfectFieldDefinition.isLinguistic(ifld) ) {
-            lingTarget = getSupportField( ifld );
+            lingTarget = ifld.getSupportFieldDef();
         }
 
         {
@@ -875,6 +805,33 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
 
 
+
+    /*******************************************************************************************************************
+     *
+     * Utilities
+     *
+     *******************************************************************************************************************/
+
+
+
+
+    protected ImperfectFieldDefinition findSupportingField( ClassDefinition cdef, FieldDefinition ifld ) {
+        for ( FieldDefinition fld : getTrait().getFieldsDefinitions() ) {
+            if ( fld instanceof ImperfectFieldDefinition &&
+                    ImperfectFieldDefinition.isLinguistic( fld ) &&
+                    ((ImperfectFieldDefinition) fld).getSupportFieldDef().equals( ifld ) ) {
+                return (ImperfectFieldDefinition) fld;
+            }
+        }
+        return null;
+    }
+
+
+    private boolean isSupport( FieldDefinition field ) {
+        return findSupportingField( getTrait(), field) != null;
+    }
+
+
     private void updateSupportField( MethodVisitor mv, ImperfectFieldDefinition ifld, String proxyName, FieldDefinition target  ) {
 
         mv.visitVarInsn(ALOAD, 0);
@@ -957,9 +914,6 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
     }
 
 
-
-
-
     protected int getTargetDistField( MethodVisitor mv, FieldDefinition field, String wrapperName, String coreName, boolean isSoftField ) {
 
         mv.visitVarInsn(ALOAD, 0);
@@ -1002,9 +956,6 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
             return 0;
         }
     }
-
-
-
 
 
 

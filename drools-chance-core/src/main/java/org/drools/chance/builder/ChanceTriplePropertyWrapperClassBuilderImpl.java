@@ -30,11 +30,6 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
 
 
-
-    protected boolean isSoftField( FieldDefinition field, int index, long mask ) {
-        return ! ( isVirtual( field ) ) && TraitRegistry.isSoftField(field, index, mask);
-    }
-
     protected boolean isVirtual( FieldDefinition field ) {
         return field instanceof VirtualFieldDefinition;
     }
@@ -47,8 +42,6 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
     protected boolean mustSkip( FieldDefinition field ) {
         return isVirtual( field ) || isDirectAccess( field );
     }
-
-
 
 
 
@@ -86,7 +79,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
 
 
-    protected FieldDefinition getSupportField(ClassDefinition cdef, ImperfectFieldDefinition ifld) {
+    protected FieldDefinition getSupportField( ClassDefinition cdef, ImperfectFieldDefinition ifld ) {
         String target = ifld.getSupport();
         FieldDefinition tfld = cdef.getField( target );
         if ( target == null || tfld == null ) {
@@ -100,40 +93,64 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
     protected void initImperfectField(MethodVisitor mv, String wrapperName, ImperfectFieldDefinition impField ) {
 
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, wrapperName, "store", "Lorg/drools/core/util/TripleStore;");
-        mv.visitVarInsn(ALOAD, 0);
+        mv.visitVarInsn( ALOAD, 0 );
+        mv.visitFieldInsn( GETFIELD,
+                wrapperName,
+                "store",
+                "Lorg/drools/core/util/TripleStore;");
+        mv.visitVarInsn( ALOAD, 0 );
         mv.visitLdcInsn( impField.getName() +"_$$Imp" );
 
-        mv.visitMethodInsn(INVOKEVIRTUAL, wrapperName, "propertyKey", "(Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "contains", "(Lorg/drools/core/util/Triple;)Z");
+        mv.visitMethodInsn( INVOKEVIRTUAL,
+                wrapperName,
+                "propertyKey",
+                "(Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
+        mv.visitMethodInsn( INVOKEVIRTUAL,
+                "org/drools/core/util/TripleStore",
+                "contains",
+                "(Lorg/drools/core/util/Triple;)Z" );
         Label l0 = new Label();
-        mv.visitJumpInsn(IFNE, l0);
+        mv.visitJumpInsn( IFNE, l0 );
 
 
 
-        mv.visitTypeInsn(NEW, "org/drools/chance/common/ImperfectField");
+        mv.visitTypeInsn( NEW, "org/drools/chance/common/ImperfectField" );
         mv.visitInsn(DUP);
         mv.visitLdcInsn( impField.getImpKind() );
         mv.visitLdcInsn( impField.getImpType() );
         mv.visitLdcInsn( impField.getDegreeType() );
         mv.visitLdcInsn( Type.getType( BuildUtils.getTypeDescriptor( impField.getTypeName() ) ) );
-        mv.visitMethodInsn(INVOKESTATIC, "org/drools/chance/common/ChanceStrategyFactory", "buildStrategies", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)Lorg/drools/chance/distribution/IDistributionStrategies;");
-        mv.visitMethodInsn(INVOKESPECIAL, "org/drools/chance/common/ImperfectField", "<init>", "(Lorg/drools/chance/distribution/IDistributionStrategies;)V");
+        mv.visitMethodInsn( INVOKESTATIC,
+                "org/drools/chance/common/ChanceStrategyFactory",
+                "buildStrategies",
+                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)Lorg/drools/chance/distribution/IDistributionStrategies;" );
+        mv.visitMethodInsn( INVOKESPECIAL,
+                "org/drools/chance/common/ImperfectField",
+                "<init>",
+                "(Lorg/drools/chance/distribution/IDistributionStrategies;)V" );
         mv.visitVarInsn(ASTORE, 1);
 
 
 
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, wrapperName, "store", "Lorg/drools/core/util/TripleStore;");
-        mv.visitVarInsn(ALOAD, 0);
+        mv.visitVarInsn( ALOAD, 0 );
+        mv.visitFieldInsn( GETFIELD,
+                wrapperName,
+                "store",
+                "Lorg/drools/core/util/TripleStore;" );
+        mv.visitVarInsn( ALOAD, 0 );
         mv.visitLdcInsn( impField.getName() +"_$$Imp" );
-        mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKEVIRTUAL, wrapperName, "property", "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "put", "(Lorg/drools/core/util/Triple;)Z");
-        mv.visitInsn(POP);
+        mv.visitVarInsn( ALOAD, 1 );
+        mv.visitMethodInsn( INVOKEVIRTUAL,
+                wrapperName,
+                "property",
+                "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;" );
+        mv.visitMethodInsn( INVOKEVIRTUAL,
+                "org/drools/core/util/TripleStore",
+                "put",
+                "(Lorg/drools/core/util/Triple;)Z" );
+        mv.visitInsn( POP );
 
-        mv.visitLabel(l0);
+        mv.visitLabel( l0 );
 
     }
 
@@ -143,29 +160,41 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
 
 
-    protected void initImperfectLinguisticField(MethodVisitor mv, String wrapperName, ImperfectFieldDefinition impField, FieldDefinition tfld ) {
+    protected void initImperfectLinguisticField( MethodVisitor mv, String wrapperName, ImperfectFieldDefinition impField, FieldDefinition tfld ) {
 
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, wrapperName, "store", "Lorg/drools/core/util/TripleStore;");
-        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn( GETFIELD,
+                wrapperName,
+                "store",
+                "Lorg/drools/core/util/TripleStore;");
+        mv.visitVarInsn( ALOAD, 0 );
         mv.visitLdcInsn( impField.getName() +"_$$Imp" );
 
-        mv.visitMethodInsn(INVOKEVIRTUAL, wrapperName, "propertyKey", "(Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "contains", "(Lorg/drools/core/util/Triple;)Z");
+        mv.visitMethodInsn( INVOKEVIRTUAL,
+                wrapperName,
+                "propertyKey",
+                "(Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;" );
+        mv.visitMethodInsn( INVOKEVIRTUAL,
+                "org/drools/core/util/TripleStore",
+                "contains",
+                "(Lorg/drools/core/util/Triple;)Z");
         Label l0 = new Label();
-        mv.visitJumpInsn(IFNE, l0);
+        mv.visitJumpInsn( IFNE, l0 );
 
 
 
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, wrapperName, "store", "Lorg/drools/core/util/TripleStore;");
-        mv.visitVarInsn(ALOAD, 0);
+        mv.visitVarInsn( ALOAD, 0 );
+        mv.visitFieldInsn( GETFIELD,
+                wrapperName,
+                "store",
+                "Lorg/drools/core/util/TripleStore;" );
+        mv.visitVarInsn( ALOAD, 0 );
         mv.visitLdcInsn( impField.getName() +"_$$Imp" );
 
 
 
-        mv.visitTypeInsn(NEW, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField");
-        mv.visitInsn(DUP);
+        mv.visitTypeInsn( NEW, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField" );
+        mv.visitInsn( DUP );
 
         mv.visitLdcInsn( impField.getImpKind() );
         mv.visitLdcInsn( impField.getImpType() );
@@ -198,11 +227,17 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
                 "<init>",
                 "(Lorg/drools/chance/distribution/IDistributionStrategies;Lorg/drools/chance/distribution/IDistributionStrategies;Ljava/lang/String;)V" );
 
-        mv.visitMethodInsn(INVOKEVIRTUAL, wrapperName, "property", "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "put", "(Lorg/drools/core/util/Triple;)Z");
-        mv.visitInsn(POP);
+        mv.visitMethodInsn( INVOKEVIRTUAL,
+                wrapperName,
+                "property",
+                "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
+        mv.visitMethodInsn( INVOKEVIRTUAL,
+                "org/drools/core/util/TripleStore",
+                "put",
+                "(Lorg/drools/core/util/Triple;)Z" );
+        mv.visitInsn( POP );
 
-        mv.visitLabel(l0);
+        mv.visitLabel( l0 );
 
     }
 

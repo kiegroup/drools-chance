@@ -126,7 +126,6 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
 
 
     protected void finalizeCreation(ClassDefinition trait) {
-        System.out.println( "Wire in virtual fields");
 
         Collection<FieldDefinition> originalFields = new HashSet<FieldDefinition>( trait.getFieldsDefinitions() );
 
@@ -169,9 +168,6 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
                 }
             }
         }
-
-
-        System.out.println( "Wired in virtual fields");
 
     }
 
