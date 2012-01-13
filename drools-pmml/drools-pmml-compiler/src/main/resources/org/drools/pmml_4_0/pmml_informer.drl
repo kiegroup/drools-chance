@@ -31,6 +31,7 @@ global PMML4Wrapper utils;
 
  function void applyTemplate(String templateName, Object context, TemplateRegistry registry, Map vars, StringBuilder builder) {
     CompiledTemplate template = (CompiledTemplate) registry.getNamedTemplate(templateName);
+    builder.append(" // fired template " + templateName );
     builder.append(TemplateRuntime.execute(template, context, vars));
 	//builder.append(TemplateRuntime.execute(template, context, new org.mvel2.integration.impl.DefaultLocalVariableResolverFactory()));
  }
@@ -73,7 +74,7 @@ rule "Question"
 dialect "java"
 when
     MiningSchema(  $inputs : miningFields )
-    $fld : MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType.value == "active" )
+    $fld : MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType == FIELDUSAGETYPE.ACTIVE )
     TypeOfField( name == $name, $type : dataType )
     $dfld : DataField( $vsize : values.size == 0, name == $name, $full : displayName )
 then
@@ -95,7 +96,7 @@ rule "Question_Multi"
 dialect "java"
 when
     MiningSchema(  $inputs : miningFields )
-    $fld : MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType.value == "active" )
+    $fld : MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType == FIELDUSAGETYPE.ACTIVE )
     TypeOfField( name == $name, $type : dataType )
     $dfld : DataField( $vals : values, $vsize : values.size > 0, name == $name, $full : displayName )
     $validz : List( size > 0 ) from accumulate(
@@ -129,7 +130,7 @@ end
 rule "Output_Predicted_AsNotes"
 when
     MiningSchema(  $inputs : miningFields )
-    $fld : MiningField( this memberOf $inputs,  $name : name, usageType.value == "predicted" )
+    $fld : MiningField( this memberOf $inputs,  $name : name, usageType == FIELDUSAGETYPE.PREDICTED )
 //    TypeOfField( name == $name, $type : dataType )
     $dfld : DataField( name == $name, $full : displayName )
 then

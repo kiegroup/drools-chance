@@ -27,11 +27,11 @@
 rule "addFeature_@{origField}_to_@{name}_@{feature}"
 
 when
- $src : @{origField}(   @if{ context != null } , context == @{format("string",context)} @end{}
+ $src : @{origField}(   @if{ context != null } context == @{format("string",context)}, @end{}
                         $srcVal : value )
         $x : @{name}( @if{ value != null } , value == @{format(type,value)} @end{} )
 then
-    $x.setDisplayValue($srcVal);
+    $x.setDisplayValue( "" + $srcVal  );
 end
 @end{}
 
