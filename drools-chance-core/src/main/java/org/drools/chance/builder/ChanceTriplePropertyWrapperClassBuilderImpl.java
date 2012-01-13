@@ -186,9 +186,9 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
                 "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)Lorg/drools/chance/distribution/IDistributionStrategies;");
 
 
-        mv.visitLdcInsn( ""+impField.getHistory() );
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(Ljava/lang/String;)Ljava/lang/Integer;");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
+//        mv.visitLdcInsn( ""+impField.getHistory() );
+//        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(Ljava/lang/String;)Ljava/lang/Integer;");
+//        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
 
         mv.visitInsn( ACONST_NULL );
 
@@ -196,7 +196,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitMethodInsn( INVOKESPECIAL,
                 "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField",
                 "<init>",
-                "(Lorg/drools/chance/distribution/IDistributionStrategies;Lorg/drools/chance/distribution/IDistributionStrategies;ILjava/lang/String;)V" );
+                "(Lorg/drools/chance/distribution/IDistributionStrategies;Lorg/drools/chance/distribution/IDistributionStrategies;Ljava/lang/String;)V" );
 
         mv.visitMethodInsn(INVOKEVIRTUAL, wrapperName, "property", "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
         mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "put", "(Lorg/drools/core/util/Triple;)Z");

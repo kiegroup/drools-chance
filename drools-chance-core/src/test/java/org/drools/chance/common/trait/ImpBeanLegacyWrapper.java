@@ -155,7 +155,6 @@ public class ImpBeanLegacyWrapper extends TripleBasedStruct {
             IImperfectField fld = new LinguisticImperfectField(
                     ChanceStrategyFactory.buildStrategies( "fuzzy", "linguistic", "simple", Weight.class ),
                     ChanceStrategyFactory.buildStrategies( "possibility", "linguistic", "simple", Double.class ),
-                    0,
                     null
             );
             store.put( property( "body_$$Imp", fld ) );
@@ -165,7 +164,6 @@ public class ImpBeanLegacyWrapper extends TripleBasedStruct {
             IImperfectField fld = new LinguisticImperfectField(
                     ChanceStrategyFactory.buildStrategies( "fuzzy", "linguistic", "simple", Price.class ),
                     ChanceStrategyFactory.buildStrategies( "possibility", "linguistic", "simple", Integer.class ),
-                    0,
                     null
             );
             store.put( property( "price_$$Imp", fld ) );

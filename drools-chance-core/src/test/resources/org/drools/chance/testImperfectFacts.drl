@@ -15,9 +15,6 @@
  */
 package org.drools.chance.test;
 
-import org.drools.chance.common.Bean;
-import org.drools.chance.builder.ChanceFactory;
-import org.drools.chance.builder.ImperfectRegistry;
 import org.drools.chance.builder.Imperfect;
 
 import org.drools.chance.common.fact.Weight;

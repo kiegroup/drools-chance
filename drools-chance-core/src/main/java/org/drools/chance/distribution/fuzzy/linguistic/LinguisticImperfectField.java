@@ -18,7 +18,6 @@ package org.drools.chance.distribution.fuzzy.linguistic;
 
 import org.drools.chance.common.IImperfectField;
 import org.drools.chance.common.ImperfectField;
-import org.drools.chance.common.ImperfectHistoryField;
 import org.drools.chance.degree.IDegree;
 import org.drools.chance.distribution.IDistribution;
 import org.drools.chance.distribution.IDistributionStrategies;
@@ -34,17 +33,8 @@ public class LinguisticImperfectField<T extends ILinguistic, K extends Number> i
 
 
     public LinguisticImperfectField( IDistributionStrategies<T> strats, IDistributionStrategies<K> subStrats, String prior) {
-        this( strats, subStrats, 0, prior );
-    }
+        innerField = new ImperfectField<T>(strats,prior);
 
-
-    public LinguisticImperfectField(IDistributionStrategies<T> strats, IDistributionStrategies<K> subStrats,
-                                    int history, String prior) {
-        if (history == 0) {
-            innerField = new ImperfectField<T>(strats,prior);
-        } else {
-            innerField = new ImperfectHistoryField<T>(strats,history,prior);
-        }
         this.subStrats = subStrats;
     }
 
