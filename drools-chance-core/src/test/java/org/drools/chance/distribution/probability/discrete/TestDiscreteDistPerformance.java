@@ -21,7 +21,9 @@ import org.drools.chance.degree.ValueDegreePair;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 

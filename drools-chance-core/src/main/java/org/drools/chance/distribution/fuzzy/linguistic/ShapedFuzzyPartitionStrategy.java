@@ -16,18 +16,19 @@
 
 package org.drools.chance.distribution.fuzzy.linguistic;
 
+import org.drools.chance.degree.DegreeTypeRegistry;
+import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.simple.SimpleDegree;
+import org.drools.chance.distribution.IDiscretePossibilityDistribution;
+import org.drools.chance.distribution.IDistribution;
+import org.drools.chance.distribution.IDistributionStrategies;
+import org.drools.core.util.StringUtils;
+
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-
-import org.drools.chance.degree.DegreeTypeRegistry;
-import org.drools.chance.degree.IDegree;
-import org.drools.chance.degree.simple.SimpleDegree;
-import org.drools.chance.distribution.*;
-import org.drools.core.util.StringUtils;
 
 public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDistributionStrategies<ILinguistic> {
 

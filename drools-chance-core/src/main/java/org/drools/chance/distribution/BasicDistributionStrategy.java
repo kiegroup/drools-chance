@@ -22,7 +22,8 @@ import org.drools.chance.degree.simple.SimpleDegree;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 
 /**

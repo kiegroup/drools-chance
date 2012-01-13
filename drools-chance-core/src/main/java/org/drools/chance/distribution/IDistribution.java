@@ -18,8 +18,6 @@ package org.drools.chance.distribution;
 
 import org.drools.chance.degree.IDegree;
 
-import java.util.Set;
-
 
 /**
  * Interface for all classes implementing the concept of "distribution" over a generic domain

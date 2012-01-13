@@ -24,7 +24,6 @@ import org.mvel2.asm.*;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -368,7 +367,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
         buildImperfectFields( cw, classDef );
 
-        buildSynchFieldsMethod( cw, classDef.getName(), classDef.getName(), classDef );
+        buildSynchFieldsMethod(cw, classDef.getName(), classDef.getName(), classDef);
     }
 
 
@@ -381,11 +380,11 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                 if ( ImperfectFieldDefinition.isLinguistic( ifld ) ) {
 
                     FieldDefinition tfld = getSupportField( cdef, ifld );
-                    initImperfectLinguisticField( mv, cdef.getName(), ifld, tfld );
+                    initImperfectLinguisticField(mv, cdef.getName(), ifld, tfld);
 
 
                 } else {
-                    initImperfectField( mv, cdef.getName(), ifld );
+                    initImperfectField(mv, cdef.getName(), ifld);
 
                 }
             }

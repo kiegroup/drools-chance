@@ -16,14 +16,14 @@
 
 package org.drools.chance.distribution.probability.discrete;
 
+import org.drools.chance.degree.IDegree;
+import org.drools.chance.distribution.IDiscreteProbabilityDistribution;
+import org.drools.chance.utils.ValueSortedMap;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import org.drools.chance.degree.IDegree;
-import org.drools.chance.distribution.IDiscreteProbabilityDistribution;
-import org.drools.chance.utils.ValueSortedMap;
 
 public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution<T> {
 

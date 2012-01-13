@@ -17,11 +17,13 @@
 package org.drools.chance.common.fact;
 
 
-import org.drools.chance.common.*;
+import org.drools.chance.common.ChanceStrategyFactory;
+import org.drools.chance.common.IImperfectField;
+import org.drools.chance.common.ImperfectField;
 import org.drools.chance.common.trait.ImpBean;
-import org.drools.chance.distribution.BasicDistribution;
 import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.fuzzy.linguistic.*;
+import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
+import org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartitionStrategyFactory;
 import org.drools.chance.distribution.probability.BasicDistributionStrategyFactory;
 import org.drools.chance.distribution.probability.dirichlet.DirichletDistributionStrategyFactory;
 import org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategyFactory;

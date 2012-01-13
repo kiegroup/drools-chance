@@ -16,7 +16,9 @@
 
 package org.drools.chance.common.trait;
 
-import org.drools.chance.common.*;
+import org.drools.chance.common.ChanceStrategyFactory;
+import org.drools.chance.common.IImperfectField;
+import org.drools.chance.common.ImperfectField;
 import org.drools.chance.common.fact.Price;
 import org.drools.chance.common.fact.Weight;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;

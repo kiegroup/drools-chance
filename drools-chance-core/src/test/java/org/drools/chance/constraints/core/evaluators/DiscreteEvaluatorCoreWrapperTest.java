@@ -19,8 +19,6 @@ package org.drools.chance.constraints.core.evaluators;
 import junit.framework.TestCase;
 import org.drools.chance.constraints.core.IConstraintCore;
 import org.drools.chance.constraints.core.connectives.IConnectiveCore;
-import org.drools.chance.constraints.core.connectives.impl.product.And;
-import org.drools.chance.constraints.core.connectives.impl.product.Or;
 import org.drools.chance.degree.IDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.probability.discrete.DiscreteDistribution;

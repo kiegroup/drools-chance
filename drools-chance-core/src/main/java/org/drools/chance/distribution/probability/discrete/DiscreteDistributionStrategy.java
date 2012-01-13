@@ -16,16 +16,16 @@
 
 package org.drools.chance.distribution.probability.discrete;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.IDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.IDiscreteProbabilityDistribution;
 import org.drools.chance.distribution.IDistribution;
 import org.drools.chance.distribution.IDistributionStrategies;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 
 /**

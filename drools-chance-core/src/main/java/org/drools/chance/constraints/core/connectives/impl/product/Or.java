@@ -16,7 +16,6 @@
 
 package org.drools.chance.constraints.core.connectives.impl.product;
 
-import org.drools.chance.constraints.core.IConstraintCore;
 import org.drools.chance.constraints.core.connectives.impl.AbstractConnective;
 import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
 import org.drools.chance.constraints.core.connectives.impl.lukas.Not;

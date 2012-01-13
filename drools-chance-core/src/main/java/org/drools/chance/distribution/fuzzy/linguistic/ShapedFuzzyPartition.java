@@ -16,16 +16,15 @@
 
 package org.drools.chance.distribution.fuzzy.linguistic;
 
-import java.util.*;
-
 import org.drools.chance.degree.IDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.IContinuousPossibilityDistribution;
 import org.drools.chance.distribution.IDiscretePossibilityDistribution;
-import org.drools.chance.distribution.IPossibilityDistribution;
-
-import de.lab4inf.fuzzy.FuzzyAlphaCutPartition;
 import org.drools.chance.utils.ValueSortedMap;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class ShapedFuzzyPartition<T extends ILinguistic<Number>> implements IDiscretePossibilityDistribution<ILinguistic<Number>> {
 

@@ -16,10 +16,10 @@
 
 package org.drools.chance.distribution;
 
+import org.drools.chance.degree.IDegree;
+
 import java.util.Map;
 import java.util.Set;
-
-import org.drools.chance.degree.IDegree;
 
 
 /**

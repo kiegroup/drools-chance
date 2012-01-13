@@ -17,12 +17,12 @@
 package org.drools.chance.common;
 
 import com.google.common.collect.HashBasedTable;
+import org.drools.chance.constraints.core.connectives.IConnectiveFactory;
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.IDistributionStrategies;
 import org.drools.chance.distribution.IDistributionStrategyFactory;
-import org.drools.chance.constraints.core.connectives.IConnectiveFactory;
 
 
 /**

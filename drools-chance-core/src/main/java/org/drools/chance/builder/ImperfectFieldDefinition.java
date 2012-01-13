@@ -16,14 +16,10 @@
 
 package org.drools.chance.builder;
 
-import org.drools.base.ClassFieldAccessor;
-import org.drools.base.FieldAccessor;
-import org.drools.chance.common.ImperfectField;
 import org.drools.core.util.StringUtils;
 import org.drools.factmodel.AnnotationDefinition;
 import org.drools.factmodel.ClassDefinition;
 import org.drools.factmodel.FieldDefinition;
-import org.drools.reteoo.builder.BuildUtils;
 
 public class ImperfectFieldDefinition extends FieldDefinition {
 

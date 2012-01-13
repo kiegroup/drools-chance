@@ -20,7 +20,6 @@ import org.drools.RuntimeDroolsException;
 import org.drools.factmodel.BuildUtils;
 import org.drools.factmodel.ClassDefinition;
 import org.drools.factmodel.FieldDefinition;
-import org.drools.factmodel.traits.TraitRegistry;
 import org.drools.factmodel.traits.TraitTriplePropertyWrapperClassBuilderImpl;
 import org.mvel2.asm.Label;
 import org.mvel2.asm.MethodVisitor;

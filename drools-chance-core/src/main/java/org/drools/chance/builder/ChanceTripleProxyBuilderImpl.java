@@ -16,10 +16,7 @@
 
 package org.drools.chance.builder;
 
-import org.drools.RuntimeDroolsException;
 import org.drools.chance.common.IImperfectField;
-import org.drools.chance.common.ImperfectField;
-import org.drools.factmodel.AnnotationDefinition;
 import org.drools.factmodel.BuildUtils;
 import org.drools.factmodel.ClassDefinition;
 import org.drools.factmodel.FieldDefinition;
@@ -29,7 +26,7 @@ import org.drools.factmodel.traits.TraitTripleProxyClassBuilderImpl;
 import org.mvel2.asm.*;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Map;
 
 
 public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderImpl {

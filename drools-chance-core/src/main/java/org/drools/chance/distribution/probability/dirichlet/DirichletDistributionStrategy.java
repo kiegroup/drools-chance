@@ -16,14 +16,6 @@
 
 package org.drools.chance.distribution.probability.dirichlet;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.IDegree;
 import org.drools.chance.distribution.IDiscreteDomainDistribution;
@@ -31,6 +23,10 @@ import org.drools.chance.distribution.IDiscreteProbabilityDistribution;
 import org.drools.chance.distribution.IDistribution;
 import org.drools.chance.distribution.IDistributionStrategies;
 import org.drools.chance.utils.ValueSortedMap;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 
 /**

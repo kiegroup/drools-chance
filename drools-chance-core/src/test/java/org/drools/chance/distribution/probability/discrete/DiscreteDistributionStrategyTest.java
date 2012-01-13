@@ -16,13 +16,11 @@
 
 package org.drools.chance.distribution.probability.discrete;
 
-import static org.junit.Assert.assertEquals;
-
-import org.drools.chance.builder.ChanceFactory;
-import org.drools.chance.common.ChanceStrategyFactory;
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 
 public class DiscreteDistributionStrategyTest {

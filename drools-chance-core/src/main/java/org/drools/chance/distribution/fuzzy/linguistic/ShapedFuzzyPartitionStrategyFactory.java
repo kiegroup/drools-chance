@@ -18,7 +18,6 @@ package org.drools.chance.distribution.fuzzy.linguistic;
 
 import org.drools.chance.distribution.IDistributionStrategies;
 import org.drools.chance.distribution.IDistributionStrategyFactory;
-import org.drools.chance.distribution.probability.dirichlet.DirichletDistributionStrategy;
 
 public class ShapedFuzzyPartitionStrategyFactory<T> implements
 		IDistributionStrategyFactory<T> {
