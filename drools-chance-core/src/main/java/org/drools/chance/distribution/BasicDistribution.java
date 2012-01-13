@@ -18,14 +18,6 @@ package org.drools.chance.distribution;
 
 import org.drools.chance.constraints.core.connectives.impl.lukas.Not;
 import org.drools.chance.degree.IDegree;
-import org.drools.chance.distribution.IDiscreteProbabilityDistribution;
-import org.drools.chance.distribution.IProbabilityDistribution;
-import org.drools.chance.utils.ValueSortedMap;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 public class BasicDistribution<T> implements IProbabilityDistribution<T> {
 
@@ -53,6 +45,10 @@ public class BasicDistribution<T> implements IProbabilityDistribution<T> {
         } else {
             return Not.getInstance().eval( degree );
         }
+    }
+
+    public IDegree get(T value) {
+        return getDegree( value );
     }
 
     public T getValue() {

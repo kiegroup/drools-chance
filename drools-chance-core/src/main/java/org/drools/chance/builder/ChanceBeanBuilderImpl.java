@@ -104,6 +104,15 @@ public class ChanceBeanBuilderImpl extends ChanceBuilder {
                 for ( AnnotationDefinition ann : fld.getAnnotations() ) {
                     if ( ann.getName().equals( Imperfect.class.getName() ) ) {
                         ImperfectFieldDefinition ifld = ImperfectFieldDefinition.fromField( fld, ann );
+                        
+                        if ( ImperfectFieldDefinition.isLinguistic( ifld ) ) {
+                            for ( FieldDefinition xfld : originalFields ) {
+                                if ( xfld.getName().equals( ifld.getSupport() ) ) {
+                                    ifld.setSupportFieldDef( xfld );
+                                }
+                            }
+                        }
+                        
                         classDef.addField( ifld );
                         break;
                     }
@@ -242,7 +251,7 @@ public class ChanceBeanBuilderImpl extends ChanceBuilder {
                 if ( fld instanceof ImperfectFieldDefinition ) {
                     ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) fld;
 
-                    if ( isLinguistic( ifld ) ) {
+                    if ( ImperfectFieldDefinition.isLinguistic( ifld ) ) {
                         FieldDefinition tfld = getSupportField( classDef, ifld );
                         buildImperfectLinguisticFieldGettersAndSetters(cw, classDef.getName(), classDef.getName(), ifld, tfld);
                     } else {

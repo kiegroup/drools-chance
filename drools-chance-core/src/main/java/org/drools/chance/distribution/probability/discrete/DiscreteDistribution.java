@@ -27,57 +27,61 @@ import org.drools.chance.utils.ValueSortedMap;
 
 public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution<T> {
 
-	private ValueSortedMap<T, IDegree> valueSorMap = new ValueSortedMap<T, IDegree>();
+    private ValueSortedMap<T, IDegree> valueSorMap = new ValueSortedMap<T, IDegree>();
     private IDegree falze;
 
-	public DiscreteDistribution() {
-		super();
-	}
+    public DiscreteDistribution() {
+        super();
+    }
 
-	public DiscreteDistribution(Collection<T> values,
-			Collection<IDegree> probabilities) {
-		Iterator<T> vIter = values.iterator();
-		Iterator<IDegree> dIter = probabilities.iterator();
+    public DiscreteDistribution(Collection<T> values,
+                                Collection<IDegree> probabilities) {
+        Iterator<T> vIter = values.iterator();
+        Iterator<IDegree> dIter = probabilities.iterator();
 
-		while (vIter.hasNext()) {
-			put(vIter.next(), dIter.next());
+        while (vIter.hasNext()) {
+            put(vIter.next(), dIter.next());
         }
 
 
-	}
+    }
 
-	public void put(T value, IDegree prob) {
-		valueSorMap.put(value, prob);
+    public void put(T value, IDegree prob) {
+        valueSorMap.put(value, prob);
 
         if ( falze == null ) {
             falze = prob.False();
         }
-	}
+    }
 
-	public T getBest() {
-		return valueSorMap.isEmpty() ? null : valueSorMap.keySet().iterator().next();
-	}
+    public T getBest() {
+        return valueSorMap.isEmpty() ? null : valueSorMap.keySet().iterator().next();
+    }
 
-	public IDegree getDegree(T value) {
-		IDegree deg =  valueSorMap.get(value);
+    public IDegree getDegree(T value) {
+        IDegree deg =  valueSorMap.get(value);
         return deg != null ? deg : falze;
-	}
+    }
 
-	public Number domainSize() {
-		return valueSorMap.size();
-	}
+    public IDegree get(T value) {
+        return getDegree( value );
+    }
+
+    public Number domainSize() {
+        return valueSorMap.size();
+    }
 
     public int size() {
         return valueSorMap.size();
     }
 
-	public Map<T, IDegree> getDistribution() {
-		return valueSorMap;
-	}
+    public Map<T, IDegree> getDistribution() {
+        return valueSorMap;
+    }
 
-	public Set<T> getSupport() {
-		return valueSorMap.keySet();
-	}
+    public Set<T> getSupport() {
+        return valueSorMap.keySet();
+    }
 
 
     public String toString() {
@@ -87,12 +91,12 @@ public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution
     public String serialize() {
         StringBuilder sb = new StringBuilder();
         Iterator<T> iter = valueSorMap.keySet().iterator();
-            while (iter.hasNext()) {
-                T elem = iter.next();
-                sb.append(elem).append("/").append(getDegree(elem).getValue());
-                if (iter.hasNext())
-                    sb.append(", ");
-            }
+        while (iter.hasNext()) {
+            T elem = iter.next();
+            sb.append(elem).append("/").append(getDegree(elem).getValue());
+            if (iter.hasNext())
+                sb.append(", ");
+        }
         return sb.toString();
     }
 

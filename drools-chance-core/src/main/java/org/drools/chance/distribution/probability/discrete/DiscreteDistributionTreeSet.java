@@ -30,52 +30,59 @@ import java.util.TreeSet;
 @Deprecated
 public class DiscreteDistributionTreeSet<T> implements IDistribution<T>  {
 
-	private TreeSet<ValueDegreePair<T>> _multipleValue=new TreeSet<ValueDegreePair<T>>();
+    private TreeSet<ValueDegreePair<T>> _multipleValue=new TreeSet<ValueDegreePair<T>>();
 
 
 
-	public DiscreteDistributionTreeSet() {
-		super();
-	}
+    public DiscreteDistributionTreeSet() {
+        super();
+    }
 
-	public DiscreteDistributionTreeSet( Collection<T> values, Collection<IDegree> probabilities) {
-		 IDegree[] deg=probabilities.toArray(new IDegree[probabilities.size()]);
-		 int i=0;
-		for (T value : values){
-			_multipleValue.add(new ValueDegreePair<T>(value,deg[i]));
-			i++;
-		}
+    public DiscreteDistributionTreeSet( Collection<T> values, Collection<IDegree> probabilities) {
+        IDegree[] deg=probabilities.toArray(new IDegree[probabilities.size()]);
+        int i=0;
+        for (T value : values){
+            _multipleValue.add(new ValueDegreePair<T>(value,deg[i]));
+            i++;
+        }
 
-	}
+    }
 
-	public DiscreteDistributionTreeSet( Collection<ValueDegreePair<T>> pairs ) {
-		for (ValueDegreePair<T> vdp : pairs)
-			_multipleValue.add(vdp);
-	}
-
-
-	public T getBest(){
-		return _multipleValue.first().getValue();
-	}
+    public DiscreteDistributionTreeSet( Collection<ValueDegreePair<T>> pairs ) {
+        for (ValueDegreePair<T> vdp : pairs)
+            _multipleValue.add(vdp);
+    }
 
 
+    public T getBest(){
+        return _multipleValue.first().getValue();
+    }
 
-	//TODO : Change internal impl to act as map
-	@Deprecated
-	public IDegree getDegree(T value) {
-		Iterator<ValueDegreePair<T>> iter = _multipleValue.descendingIterator();
 
-		if (_multipleValue.size() == 0) return SimpleDegree.FALSE;
 
-		ValueDegreePair<T> pair = null;
-		while (iter.hasNext()) {
-			pair = iter.next();
-			if (pair.getValue().equals(value))
-				return pair.getDegree();
-		}
+    //TODO : Change internal impl to act as map
+    @Deprecated
+    public IDegree getDegree(T value) {
+        Iterator<ValueDegreePair<T>> iter = _multipleValue.descendingIterator();
 
-		return null;
-	}
+        if (_multipleValue.size() == 0) return SimpleDegree.FALSE;
+
+        ValueDegreePair<T> pair = null;
+        while (iter.hasNext()) {
+            pair = iter.next();
+            if (pair.getValue().equals(value))
+                return pair.getDegree();
+        }
+
+        return null;
+    }
+
+
+
+    public IDegree get(T value) {
+        return getDegree( value );
+    }
+
 
     public Number domainSize() {
         return _multipleValue.size();
@@ -83,26 +90,26 @@ public class DiscreteDistributionTreeSet<T> implements IDistribution<T>  {
 
 
     public T sample() {
-		double p = Math.random();
-		double acc = 0.0;
-		T result = null;
-		Iterator<ValueDegreePair<T>> iter = _multipleValue.descendingIterator();
-		while ( acc < p ) {
-			ValueDegreePair<T> pair = iter.next();
-			result = pair.getValue();
-			acc += pair.getDegree().getValue();
-		}
-		return result;
-	}
+        double p = Math.random();
+        double acc = 0.0;
+        T result = null;
+        Iterator<ValueDegreePair<T>> iter = _multipleValue.descendingIterator();
+        while ( acc < p ) {
+            ValueDegreePair<T> pair = iter.next();
+            result = pair.getValue();
+            acc += pair.getDegree().getValue();
+        }
+        return result;
+    }
 
 
-	public void add(ValueDegreePair<T> pair){
-		_multipleValue.add(pair);
-	}
+    public void add(ValueDegreePair<T> pair){
+        _multipleValue.add(pair);
+    }
 
-	public int size(){
-		return _multipleValue.size();
-	}
+    public int size(){
+        return _multipleValue.size();
+    }
 
 
 

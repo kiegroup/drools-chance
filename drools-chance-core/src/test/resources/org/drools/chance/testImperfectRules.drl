@@ -73,43 +73,29 @@ end
 
 
 
-rule "Init"
- when
- then
-     LegacyBean b = new LegacyBean( "joe", 65.0 );
-     ImpBean imp = don( b, ImpBean.class );
-end
-
-
-
-
-
-
-/*
-
-
-rule "Wrap II"
+rule "Check"
 when
-    $p : Imperson( $name : name, $dist : nameDistr, $val : nameValue )
+    $p : ImpBean( nameValue == "david",
+                  age.crisp == 19,
+                  flag.crisp == false,
+                  likesValue.name == "mozzarella",
+                  bodyDistr.get( Weight.SLIM ).value == 0.8,
+                  bucks == 50 )
 then
-    System.out.println( " >> " + $p );
+    System.err.println( " >> " + $p );
 
-    System.err.println( $name );
-    System.err.println( $dist );
-    System.err.println( $val );
-
+    list.add( "OK" );
 end
 
 
 rule "Init"
+no-loop
 when
 then
     LegacyBean b = new LegacyBean( "joe", 65.0 );
     ImpBean imp = don( b, ImpBean.class );
 
         System.out.println(" *** >>>>>> " + imp );
-
-
 
         System.out.println(" getName   >>>>>> " + imp.getName( ) );
 
@@ -264,52 +250,52 @@ then
 
 
 
-//        System.out.println(" getBody   >>>>>> " + imp.getBody( ) );
-//
-//            System.out.println(" \t\t Initial Imp field (body) : " + imp.getBody( ) );
-//            System.out.println(" \t\t Initial Imp distr (body) : " + imp.getBodyDistr( ) );
-//            System.out.println(" \t\t Initial Imp alive (body) : " + imp.getBodyValue( ) );
-//            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
-//
-//
-//
-//        IDistribution bodyDist = imp.getBody().getStrategies().parse("SLIM/0.7");
-//        IDistribution bodyDist2 = imp.getBody().getStrategies().parse("SLIM/0.8,FAT/0.2");
-//        imp.setBodyDistr( bodyDist );
-//
-//            System.out.println(" \t\t After setting new distr (body) : " + imp.getBody( ) );
-//            System.out.println(" \t\t After setting new distr (inner body) : " + imp.getFields( ).get( "body" ) );
-//            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
-//
-//        imp.setBody( imp.getBody() );
-//            System.out.println(" \t\t After auto-setting impe field (body) : " + imp.getBody( ) );
-//            System.out.println(" \t\t After auto-setting impe field (body) : " + imp.getFields( ).get( "body" ) );
-//            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
-//
-//        imp.updateBodyDistr( bodyDist2 );
-//            System.out.println(" \t\t After update distr2 (body) : " + imp.getBody( ) );
-//            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
-//
-//        imp.updateBodyValue( Weight.SLIM );
-//            System.out.println(" \t\t After updating with degenerated distro (body) : " + imp.getBody( ) );
-//            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
-//        imp.setBodyValue( Weight.FAT );
-//            System.out.println(" \t\t After setting hard value (body) : " + imp.getBody( ) );
-//            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
-//
-//
-//        imp.setWeight(55.0);
-//            System.out.println(" \t\t After setting crisp value (weight) : " + imp.getBody( ) );
-//            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
-//
-//        imp.setWeight(25.0);
-//            System.out.println(" \t\t After setting crisp value (weight) : " + imp.getBody( ) );
-//            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
-//
-//        imp.setBodyDistr( bodyDist2 );
-//            System.out.println(" \t\t After set distr2 (body) : " + imp.getBody( ) );
-//            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+        System.out.println(" getBody   >>>>>> " + imp.getBody( ) );
 
+            System.out.println(" \t\t Initial Imp field (body) : " + imp.getBody( ) );
+            System.out.println(" \t\t Initial Imp distr (body) : " + imp.getBodyDistr( ) );
+            System.out.println(" \t\t Initial Imp alive (body) : " + imp.getBodyValue( ) );
+            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+
+
+
+        IDistribution bodyDist = imp.getBody().getStrategies().parse("SLIM/0.7");
+        IDistribution bodyDist2 = imp.getBody().getStrategies().parse("SLIM/0.8,FAT/0.2");
+        imp.setBodyDistr( bodyDist );
+
+            System.out.println(" \t\t After setting new distr (body) : " + imp.getBody( ) );
+            System.out.println(" \t\t After setting new distr (inner body) : " + imp.getFields( ).get( "body" ) );
+            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+
+        imp.setBody( imp.getBody() );
+            System.out.println(" \t\t After auto-setting impe field (body) : " + imp.getBody( ) );
+            System.out.println(" \t\t After auto-setting impe field (body) : " + imp.getFields( ).get( "body" ) );
+            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+
+        imp.updateBodyDistr( bodyDist2 );
+            System.out.println(" \t\t After update distr2 (body) : " + imp.getBody( ) );
+            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+
+        imp.updateBodyValue( Weight.SLIM );
+            System.out.println(" \t\t After updating with degenerated distro (body) : " + imp.getBody( ) );
+            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+        imp.setBodyValue( Weight.FAT );
+            System.out.println(" \t\t After setting hard value (body) : " + imp.getBody( ) );
+            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+
+
+        imp.setWeight(55.0);
+            System.out.println(" \t\t After setting crisp value (weight) : " + imp.getBody( ) );
+            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+
+        imp.setWeight(25.0);
+            System.out.println(" \t\t After setting crisp value (weight) : " + imp.getBody( ) );
+            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+
+        imp.setBodyDistr( bodyDist2 );
+            System.out.println(" \t\t After set distr2 (body) : " + imp.getBody( ) );
+            System.out.println(" \t\t *** Support field value (weight) : " + imp.getWeight( ) );
+
+    update( imp );
 end
-         */
 

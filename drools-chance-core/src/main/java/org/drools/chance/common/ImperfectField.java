@@ -96,4 +96,21 @@ public class ImperfectField<T> extends AbstractImperfectField<T> {
                 "distr=" + distr +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ImperfectField that = (ImperfectField) o;
+
+        if (distr != null ? !distr.equals(that.distr) : that.distr != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return distr != null ? distr.hashCode() : 0;
+    }
 }

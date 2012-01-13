@@ -80,9 +80,9 @@ public interface ImpBean {
     public void setBodyDistr( IDistribution<Weight> x );
     public void setBodyValue( Weight x );
 
-    public void updateBody( IDistribution<Weight> x );
-    public void updateBody( Weight x );
-    
+    public void updateBody( IImperfectField<Weight> x );
+    public void updateBodyDistr( IDistribution<Weight> x );
+    public void updateBodyValue( Weight x );
 
     public Double getWeight();
     public void setWeight( Double x );
@@ -97,8 +97,9 @@ public interface ImpBean {
     public void setPriceDistr( IDistribution<Price> x );
     public void setPriceValue( Price x );
 
-    public void updatePrice( IDistribution<Price> x );
-    public void updatePrice( Price x );
+    public void updatePrice( IImperfectField<Price> x );
+    public void updatePriceDistr( IDistribution<Price> x );
+    public void updatePriceValue( Price x );
         
 
     public Integer getBucks();

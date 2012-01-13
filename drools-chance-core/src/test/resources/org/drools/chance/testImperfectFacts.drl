@@ -52,13 +52,13 @@ declare BeanImp
     body    : Weight    = "SLIM/0.6, FAT/0.4"
                     @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="weight" )
 
-    weight  : Double
+    weight  : Double    = 65.0
 
 
-//    price   : Price
-//                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="bucks" )
+    price   : Price
+                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="bucks" )
 
-    bucks   : Integer   = 40
+    bucks   : Integer
 
 
     likes   : Cheese    = "cheddar/0.6"
@@ -116,3 +116,8 @@ then
 end
 
 
+rule "Bind"
+when
+
+then
+end

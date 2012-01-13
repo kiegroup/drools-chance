@@ -289,7 +289,7 @@ public class Bean_Trait extends TraitProxy {
 		body.setValue(dist,true);
         object.setBody(body.getCrisp());
 
-		object.setWeight(((LinguisticImperfectField<Weight, Double>) body).defuzzify());
+		object.setWeight(((LinguisticImperfectField<Weight, Double>) body).defuzzify().doubleValue());
 	}
 	
 
@@ -323,7 +323,7 @@ public class Bean_Trait extends TraitProxy {
 		object.setBody(val);
 		this.body.setValue(val,true);
 
-		object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify());
+		object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify().doubleValue());
 	}
 
 
@@ -333,7 +333,7 @@ public class Bean_Trait extends TraitProxy {
 		object.setBody(body.getCrisp());
 
         if ( k ) {
-        object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify());
+        object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify().doubleValue());
         } else {
             System.out.println("x");
         }
@@ -354,7 +354,7 @@ public class Bean_Trait extends TraitProxy {
 		this.body.update(body_bit);
         object.setBody(body.getCrisp());
 
-        object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify());
+        object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify().doubleValue());
     }
 
 

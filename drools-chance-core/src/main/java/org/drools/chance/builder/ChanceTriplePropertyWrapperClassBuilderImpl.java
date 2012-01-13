@@ -20,6 +20,7 @@ import org.drools.RuntimeDroolsException;
 import org.drools.factmodel.BuildUtils;
 import org.drools.factmodel.ClassDefinition;
 import org.drools.factmodel.FieldDefinition;
+import org.drools.factmodel.traits.TraitRegistry;
 import org.drools.factmodel.traits.TraitTriplePropertyWrapperClassBuilderImpl;
 import org.mvel2.asm.Label;
 import org.mvel2.asm.MethodVisitor;
@@ -31,12 +32,27 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
 
     protected boolean isSoftField( FieldDefinition field, int index, long mask ) {
-        return ! ( isVirtual( field ) ) && super.isSoftField( field, index, mask );
+        return ! ( isVirtual( field ) ) && TraitRegistry.isSoftField(field, index, mask);
     }
 
     protected boolean isVirtual( FieldDefinition field ) {
         return field instanceof VirtualFieldDefinition;
     }
+
+
+    protected boolean isDirectAccess( FieldDefinition field ) {
+        return field instanceof DirectAccessFieldDefinition;
+    }
+
+    protected boolean mustSkip( FieldDefinition field ) {
+        return isVirtual( field ) || isDirectAccess( field );
+    }
+
+
+
+
+
+
 
     protected int initSoftFields( MethodVisitor mv, String wrapperName, ClassDefinition trait, long mask ) {
         int stackSize = super.initSoftFields( mv, wrapperName, trait, mask );
@@ -46,17 +62,21 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
             if ( field instanceof ImperfectFieldDefinition ) {
                 ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
 
-                if ( isLinguistic( ifld ) ) {
+                if ( ImperfectFieldDefinition.isLinguistic(ifld) ) {
 
                     FieldDefinition tfld = getSupportField( trait, ifld );
                     initImperfectLinguisticField( mv, wrapperName, ifld, tfld );
                     stackSize += 2;
 
                 } else {
+                    
                     initImperfectField( mv, wrapperName, (ImperfectFieldDefinition) field);
 
                 }
 
+            } else if ( field instanceof DirectAccessFieldDefinition ) {
+
+                System.out.println("Should I init core? " + field.getName());
             }
         }
         return stackSize;
@@ -73,10 +93,6 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
             throw new RuntimeDroolsException( " Fuzzy Linguistic Field " + ifld.getName() + " requires a support field, not found " + target );
         }
         return  tfld;
-    }
-
-    protected boolean isLinguistic(ImperfectFieldDefinition ifld) {
-        return "fuzzy".equals( ifld.getImpKind() );
     }
 
 

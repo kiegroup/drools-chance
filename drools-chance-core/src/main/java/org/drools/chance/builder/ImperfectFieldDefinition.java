@@ -31,11 +31,20 @@ public class ImperfectFieldDefinition extends FieldDefinition {
     private String impType;
     private String degreeType;
     private String support;
+    private FieldDefinition supportFieldDef;
 
 
     private int history;
 
     private ClassDefinition klassDef;
+
+
+
+    public static boolean isLinguistic( FieldDefinition ifld ) {
+        return (ifld instanceof ImperfectFieldDefinition) && "fuzzy".equals( ((ImperfectFieldDefinition) ifld).getImpKind() );
+    }
+
+
 
     public void setClassDefinition(ClassDefinition classDef) {
         klassDef = classDef;
@@ -84,6 +93,14 @@ public class ImperfectFieldDefinition extends FieldDefinition {
 
     public void setSupport(String support) {
         this.support = support;
+    }
+
+    public FieldDefinition getSupportFieldDef() {
+        return supportFieldDef;
+    }
+
+    public void setSupportFieldDef(FieldDefinition supportFieldDef) {
+        this.supportFieldDef = supportFieldDef;
     }
 
 

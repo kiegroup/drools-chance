@@ -33,7 +33,15 @@ public interface IDistribution<T>  {
      * @param value the query value
      * @return the associated Degree
      */
-	public IDegree getDegree(T value);
+    public IDegree getDegree(T value);
+
+
+    /**
+     * computes the degree for a given value
+     * @param value the query value
+     * @return the associated Degree
+     */
+    public IDegree get(T value);
 
 
     /**

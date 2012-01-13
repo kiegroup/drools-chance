@@ -36,6 +36,7 @@ import org.drools.chance.distribution.IDistributionStrategies;
  *
  * @author sotty, doncat
  */
+@Deprecated
 public class ImperfectHistoryField<T> extends AbstractImperfectField<T> {
 
     /**

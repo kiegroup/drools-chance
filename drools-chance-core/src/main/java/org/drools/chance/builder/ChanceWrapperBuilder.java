@@ -75,7 +75,7 @@ public class ChanceWrapperBuilder extends ChanceBuilder {
                 if ( fld instanceof ImperfectFieldDefinition ) {
                     ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) fld;
 
-                    if ( isLinguistic( ifld ) ) {
+                    if ( ImperfectFieldDefinition.isLinguistic( ifld ) ) {
 
                         FieldDefinition tfld = getSupportField( cdef, ifld );
                         buildImperfectLinguisticField(mv, wrapperName, ifld, tfld );

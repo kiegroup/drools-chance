@@ -140,7 +140,11 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
 
 
     public ILinguistic toCrispValue(IDistribution<ILinguistic> dist) {
-        return ((IDiscretePossibilityDistribution<ILinguistic>) dist).iterator().next();
+        IDiscretePossibilityDistribution<ILinguistic> ldist = (IDiscretePossibilityDistribution<ILinguistic>) dist;
+        if ( ldist.size() == 0 ) {
+            return null;
+        }
+        return ldist.iterator().next();
     }
 
     public ILinguistic toCrispValue(IDistribution<ILinguistic> dist, String strategy) {

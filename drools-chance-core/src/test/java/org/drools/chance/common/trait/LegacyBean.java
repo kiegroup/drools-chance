@@ -50,9 +50,10 @@ public class LegacyBean extends Entity {
 
     @Override
     public String toString() {
-        return "LegacyBean - HC {" +
-                "weight=" + weight +
-                ", name='" + name + '\'' +
-                '}';
+//        return "LegacyBean - HC {" +
+//                "weight=" + weight +
+//                ", name='" + name + '\'' +
+//                '}';
+        return "LX";
     }
 }

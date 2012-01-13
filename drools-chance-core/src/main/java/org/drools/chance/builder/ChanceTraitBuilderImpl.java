@@ -29,7 +29,6 @@ import org.mvel2.asm.MethodVisitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
 
@@ -52,6 +51,15 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
                         ImperfectFieldDefinition ifld = ImperfectFieldDefinition.fromField( fld, ann );
                         ifld.setClassDefinition( classDef );
                         classDef.addField( ifld );
+
+                        if ( ImperfectFieldDefinition.isLinguistic( ifld ) ) {
+                            for ( FieldDefinition xfld : originalFields ) {
+                                if ( xfld.getName().equals( ifld.getSupport() ) ) {
+                                    ifld.setSupportFieldDef( xfld );
+                                }
+                            }
+                        }
+
                         break;
                     }
                 }
@@ -63,13 +71,18 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
     protected void buildSetter(ClassWriter cw, FieldDefinition field, String name, String type, String generic) {
 
         if ( field instanceof ImperfectFieldDefinition ) {
-            super.buildSetter( cw, field, name, IImperfectField.class.getName(), type );
+            super.buildSetter( cw, null, name, IImperfectField.class.getName(), type );
+
+            if ( ImperfectFieldDefinition.isLinguistic( field ) ) {
+                ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
+                super.buildSetter( cw, null, ifld.getSupport()+"Core", ifld.getSupportFieldDef().getTypeName(), null );
+            }
         } else {
-            super.buildSetter( cw, field, name, type, null );
+            super.buildSetter( cw, null, name, type, null );
         }
 
-        super.buildSetter( cw, field, name+"Distr", IDistribution.class.getName(), type );
-        super.buildSetter( cw, field, name+"Value", type, null );
+        super.buildSetter( cw, null, name+"Distr", IDistribution.class.getName(), type );
+        super.buildSetter( cw, null, name+"Value", type, null );
 //        super.buildSetter( cw, field, name+"Core", type, null );
 
         buildUpdater( cw, field, name+"Distr", IDistribution.class.getName(), type );
@@ -81,13 +94,18 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
     protected void buildGetter(ClassWriter cw, FieldDefinition field, String name, String type, String generic) {
 
         if ( field instanceof ImperfectFieldDefinition ) {
-            super.buildGetter(cw, field, name, IImperfectField.class.getName(), type);
+            super.buildGetter(cw, null, name, IImperfectField.class.getName(), type);
+
+            if ( ImperfectFieldDefinition.isLinguistic( field ) ) {
+                ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
+                super.buildGetter( cw, null, ifld.getSupport()+"Core", ifld.getSupportFieldDef().getTypeName(), null );
+            }
         } else {
-            super.buildGetter(cw, field, name, type, null);
+            super.buildGetter(cw, null, name, type, null);
         }
 
-        super.buildGetter( cw, field, name+"Distr", IDistribution.class.getName(), type );
-        super.buildGetter( cw, field, name+"Value", type, null );
+        super.buildGetter( cw, null, name+"Distr", IDistribution.class.getName(), type );
+        super.buildGetter( cw, null, name+"Value", type, null );
 //        super.buildGetter( cw, field, name+"Core", type, null );
 
 
@@ -114,19 +132,41 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
 
         for ( FieldDefinition field : originalFields ) {
             if ( field instanceof ImperfectFieldDefinition ) {
+
+                ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
+
                 FieldDefinition fieldDistr = new VirtualFieldDefinition();
-                    fieldDistr.setName( field.getName() + "Distr" );
-                    fieldDistr.setTypeName( IDistribution.class.getName() );
-                    fieldDistr.setInherited( field.isInherited() );
+                fieldDistr.setName( field.getName() + "Distr" );
+                fieldDistr.setTypeName( IDistribution.class.getName() );
+                fieldDistr.setInherited( field.isInherited() );
 
                 trait.addField( fieldDistr );
 
                 FieldDefinition fieldValue = new VirtualFieldDefinition();
-                    fieldValue.setName( field.getName() + "Value" );
-                    fieldValue.setTypeName( field.getTypeName() );
-                    fieldValue.setInherited( field.isInherited() );
+                fieldValue.setName( field.getName() + "Value" );
+                fieldValue.setTypeName( field.getTypeName() );
+                fieldValue.setInherited( field.isInherited() );
 
                 trait.addField(fieldValue);
+
+                if ( ImperfectFieldDefinition.isLinguistic( ifld ) ) {
+                    FieldDefinition support = null;
+                    for ( FieldDefinition x : originalFields ) {
+                        if ( x.getName().equals( ifld.getSupport() ) ) {
+                            support = x;
+                        }
+                    }
+                    if ( support != null ) {
+                        FieldDefinition fieldCore = new DirectAccessFieldDefinition( support );
+                        fieldCore.setName( support.getName() + "Core" );
+                        fieldCore.setTypeName( support.getTypeName() );
+                        fieldCore.setInherited( support.isInherited() );
+
+                        trait.addField(fieldCore);
+                    } else {
+                        throw new IllegalStateException("Could not find the support field " + ifld.getSupport() + " for the Linguistic Imperfect field " + field.getName() );
+                    }
+                }
             }
         }
 

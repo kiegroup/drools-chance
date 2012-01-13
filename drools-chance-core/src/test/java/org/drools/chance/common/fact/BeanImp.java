@@ -21,8 +21,7 @@ import org.drools.chance.common.*;
 import org.drools.chance.common.trait.ImpBean;
 import org.drools.chance.distribution.BasicDistribution;
 import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
-import org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartitionStrategyFactory;
+import org.drools.chance.distribution.fuzzy.linguistic.*;
 import org.drools.chance.distribution.probability.BasicDistributionStrategyFactory;
 import org.drools.chance.distribution.probability.dirichlet.DirichletDistributionStrategyFactory;
 import org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategyFactory;
@@ -59,13 +58,12 @@ public class BeanImp implements ImpBean {
 
     // an "history field" for every @Imperfect field in the managed bean
 //	private IImperfectField<Integer> age;
-    private IImperfectField<Integer> age_$$Imp = new ImperfectHistoryField<Integer>(
+    private IImperfectField<Integer> age_$$Imp = new ImperfectField<Integer>(
             ChanceStrategyFactory.<Integer>buildStrategies(
                     "probability",
                     "dirichlet",
                     "simple",
                     Integer.class),
-            Integer.valueOf("3"),
             "18/0.02, 19/0.01, 20/0.04"
     );
 
@@ -85,19 +83,33 @@ public class BeanImp implements ImpBean {
                     "linguistic",
                     "simple",
                     Double.class),
-            Integer.valueOf("3"),
             null
     );
 
 
-    private IImperfectField<Cheese> likes_$$Imp = new ImperfectHistoryField<Cheese>(
+    private IImperfectField<Cheese> likes_$$Imp = new ImperfectField<Cheese>(
             ChanceStrategyFactory.<Cheese>buildStrategies(
                     "probability",
                     "basic",
                     "simple",
                     Cheese.class),
-            Integer.valueOf("2"),
             "cheddar/0.6"
+    );
+
+
+    //    private IImperfectField<Weight> body;
+    private IImperfectField<Price> price_$$Imp = new LinguisticImperfectField<Price,Integer>(
+            ChanceStrategyFactory.<Price>buildStrategies(
+                    "fuzzy",
+                    "linguistic",
+                    "simple",
+                    Price.class),
+            ChanceStrategyFactory.<Integer>buildStrategies(
+                    "possibility",
+                    "linguistic",
+                    "simple",
+                    Integer.class),
+            null
     );
 
 
@@ -107,6 +119,8 @@ public class BeanImp implements ImpBean {
     private Weight  body;
     private Double  weight;
     private Cheese  likes;
+    private Integer bucks;
+    private Price   price;
 
 
 
@@ -123,6 +137,9 @@ public class BeanImp implements ImpBean {
         likes_$$Imp.setValue( new BasicDistributionStrategyFactory<Cheese>().buildStrategies("simple", Cheese.class).parse("cheddar/0.6" ),
                 false );
 
+        body_$$Imp.setValue( new ShapedFuzzyPartitionStrategyFactory<Weight>().buildStrategies("simple", Weight.class).parse("SLIM/0.6, FAT/0.4"), false );
+
+        weight = 65.0;
 
         synchFields();
     }
@@ -147,21 +164,37 @@ public class BeanImp implements ImpBean {
             flag = flag_$$Imp.getCrisp();
 
 
-        if (weight != null) {
-            Double w = weight;
 
-            IDistribution dist = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).fuzzify(w);
-            body_$$Imp.setValue(dist,false);
+
+        if ( weight != null ) {
+            IDistribution dist = ((LinguisticImperfectField<Weight, Double>) body_$$Imp).fuzzify(weight);
+            body_$$Imp.setValue(dist, false);
             body = body_$$Imp.getCrisp();
-
-            weight = w;
         } else {
-            if (body != null)
-                body_$$Imp.setValue(body);
-            if (body_$$Imp != null) {
+
+            if ( body != null )
+                body_$$Imp.setValue( body );
+            if ( body_$$Imp != null ) {
                 body = body_$$Imp.getCrisp();
-                weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify();
+                weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify().doubleValue();
             }
+
+        }
+
+
+        if ( bucks != null ) {
+            IDistribution dist = ((LinguisticImperfectField<Price, Integer>) price_$$Imp).fuzzify( bucks );
+            price_$$Imp.setValue(dist, false);
+            price = price_$$Imp.getCrisp();
+        } else {
+
+            if ( price != null )
+                price_$$Imp.setValue( price );
+            if ( price_$$Imp != null ) {
+                price = price_$$Imp.getCrisp();
+                bucks = ((LinguisticImperfectField<Price, Integer>) price_$$Imp).defuzzify().intValue();
+            }
+
         }
 
 
@@ -331,44 +364,77 @@ public class BeanImp implements ImpBean {
 
 
 
+    public Integer getBucks() {
+        return bucks;
+    }
+
+    public void setBucks(Integer w) {
+        IDistribution dist = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).fuzzify(w);
+        price_$$Imp.setValue(dist,false);
+        price = price_$$Imp.getCrisp();
+
+        bucks = w;
+    }
+
+
+
+
     public IImperfectField<Price> getPrice() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return price_$$Imp;
     }
 
     public IDistribution<Price> getPriceDistr() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return price_$$Imp.getCurrent();
     }
 
     public Price getPriceValue() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return price;
     }
 
     public void setPrice(IImperfectField<Price> x) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        price_$$Imp.setValue( x.getCurrent(), false );
+        price = price_$$Imp.getCrisp();
+
+        bucks = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).defuzzify().intValue();
     }
 
     public void setPriceDistr(IDistribution<Price> x) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        price_$$Imp.setValue( x, false );
+        price = price_$$Imp.getCrisp();
+
+        bucks = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).defuzzify().intValue();
     }
 
-    public void setPriceValue(Price x) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+    public void setPriceValue(Price val) {
+        price = val;
+        this.price_$$Imp.setValue( val, false);
+
+        bucks = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).defuzzify().intValue();
     }
 
-    public void updatePrice(IDistribution<Price> x) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+
+    public void updatePrice(IImperfectField<Price> price_bit) {
+        price_$$Imp.update( price_bit.getCurrent() );
+        price = price_$$Imp.getCrisp();
+
+        bucks = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).defuzzify().intValue();
     }
 
-    public void updatePrice(Price x) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void updatePriceValue(Price val) {
+        price = val;
+        price_$$Imp.setValue(val,true);
+
+        bucks = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).defuzzify().intValue();
     }
 
-    public Integer getBucks() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 
-    public void setBucks(Integer x) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void updatePriceDistr(IDistribution<Price> price_bit) {
+        price_$$Imp.update(price_bit);
+        price = price_$$Imp.getCrisp();
+
+        bucks = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).defuzzify().intValue();
     }
 
 
@@ -444,16 +510,12 @@ public class BeanImp implements ImpBean {
         weight = w;
     }
 
-    public void updateWeight(Double w) {
-        IDistribution dist = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).fuzzify(w);
-        body_$$Imp.setValue(dist,false);
-        body = body_$$Imp.getCrisp();
 
-        weight = ((LinguisticImperfectField<Weight, Double>) body_$$Imp).defuzzify();
+
+
+    public IImperfectField<Weight> getBody() {
+        return body_$$Imp;
     }
-
-
-
 
     public IDistribution<Weight> getBodyDistr() {
         return body_$$Imp.getCurrent();
@@ -464,52 +526,53 @@ public class BeanImp implements ImpBean {
     }
 
     public void setBody(IImperfectField<Weight> x) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        body_$$Imp.setValue( x.getCurrent(), false );
+        body = body_$$Imp.getCrisp();
+
+        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify().doubleValue();
     }
 
     public void setBodyDistr(IDistribution<Weight> x) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setBodyValue(Weight x) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setBody(Weight val) {
-        body = val;
-        this.body_$$Imp.setValue(val,false);
-
-        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify();
-    }
-
-    public void updateBody(Weight val) {
-        body = val;
-        this.body_$$Imp.setValue(val,true);
-
-        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify();
-    }
-
-
-
-    public void setBody(IDistribution<Weight> body_dist) {
-        body_$$Imp.setValue(body_dist,true);
+        body_$$Imp.setValue( x, false );
         body = body_$$Imp.getCrisp();
 
-        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify();
+        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify().doubleValue();
     }
 
-    public void updateBody(IDistribution<Weight> body_bit) {
+
+    public void setBodyValue(Weight val) {
+        body = val;
+        this.body_$$Imp.setValue( val, false);
+
+        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify().doubleValue();
+    }
+
+
+
+    public void updateBody(IImperfectField<Weight> body_bit) {
+        body_$$Imp.update( body_bit.getCurrent() );
+        body = body_$$Imp.getCrisp();
+
+        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify().doubleValue();
+    }
+
+    public void updateBodyValue(Weight val) {
+        body = val;
+        body_$$Imp.setValue(val,true);
+
+        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify().doubleValue();
+    }
+
+
+    public void updateBodyDistr(IDistribution<Weight> body_bit) {
         body_$$Imp.update(body_bit);
         body = body_$$Imp.getCrisp();
 
-
-        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify();
+        weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify().doubleValue();
     }
 
 
-    public IImperfectField<Weight> getBody() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+
 
 
 

@@ -27,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 
+@Deprecated
 public class Bean_HandleGenTest {
 
     @Before

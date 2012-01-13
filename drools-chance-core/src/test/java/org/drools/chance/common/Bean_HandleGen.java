@@ -129,7 +129,7 @@ public class Bean_HandleGen  {
                 body.setValue(object.getBody());
             if (body != null) {
                 object.setBody(body.getCrisp());
-                object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify());
+                object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify().doubleValue());
             }
         }
     }
@@ -246,7 +246,7 @@ public class Bean_HandleGen  {
 		body.setValue(dist,true);
         object.setBody(body.getCrisp());
 
-		object.setWeight(((LinguisticImperfectField<Weight, Double>) body).defuzzify());
+		object.setWeight(((LinguisticImperfectField<Weight, Double>) body).defuzzify().doubleValue());
 	}
 	
 
@@ -271,14 +271,14 @@ public class Bean_HandleGen  {
 		object.setBody(val);
 		this.body.setValue(val,false);
 		
-		object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify());
+		object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify().doubleValue());
 	}
 
     public void updateBody(Weight val) {
 		object.setBody(val);
 		this.body.setValue(val,true);
 
-		object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify());
+		object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify().doubleValue());
 	}
 
 
@@ -287,7 +287,7 @@ public class Bean_HandleGen  {
 		this.body.setValue(body_dist,true);
 		object.setBody(body.getCrisp());
 
-        object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify());
+        object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify().doubleValue());
 	}
 
 
@@ -299,7 +299,7 @@ public class Bean_HandleGen  {
 		this.body.update(body_bit);
         object.setBody(body.getCrisp());
 
-        object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify());
+        object.setWeight(((LinguisticImperfectField<Weight,Double>) body).defuzzify().doubleValue());
     }
 
 	

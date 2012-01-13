@@ -33,6 +33,11 @@ public class LinguisticImperfectField<T extends ILinguistic, K extends Number> i
 
 
 
+    public LinguisticImperfectField( IDistributionStrategies<T> strats, IDistributionStrategies<K> subStrats, String prior) {
+        this( strats, subStrats, 0, prior );
+    }
+
+
     public LinguisticImperfectField(IDistributionStrategies<T> strats, IDistributionStrategies<K> subStrats,
                                     int history, String prior) {
         if (history == 0) {
@@ -94,17 +99,33 @@ public class LinguisticImperfectField<T extends ILinguistic, K extends Number> i
 
 
 
-    public K defuzzify() {
-        K ans = subStrats.toCrispValue(
-                ((ShapedFuzzyPartition)innerField.getCurrent()).asInducedPossibilityDistribution());
+    public Number defuzzify() {
+        Number ans = subStrats.toCrispValue(
+                ( (ShapedFuzzyPartition) innerField.getCurrent() ).asInducedPossibilityDistribution() );
         return ans;
     }
 
 
     public IDistribution<T> fuzzify(Number val) {
-        Map<? extends T,? extends IDegree> m = ((ShapedFuzzyPartition) innerField.getCurrent()).fuzzify(val);
-        return getStrategies().newDistribution(m);
+        Map<? extends T,? extends IDegree> m = ( (ShapedFuzzyPartition) innerField.getCurrent() ).fuzzify( val );
+        return getStrategies().newDistribution( m );
     }
-    
-    
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LinguisticImperfectField that = (LinguisticImperfectField) o;
+
+        if (innerField != null ? !innerField.equals(that.innerField) : that.innerField != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return innerField != null ? innerField.hashCode() : 0;
+    }
 }

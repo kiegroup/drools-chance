@@ -94,15 +94,50 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         }
         setLikesCore( likes.getCrisp() );
 
+
+
+        LinguisticImperfectField<Weight,Double> bodyImp = (LinguisticImperfectField<Weight,Double>) getBody();
+        Double wgt = getWeight();
+        if ( wgt != null ) {
+
+            IDistribution dist = bodyImp.fuzzify(wgt);
+            bodyImp.setValue(dist, false);
+
+            setBodyCore( bodyImp.getCrisp() );
+
+        } else {
+            Weight bodyVal = getBodyValue();
+            if ( bodyVal != null )
+                bodyImp.setValue( bodyVal );
+            if ( bodyImp != null ) {
+                setBodyCore( bodyImp.getCrisp() );
+                setWeightCore( ( bodyImp ).defuzzify().doubleValue() );
+            }
+        }
+
+
+        LinguisticImperfectField<Price,Integer> priceImp = (LinguisticImperfectField<Price,Integer>) getPrice();
+        Integer pri = getBucks();
+        if ( pri != null ) {
+
+            IDistribution dist = priceImp.fuzzify(pri);
+            priceImp.setValue(dist, false);
+
+            setPriceCore( priceImp.getCrisp() );
+
+        } else {
+            Price priceVal = getPriceValue();
+            if ( priceVal != null )
+                priceImp.setValue( priceVal );
+            if ( priceImp != null ) {
+                setPriceCore( priceImp.getCrisp() );
+                setBucksCore( ( priceImp.defuzzify() ).intValue() );
+            }
+        }
+
+
+
     }
-
-
-
-
-
-
-
-
 
 
 
@@ -338,70 +373,79 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         store.put( property( "body_$$Imp", x ) );
         store.put( property( "body", x.getCrisp() ) );
 
-        setWeight( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify(), false );
+        setWeightCore( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify().doubleValue());
     }
 
     public void setBodyDistr(IDistribution<Weight> x) {
-        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) );
-        fld.setValue( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
+        fld.setValue( x, false );
         store.put( property( "body", fld.getCrisp() ) );
 
-        setWeight( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify(), false );
+        setWeightCore( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify().doubleValue() );
     }
 
     public void setBodyValue(Weight x) {
-        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) );
-        fld.setValue( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
+        fld.setValue( x, false );
         store.put( property( "body", fld.getCrisp() ) );
 
-        setWeight( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify(), false );
+        setWeightCore( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify().doubleValue());
     }
 
     public void setBodyCore( Weight x ) {
         store.put( property( "body", x ) );
     }
 
-    public void updateBody(IDistribution<Weight> x) {
-        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) );
+    public void updateBodyDistr(IDistribution<Weight> x) {
+        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
         fld.update( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
         store.put( property( "body", fld.getCrisp() ) );
 
-        setWeight( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify(), false );
+        setWeightCore( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify().doubleValue() );
     }
 
-    public void updateBody(Weight x) {
-        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) );
+    public void updateBodyValue(Weight x) {
+        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
         fld.update( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
         store.put( property( "body", fld.getCrisp() ) );
 
-        setWeight( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify(), false );
+        setWeightCore( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify().doubleValue() );
+    }
+
+    public void updateBody(IImperfectField<Weight> x) {
+        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
+        fld.update( x.getCurrent() );
+        store.put( property( "body", fld.getCrisp() ) );
+
+        setWeightCore( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify().doubleValue() );
     }
 
 
+
+
+    public Double getWeightCore() {
+        return getCore().getWeight();
+    }
+
+    public void setWeightCore( Double x ) {
+        getCore().setWeight( x );
+    }
 
 
     public Double getWeight() {
-        return object.getWeight();
+        System.out.println( getCore() );
+        return getWeightCore();
     }
 
-    public void setWeight(Double x) {
-        setWeight( x, true );
+    public void setWeight(Double w) {
+        LinguisticImperfectField<Weight,Double> bodyImp = (LinguisticImperfectField<Weight, Double>) getBody();
+
+        bodyImp.setValue(  bodyImp.fuzzify(w), false );
+        setBodyCore( bodyImp.getCrisp() );
+
+        setWeightCore( w );
     }
 
-    public void setWeight(Double x, boolean flag) {
-
-        if ( flag ) {
-            getBody().setValue( ((LinguisticImperfectField<Weight,Double>) getBody()).fuzzify( x ) );
-        }
-
-        setBodyCore( getBody().getCrisp() );
-
-        getCore().setWeight( x );
-    }
 
 
 
@@ -431,72 +475,75 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         store.put( property( "price_$$Imp", x ) );
         store.put( property( "price", x.getCrisp() ) );
 
-        setBucks(((LinguisticImperfectField<Price, Integer>) getPrice()).defuzzify(), false);
+        setBucksCore(((LinguisticImperfectField<Price, Integer>) getPrice()).defuzzify().intValue() );
     }
 
     public void setPriceDistr(IDistribution<Price> x) {
-        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) );
-        fld.setValue( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+        fld.setValue( x, false );
         store.put( property( "price", fld.getCrisp() ) );
 
-        setBucks(((LinguisticImperfectField<Price, Integer>) getPrice()).defuzzify(), false);
+        setBucksCore(((LinguisticImperfectField<Price, Integer>) getPrice()).defuzzify().intValue() );
     }
 
     public void setPriceValue(Price x) {
-        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) );
-        fld.setValue( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+        fld.setValue( x, false );
         store.put( property( "price", fld.getCrisp() ) );
 
-        setBucks( ( (LinguisticImperfectField<Price,Integer>) getPrice()).defuzzify(), false );
+        setBucksCore( ( (LinguisticImperfectField<Price,Integer>) getPrice()).defuzzify().intValue()  );
     }
 
     public void setPriceCore( Price x ) {
         store.put( property( "price", x ) );
     }
 
-    public void updatePrice(IDistribution<Price> x) {
-        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) );
-        fld.update(x);
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
+    public void updatePrice(IImperfectField<Price> x) {
+        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+        fld.update( x.getCurrent() );
         store.put( property( "price", fld.getCrisp() ) );
 
-        setBucks( ( (LinguisticImperfectField<Price,Integer>) getPrice()).defuzzify(), false );
+        setBucksCore( ( (LinguisticImperfectField<Price,Integer>) getPrice()).defuzzify().intValue() );
     }
 
-    public void updatePrice(Price x) {
-        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) );
+    public void updatePriceDistr(IDistribution<Price> x) {
+        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
         fld.update( x );
-        //TODO :  store.get viene chiamato 2 volte nell'asm , si può migliorare così?
         store.put( property( "price", fld.getCrisp() ) );
 
-        setBucks( ( (LinguisticImperfectField<Price,Integer>) getPrice()).defuzzify(), false );
+        setBucksCore( ( (LinguisticImperfectField<Price,Integer>) getPrice()).defuzzify().intValue() );
+    }
+
+    public void updatePriceValue(Price x) {
+        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+        fld.update( x );
+        store.put( property( "price", fld.getCrisp() ) );
+
+        setBucksCore( ( (LinguisticImperfectField<Price,Integer>) getPrice()).defuzzify().intValue() );
     }
 
 
 
-
-    public Integer getBucks() {
+    public Integer getBucksCore() {
         return (Integer) (store.get( propertyKey( "bucks" ) ) ).getValue();
     }
 
-    public void setBucks(Integer x) {
-        setBucks( x, true );
-    }
-
-    public void setBucks(Integer x, boolean flag) {
-
-        if ( flag ) {
-            getPrice().setValue( ((LinguisticImperfectField<Price, Integer>) getPrice()).fuzzify( x ) );
-        }
-
-        setPriceCore(getPrice().getCrisp());
-
-        //TODO: Commented out??
+    public void setBucksCore( Integer x ) {
         store.put( property( "bucks", x ) );
     }
 
+    public Integer getBucks() {
+        return getBucksCore();
+    }
+
+    public void setBucks(Integer x) {
+        LinguisticImperfectField<Price,Integer> priceImp = (LinguisticImperfectField<Price, Integer>) getPrice();
+
+        priceImp.setValue( priceImp.fuzzify( x ), false );
+        setPriceCore( priceImp.getCrisp() );
+
+        setBucksCore( x );
+    }
 
 
 
