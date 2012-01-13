@@ -17,71 +17,71 @@
 package org.drools.chance.common.trait;
 
 
-import org.drools.chance.common.IImperfectField;
+import org.drools.chance.common.ImperfectField;
 import org.drools.chance.common.fact.Price;
 import org.drools.chance.common.fact.Weight;
-import org.drools.chance.distribution.IDistribution;
+import org.drools.chance.distribution.Distribution;
 
 public interface ImpBean {
 
     //TODO Update by field ??
 
-    public IImperfectField<String> getName();
-    public IDistribution<String> getNameDistr();
+    public ImperfectField<String> getName();
+    public Distribution<String> getNameDistr();
     public String getNameValue();
 
-    public void setName( IImperfectField<String> x );
-    public void setNameDistr( IDistribution<String> x );
+    public void setName( ImperfectField<String> x );
+    public void setNameDistr( Distribution<String> x );
     public void setNameValue( String x );
 
-    public void updateName( IImperfectField<String> x  );
-    public void updateNameDistr( IDistribution<String> x );
+    public void updateName( ImperfectField<String> x  );
+    public void updateNameDistr( Distribution<String> x );
     public void updateNameValue( String x );
 
     
     
     
-    public IImperfectField<Boolean> getFlag();
-    public IDistribution<Boolean> getFlagDistr();
+    public ImperfectField<Boolean> getFlag();
+    public Distribution<Boolean> getFlagDistr();
     public Boolean getFlagValue();
 
-    public void setFlag( IImperfectField<Boolean> x );
-    public void setFlagDistr( IDistribution<Boolean> x );
+    public void setFlag( ImperfectField<Boolean> x );
+    public void setFlagDistr( Distribution<Boolean> x );
     public void setFlagValue( Boolean x );
 
-    public void updateFlag( IImperfectField<Boolean> x );
-    public void updateFlagDistr( IDistribution<Boolean> x );
+    public void updateFlag( ImperfectField<Boolean> x );
+    public void updateFlagDistr( Distribution<Boolean> x );
     public void updateFlagValue( Boolean x );
     
     
     
     
-    public IImperfectField<Integer> getAge();
-    public IDistribution<Integer> getAgeDistr();
+    public ImperfectField<Integer> getAge();
+    public Distribution<Integer> getAgeDistr();
     public Integer getAgeValue();
 
-    public void setAge( IImperfectField<Integer> x );
-    public void setAgeDistr( IDistribution<Integer> x );
+    public void setAge( ImperfectField<Integer> x );
+    public void setAgeDistr( Distribution<Integer> x );
     public void setAgeValue( Integer x );
 
-    public void updateAge( IImperfectField<Integer> x );
-    public void updateAgeDistr( IDistribution<Integer> x );
+    public void updateAge( ImperfectField<Integer> x );
+    public void updateAgeDistr( Distribution<Integer> x );
     public void updateAgeValue( Integer x );
 
     
     
     
     
-    public IImperfectField<Weight> getBody();
-    public IDistribution<Weight> getBodyDistr();
+    public ImperfectField<Weight> getBody();
+    public Distribution<Weight> getBodyDistr();
     public Weight getBodyValue();
 
-    public void setBody( IImperfectField<Weight> x );
-    public void setBodyDistr( IDistribution<Weight> x );
+    public void setBody( ImperfectField<Weight> x );
+    public void setBodyDistr( Distribution<Weight> x );
     public void setBodyValue( Weight x );
 
-    public void updateBody( IImperfectField<Weight> x );
-    public void updateBodyDistr( IDistribution<Weight> x );
+    public void updateBody( ImperfectField<Weight> x );
+    public void updateBodyDistr( Distribution<Weight> x );
     public void updateBodyValue( Weight x );
 
     public Double getWeight();
@@ -89,16 +89,16 @@ public interface ImpBean {
 
     
     
-    public IImperfectField<Price> getPrice();
-    public IDistribution<Price> getPriceDistr();
+    public ImperfectField<Price> getPrice();
+    public Distribution<Price> getPriceDistr();
     public Price getPriceValue();
 
-    public void setPrice( IImperfectField<Price> x );
-    public void setPriceDistr( IDistribution<Price> x );
+    public void setPrice( ImperfectField<Price> x );
+    public void setPriceDistr( Distribution<Price> x );
     public void setPriceValue( Price x );
 
-    public void updatePrice( IImperfectField<Price> x );
-    public void updatePriceDistr( IDistribution<Price> x );
+    public void updatePrice( ImperfectField<Price> x );
+    public void updatePriceDistr( Distribution<Price> x );
     public void updatePriceValue( Price x );
         
 
@@ -107,16 +107,16 @@ public interface ImpBean {
 
 
     
-    public IImperfectField<Cheese> getLikes();
-    public IDistribution<Cheese> getLikesDistr();
+    public ImperfectField<Cheese> getLikes();
+    public Distribution<Cheese> getLikesDistr();
     public Cheese getLikesValue();
 
-    public void setLikes( IImperfectField<Cheese> x );
-    public void setLikesDistr( IDistribution<Cheese> x );
+    public void setLikes( ImperfectField<Cheese> x );
+    public void setLikesDistr( Distribution<Cheese> x );
     public void setLikesValue( Cheese x );
 
-    public void updateLikes( IImperfectField<Cheese> x );
-    public void updateLikesDistr( IDistribution<Cheese> x );
+    public void updateLikes( ImperfectField<Cheese> x );
+    public void updateLikesDistr( Distribution<Cheese> x );
     public void updateLikesValue( Cheese x );
 
 

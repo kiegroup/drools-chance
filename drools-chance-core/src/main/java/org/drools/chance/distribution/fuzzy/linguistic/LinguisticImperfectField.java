@@ -16,24 +16,24 @@
 
 package org.drools.chance.distribution.fuzzy.linguistic;
 
-import org.drools.chance.common.IImperfectField;
 import org.drools.chance.common.ImperfectField;
-import org.drools.chance.degree.IDegree;
-import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.IDistributionStrategies;
+import org.drools.chance.common.ImperfectFieldImpl;
+import org.drools.chance.degree.Degree;
+import org.drools.chance.distribution.Distribution;
+import org.drools.chance.distribution.DistributionStrategies;
 
 import java.util.Map;
 
-public class LinguisticImperfectField<T extends ILinguistic, K extends Number> implements IImperfectField<T> {
+public class LinguisticImperfectField<T extends Linguistic, K extends Number> implements ImperfectField<T> {
 
-    IImperfectField<T> innerField;
+    ImperfectField<T> innerField;
 
-    protected IDistributionStrategies<K> subStrats;
+    protected DistributionStrategies<K> subStrats;
 
 
 
-    public LinguisticImperfectField( IDistributionStrategies<T> strats, IDistributionStrategies<K> subStrats, String prior) {
-        innerField = new ImperfectField<T>(strats,prior);
+    public LinguisticImperfectField( DistributionStrategies<T> strats, DistributionStrategies<K> subStrats, String prior) {
+        innerField = new ImperfectFieldImpl<T>(strats,prior);
 
         this.subStrats = subStrats;
     }
@@ -46,11 +46,11 @@ public class LinguisticImperfectField<T extends ILinguistic, K extends Number> i
         innerField.setValue(value,update);
     }
 
-    public void setValue(IDistribution<T> dist) {
+    public void setValue(Distribution<T> dist) {
         innerField.setValue(dist);
     }
 
-    public void setValue(IDistribution<T> dist, boolean update) {
+    public void setValue(Distribution<T> dist, boolean update) {
         innerField.setValue(dist,update);
     }
 
@@ -62,19 +62,19 @@ public class LinguisticImperfectField<T extends ILinguistic, K extends Number> i
         return innerField.getCrisp();
     }
 
-    public IDistribution<T> getPast(int time) throws IndexOutOfBoundsException {
+    public Distribution<T> getPast(int time) throws IndexOutOfBoundsException {
         return innerField.getPast(time);
     }
 
-    public IDistribution<T> getCurrent() {
+    public Distribution<T> getCurrent() {
         return innerField.getCurrent();
     }
 
-    public IDistributionStrategies<T> getStrategies() {
+    public DistributionStrategies<T> getStrategies() {
         return innerField.getStrategies();
     }
 
-    public void update(IDistribution<T> fieldBit) {
+    public void update(Distribution<T> fieldBit) {
         innerField.update(fieldBit);
     }
 
@@ -96,8 +96,8 @@ public class LinguisticImperfectField<T extends ILinguistic, K extends Number> i
     }
 
 
-    public IDistribution<T> fuzzify(Number val) {
-        Map<? extends T,? extends IDegree> m = ( (ShapedFuzzyPartition) innerField.getCurrent() ).fuzzify( val );
+    public Distribution<T> fuzzify(Number val) {
+        Map<? extends T,? extends Degree> m = ( (ShapedFuzzyPartition) innerField.getCurrent() ).fuzzify( val );
         return getStrategies().newDistribution( m );
     }
 

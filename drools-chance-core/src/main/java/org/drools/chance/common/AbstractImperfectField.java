@@ -16,35 +16,35 @@
 
 package org.drools.chance.common;
 
-import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.IDistributionStrategies;
+import org.drools.chance.distribution.Distribution;
+import org.drools.chance.distribution.DistributionStrategies;
 
 /**
  * Abstract class for the structures holding the imperfect information regarding a single bean's field.
  *
- * This structure mimics the field's value, actually storing a IDistribution over that field's domain.
- * i.e. if Person.age is the target field, this structure will e.g. hold one (or more) IDistribution<Integer>.
- * A IDistribution maps one or more elements of that domain to an IDegree. The semantics is determined on
+ * This structure mimics the field's value, actually storing a Distribution over that field's domain.
+ * i.e. if Person.age is the target field, this structure will e.g. hold one (or more) Distribution<Integer>.
+ * A Distribution maps one or more elements of that domain to an Degree. The semantics is determined on
  * a case-by-case basis. For example, it may be a discrete probability distribution, or a fuzzy set (possibility
  * distribution), or a basic mass assignment, etc...
  *
- * See ImperfectField for the rationale and ImperfectHistoryField
+ * See ImperfectFieldImpl for the rationale and ImperfectHistoryField
  *
  *
  */
-public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
+public abstract class AbstractImperfectField<T> implements ImperfectField<T> {
 
     /**
      * Reference to a Strategy class holding all the algorithms for the manipulation of this field's distribution
      */
-    protected IDistributionStrategies<T> strategies;
+    protected DistributionStrategies<T> strategies;
 
 
     /**
      * Basic constructor
      * @param strategies a reference to the Strategy class with the logic for handling this field's distribution
      */
-    public AbstractImperfectField(IDistributionStrategies<T> strategies){
+    public AbstractImperfectField(DistributionStrategies<T> strategies){
         this.strategies = strategies;
     }
 
@@ -67,7 +67,7 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * Setter. Overrides the previous distribution, if any)
      * @param dist A distribution over a bean's field domain
      */
-    public void setValue(IDistribution<T> dist) {
+    public void setValue(Distribution<T> dist) {
         setValue(dist, isSet());
     }
 
@@ -77,7 +77,7 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * @param update if true, the new distribution dist will be merged with the current distribution, according to
      * this instance's strategies. If false, the new distribution will override the previous one.
      */
-    public abstract void setValue(IDistribution<T> dist, boolean update);
+    public abstract void setValue(Distribution<T> dist, boolean update);
 
     /**
      * Predicate.
@@ -89,7 +89,7 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
     /**
      * Getter
      * @return converts the current distribution to a crisp value (according to the current strategies "toCrispValue").
-     * The value returned belongs to the same domain the distribution is defined on (e.g. an IDistribution<String> will
+     * The value returned belongs to the same domain the distribution is defined on (e.g. an Distribution<String> will
      * return a String when crispified)
      */
     public T getCrisp(){
@@ -106,20 +106,20 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * 0 corresponds to the current value.
      * @throws IndexOutOfBoundsException
      */
-    public abstract IDistribution<T> getPast(int time) throws IndexOutOfBoundsException;
+    public abstract Distribution<T> getPast(int time) throws IndexOutOfBoundsException;
 
 
     /**
      * @return the current distribution for this field
      */
-    public abstract IDistribution<T> getCurrent();
+    public abstract Distribution<T> getCurrent();
 
 
     /**
      * Getter
      * @return the current Strategies used to manipulate this field's distribution
      */
-    public IDistributionStrategies<T> getStrategies() {
+    public DistributionStrategies<T> getStrategies() {
         return strategies;
     }
 
@@ -129,7 +129,7 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * know what you're doing. So, no public API for this
      * @param factory the new Strategies used to manipulate this field's distribution
      */
-    protected void setStrategies(IDistributionStrategies<T> factory) {
+    protected void setStrategies(DistributionStrategies<T> factory) {
         this.strategies = factory;
     }
 
@@ -139,7 +139,7 @@ public abstract class AbstractImperfectField<T> implements IImperfectField<T> {
      * Convenience method that calls "setValue" with update set to true
      * @param fieldBit the new distribution to merge with the current one
      */
-    public void update(IDistribution<T> fieldBit) {
+    public void update(Distribution<T> fieldBit) {
         this.setValue( fieldBit, true );
     }
 

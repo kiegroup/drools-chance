@@ -16,7 +16,7 @@
 
 package org.drools.chance.degree.interval;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
 
 
@@ -26,16 +26,16 @@ import org.drools.chance.degree.simple.SimpleDegree;
  *
  * Still experimental
  */
-public class IntervalDegree implements IDegree {
+public class IntervalDegree implements Degree {
 
     private static final double EPSILON = 1e-6;
 
 	private double tau;
 	private double phi;
 
-	public static final IDegree TRUE = new IntervalDegree(1,1);
-	public static final IDegree FALSE = new IntervalDegree(0,0);
-	public static final IDegree UNKNOWN = new IntervalDegree(0,1);
+	public static final Degree TRUE = new IntervalDegree(1,1);
+	public static final Degree FALSE = new IntervalDegree(0,0);
+	public static final Degree UNKNOWN = new IntervalDegree(0,1);
 
 
 
@@ -155,7 +155,7 @@ public class IntervalDegree implements IDegree {
 
 
 
-    public boolean isComparableTo(IDegree o) {
+    public boolean isComparableTo(Degree o) {
         IntervalDegree other = o.asIntervalDegree();
 
 		return ( (this.getUpp() < other.getLow())
@@ -163,7 +163,7 @@ public class IntervalDegree implements IDegree {
                  (this.getLow() > other.getUpp()));
     }
 
-	public int compareTo(IDegree o) {
+	public int compareTo(Degree o) {
 		IntervalDegree other = o.asIntervalDegree();
 
 		if (this.getUpp() < other.getLow()) return -1;
@@ -178,19 +178,19 @@ public class IntervalDegree implements IDegree {
 
 
 
-	public IDegree False() {
+	public Degree False() {
 		return FALSE;
 	}
 
 
 
-	public IDegree True() {
+	public Degree True() {
 		return TRUE;
 	}
 
 
 
-	public IDegree Unknown() {
+	public Degree Unknown() {
 		return UNKNOWN;
 	}
 
@@ -199,14 +199,14 @@ public class IntervalDegree implements IDegree {
 
 
 
-    public IDegree sum(IDegree other) {
+    public Degree sum(Degree other) {
         double l = Math.min(1.0, this.getLow()+other.asIntervalDegree().getLow());
         double u = Math.min(1.0, this.getUpp()+other.asIntervalDegree().getUpp());
 
        return new IntervalDegree(l,u);
     }
 
-    public IDegree mul(IDegree other) {
+    public Degree mul(Degree other) {
         return new IntervalDegree(
                 this.getLow()*other.asIntervalDegree().getLow(),
                 this.getUpp()*other.asIntervalDegree().getUpp()
@@ -214,7 +214,7 @@ public class IntervalDegree implements IDegree {
     }
 
 
-    public IDegree div(IDegree other) {
+    public Degree div(Degree other) {
         double d1 = other.asIntervalDegree().getUpp();
         double l = d1 != 0 ? Math.min(1.0, this.getLow()/d1) : 1.0;
 
@@ -224,32 +224,32 @@ public class IntervalDegree implements IDegree {
        return new IntervalDegree(l,u);
     }
 
-    public IDegree sub(IDegree other) {
+    public Degree sub(Degree other) {
         double l = Math.max(0.0, this.getLow() - other.asIntervalDegree().getUpp());
         double u = Math.max(0.0, this.getUpp() - other.asIntervalDegree().getLow());
 
        return new IntervalDegree(l,u);
     }
 
-    public IDegree max(IDegree other) {
+    public Degree max(Degree other) {
         return new IntervalDegree(
                 Math.max(this.getLow(), other.asIntervalDegree().getLow()),
                 Math.max(this.getUpp(), other.asIntervalDegree().getUpp())
         );
     }
 
-    public IDegree min(IDegree other) {
+    public Degree min(Degree other) {
         return new IntervalDegree(
                 Math.min(this.getLow(),other.asIntervalDegree().getLow()),
                 Math.min(this.getUpp(),other.asIntervalDegree().getUpp())
         );
     }
 
-    public IDegree fromConst(double number) {
+    public Degree fromConst(double number) {
         return new IntervalDegree(number,number);
     }
 
-    public IDegree fromString(String val) {
+    public Degree fromString(String val) {
         val = val.replace("[","").replace("]","");
         int pos = val.indexOf(",");
         return new IntervalDegree( Double.parseDouble( val.substring( 0, pos - 1 ) ), Double.parseDouble( val.substring( pos + 1 ) ) );

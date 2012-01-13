@@ -19,9 +19,9 @@ package org.drools.chance.degree;
 @Deprecated
 public class ValueDegreePair<T> implements Comparable<ValueDegreePair<T>> {
     private T value;
-    private IDegree degree;
+    private Degree degree;
 
-    public ValueDegreePair(T value, IDegree degree) {
+    public ValueDegreePair(T value, Degree degree) {
         this.value = value;
         this.degree = degree;
     }
@@ -34,11 +34,11 @@ public class ValueDegreePair<T> implements Comparable<ValueDegreePair<T>> {
         this.value = value;
     }
 
-    public IDegree getDegree() {
+    public Degree getDegree() {
         return degree;
     }
 
-    public void setDegree(IDegree degree) {
+    public void setDegree(Degree degree) {
         this.degree = degree;
     }
 

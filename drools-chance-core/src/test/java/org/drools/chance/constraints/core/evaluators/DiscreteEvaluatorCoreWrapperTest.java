@@ -19,7 +19,7 @@ package org.drools.chance.constraints.core.evaluators;
 import junit.framework.TestCase;
 import org.drools.chance.constraints.core.IConstraintCore;
 import org.drools.chance.constraints.core.connectives.IConnectiveCore;
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.probability.discrete.DiscreteDistribution;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public class DiscreteEvaluatorCoreWrapperTest  extends TestCase {
      */
     @Test
     public void testEvalBinary() throws Exception {
-        IDegree deg = SimpleDegree.FALSE;
+        Degree deg = SimpleDegree.FALSE;
         IConstraintCore core = new EqualityEvaluatorCore(deg);
         IConnectiveCore and = org.drools.chance.constraints.core.connectives.impl.product.And.getInstance();
         IConnectiveCore or = org.drools.chance.constraints.core.connectives.impl.lukas.Or.getInstance();
@@ -68,7 +68,7 @@ public class DiscreteEvaluatorCoreWrapperTest  extends TestCase {
 
         DiscreteEvaluatorCoreWrapper wrapper = new DiscreteEvaluatorCoreWrapper(core, and, or, deg);
 
-        IDegree ans = wrapper.eval(left,right);
+        Degree ans = wrapper.eval(left,right);
         assertTrue(ans instanceof SimpleDegree);
         assertEquals(new SimpleDegree(0.2*0.7 + 0.6*0.2 + 0.2*0.1),ans);
 

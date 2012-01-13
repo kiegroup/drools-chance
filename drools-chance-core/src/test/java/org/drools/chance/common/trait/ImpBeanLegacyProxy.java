@@ -17,10 +17,10 @@
 package org.drools.chance.common.trait;
 
 
-import org.drools.chance.common.IImperfectField;
+import org.drools.chance.common.ImperfectField;
 import org.drools.chance.common.fact.Price;
 import org.drools.chance.common.fact.Weight;
-import org.drools.chance.distribution.IDistribution;
+import org.drools.chance.distribution.Distribution;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
 import org.drools.core.util.Triple;
 import org.drools.core.util.TripleStore;
@@ -67,28 +67,28 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
     private void synchFields() {
 
         String coreName = getNameCore();
-        IImperfectField<String> name = getName();
+        ImperfectField<String> name = getName();
         if ( coreName != null ) {
             name.setValue( coreName, false );
         }
         setNameCore( name.getCrisp() );
 
         Boolean coreFlag = getFlagCore();
-        IImperfectField<Boolean> flag = getFlag();
+        ImperfectField<Boolean> flag = getFlag();
         if ( coreFlag != null ) {
             flag.setValue( coreFlag, false );
         }
         setFlagCore( flag.getCrisp() );
 
         Integer coreAge = getAgeCore();
-        IImperfectField<Integer> age = getAge();
+        ImperfectField<Integer> age = getAge();
         if ( coreAge != null ) {
             age.setValue( coreAge, false );
         }
         setAgeCore( age.getCrisp() );
 
         Cheese coreLikes = getLikesCore();
-        IImperfectField<Cheese> likes = getLikes();
+        ImperfectField<Cheese> likes = getLikes();
         if ( coreLikes != null ) {
             likes.setValue( coreLikes, false );
         }
@@ -100,7 +100,7 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         Double wgt = getWeight();
         if ( wgt != null ) {
 
-            IDistribution dist = bodyImp.fuzzify(wgt);
+            Distribution dist = bodyImp.fuzzify(wgt);
             bodyImp.setValue(dist, false);
 
             setBodyCore( bodyImp.getCrisp() );
@@ -120,7 +120,7 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         Integer pri = getBucks();
         if ( pri != null ) {
 
-            IDistribution dist = priceImp.fuzzify(pri);
+            Distribution dist = priceImp.fuzzify(pri);
             priceImp.setValue(dist, false);
 
             setPriceCore( priceImp.getCrisp() );
@@ -148,12 +148,12 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
 
 
 
-    public IImperfectField<String> getName() {
-        return (IImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
+    public ImperfectField<String> getName() {
+        return (ImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
     }
 
-    public IDistribution<String> getNameDistr() {
-        return ((IImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue()).getCurrent();
+    public Distribution<String> getNameDistr() {
+        return ((ImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue()).getCurrent();
     }
 
     public String getNameValue() {
@@ -164,19 +164,19 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         return getCore().getName();
     }
 
-    public void setName(IImperfectField<String> x) {
+    public void setName(ImperfectField<String> x) {
         store.put( property( "name_$$Imp", x ) );
         getCore().setName( x.getCrisp() );
     }
 
-    public void setNameDistr(IDistribution<String> x) {
-        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
+    public void setNameDistr(Distribution<String> x) {
+        ImperfectField<String> fld = (ImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         getCore().setName( fld.getCrisp() );
     }
 
     public void setNameValue(String x) {
-        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
+        ImperfectField<String> fld = (ImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         getCore().setName( fld.getCrisp() );
     }
@@ -188,20 +188,20 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
 
 
 
-    public void updateName(IImperfectField<String> x) {
-        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
+    public void updateName(ImperfectField<String> x) {
+        ImperfectField<String> fld = (ImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
         fld.update( x.getCurrent() );
         getCore().setName( fld.getCrisp() );
     }
 
-    public void updateNameDistr(IDistribution<String> x) {
-        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
+    public void updateNameDistr(Distribution<String> x) {
+        ImperfectField<String> fld = (ImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
         fld.update( x );
         getCore().setName( fld.getCrisp() );
     }
 
     public void updateNameValue(String x) {
-        IImperfectField<String> fld = (IImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
+        ImperfectField<String> fld = (ImperfectField<String>) store.get( propertyKey( "name_$$Imp" ) ).getValue();
         fld.update( x );
         getCore().setName( fld.getCrisp() );
     }
@@ -214,12 +214,12 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
 
 
 
-    public IImperfectField<Boolean> getFlag() {
-        return (IImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
+    public ImperfectField<Boolean> getFlag() {
+        return (ImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
     }
 
-    public IDistribution<Boolean> getFlagDistr() {
-        return ((IImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue()).getCurrent();
+    public Distribution<Boolean> getFlagDistr() {
+        return ((ImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue()).getCurrent();
     }
 
     public Boolean getFlagValue() {
@@ -236,19 +236,19 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
     }
 
 
-    public void setFlag(IImperfectField<Boolean> x) {
+    public void setFlag(ImperfectField<Boolean> x) {
         store.put( property( "flag_$$Imp", x ) );
         store.put( property( "flag", x.getCrisp() ) );
     }
 
-    public void setFlagDistr(IDistribution<Boolean> x) {
-        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
+    public void setFlagDistr(Distribution<Boolean> x) {
+        ImperfectField<Boolean> fld = (ImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         store.put( property( "flag", fld.getCrisp() ) );
     }
 
     public void setFlagValue(Boolean x) {
-        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
+        ImperfectField<Boolean> fld = (ImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         store.put( property( "flag", fld.getCrisp() ) );
     }
@@ -257,20 +257,20 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         store.put( property( "flag", x ) );
     }
 
-    public void updateFlag(IImperfectField<Boolean> x) {
-        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
+    public void updateFlag(ImperfectField<Boolean> x) {
+        ImperfectField<Boolean> fld = (ImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
         fld.update( x.getCurrent() );
         store.put( property( "flag", fld.getCrisp() ) );
     }
 
-    public void updateFlagDistr(IDistribution<Boolean> x) {
-        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
+    public void updateFlagDistr(Distribution<Boolean> x) {
+        ImperfectField<Boolean> fld = (ImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "flag", fld.getCrisp() ) );
     }
 
     public void updateFlagValue(Boolean x) {
-        IImperfectField<Boolean> fld = (IImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
+        ImperfectField<Boolean> fld = (ImperfectField<Boolean>) store.get( propertyKey( "flag_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "flag", fld.getCrisp() ) );
     }
@@ -280,12 +280,12 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
 
 
 
-    public IImperfectField<Integer> getAge() {
-        return (IImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
+    public ImperfectField<Integer> getAge() {
+        return (ImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
     }
 
-    public IDistribution<Integer> getAgeDistr() {
-        return ((IImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue()).getCurrent();
+    public Distribution<Integer> getAgeDistr() {
+        return ((ImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue()).getCurrent();
     }
 
     public Integer getAgeValue() {
@@ -301,19 +301,19 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         return (Integer) store.get( propertyKey( "age") ).getValue();
     }
 
-    public void setAge(IImperfectField<Integer> x) {
+    public void setAge(ImperfectField<Integer> x) {
         store.put( property( "age_$$Imp", x ) );
         store.put( property( "age", x.getCrisp() ) );
     }
 
-    public void setAgeDistr(IDistribution<Integer> x) {
-        IImperfectField<Integer> fld = (IImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();;
+    public void setAgeDistr(Distribution<Integer> x) {
+        ImperfectField<Integer> fld = (ImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();;
         fld.setValue( x, false );
         store.put( property( "age", fld.getCrisp() ) );
     }
 
     public void setAgeValue(Integer x) {
-        IImperfectField<Integer> fld = (IImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
+        ImperfectField<Integer> fld = (ImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         store.put( property( "age", x ) );
     }
@@ -322,20 +322,20 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         store.put( property( "age", x ) );
     }
 
-    public void updateAgeDistr(IDistribution<Integer> x) {
-        IImperfectField<Integer> fld = (IImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
+    public void updateAgeDistr(Distribution<Integer> x) {
+        ImperfectField<Integer> fld = (ImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "age", fld.getCrisp() ) );
     }
 
     public void updateAgeValue(Integer x) {
-        IImperfectField<Integer> fld = (IImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
+        ImperfectField<Integer> fld = (ImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "age", fld.getCrisp() ) );
     }
 
-    public void updateAge(IImperfectField<Integer> x) {
-        IImperfectField<Integer> fld = (IImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
+    public void updateAge(ImperfectField<Integer> x) {
+        ImperfectField<Integer> fld = (ImperfectField<Integer>) store.get( propertyKey( "age_$$Imp" ) ).getValue();
         fld.update( x.getCurrent() );
         store.put( property( "age", fld.getCrisp() ) );
     }
@@ -344,12 +344,12 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
 
 
 
-    public IImperfectField<Weight> getBody() {
-        return (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
+    public ImperfectField<Weight> getBody() {
+        return (ImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
     }
 
-    public IDistribution<Weight> getBodyDistr() {
-        return ((IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue()).getCurrent();
+    public Distribution<Weight> getBodyDistr() {
+        return ((ImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue()).getCurrent();
     }
 
     public Weight getBodyValue() {
@@ -369,15 +369,15 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
 
 
 
-    public void setBody(IImperfectField<Weight> x) {
+    public void setBody(ImperfectField<Weight> x) {
         store.put( property( "body_$$Imp", x ) );
         store.put( property( "body", x.getCrisp() ) );
 
         setWeightCore( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify().doubleValue());
     }
 
-    public void setBodyDistr(IDistribution<Weight> x) {
-        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
+    public void setBodyDistr(Distribution<Weight> x) {
+        ImperfectField<Weight> fld = (ImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         store.put( property( "body", fld.getCrisp() ) );
 
@@ -385,7 +385,7 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
     }
 
     public void setBodyValue(Weight x) {
-        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
+        ImperfectField<Weight> fld = (ImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         store.put( property( "body", fld.getCrisp() ) );
 
@@ -396,8 +396,8 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         store.put( property( "body", x ) );
     }
 
-    public void updateBodyDistr(IDistribution<Weight> x) {
-        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
+    public void updateBodyDistr(Distribution<Weight> x) {
+        ImperfectField<Weight> fld = (ImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "body", fld.getCrisp() ) );
 
@@ -405,15 +405,15 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
     }
 
     public void updateBodyValue(Weight x) {
-        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
+        ImperfectField<Weight> fld = (ImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "body", fld.getCrisp() ) );
 
         setWeightCore( ((LinguisticImperfectField<Weight,Double>) getBody()).defuzzify().doubleValue() );
     }
 
-    public void updateBody(IImperfectField<Weight> x) {
-        IImperfectField<Weight> fld = (IImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
+    public void updateBody(ImperfectField<Weight> x) {
+        ImperfectField<Weight> fld = (ImperfectField<Weight>) store.get( propertyKey( "body_$$Imp" ) ).getValue();
         fld.update( x.getCurrent() );
         store.put( property( "body", fld.getCrisp() ) );
 
@@ -450,12 +450,12 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
 
 
 
-    public IImperfectField<Price> getPrice() {
-        return (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+    public ImperfectField<Price> getPrice() {
+        return (ImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
     }
 
-    public IDistribution<Price> getPriceDistr() {
-        return ((IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue()).getCurrent();
+    public Distribution<Price> getPriceDistr() {
+        return ((ImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue()).getCurrent();
     }
 
     public Price getPriceValue() {
@@ -471,15 +471,15 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         return (Price) store.get( propertyKey( "price" ) ).getValue();
     }
 
-    public void setPrice(IImperfectField<Price> x) {
+    public void setPrice(ImperfectField<Price> x) {
         store.put( property( "price_$$Imp", x ) );
         store.put( property( "price", x.getCrisp() ) );
 
         setBucksCore(((LinguisticImperfectField<Price, Integer>) getPrice()).defuzzify().intValue() );
     }
 
-    public void setPriceDistr(IDistribution<Price> x) {
-        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+    public void setPriceDistr(Distribution<Price> x) {
+        ImperfectField<Price> fld = (ImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         store.put( property( "price", fld.getCrisp() ) );
 
@@ -487,7 +487,7 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
     }
 
     public void setPriceValue(Price x) {
-        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+        ImperfectField<Price> fld = (ImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         store.put( property( "price", fld.getCrisp() ) );
 
@@ -498,16 +498,16 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         store.put( property( "price", x ) );
     }
 
-    public void updatePrice(IImperfectField<Price> x) {
-        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+    public void updatePrice(ImperfectField<Price> x) {
+        ImperfectField<Price> fld = (ImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
         fld.update( x.getCurrent() );
         store.put( property( "price", fld.getCrisp() ) );
 
         setBucksCore( ( (LinguisticImperfectField<Price,Integer>) getPrice()).defuzzify().intValue() );
     }
 
-    public void updatePriceDistr(IDistribution<Price> x) {
-        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+    public void updatePriceDistr(Distribution<Price> x) {
+        ImperfectField<Price> fld = (ImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "price", fld.getCrisp() ) );
 
@@ -515,7 +515,7 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
     }
 
     public void updatePriceValue(Price x) {
-        IImperfectField<Price> fld = (IImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
+        ImperfectField<Price> fld = (ImperfectField<Price>) store.get( propertyKey( "price_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "price", fld.getCrisp() ) );
 
@@ -550,12 +550,12 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
 
 
 
-    public IImperfectField<Cheese> getLikes() {
-        return (IImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
+    public ImperfectField<Cheese> getLikes() {
+        return (ImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
     }
 
-    public IDistribution<Cheese> getLikesDistr() {
-        return ((IImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue()).getCurrent();
+    public Distribution<Cheese> getLikesDistr() {
+        return ((ImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue()).getCurrent();
     }
 
     public Cheese getLikesValue() {
@@ -571,19 +571,19 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         return (Cheese) store.get( propertyKey( "likes") ).getValue();
     }
 
-    public void setLikes(IImperfectField<Cheese> x) {
+    public void setLikes(ImperfectField<Cheese> x) {
         store.put( property( "likes_$$Imp", x ) );
         store.put( property( "likes", x.getCrisp() ) );
     }
 
-    public void setLikesDistr(IDistribution<Cheese> x) {
-        IImperfectField<Cheese> fld = (IImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
+    public void setLikesDistr(Distribution<Cheese> x) {
+        ImperfectField<Cheese> fld = (ImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         store.put( property( "likes", fld.getCrisp() ) );
     }
 
     public void setLikesValue(Cheese x) {
-        IImperfectField<Cheese> fld = (IImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
+        ImperfectField<Cheese> fld = (ImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
         fld.setValue( x, false );
         store.put( property( "likes", fld.getCrisp() ) );
     }
@@ -592,20 +592,20 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         store.put( property( "likes", x ) );
     }
 
-    public void updateLikesDistr(IDistribution<Cheese> x) {
-        IImperfectField<Cheese> fld = (IImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
+    public void updateLikesDistr(Distribution<Cheese> x) {
+        ImperfectField<Cheese> fld = (ImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "likes", fld.getCrisp() ) );
     }
 
     public void updateLikesValue(Cheese x) {
-        IImperfectField<Cheese> fld = (IImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
+        ImperfectField<Cheese> fld = (ImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
         fld.update( x );
         store.put( property( "likes", fld.getCrisp() ) );
     }
 
-    public void updateLikes(IImperfectField<Cheese> x ) {
-        IImperfectField<Cheese> fld = (IImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
+    public void updateLikes(ImperfectField<Cheese> x ) {
+        ImperfectField<Cheese> fld = (ImperfectField<Cheese>) store.get( propertyKey( "likes_$$Imp" ) ).getValue();
         fld.update( x.getCurrent() );
         store.put( property( "likes", fld.getCrisp() ) );
     }

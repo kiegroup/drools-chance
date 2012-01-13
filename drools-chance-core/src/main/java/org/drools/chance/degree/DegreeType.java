@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-package org.drools.chance.distribution;
+package org.drools.chance.degree;
 
-public interface IContinuousDomainDistribution<T> {
+
+public enum DegreeType {
+
+    SIMPLE              ("simple"),
+    INTERVAL            ("interval"),
+    LPAD                ("lpad");
+
+    private String type;
+
+    DegreeType(String type) {
+        this.type = type;
+    }
+
+
 
 }

@@ -16,13 +16,13 @@
 
 package org.drools.chance.constraints.core;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 
 public interface IConstraintCore {
 
-    IDegree eval(Object left,Object right);
-    IDegree eval(Object obj);
-    IDegree eval(Object... objs);
+    Degree eval(Object left,Object right);
+    Degree eval(Object obj);
+    Degree eval(Object... objs);
 
     boolean isUnary();
     boolean isBinary();

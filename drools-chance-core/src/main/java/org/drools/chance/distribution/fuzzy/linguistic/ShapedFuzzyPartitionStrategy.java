@@ -16,12 +16,13 @@
 
 package org.drools.chance.distribution.fuzzy.linguistic;
 
+import org.drools.chance.degree.DegreeType;
 import org.drools.chance.degree.DegreeTypeRegistry;
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
-import org.drools.chance.distribution.IDiscretePossibilityDistribution;
-import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.IDistributionStrategies;
+import org.drools.chance.distribution.DiscretePossibilityDistribution;
+import org.drools.chance.distribution.Distribution;
+import org.drools.chance.distribution.DistributionStrategies;
 import org.drools.core.util.StringUtils;
 
 import java.lang.reflect.Constructor;
@@ -30,23 +31,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDistributionStrategies<ILinguistic> {
+public class ShapedFuzzyPartitionStrategy<T extends Linguistic> implements DistributionStrategies<Linguistic> {
 
 		
-	private String degreeType;
+	private DegreeType degreeType;
 	private Class<T> domainType;
 
     private Constructor degreeStringConstr = null;
     
 
-    ShapedFuzzyPartitionStrategy(String degreeType, Class<T> domainType){
+    ShapedFuzzyPartitionStrategy( DegreeType degreeType, Class<T> domainType ){
         this.degreeType = degreeType;
         this.domainType = domainType;
     }
 
     private Constructor getDegreeStringConstructor() {
-        if (degreeStringConstr == null)
-            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString(degreeType);
+        if ( degreeStringConstr == null ) {
+            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType );
+        }
         return degreeStringConstr;
     }
 
@@ -63,17 +65,17 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
     
 
 
-    public IDistribution<ILinguistic> toDistribution(ILinguistic value) {
-        IDistribution<ILinguistic> dist = createEmptyPartition();
-        ((IDiscretePossibilityDistribution<ILinguistic>) dist).getDistribution().put(value,SimpleDegree.TRUE);
+    public Distribution<Linguistic> toDistribution(Linguistic value) {
+        Distribution<Linguistic> dist = createEmptyPartition();
+        ((DiscretePossibilityDistribution<Linguistic>) dist).getDistribution().put(value,SimpleDegree.TRUE);
         return dist;
     }
 
-    public IDistribution<ILinguistic> toDistribution(ILinguistic value, String strategy) {
+    public Distribution<Linguistic> toDistribution(Linguistic value, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<ILinguistic> toDistribution(ILinguistic value, Object... params) {
+    public Distribution<Linguistic> toDistribution(Linguistic value, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -81,7 +83,7 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
 
 
 
-	public IDistribution<ILinguistic> parse(String distrAsString) {
+	public Distribution<Linguistic> parse(String distrAsString) {
 		ShapedFuzzyPartition part = (ShapedFuzzyPartition) createEmptyPartition();
 
         if ( StringUtils.isEmpty( distrAsString ) ) {
@@ -96,7 +98,7 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
 
             try {
             	String label = sub.nextToken().trim();
-                IDegree deg = (IDegree) getDegreeStringConstructor().newInstance(sub.nextToken().trim());
+                Degree deg = (Degree) getDegreeStringConstructor().newInstance(sub.nextToken().trim() );
                 part.reshape(label, deg);
             } catch (Exception e) {
             	e.printStackTrace();
@@ -111,9 +113,9 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
 
 
 
-	protected IDistribution<ILinguistic> createEmptyPartition() {
+	protected Distribution<Linguistic> createEmptyPartition() {
 		try {
-			ILinguistic[] values = (ILinguistic[]) domainType.getMethod("values").invoke(null);
+			Linguistic[] values = (Linguistic[]) domainType.getMethod("values").invoke(null);
 			ShapedFuzzyPartition ans = new ShapedFuzzyPartition(values);
 			return ans;
 		} catch (Exception e) {
@@ -122,15 +124,15 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
 		return null;
 	}
 
-    public IDistribution<ILinguistic> newDistribution() {
+    public Distribution<Linguistic> newDistribution() {
         return createEmptyPartition();
     }
 
-    public IDistribution<ILinguistic> newDistribution(Set<ILinguistic> focalElements) {
+    public Distribution<Linguistic> newDistribution(Set<Linguistic> focalElements) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<ILinguistic> newDistribution(Map<? extends ILinguistic, ? extends IDegree> elements) {
+    public Distribution<Linguistic> newDistribution(Map<? extends Linguistic, ? extends Degree> elements) {
         return new ShapedFuzzyPartition(elements);
     }
 
@@ -140,42 +142,42 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
 
 
 
-    public ILinguistic toCrispValue(IDistribution<ILinguistic> dist) {
-        IDiscretePossibilityDistribution<ILinguistic> ldist = (IDiscretePossibilityDistribution<ILinguistic>) dist;
+    public Linguistic toCrispValue(Distribution<Linguistic> dist) {
+        DiscretePossibilityDistribution<Linguistic> ldist = (DiscretePossibilityDistribution<Linguistic>) dist;
         if ( ldist.size() == 0 ) {
             return null;
         }
         return ldist.iterator().next();
     }
 
-    public ILinguistic toCrispValue(IDistribution<ILinguistic> dist, String strategy) {
+    public Linguistic toCrispValue(Distribution<Linguistic> dist, String strategy) {
         return toCrispValue(dist);
     }
 
-    public ILinguistic toCrispValue(IDistribution<ILinguistic> dist, Object... params) {
+    public Linguistic toCrispValue(Distribution<Linguistic> dist, Object... params) {
         return toCrispValue(dist);
     }
 
-    public ILinguistic sample(IDistribution<ILinguistic> dist) {
+    public Linguistic sample(Distribution<Linguistic> dist) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public ILinguistic sample(IDistribution<ILinguistic> dist, String strategy) {
+    public Linguistic sample(Distribution<Linguistic> dist, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public ILinguistic sample(IDistribution<ILinguistic> dist, Object... params) {
+    public Linguistic sample(Distribution<Linguistic> dist, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<ILinguistic> merge(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit) {
+    public Distribution<Linguistic> merge(Distribution<Linguistic> current, Distribution<Linguistic> newBit) {
         ShapedFuzzyPartition part1 = (ShapedFuzzyPartition) current;
         ShapedFuzzyPartition part2 = (ShapedFuzzyPartition) newBit;
 
-        Iterator<ILinguistic<Number>> iter = part2.iterator();
+        Iterator<Linguistic<Number>> iter = part2.iterator();
         while ( iter.hasNext() ) {
-            ILinguistic<Number> ling = iter.next();
-            IDegree deg = part2.getDegree( ling );
+            Linguistic<Number> ling = iter.next();
+            Degree deg = part2.getDegree( ling );
 
             part1.reshape( ling, part1.getDegree( ling ).max( deg ) );
         }
@@ -184,24 +186,24 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
 
     }
 
-    public IDistribution<ILinguistic> merge(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit, String strategy) {
+    public Distribution<Linguistic> merge(Distribution<Linguistic> current, Distribution<Linguistic> newBit, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<ILinguistic> merge(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit, Object... params) {
+    public Distribution<Linguistic> merge(Distribution<Linguistic> current, Distribution<Linguistic> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<ILinguistic> mergeAsNew(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit) {
+    public Distribution<Linguistic> mergeAsNew(Distribution<Linguistic> current, Distribution<Linguistic> newBit) {
         ShapedFuzzyPartition part1 = (ShapedFuzzyPartition) current;
         ShapedFuzzyPartition part2 = (ShapedFuzzyPartition) newBit;
         ShapedFuzzyPartition ansPt = (ShapedFuzzyPartition) createEmptyPartition();
 
-        Iterator<ILinguistic<Number>> iter = ansPt.iterator();
+        Iterator<Linguistic<Number>> iter = ansPt.iterator();
         while ( iter.hasNext() ) {
-            ILinguistic<Number> ling = iter.next();
-            IDegree deg1 = part1.getDegree( ling );
-            IDegree deg2 = part2.getDegree( ling );
+            Linguistic<Number> ling = iter.next();
+            Degree deg1 = part1.getDegree( ling );
+            Degree deg2 = part2.getDegree( ling );
 
             part1.reshape( ling, deg1.max( deg2 ) );
         }
@@ -209,11 +211,11 @@ public class ShapedFuzzyPartitionStrategy<T extends ILinguistic> implements IDis
         return ansPt;
     }
 
-    public IDistribution<ILinguistic> mergeAsNew(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit, String strategy) {
+    public Distribution<Linguistic> mergeAsNew(Distribution<Linguistic> current, Distribution<Linguistic> newBit, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<ILinguistic> mergeAsNew(IDistribution<ILinguistic> current, IDistribution<ILinguistic> newBit, Object... params) {
+    public Distribution<Linguistic> mergeAsNew(Distribution<Linguistic> current, Distribution<Linguistic> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

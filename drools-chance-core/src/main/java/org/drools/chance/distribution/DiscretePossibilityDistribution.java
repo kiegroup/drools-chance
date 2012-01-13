@@ -16,13 +16,15 @@
 
 package org.drools.chance.distribution;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 
 import java.util.Map;
 
-public interface IDiscreteProbabilityDistribution<T> extends IDiscreteDomainDistribution<T>,
-		IProbabilityDistribution<T> {
+public interface DiscretePossibilityDistribution<T> extends DiscreteDomainDistribution<T>,
+        PossibilityDistribution<T> {
 	
-	public Map<T,IDegree> getDistribution();
+	
+	
+	public Map<T,Degree> getDistribution();
 
 }

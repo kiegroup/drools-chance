@@ -16,23 +16,26 @@
 
 package org.drools.chance.distribution.fuzzy.linguistic;
 
-import org.drools.chance.distribution.IDistributionStrategies;
-import org.drools.chance.distribution.IDistributionStrategyFactory;
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.DistributionStrategies;
+import org.drools.chance.distribution.DistributionStrategyFactory;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
 
-public class LinguisticPossibilityDistributionStrategyFactory<T extends ILinguistic> implements
-		IDistributionStrategyFactory<ILinguistic> {
+public class LinguisticPossibilityDistributionStrategyFactory<T extends Linguistic> implements
+        DistributionStrategyFactory<Linguistic> {
 
 	
-	public <T> IDistributionStrategies<T> buildStrategies(String degreeType, Class<T> domainType) {
+	public <T> DistributionStrategies<T> buildStrategies(DegreeType degreeType, Class<T> domainType) {
 		return new LinguisticPossibilityDistributionStrategy(degreeType, domainType);
 	}
 
-	public String getImp_Kind() {
-		return "possibility";
+	public ImpKind getImp_Kind() {
+		return ImpKind.POSSIBILITY;
 	}
 
-	public String getImp_Model() {
-		return "linguistic";
+	public ImpType getImp_Model() {
+		return ImpType.LINGUISTIC;
 	}
 
 }

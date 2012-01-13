@@ -17,7 +17,7 @@
 package org.drools.chance.degree.simple;
 
 import junit.framework.TestCase;
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.junit.Test;
 
@@ -151,8 +151,8 @@ public class SimpleDegreeTest extends TestCase {
         SimpleDegree s2 = new SimpleDegree(0.3);
         SimpleDegree s3 = new SimpleDegree(0.9);
 
-        IDegree s4 = s1.sum(s2);
-        IDegree s5 = s1.sum(s3);
+        Degree s4 = s1.sum(s2);
+        Degree s5 = s1.sum(s3);
 
         assertEquals(new SimpleDegree(0.6),s1);
         assertEquals(new SimpleDegree(0.3),s2);
@@ -168,8 +168,8 @@ public class SimpleDegreeTest extends TestCase {
         SimpleDegree s2 = new SimpleDegree(0.3);
         SimpleDegree s3 = new SimpleDegree(0.9);
 
-        IDegree s4 = s1.mul(s2);
-        IDegree s5 = s1.mul(s3);
+        Degree s4 = s1.mul(s2);
+        Degree s5 = s1.mul(s3);
 
         assertEquals(new SimpleDegree(0.6),s1);
         assertEquals(new SimpleDegree(0.3),s2);
@@ -186,9 +186,9 @@ public class SimpleDegreeTest extends TestCase {
         SimpleDegree s3 = new SimpleDegree(0.9);
         SimpleDegree s0 = new SimpleDegree(0.0);
 
-        IDegree s4 = s2.div(s1);
-        IDegree s5 = s3.div(s1);
-        IDegree s9 = s1.div(s0);
+        Degree s4 = s2.div(s1);
+        Degree s5 = s3.div(s1);
+        Degree s9 = s1.div(s0);
 
         assertEquals(new SimpleDegree(0.6),s1);
         assertEquals(new SimpleDegree(0.3),s2);
@@ -205,8 +205,8 @@ public class SimpleDegreeTest extends TestCase {
         SimpleDegree s2 = new SimpleDegree(0.3);
         SimpleDegree s3 = new SimpleDegree(0.9);
 
-        IDegree s4 = s1.sub(s2);
-        IDegree s5 = s1.sub(s3);
+        Degree s4 = s1.sub(s2);
+        Degree s5 = s1.sub(s3);
 
         assertEquals(new SimpleDegree(0.6),s1);
         assertEquals(new SimpleDegree(0.3),s2);
@@ -221,7 +221,7 @@ public class SimpleDegreeTest extends TestCase {
         SimpleDegree s1 = new SimpleDegree(0.6);
         SimpleDegree s2 = new SimpleDegree(0.3);
 
-        IDegree s4 = s1.max(s2);
+        Degree s4 = s1.max(s2);
 
         assertEquals(new SimpleDegree(0.6),s1);
         assertEquals(new SimpleDegree(0.3),s2);
@@ -234,7 +234,7 @@ public class SimpleDegreeTest extends TestCase {
         SimpleDegree s1 = new SimpleDegree(0.6);
         SimpleDegree s2 = new SimpleDegree(0.3);
 
-        IDegree s4 = s1.min(s2);
+        Degree s4 = s1.min(s2);
 
         assertEquals(new SimpleDegree(0.6),s1);
         assertEquals(new SimpleDegree(0.3),s2);
@@ -246,7 +246,7 @@ public class SimpleDegreeTest extends TestCase {
     public void testFromConst() throws Exception {
         SimpleDegree s1 = new SimpleDegree(0.6);
 
-        IDegree s2 = s1.fromConst(0.33);
+        Degree s2 = s1.fromConst(0.33);
 
         assertEquals(new SimpleDegree(0.33),s2);
     }

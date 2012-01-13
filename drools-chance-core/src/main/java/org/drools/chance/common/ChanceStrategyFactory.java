@@ -18,11 +18,14 @@ package org.drools.chance.common;
 
 import com.google.common.collect.HashBasedTable;
 import org.drools.chance.constraints.core.connectives.IConnectiveFactory;
+import org.drools.chance.degree.DegreeType;
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
-import org.drools.chance.distribution.IDistributionStrategies;
-import org.drools.chance.distribution.IDistributionStrategyFactory;
+import org.drools.chance.distribution.DistributionStrategies;
+import org.drools.chance.distribution.DistributionStrategyFactory;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
 
 
 /**
@@ -31,16 +34,16 @@ import org.drools.chance.distribution.IDistributionStrategyFactory;
  * Given a KIND of imperfection --> fuzzy, probability, belief, ...
  * and a TYPE of distribution --> discrete, fuzzyset, Gaussian, Dirichlet, ...
  *
- * retrieves the appropriate IDistributionStrategyFactory which is capable
- * of building the appropriate IDistributionStrategies object, which in turn
+ * retrieves the appropriate DistributionStrategyFactory which is capable
+ * of building the appropriate DistributionStrategies object, which in turn
  * acts a factory class for the IDistributions, in addition to providing
  * all the necessary methods.
  *
- * Any class implementing IDistributionStrategyFactory must register itself
+ * Any class implementing DistributionStrategyFactory must register itself
  * TODO Improve?
  * At the moment, with something like
- *   IDistributionStrategyFactory subFactory =
- *              (IDistributionStrategyFactory) //load class by name//.newInstance();
+ *   DistributionStrategyFactory subFactory =
+ *              (DistributionStrategyFactory) //load class by name//.newInstance();
  *   ChanceStrategyFactory.register(subFactory.getImp_Kind(),factory.getImp_Model(),factory);
  *
  *
@@ -48,34 +51,34 @@ import org.drools.chance.distribution.IDistributionStrategyFactory;
  */
 public class ChanceStrategyFactory<T> {
 
-    private static HashBasedTable<String,String,IDistributionStrategyFactory> cache
+    private static HashBasedTable<ImpKind,ImpType,DistributionStrategyFactory> cache
             = HashBasedTable.create();
 
-    private static HashBasedTable<String,String,IConnectiveFactory> cacheConnective= HashBasedTable.create();
+    private static HashBasedTable<ImpKind,ImpType,IConnectiveFactory> cacheConnective= HashBasedTable.create();
 
 
-    public static <T> IDistributionStrategies buildStrategies(
-            String kind, String model,String degreeType, Class<T> domainType) {
+    public static <T> DistributionStrategies buildStrategies(
+            ImpKind kind, ImpType model, DegreeType degreeType, Class<T> domainType) {
 
-        IDistributionStrategyFactory<T> factory = cache.get(kind,model);
+        DistributionStrategyFactory<T> factory = cache.get(kind,model);
         return factory.<T>buildStrategies(degreeType, domainType);
 
     }
 
-    public static <T> void register(String kind, String model, IDistributionStrategyFactory<T> factory) {
+    public static <T> void register(ImpKind kind, ImpType model, DistributionStrategyFactory<T> factory) {
         cache.put(kind,model,factory);
     }
 
 
 
 
-    public static void registerConnective(String kind,String model, IConnectiveFactory connFac){
+    public static void registerConnective(ImpKind kind,ImpType model, IConnectiveFactory connFac){
         cacheConnective.put(kind,model,connFac);
 
     }
 
 
-    public static IConnectiveFactory getConnective(String kind,String model){
+    public static IConnectiveFactory getConnective(ImpKind kind,ImpType model){
         return cacheConnective.get(kind,true);
     }
 
@@ -83,49 +86,49 @@ public class ChanceStrategyFactory<T> {
 
     public static void initDefaults() {
         try {
-            IDistributionStrategyFactory factory = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategyFactory").newInstance();
+            DistributionStrategyFactory factory = (DistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.discrete.DiscreteDistributionStrategyFactory").newInstance();
             ChanceStrategyFactory.register(factory.getImp_Kind(), factory.getImp_Model(), factory);
         } catch ( Exception e ) {
             e.printStackTrace();
         }
 
         try {
-            IDistributionStrategyFactory factory = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.BasicDistributionStrategyFactory").newInstance();
+            DistributionStrategyFactory factory = (DistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.BasicDistributionStrategyFactory").newInstance();
             ChanceStrategyFactory.register(factory.getImp_Kind(), factory.getImp_Model(), factory);
         } catch ( Exception e ) {
             e.printStackTrace();
         }
 
         try {
-            IDistributionStrategyFactory factory2 = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.dirichlet.DirichletDistributionStrategyFactory").newInstance();
+            DistributionStrategyFactory factory2 = (DistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.dirichlet.DirichletDistributionStrategyFactory").newInstance();
             ChanceStrategyFactory.register(factory2.getImp_Kind(), factory2.getImp_Model(), factory2);
         } catch ( Exception e ) {
             e.printStackTrace();
         }
 
         try {
-            IDistributionStrategyFactory factory3 = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartitionStrategyFactory").newInstance();
+            DistributionStrategyFactory factory3 = (DistributionStrategyFactory) Class.forName("org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartitionStrategyFactory").newInstance();
             ChanceStrategyFactory.register(factory3.getImp_Kind(), factory3.getImp_Model(), factory3);
         } catch ( Exception e ) {
             e.printStackTrace();
         }
 
         try {
-            IDistributionStrategyFactory factory4 = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.fuzzy.linguistic.LinguisticPossibilityDistributionStrategyFactory").newInstance();
+            DistributionStrategyFactory factory4 = (DistributionStrategyFactory) Class.forName("org.drools.chance.distribution.fuzzy.linguistic.LinguisticPossibilityDistributionStrategyFactory").newInstance();
             ChanceStrategyFactory.register(factory4.getImp_Kind(), factory4.getImp_Model(), factory4);
         } catch ( Exception e ) {
             e.printStackTrace();
         }
 
         try {
-            IDistributionStrategyFactory factory5 = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.BasicDistributionStrategyFactory").newInstance();
+            DistributionStrategyFactory factory5 = (DistributionStrategyFactory) Class.forName("org.drools.chance.distribution.probability.BasicDistributionStrategyFactory").newInstance();
             ChanceStrategyFactory.register(factory5.getImp_Kind(), factory5.getImp_Model(), factory5);
         } catch ( Exception e ) {
             e.printStackTrace();
         }
 
         try {
-            IDistributionStrategyFactory factory6 = (IDistributionStrategyFactory) Class.forName("org.drools.chance.distribution.fuzzy.BasicDistributionStrategyFactory").newInstance();
+            DistributionStrategyFactory factory6 = (DistributionStrategyFactory) Class.forName("org.drools.chance.distribution.fuzzy.BasicDistributionStrategyFactory").newInstance();
             ChanceStrategyFactory.register(factory6.getImp_Kind(), factory6.getImp_Model(), factory6);
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -133,8 +136,9 @@ public class ChanceStrategyFactory<T> {
 
 
 
-        DegreeTypeRegistry.getSingleInstance().registerDegreeType( "simple", SimpleDegree.class);
-        DegreeTypeRegistry.getSingleInstance().registerDegreeType( "interval", IntervalDegree.class);
+        DegreeTypeRegistry.getSingleInstance().registerDegreeType( DegreeType.SIMPLE, SimpleDegree.class);
+
+        DegreeTypeRegistry.getSingleInstance().registerDegreeType( DegreeType.INTERVAL, IntervalDegree.class);
     }
 
 

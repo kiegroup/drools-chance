@@ -16,6 +16,11 @@
 
 package org.drools.chance.distribution;
 
-public interface IProbabilityDistribution<T> extends IDistribution<T> {
+
+public interface ContinuousPossibilityDistribution<T> extends
+        ContinuousDomainDistribution<T>, PossibilityDistribution<T> {
+	
+		
+	
 
 }

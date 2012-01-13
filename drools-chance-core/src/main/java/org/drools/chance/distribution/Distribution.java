@@ -16,35 +16,44 @@
 
 package org.drools.chance.distribution;
 
+import org.drools.chance.degree.Degree;
+
+
 /**
- * Interface for Distribution Level II factories
- * This factory is responsible for the creation of the Stragies/Factory
- * defining a specific type of imperfect distribution and its algorithms
- *
+ * Interface for all classes implementing the concept of "distribution" over a generic domain
+ * A distribution is assumed to be a map Value -> Degree
+ * @param <T>
  */
-public interface IDistributionStrategyFactory<T> {
+public interface Distribution<T>  {
 
     /**
-     * Factory method
-     * @param <T>
-     * @return
+     * computes the degree for a given value
+     * @param value the query value
+     * @return the associated Degree
      */
-
-    public <T> IDistributionStrategies<T> buildStrategies(String degreeType, Class<T> priorType);
-
-    /**
-     * The kind of imperfection modelled
-     * --> fuzzy, probability, belief, ...
-     * @return
-     */
-    public String getImp_Kind();
+    public Degree getDegree(T value);
 
 
     /**
-     * The type of distribution implemented
-     * --> discrete, fuzzyset, Gaussian, Dirichlet, ...
+     * computes the degree for a given value
+     * @param value the query value
+     * @return the associated Degree
+     */
+    public Degree get(T value);
+
+
+    /**
+     * Size of the domain, may be infinite
      * @return
      */
-    public String getImp_Model();
+    public Number domainSize();
+
+
+
+
+
+
+
+
 
 }

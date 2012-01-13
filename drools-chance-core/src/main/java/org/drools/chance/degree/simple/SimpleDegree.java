@@ -16,7 +16,7 @@
 
 package org.drools.chance.degree.simple;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.interval.IntervalDegree;
 
 
@@ -24,12 +24,12 @@ import org.drools.chance.degree.interval.IntervalDegree;
  * Class that implements the concept of degree using a simple double value.
  * Useful for many semantics (probability, possibility, many-valued truth, confidence, belief, ...)
  */
-public class SimpleDegree implements IDegree {
+public class SimpleDegree implements Degree {
 
 	private static final double EPSILON = 1e-12;
 
-	public static final IDegree TRUE = new SimpleDegree(1);
-	public static final IDegree FALSE = new SimpleDegree(0);
+	public static final Degree TRUE = new SimpleDegree(1);
+	public static final Degree FALSE = new SimpleDegree(0);
 
 
 	private double value;
@@ -75,56 +75,56 @@ public class SimpleDegree implements IDegree {
     }
 
 
-	public IDegree True() {
+	public Degree True() {
 		return TRUE;
 	}
 
-	public IDegree False() {
+	public Degree False() {
 		return FALSE;
 	}
 
 	/**
 	 * Under the Closed World Assumption, Unknown = False
 	 */
-	public IDegree Unknown() {
+	public Degree Unknown() {
 		return FALSE;
 	}
 
 
 
-    public IDegree sum(IDegree sum) {
+    public Degree sum(Degree sum) {
         double ret = Math.min( 1.0, this.getValue() + sum.getValue() );
         return new SimpleDegree(ret);
     }
 
-    public IDegree mul(IDegree mul) {
+    public Degree mul(Degree mul) {
         return new SimpleDegree( getValue()*mul.getValue() );
     }
 
-    public IDegree div(IDegree div) {
+    public Degree div(Degree div) {
         if (div.getValue() == 0) return Unknown();
         return new SimpleDegree( Math.min(1.0, getValue()/div.getValue()) );
     }
 
-    public IDegree sub(IDegree sub) {
+    public Degree sub(Degree sub) {
         double ret = Math.max( 0.0, this.getValue() - sub.getValue() );
 
         return new SimpleDegree(ret);
     }
 
-    public IDegree max(IDegree comp) {
+    public Degree max(Degree comp) {
         return new SimpleDegree( Math.max( this.getValue(), comp.getValue()) );
     }
 
-    public IDegree min(IDegree comp) {
+    public Degree min(Degree comp) {
         return new SimpleDegree( Math.min(this.getValue(), comp.getValue()) );
     }
 
-    public IDegree fromConst(double number) {
+    public Degree fromConst(double number) {
        return new SimpleDegree(number);
     }
 
-    public IDegree fromString(String number) {
+    public Degree fromString(String number) {
        return new SimpleDegree( Double.parseDouble( number ) );
     }
 
@@ -160,7 +160,7 @@ public class SimpleDegree implements IDegree {
 	}
 
 
-	public int compareTo(IDegree arg0) {
+	public int compareTo(Degree arg0) {
 		if (arg0 == null) throw new NullPointerException("Comparing a SimpleDegree to a null Degree");
         double delta = value - arg0.getValue() ;
 

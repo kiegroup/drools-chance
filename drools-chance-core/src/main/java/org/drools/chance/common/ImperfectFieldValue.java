@@ -17,21 +17,21 @@
 package org.drools.chance.common;
 
 
-import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.IDistributionStrategies;
+import org.drools.chance.distribution.Distribution;
+import org.drools.chance.distribution.DistributionStrategies;
 
-public class ImperfectFieldValue<T> extends ImperfectField<T> {
+public class ImperfectFieldValue<T> extends ImperfectFieldImpl<T> {
 
 
-    public ImperfectFieldValue(IDistributionStrategies<T> tiDistributionStrategies) {
+    public ImperfectFieldValue(DistributionStrategies<T> tiDistributionStrategies) {
         super(tiDistributionStrategies);
     }
 
-    public ImperfectFieldValue(IDistributionStrategies<T> tiDistributionStrategies, String distrAsString) {
+    public ImperfectFieldValue(DistributionStrategies<T> tiDistributionStrategies, String distrAsString) {
         super(tiDistributionStrategies, distrAsString);
     }
 
-    public ImperfectFieldValue(IDistributionStrategies<T> tiDistributionStrategies, IDistribution<T> distr0) {
+    public ImperfectFieldValue(DistributionStrategies<T> tiDistributionStrategies, Distribution<T> distr0) {
         super(tiDistributionStrategies, distr0);
     }
 

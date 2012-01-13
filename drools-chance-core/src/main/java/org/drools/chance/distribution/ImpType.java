@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-package org.drools.chance.distribution.fuzzy.linguistic;
+package org.drools.chance.distribution;
 
-import de.lab4inf.fuzzy.FuzzySet;
 
-public interface ILinguistic<K> {
-		
-	public String getLabel();
-	
-	public FuzzySet getSet();
-	
-	public ILinguistic parse(String label);
+public enum ImpType {
+
+    LINGUISTIC          ("linguistic"),
+    TBM                 ("TBM"),
+    DISCRETE            ("discrete"),
+    DIRICHLET           ("dirichlet"),
+    BASIC               ("basic");
+
+    private String type;
+
+    ImpType(String type) {
+        this.type = type;
+    }
+
+
 
 }

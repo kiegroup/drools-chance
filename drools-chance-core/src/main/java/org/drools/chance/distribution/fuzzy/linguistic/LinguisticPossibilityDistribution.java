@@ -18,24 +18,24 @@ package org.drools.chance.distribution.fuzzy.linguistic;
 
 import de.lab4inf.fuzzy.FuzzyAlphaCutPartition;
 import de.lab4inf.fuzzy.UniqueFuzzyPartition;
-import org.drools.chance.degree.IDegree;
-import org.drools.chance.distribution.IContinuousPossibilityDistribution;
+import org.drools.chance.degree.Degree;
+import org.drools.chance.distribution.ContinuousPossibilityDistribution;
 
 import java.util.Iterator;
 import java.util.Map;
 
 public class LinguisticPossibilityDistribution<T extends Number>
-        implements IContinuousPossibilityDistribution<Number> {
+        implements ContinuousPossibilityDistribution<Number> {
 
     private FuzzyAlphaCutPartition cutPart;
-    private IDegree master;
+    private Degree master;
 
-    public LinguisticPossibilityDistribution(Map<ILinguistic<Number>,IDegree> map) {
+    public LinguisticPossibilityDistribution(Map<Linguistic<Number>,Degree> map) {
         UniqueFuzzyPartition.clearPartitionNames();
         cutPart = new FuzzyAlphaCutPartition(map.keySet().iterator().getClass().getName());
-        Iterator<ILinguistic<Number>> iter = map.keySet().iterator();
+        Iterator<Linguistic<Number>> iter = map.keySet().iterator();
         while (iter.hasNext()) {
-            ILinguistic ling = iter.next();
+            Linguistic ling = iter.next();
             cutPart.add(ling.getLabel(),ling.getSet());
             cutPart.set(ling.getLabel(),map.get(ling).getValue());
             if (master == null) master = map.get(ling);
@@ -43,7 +43,7 @@ public class LinguisticPossibilityDistribution<T extends Number>
     }
 
 
-    public IDegree getDegree(Number value) {
+    public Degree getDegree(Number value) {
         double[] mus = cutPart.fuzzyfy(value.doubleValue());
         double max = mus[0];
         for (int j = 1; j < mus.length; j++)
@@ -52,7 +52,7 @@ public class LinguisticPossibilityDistribution<T extends Number>
     }
 
 
-    public IDegree get(Number value) {
+    public Degree get(Number value) {
         return getDegree( value );
     }
 

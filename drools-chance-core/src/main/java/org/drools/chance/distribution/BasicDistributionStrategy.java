@@ -16,8 +16,9 @@
 
 package org.drools.chance.distribution;
 
+import org.drools.chance.degree.Degree;
+import org.drools.chance.degree.DegreeType;
 import org.drools.chance.degree.DegreeTypeRegistry;
-import org.drools.chance.degree.IDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 
 import java.lang.reflect.Constructor;
@@ -30,21 +31,21 @@ import java.util.Set;
  * Strategy and level III factory for discrete probability distributions
  * @param <T>
  */
-public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T> {
+public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> {
 
 
 
-    private String degreeType;
+    private DegreeType degreeType;
     private Class<T> domainType;
 
     private Constructor degreeStringConstr = null;
 
-    private IDegree tru;
-    private IDegree fal;
-    private IDegree unk;
+    private Degree tru;
+    private Degree fal;
+    private Degree unk;
 
 
-    public BasicDistributionStrategy(String degreeType, Class<T> domainType){
+    public BasicDistributionStrategy( DegreeType degreeType, Class<T> domainType){
         this.degreeType = degreeType;
         this.domainType = domainType;
         try {
@@ -76,25 +77,25 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
 
 
 
-    public IDistribution<T> toDistribution(T value) {
+    public Distribution<T> toDistribution(T value) {
         return new BasicDistribution<T>( value, tru );
     }
 
-    public IDistribution<T> toDistribution(T value, String strategy) {
+    public Distribution<T> toDistribution(T value, String strategy) {
         return new BasicDistribution<T>( value, tru );
     }
 
-    public IDistribution<T> toDistribution(T value, Object... params) {
+    public Distribution<T> toDistribution(T value, Object... params) {
         return new BasicDistribution<T>( value, tru );
     }
 
 
 
-    public IDistribution<T> parse(String distrAsString) {
+    public Distribution<T> parse(String distrAsString) {
 
         int idx = distrAsString.indexOf('/');
         T val;
-        IDegree deg;
+        Degree deg;
         try {
 
             if ( idx < 0 ) {
@@ -102,7 +103,7 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
                 deg = tru;
             } else {
                 val = domainType.getConstructor(String.class).newInstance( distrAsString.substring( 0, idx ) );
-                deg = (IDegree) DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType ).newInstance( distrAsString.substring( idx + 1 ) );
+                deg = (Degree) DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType ).newInstance( distrAsString.substring( idx + 1 ) );
             }
 
             return new BasicDistribution<T>( val, deg );
@@ -122,22 +123,22 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
 
 
 
-    public IDistribution<T> newDistribution() {
+    public Distribution<T> newDistribution() {
         if ( Boolean.class.equals( domainType ) ) {
-            return (IDistribution<T>) new BasicDistribution<Boolean>( true, unk );
+            return (Distribution<T>) new BasicDistribution<Boolean>( true, unk );
         } else {
             return new BasicDistribution<T>( null, fal );
         }
     }
 
-    public IDistribution<T> newDistribution(Set<T> focalElements) {
+    public Distribution<T> newDistribution(Set<T> focalElements) {
         T value = focalElements.iterator().next();
         return new BasicDistribution<T>( value, tru );
     }
 
-    public IDistribution<T> newDistribution(Map<? extends T, ? extends IDegree> elements) {
+    public Distribution<T> newDistribution(Map<? extends T, ? extends Degree> elements) {
         T value = elements.keySet().iterator().next();
-        IDegree deg = elements.get( value );
+        Degree deg = elements.get( value );
         try {
             return new BasicDistribution<T>( value, deg );
         } catch( Exception e ) {
@@ -147,35 +148,35 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
 
 
 
-    public T toCrispValue(IDistribution<T> dist) {
+    public T toCrispValue(Distribution<T> dist) {
         return ((BasicDistribution<T>) dist).getValue();
     }
 
-    public T toCrispValue(IDistribution<T> dist, String strategy) {
+    public T toCrispValue(Distribution<T> dist, String strategy) {
         return ((BasicDistribution<T>) dist).getValue();
     }
 
-    public T toCrispValue(IDistribution<T> dist, Object... params) {
+    public T toCrispValue(Distribution<T> dist, Object... params) {
         return ((BasicDistribution<T>) dist).getValue();
     }
 
 
 
-    public T sample(IDistribution<T> dist) {
+    public T sample(Distribution<T> dist) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public T sample(IDistribution<T> dist, String strategy) {
+    public T sample(Distribution<T> dist, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public T sample(IDistribution<T> dist, Object... params) {
+    public T sample(Distribution<T> dist, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 
 
-    public IDistribution<T> merge(IDistribution<T> current, IDistribution<T> newBit) {
+    public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit) {
         BasicDistribution<T> src = (BasicDistribution<T>) current;
         BasicDistribution<T> bit = (BasicDistribution<T>) newBit;
 
@@ -184,13 +185,13 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
             val = ((BasicDistribution<T>) newBit).getValue();
             src.set( val, newBit.getDegree( val ) );
         } else if ( val.equals( bit.getValue() ) ) {
-            IDegree a = src.getDegree(val);
-            IDegree b = bit.getDegree( val );
+            Degree a = src.getDegree(val);
+            Degree b = bit.getDegree( val );
             src.setDegree( a.sum( b.mul( a.True().sub( a ) ) ) );
         } else {
-            IDegree a = src.getDegree(val);
-            IDegree b = bit.getDegree( val );
-            IDegree c = a.mul( b );
+            Degree a = src.getDegree(val);
+            Degree b = bit.getDegree( val );
+            Degree c = a.mul( b );
             if ( c.equals( c.False() ) ) {
                 src.set( ((BasicDistribution<T>) newBit).getValue(), c.True() );
             } else {
@@ -200,17 +201,17 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
         return src;
     }
 
-    public IDistribution<T> merge(IDistribution<T> current, IDistribution<T> newBit, String strategy) {
+    public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<T> merge(IDistribution<T> current, IDistribution<T> newBit, Object... params) {
+    public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 
 
-    public IDistribution<T> mergeAsNew(IDistribution<T> current, IDistribution<T> newBit) {
+    public Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit) {
         BasicDistribution<T> src = (BasicDistribution<T>) current;
         BasicDistribution<T> bit = (BasicDistribution<T>) newBit;
 
@@ -220,20 +221,20 @@ public class BasicDistributionStrategy<T>  implements IDistributionStrategies<T>
             return src;
         }
 
-        IDegree a = src.getDegree( val );
-        IDegree b = bit.getDegree( val );
-        IDegree deg = ( a.sum( b ) ).sub( a.mul( b ) );
+        Degree a = src.getDegree( val );
+        Degree b = bit.getDegree( val );
+        Degree deg = ( a.sum( b ) ).sub( a.mul( b ) );
 
         BasicDistribution<T> dist = new BasicDistribution<T>( val, deg );
 
         return dist;
     }
 
-    public IDistribution<T> mergeAsNew(IDistribution<T> current, IDistribution<T> newBit, String strategy) {
+    public Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<T> mergeAsNew(IDistribution<T> current, IDistribution<T> newBit, Object... params) {
+    public Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

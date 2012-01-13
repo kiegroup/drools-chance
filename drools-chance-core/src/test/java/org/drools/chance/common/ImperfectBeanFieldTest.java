@@ -32,8 +32,11 @@ import org.drools.chance.common.fact.Weight;
 import org.drools.chance.common.trait.ImpBean;
 import org.drools.chance.common.trait.ImpBeanLegacyProxy;
 import org.drools.chance.common.trait.LegacyBean;
-import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.IDistributionStrategies;
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.Distribution;
+import org.drools.chance.distribution.DistributionStrategies;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
 import org.drools.core.util.Triple;
 import org.drools.core.util.TripleImpl;
@@ -190,10 +193,10 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnString_getName() {
 
-        checkReturnType( beanHand.getClass(), "getName", IImperfectField.class );
-        checkReturnType( traitHand.getClass(), "getName", IImperfectField.class );
-        checkReturnType( beanDrl.getClass(), "getName", IImperfectField.class );
-        checkReturnType( traitDrl.getClass(), "getName", IImperfectField.class );
+        checkReturnType( beanHand.getClass(), "getName", ImperfectField.class );
+        checkReturnType( traitHand.getClass(), "getName", ImperfectField.class );
+        checkReturnType( beanDrl.getClass(), "getName", ImperfectField.class );
+        checkReturnType( traitDrl.getClass(), "getName", ImperfectField.class );
 
         assertNotNull( beanHand.getName() );
         assertNotNull( traitHand.getName() );
@@ -205,10 +208,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "name") );
         System.out.println( traitDrlClass.get(traitDrl, "name") );
 
-        assertEquals( "philip", ((IImperfectField) beanHand.getName()).getCrisp() );
-        assertEquals( "joe", ((IImperfectField) traitHand.getName()).getCrisp() );
-        assertEquals( "philip", ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCrisp() );
-        assertEquals( "joe", ((IImperfectField) traitDrlClass.get(traitDrl, "name")).getCrisp() );
+        assertEquals( "philip", ((ImperfectField) beanHand.getName()).getCrisp() );
+        assertEquals( "joe", ((ImperfectField) traitHand.getName()).getCrisp() );
+        assertEquals( "philip", ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCrisp() );
+        assertEquals( "joe", ((ImperfectField) traitDrlClass.get(traitDrl, "name")).getCrisp() );
 
         checkConsistency();
     }
@@ -216,10 +219,10 @@ public class ImperfectBeanFieldTest {
 
     @Test
     public void testProbabilityOnString_getDistributionName() {
-        checkReturnType( beanHand.getClass(), "getNameDistr", IDistribution.class );
-        checkReturnType( traitHand.getClass(), "getNameDistr", IDistribution.class );
-        checkReturnType( beanDrl.getClass(), "getNameDistr", IDistribution.class );
-        checkReturnType( traitDrl.getClass(), "getNameDistr", IDistribution.class);
+        checkReturnType( beanHand.getClass(), "getNameDistr", Distribution.class );
+        checkReturnType( traitHand.getClass(), "getNameDistr", Distribution.class );
+        checkReturnType( beanDrl.getClass(), "getNameDistr", Distribution.class );
+        checkReturnType( traitDrl.getClass(), "getNameDistr", Distribution.class);
 
         assertNotNull( beanHand.getNameDistr() );
         assertNotNull( traitHand.getNameDistr() );
@@ -231,10 +234,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "nameDistr" ) );
         System.out.println( traitDrlClass.get(traitDrl, "nameDistr" ) );
 
-        assertEquals( 0.7, ((IDistribution) beanHand.getNameDistr()).getDegree("philip").getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitHand.getNameDistr()).getDegree("joe").getValue(), 1e-16 );
-        assertEquals( 0.7, ((IDistribution) beanDrlClass.get(beanDrl, "nameDistr")).getDegree("philip").getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitDrlClass.get(traitDrl, "nameDistr")).getDegree("joe").getValue(), 1e-16 );
+        assertEquals( 0.7, ((Distribution) beanHand.getNameDistr()).getDegree("philip").getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitHand.getNameDistr()).getDegree("joe").getValue(), 1e-16 );
+        assertEquals( 0.7, ((Distribution) beanDrlClass.get(beanDrl, "nameDistr")).getDegree("philip").getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitDrlClass.get(traitDrl, "nameDistr")).getDegree("joe").getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -271,13 +274,13 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnString_setName() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setName", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setName", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setName", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setName", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setName", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setName", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setName", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setName", ImperfectField.class);
 
-        IDistributionStrategies<String> builder = ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", String.class );
-        IImperfectField<String> fld = new ImperfectField<String>( builder, builder.parse( "alice/0.4, bob/0.6" ) );
+        DistributionStrategies<String> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, String.class );
+        ImperfectField<String> fld = new ImperfectFieldImpl<String>( builder, builder.parse( "alice/0.4, bob/0.6" ) );
 
         beanHand.setName( fld );
         traitHand.setName( fld );
@@ -294,10 +297,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "name") );
         System.out.println( traitDrlClass.get(traitDrl, "name") );
 
-        assertEquals( "bob", ((IImperfectField) beanHand.getName()).getCrisp() );
-        assertEquals( "bob", ((IImperfectField) traitHand.getName()).getCrisp() );
-        assertEquals( "bob", ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCrisp() );
-        assertEquals( "bob", ((IImperfectField) traitDrlClass.get(traitDrl, "name")).getCrisp() );
+        assertEquals( "bob", ((ImperfectField) beanHand.getName()).getCrisp() );
+        assertEquals( "bob", ((ImperfectField) traitHand.getName()).getCrisp() );
+        assertEquals( "bob", ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCrisp() );
+        assertEquals( "bob", ((ImperfectField) traitDrlClass.get(traitDrl, "name")).getCrisp() );
 
         assertEquals( 0.4, fld.getCurrent().getDegree( "alice" ).getValue(), 1e-16 );
 
@@ -309,17 +312,17 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnString_setNameDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setNameDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setNameDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setNameDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setNameDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setNameDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setNameDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setNameDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setNameDistr", Distribution.class);
 
-        IDistributionStrategies<String> builder = ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", String.class );
+        DistributionStrategies<String> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, String.class );
 
-        IDistribution<String> d1 = builder.parse( "alice/0.4, bob/0.6" );
-        IDistribution<String> d2 = builder.parse( "cindy/0.35, david/0.65" );
-        IDistribution<String> d3 = builder.parse("earl/0.1, franz/0.9");
-        IDistribution<String> d4 = builder.parse( "gary/0.8, homer/0.2" );
+        Distribution<String> d1 = builder.parse( "alice/0.4, bob/0.6" );
+        Distribution<String> d2 = builder.parse( "cindy/0.35, david/0.65" );
+        Distribution<String> d3 = builder.parse("earl/0.1, franz/0.9");
+        Distribution<String> d4 = builder.parse( "gary/0.8, homer/0.2" );
 
 
         beanHand.setNameDistr(d1);
@@ -339,10 +342,10 @@ public class ImperfectBeanFieldTest {
         assertSame( d4, traitDrlClass.get(traitDrl, "nameDistr") );
 
 
-        assertEquals( "bob", ((IImperfectField) beanHand.getName()).getCrisp() );
-        assertEquals( "david", ((IImperfectField) traitHand.getName()).getCrisp() );
-        assertEquals( "franz", ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCrisp() );
-        assertEquals( "gary", ((IImperfectField) traitDrlClass.get(traitDrl, "name")).getCrisp() );
+        assertEquals( "bob", ((ImperfectField) beanHand.getName()).getCrisp() );
+        assertEquals( "david", ((ImperfectField) traitHand.getName()).getCrisp() );
+        assertEquals( "franz", ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCrisp() );
+        assertEquals( "gary", ((ImperfectField) traitDrlClass.get(traitDrl, "name")).getCrisp() );
 
         checkConsistency();
     }
@@ -366,15 +369,15 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "nameValue" ) );
         System.out.println( traitDrlClass.get(traitDrl, "nameValue" ) );
 
-        assertEquals( "alan", ((IImperfectField) beanHand.getName()).getCrisp() );
-        assertEquals( "bart", ((IImperfectField) traitHand.getName()).getCrisp() );
-        assertEquals( "chris", ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCrisp() );
-        assertEquals( "donna", ((IImperfectField) traitDrlClass.get(traitDrl, "name")).getCrisp() );
+        assertEquals( "alan", ((ImperfectField) beanHand.getName()).getCrisp() );
+        assertEquals( "bart", ((ImperfectField) traitHand.getName()).getCrisp() );
+        assertEquals( "chris", ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCrisp() );
+        assertEquals( "donna", ((ImperfectField) traitDrlClass.get(traitDrl, "name")).getCrisp() );
 
-        assertEquals( 1.0, ((IDistribution) beanHand.getNameDistr()).getDegree("alan").getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitHand.getNameDistr()).getDegree("bart").getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) beanDrlClass.get(beanDrl, "nameDistr")).getDegree("chris").getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitDrlClass.get(traitDrl, "nameDistr")).getDegree("donna").getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanHand.getNameDistr()).getDegree("alan").getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitHand.getNameDistr()).getDegree("bart").getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanDrlClass.get(beanDrl, "nameDistr")).getDegree("chris").getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitDrlClass.get(traitDrl, "nameDistr")).getDegree("donna").getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -387,19 +390,19 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnString_updateName() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "updateName", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "updateName", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateName", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateName", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "updateName", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "updateName", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateName", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateName", ImperfectField.class);
 
-        IDistributionStrategies<String> builder = ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", String.class );
-        IImperfectField<String> fld1 = new ImperfectField<String>( builder, builder.parse( "philip/0.3, john/0.7" ) );
-        IImperfectField<String> fld2 = new ImperfectField<String>( builder, builder.parse( "joe/0.5, john/0.25, james/0.25") );
+        DistributionStrategies<String> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, String.class );
+        ImperfectField<String> fld1 = new ImperfectFieldImpl<String>( builder, builder.parse( "philip/0.3, john/0.7" ) );
+        ImperfectField<String> fld2 = new ImperfectFieldImpl<String>( builder, builder.parse( "joe/0.5, john/0.25, james/0.25") );
 
         beanHand.updateName( fld1 );
         traitHand.updateName( fld2 );
-        invokeUpdate( beanDrl, "name", fld1, IImperfectField.class );
-        invokeUpdate( traitDrl, "name", fld2, IImperfectField.class );
+        invokeUpdate( beanDrl, "name", fld1, ImperfectField.class );
+        invokeUpdate( traitDrl, "name", fld2, ImperfectField.class );
 
         assertNotSame( fld1, beanHand.getName() );
         assertNotSame( fld2, traitHand.getName() );
@@ -416,10 +419,10 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 1.0, traitHand.getName().getCurrent().getDegree( "joe" ).getValue(), 1e-16 );
 
-        assertEquals( 0.5, ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "philip" ).getValue(), 1e-16 );
-        assertEquals( 0.5, ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "john" ).getValue(), 1e-16 );
+        assertEquals( 0.5, ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "philip" ).getValue(), 1e-16 );
+        assertEquals( 0.5, ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "john" ).getValue(), 1e-16 );
 
-        assertEquals( 1.0, ((IImperfectField) traitDrlClass.get(traitDrl, "name")).getCurrent().getDegree( "joe" ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) traitDrlClass.get(traitDrl, "name")).getCurrent().getDegree( "joe" ).getValue(), 1e-16 );
 
         checkConsistency();
 
@@ -433,19 +436,19 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnString_updateNameDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "updateNameDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "updateNameDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateNameDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateNameDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "updateNameDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "updateNameDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateNameDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateNameDistr", Distribution.class);
 
-        IDistributionStrategies<String> builder = ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", String.class );
-        IDistribution<String> d1 = builder.parse( "philip/0.3, john/0.7" );
-        IDistribution<String> d2 = builder.parse( "joe/0.5, john/0.25, james/0.25");
+        DistributionStrategies<String> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, String.class );
+        Distribution<String> d1 = builder.parse( "philip/0.3, john/0.7" );
+        Distribution<String> d2 = builder.parse( "joe/0.5, john/0.25, james/0.25");
 
         beanHand.updateNameDistr( d1 );
         traitHand.updateNameDistr( d2 );
-        invokeUpdate( beanDrl, "nameDistr", d1, IDistribution.class );
-        invokeUpdate( traitDrl, "nameDistr", d2, IDistribution.class );
+        invokeUpdate( beanDrl, "nameDistr", d1, Distribution.class );
+        invokeUpdate( traitDrl, "nameDistr", d2, Distribution.class );
 
         assertNotSame( d1, beanHand.getNameDistr() );
         assertNotSame( d2, traitHand.getNameDistr() );
@@ -462,10 +465,10 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 1.0, traitHand.getName().getCurrent().getDegree( "joe" ).getValue(), 1e-16 );
 
-        assertEquals( 0.5, ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "philip" ).getValue(), 1e-16 );
-        assertEquals( 0.5, ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "john" ).getValue(), 1e-16 );
+        assertEquals( 0.5, ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "philip" ).getValue(), 1e-16 );
+        assertEquals( 0.5, ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "john" ).getValue(), 1e-16 );
 
-        assertEquals( 1.0, ((IImperfectField) traitDrlClass.get(traitDrl, "name")).getCurrent().getDegree( "joe" ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) traitDrlClass.get(traitDrl, "name")).getCurrent().getDegree( "joe" ).getValue(), 1e-16 );
 
         checkConsistency();
 
@@ -504,10 +507,10 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 1.0, traitHand.getName().getCurrent().getDegree( "joe" ).getValue(), 1e-16 );
 
-        assertEquals( 0.0, ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "philip" ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "john" ).getValue(), 1e-16 );
+        assertEquals( 0.0, ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "philip" ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) beanDrlClass.get(beanDrl, "name")).getCurrent().getDegree( "john" ).getValue(), 1e-16 );
 
-        assertEquals( 1.0, ((IImperfectField) traitDrlClass.get(traitDrl, "name")).getCurrent().getDegree( "joe" ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) traitDrlClass.get(traitDrl, "name")).getCurrent().getDegree( "joe" ).getValue(), 1e-16 );
 
         checkConsistency();
 
@@ -538,10 +541,10 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnBoolean_getFlag() {
 
-        checkReturnType( beanHand.getClass(), "getFlag", IImperfectField.class );
-        checkReturnType( traitHand.getClass(), "getFlag", IImperfectField.class );
-        checkReturnType( beanDrl.getClass(), "getFlag", IImperfectField.class );
-        checkReturnType( traitDrl.getClass(), "getFlag", IImperfectField.class );
+        checkReturnType( beanHand.getClass(), "getFlag", ImperfectField.class );
+        checkReturnType( traitHand.getClass(), "getFlag", ImperfectField.class );
+        checkReturnType( beanDrl.getClass(), "getFlag", ImperfectField.class );
+        checkReturnType( traitDrl.getClass(), "getFlag", ImperfectField.class );
 
         assertNotNull( beanHand.getFlag() );
         assertNotNull( traitHand.getFlag() );
@@ -553,10 +556,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "flag") );
         System.out.println( traitDrlClass.get(traitDrl, "flag") );
 
-        assertEquals( true, ((IImperfectField) beanHand.getFlag()).getCrisp() );
-        assertEquals( true, ((IImperfectField) traitHand.getFlag()).getCrisp() );
-        assertEquals( true, ((IImperfectField) beanDrlClass.get(beanDrl, "flag")).getCrisp() );
-        assertEquals( true, ((IImperfectField) traitDrlClass.get(traitDrl, "flag")).getCrisp() );
+        assertEquals( true, ((ImperfectField) beanHand.getFlag()).getCrisp() );
+        assertEquals( true, ((ImperfectField) traitHand.getFlag()).getCrisp() );
+        assertEquals( true, ((ImperfectField) beanDrlClass.get(beanDrl, "flag")).getCrisp() );
+        assertEquals( true, ((ImperfectField) traitDrlClass.get(traitDrl, "flag")).getCrisp() );
 
         checkConsistency();
 
@@ -564,10 +567,10 @@ public class ImperfectBeanFieldTest {
 
     @Test
     public void testProbabilityOnBoolean_getDistributionFlag() {
-        checkReturnType( beanHand.getClass(), "getFlagDistr", IDistribution.class );
-        checkReturnType( traitHand.getClass(), "getFlagDistr", IDistribution.class );
-        checkReturnType( beanDrl.getClass(), "getFlagDistr", IDistribution.class );
-        checkReturnType( traitDrl.getClass(), "getFlagDistr", IDistribution.class);
+        checkReturnType( beanHand.getClass(), "getFlagDistr", Distribution.class );
+        checkReturnType( traitHand.getClass(), "getFlagDistr", Distribution.class );
+        checkReturnType( beanDrl.getClass(), "getFlagDistr", Distribution.class );
+        checkReturnType( traitDrl.getClass(), "getFlagDistr", Distribution.class);
 
         assertNotNull( beanHand.getFlagDistr() );
         assertNotNull( traitHand.getFlagDistr() );
@@ -579,10 +582,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "flagDistr" ) );
         System.out.println( traitDrlClass.get(traitDrl, "flagDistr" ) );
 
-        assertEquals( 0.66, ((IDistribution) beanHand.getFlagDistr()).getDegree(true).getValue(), 1e-16 );
-        assertEquals( 0.5, ((IDistribution) traitHand.getFlagDistr()).getDegree(true).getValue(), 1e-16 );
-        assertEquals( 0.75, ((IDistribution) beanDrlClass.get(beanDrl, "flagDistr")).getDegree(true).getValue(), 1e-16 );
-        assertEquals( 0.5, ((IDistribution) traitDrlClass.get(traitDrl, "flagDistr")).getDegree(true).getValue(), 1e-16 );
+        assertEquals( 0.66, ((Distribution) beanHand.getFlagDistr()).getDegree(true).getValue(), 1e-16 );
+        assertEquals( 0.5, ((Distribution) traitHand.getFlagDistr()).getDegree(true).getValue(), 1e-16 );
+        assertEquals( 0.75, ((Distribution) beanDrlClass.get(beanDrl, "flagDistr")).getDegree(true).getValue(), 1e-16 );
+        assertEquals( 0.5, ((Distribution) traitDrlClass.get(traitDrl, "flagDistr")).getDegree(true).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -618,13 +621,13 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnBoolean_setFlag() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setFlag", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setFlag", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setFlag", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setFlag", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setFlag", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setFlag", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setFlag", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setFlag", ImperfectField.class);
 
-        IDistributionStrategies<Boolean> builder = ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", Boolean.class );
-        IImperfectField<Boolean> fld = new ImperfectField<Boolean>( builder, builder.parse( "true/0.83, bob/0.17" ) );
+        DistributionStrategies<Boolean> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, Boolean.class );
+        ImperfectField<Boolean> fld = new ImperfectFieldImpl<Boolean>( builder, builder.parse( "true/0.83, bob/0.17" ) );
 
         beanHand.setFlag( fld );
         traitHand.setFlag( fld );
@@ -641,10 +644,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "flag") );
         System.out.println( traitDrlClass.get(traitDrl, "flag") );
 
-        assertEquals( Boolean.TRUE, ((IImperfectField) beanHand.getFlag()).getCrisp() );
-        assertEquals( Boolean.TRUE, ((IImperfectField) traitHand.getFlag()).getCrisp() );
-        assertEquals( Boolean.TRUE, ((IImperfectField) beanDrlClass.get(beanDrl, "flag")).getCrisp() );
-        assertEquals( Boolean.TRUE, ((IImperfectField) traitDrlClass.get(traitDrl, "flag")).getCrisp() );
+        assertEquals( Boolean.TRUE, ((ImperfectField) beanHand.getFlag()).getCrisp() );
+        assertEquals( Boolean.TRUE, ((ImperfectField) traitHand.getFlag()).getCrisp() );
+        assertEquals( Boolean.TRUE, ((ImperfectField) beanDrlClass.get(beanDrl, "flag")).getCrisp() );
+        assertEquals( Boolean.TRUE, ((ImperfectField) traitDrlClass.get(traitDrl, "flag")).getCrisp() );
 
         assertEquals( 0.83, fld.getCurrent().getDegree( Boolean.TRUE ).getValue(), 1e-16 );
 
@@ -656,17 +659,17 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnBoolean_setFlagDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setFlagDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setFlagDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setFlagDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setFlagDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setFlagDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setFlagDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setFlagDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setFlagDistr", Distribution.class);
 
-        IDistributionStrategies<Boolean> builder = ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", Boolean.class );
+        DistributionStrategies<Boolean> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, Boolean.class );
 
-        IDistribution<Boolean> d1 = builder.parse( "true/0.4, false/0.6" );
-        IDistribution<Boolean> d2 = builder.parse( "true/0.35, false/0.65" );
-        IDistribution<Boolean> d3 = builder.parse("true/0.1, false/0.9");
-        IDistribution<Boolean> d4 = builder.parse( "true/0.8, false/0.2" );
+        Distribution<Boolean> d1 = builder.parse( "true/0.4, false/0.6" );
+        Distribution<Boolean> d2 = builder.parse( "true/0.35, false/0.65" );
+        Distribution<Boolean> d3 = builder.parse("true/0.1, false/0.9");
+        Distribution<Boolean> d4 = builder.parse( "true/0.8, false/0.2" );
 
 
         beanHand.setFlagDistr(d1);
@@ -686,10 +689,10 @@ public class ImperfectBeanFieldTest {
         assertSame( d4, traitDrlClass.get(traitDrl, "flagDistr") );
 
 
-        assertEquals( Boolean.FALSE, ((IImperfectField) beanHand.getFlag()).getCrisp() );
-        assertEquals( Boolean.FALSE, ((IImperfectField) traitHand.getFlag()).getCrisp() );
-        assertEquals( Boolean.FALSE, ((IImperfectField) beanDrlClass.get(beanDrl, "flag")).getCrisp() );
-        assertEquals( Boolean.TRUE, ((IImperfectField) traitDrlClass.get(traitDrl, "flag")).getCrisp() );
+        assertEquals( Boolean.FALSE, ((ImperfectField) beanHand.getFlag()).getCrisp() );
+        assertEquals( Boolean.FALSE, ((ImperfectField) traitHand.getFlag()).getCrisp() );
+        assertEquals( Boolean.FALSE, ((ImperfectField) beanDrlClass.get(beanDrl, "flag")).getCrisp() );
+        assertEquals( Boolean.TRUE, ((ImperfectField) traitDrlClass.get(traitDrl, "flag")).getCrisp() );
 
         checkConsistency();
     }
@@ -713,15 +716,15 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "flagValue" ) );
         System.out.println( traitDrlClass.get(traitDrl, "flagValue" ) );
 
-        assertEquals( Boolean.TRUE, ((IImperfectField) beanHand.getFlag()).getCrisp() );
-        assertEquals( Boolean.FALSE, ((IImperfectField) traitHand.getFlag()).getCrisp() );
-        assertEquals( Boolean.TRUE, ((IImperfectField) beanDrlClass.get(beanDrl, "flag")).getCrisp() );
-        assertEquals( Boolean.FALSE, ((IImperfectField) traitDrlClass.get(traitDrl, "flag")).getCrisp() );
+        assertEquals( Boolean.TRUE, ((ImperfectField) beanHand.getFlag()).getCrisp() );
+        assertEquals( Boolean.FALSE, ((ImperfectField) traitHand.getFlag()).getCrisp() );
+        assertEquals( Boolean.TRUE, ((ImperfectField) beanDrlClass.get(beanDrl, "flag")).getCrisp() );
+        assertEquals( Boolean.FALSE, ((ImperfectField) traitDrlClass.get(traitDrl, "flag")).getCrisp() );
 
-        assertEquals( 1.0, ((IDistribution) beanHand.getFlagDistr()).getDegree( Boolean.TRUE ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitHand.getFlagDistr()).getDegree( Boolean.FALSE ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) beanDrlClass.get(beanDrl, "flagDistr")).getDegree( Boolean.TRUE ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitDrlClass.get(traitDrl, "flagDistr")).getDegree( Boolean.FALSE ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanHand.getFlagDistr()).getDegree( Boolean.TRUE ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitHand.getFlagDistr()).getDegree( Boolean.FALSE ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanDrlClass.get(beanDrl, "flagDistr")).getDegree( Boolean.TRUE ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitDrlClass.get(traitDrl, "flagDistr")).getDegree( Boolean.FALSE ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -730,19 +733,19 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnBoolean_updateFlag() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "updateFlag", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "updateFlag", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateFlag", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateFlag", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "updateFlag", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "updateFlag", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateFlag", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateFlag", ImperfectField.class);
 
-        IDistributionStrategies<Boolean> builder = ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", Boolean.class );
-        IImperfectField<Boolean> fld1 = new ImperfectField<Boolean>( builder, builder.parse( "true/0.3, false/0.7" ) );
-        IImperfectField<Boolean> fld2 = new ImperfectField<Boolean>( builder, builder.parse( "true/0.75, false/0.25" ) );
+        DistributionStrategies<Boolean> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, Boolean.class );
+        ImperfectField<Boolean> fld1 = new ImperfectFieldImpl<Boolean>( builder, builder.parse( "true/0.3, false/0.7" ) );
+        ImperfectField<Boolean> fld2 = new ImperfectFieldImpl<Boolean>( builder, builder.parse( "true/0.75, false/0.25" ) );
 
         beanHand.updateFlag( fld1 );
         traitHand.updateFlag( fld2 );
-        invokeUpdate( beanDrl, "flag", fld1, IImperfectField.class );
-        invokeUpdate( traitDrl, "flag", fld2, IImperfectField.class );
+        invokeUpdate( beanDrl, "flag", fld1, ImperfectField.class );
+        invokeUpdate( traitDrl, "flag", fld2, ImperfectField.class );
 
         assertNotSame( fld1, beanHand.getFlag() );
         assertNotSame( fld2, traitHand.getFlag() );
@@ -759,10 +762,10 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 0.75, traitHand.getFlag().getCurrent().getDegree( true ).getValue(), 1e-16 );
 
-        assertEquals( 0.5625, ((IImperfectField) beanDrlClass.get(beanDrl, "flag" )).getCurrent().getDegree( true ).getValue(), 1e-16 );
-        assertEquals( 0.4375, ((IImperfectField) beanDrlClass.get(beanDrl, "flag" )).getCurrent().getDegree( false ).getValue(), 1e-16 );
+        assertEquals( 0.5625, ((ImperfectField) beanDrlClass.get(beanDrl, "flag" )).getCurrent().getDegree( true ).getValue(), 1e-16 );
+        assertEquals( 0.4375, ((ImperfectField) beanDrlClass.get(beanDrl, "flag" )).getCurrent().getDegree( false ).getValue(), 1e-16 );
 
-        assertEquals( 0.75, ((IImperfectField) traitDrlClass.get(traitDrl, "flag")).getCurrent().getDegree( true ).getValue(), 1e-16 );
+        assertEquals( 0.75, ((ImperfectField) traitDrlClass.get(traitDrl, "flag")).getCurrent().getDegree( true ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -771,19 +774,19 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnBoolean_updateFlagDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "updateFlagDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "updateFlagDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateFlagDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateFlagDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "updateFlagDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "updateFlagDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateFlagDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateFlagDistr", Distribution.class);
 
-        IDistributionStrategies<Boolean> builder = ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", Boolean.class );
-        IDistribution<Boolean> d1 = new ImperfectField<Boolean>( builder, builder.parse( "true/0.3, false/0.7" ) ).getCurrent();
-        IDistribution<Boolean> d2 = new ImperfectField<Boolean>( builder, builder.parse( "true/0.75, false/0.25" ) ).getCurrent();
+        DistributionStrategies<Boolean> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, Boolean.class );
+        Distribution<Boolean> d1 = new ImperfectFieldImpl<Boolean>( builder, builder.parse( "true/0.3, false/0.7" ) ).getCurrent();
+        Distribution<Boolean> d2 = new ImperfectFieldImpl<Boolean>( builder, builder.parse( "true/0.75, false/0.25" ) ).getCurrent();
 
         beanHand.updateFlagDistr( d1 );
         traitHand.updateFlagDistr( d2 );
-        invokeUpdate( beanDrl, "flagDistr", d1, IDistribution.class );
-        invokeUpdate( traitDrl, "flagDistr", d2, IDistribution.class );
+        invokeUpdate( beanDrl, "flagDistr", d1, Distribution.class );
+        invokeUpdate( traitDrl, "flagDistr", d2, Distribution.class );
 
         assertNotSame( d1, beanHand.getFlagDistr() );
         assertNotSame( d2, traitHand.getFlagDistr() );
@@ -800,10 +803,10 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 0.75, traitHand.getFlag().getCurrent().getDegree( true ).getValue(), 1e-16 );
 
-        assertEquals( 0.5625, ((IImperfectField) beanDrlClass.get(beanDrl, "flag" )).getCurrent().getDegree( true ).getValue(), 1e-16 );
-        assertEquals( 0.4375, ((IImperfectField) beanDrlClass.get(beanDrl, "flag" )).getCurrent().getDegree( false ).getValue(), 1e-16 );
+        assertEquals( 0.5625, ((ImperfectField) beanDrlClass.get(beanDrl, "flag" )).getCurrent().getDegree( true ).getValue(), 1e-16 );
+        assertEquals( 0.4375, ((ImperfectField) beanDrlClass.get(beanDrl, "flag" )).getCurrent().getDegree( false ).getValue(), 1e-16 );
 
-        assertEquals( 0.75, ((IImperfectField) traitDrlClass.get(traitDrl, "flag")).getCurrent().getDegree( true ).getValue(), 1e-16 );
+        assertEquals( 0.75, ((ImperfectField) traitDrlClass.get(traitDrl, "flag")).getCurrent().getDegree( true ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -841,10 +844,10 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 1.0, traitHand.getFlag().getCurrent().getDegree( false ).getValue(), 1e-16 );
 
-        assertEquals( 1.0, ((IImperfectField) beanDrlClass.get(beanDrl, "flag")).getCurrent().getDegree( true ).getValue(), 1e-16 );
-        assertEquals( 0.0, ((IImperfectField) beanDrlClass.get(beanDrl, "flag")).getCurrent().getDegree( false ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) beanDrlClass.get(beanDrl, "flag")).getCurrent().getDegree( true ).getValue(), 1e-16 );
+        assertEquals( 0.0, ((ImperfectField) beanDrlClass.get(beanDrl, "flag")).getCurrent().getDegree( false ).getValue(), 1e-16 );
 
-        assertEquals( 1.0, ((IImperfectField) traitDrlClass.get(traitDrl, "flag")).getCurrent().getDegree( false ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) traitDrlClass.get(traitDrl, "flag")).getCurrent().getDegree( false ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -861,10 +864,10 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnInteger_getAge() {
 
-        checkReturnType( beanHand.getClass(), "getAge", IImperfectField.class );
-        checkReturnType( traitHand.getClass(), "getAge", IImperfectField.class );
-        checkReturnType( beanDrl.getClass(), "getAge", IImperfectField.class );
-        checkReturnType( traitDrl.getClass(), "getAge", IImperfectField.class );
+        checkReturnType( beanHand.getClass(), "getAge", ImperfectField.class );
+        checkReturnType( traitHand.getClass(), "getAge", ImperfectField.class );
+        checkReturnType( beanDrl.getClass(), "getAge", ImperfectField.class );
+        checkReturnType( traitDrl.getClass(), "getAge", ImperfectField.class );
 
         assertNotNull( beanHand.getAge() );
         assertNotNull( traitHand.getAge() );
@@ -876,20 +879,20 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "age") );
         System.out.println( traitDrlClass.get(traitDrl, "age") );
 
-        assertEquals( 20, ((IImperfectField) beanHand.getAge()).getCrisp() );
-        assertEquals( null, ((IImperfectField) traitHand.getAge()).getCrisp() );
-        assertEquals( 20, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCrisp() );
-        assertEquals( null, ((IImperfectField) traitDrlClass.get(traitDrl, "age")).getCrisp() );
+        assertEquals( 20, ((ImperfectField) beanHand.getAge()).getCrisp() );
+        assertEquals( null, ((ImperfectField) traitHand.getAge()).getCrisp() );
+        assertEquals( 20, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCrisp() );
+        assertEquals( null, ((ImperfectField) traitDrlClass.get(traitDrl, "age")).getCrisp() );
 
         checkConsistency();
     }
 
     @Test
     public void testProbabilityOnInteger_getDistributionAge() {
-        checkReturnType( beanHand.getClass(), "getAgeDistr", IDistribution.class );
-        checkReturnType( traitHand.getClass(), "getAgeDistr", IDistribution.class );
-        checkReturnType( beanDrl.getClass(), "getAgeDistr", IDistribution.class );
-        checkReturnType( traitDrl.getClass(), "getAgeDistr", IDistribution.class);
+        checkReturnType( beanHand.getClass(), "getAgeDistr", Distribution.class );
+        checkReturnType( traitHand.getClass(), "getAgeDistr", Distribution.class );
+        checkReturnType( beanDrl.getClass(), "getAgeDistr", Distribution.class );
+        checkReturnType( traitDrl.getClass(), "getAgeDistr", Distribution.class);
 
         assertNotNull( beanHand.getAgeDistr() );
         assertNotNull( traitHand.getAgeDistr() );
@@ -901,10 +904,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "ageDistr" ) );
         System.out.println( traitDrlClass.get(traitDrl, "ageDistr" ) );
 
-        assertEquals( 0.15, ((IDistribution) beanHand.getAgeDistr()).getDegree(19).getValue(), 1e-2 );
-        assertEquals( 0.0, ((IDistribution) traitHand.getAgeDistr()).getDegree(23).getValue(), 1e-16 );
-        assertEquals( 0.3, ((IDistribution) beanDrlClass.get(beanDrl, "ageDistr")).getDegree(18).getValue(), 2e-2 );
-        assertEquals( 0.0, ((IDistribution) traitDrlClass.get(traitDrl, "ageDistr")).getDegree(23).getValue(), 1e-16 );
+        assertEquals( 0.15, ((Distribution) beanHand.getAgeDistr()).getDegree(19).getValue(), 1e-2 );
+        assertEquals( 0.0, ((Distribution) traitHand.getAgeDistr()).getDegree(23).getValue(), 1e-16 );
+        assertEquals( 0.3, ((Distribution) beanDrlClass.get(beanDrl, "ageDistr")).getDegree(18).getValue(), 2e-2 );
+        assertEquals( 0.0, ((Distribution) traitDrlClass.get(traitDrl, "ageDistr")).getDegree(23).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -941,13 +944,13 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnInteger_setAge() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setAge", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setAge", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setAge", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setAge", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setAge", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setAge", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setAge", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setAge", ImperfectField.class);
 
-        IDistributionStrategies<Integer> builder = ChanceStrategyFactory.buildStrategies( "probability", "dirichlet", "simple", Integer.class );
-        IImperfectField<Integer> fld = new ImperfectField<Integer>( builder, builder.parse( "18/0.4, 20/0.6" ) );
+        DistributionStrategies<Integer> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DIRICHLET, DegreeType.SIMPLE, Integer.class );
+        ImperfectField<Integer> fld = new ImperfectFieldImpl<Integer>( builder, builder.parse( "18/0.4, 20/0.6" ) );
 
         beanHand.setAge( fld );
         traitHand.setAge( fld );
@@ -964,10 +967,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "age") );
         System.out.println( traitDrlClass.get(traitDrl, "age") );
 
-        assertEquals( 20, ((IImperfectField) beanHand.getAge()).getCrisp() );
-        assertEquals( 20, ((IImperfectField) traitHand.getAge()).getCrisp() );
-        assertEquals( 20, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCrisp() );
-        assertEquals( 20, ((IImperfectField) traitDrlClass.get(traitDrl, "age")).getCrisp() );
+        assertEquals( 20, ((ImperfectField) beanHand.getAge()).getCrisp() );
+        assertEquals( 20, ((ImperfectField) traitHand.getAge()).getCrisp() );
+        assertEquals( 20, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCrisp() );
+        assertEquals( 20, ((ImperfectField) traitDrlClass.get(traitDrl, "age")).getCrisp() );
 
         assertEquals( 0.4, fld.getCurrent().getDegree( 18 ).getValue(), 1e-16 );
         assertEquals( 0.6, fld.getCurrent().getDegree( 20 ).getValue(), 1e-16 );
@@ -981,17 +984,17 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnInteger_setAgeDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setAgeDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setAgeDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setAgeDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setAgeDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setAgeDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setAgeDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setAgeDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setAgeDistr", Distribution.class);
 
-        IDistributionStrategies<Integer> builder = ChanceStrategyFactory.buildStrategies( "probability", "dirichlet", "simple", Integer.class );
+        DistributionStrategies<Integer> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DIRICHLET, DegreeType.SIMPLE, Integer.class );
 
-        IDistribution<Integer> d1 = builder.parse( "18/0.4, 20/0.6" );
-        IDistribution<Integer> d2 = builder.parse( "19/0.35, 21/0.65" );
-        IDistribution<Integer> d3 = builder.parse("20/0.1, 22/0.9");
-        IDistribution<Integer> d4 = builder.parse( "21/0.8, 23/0.2" );
+        Distribution<Integer> d1 = builder.parse( "18/0.4, 20/0.6" );
+        Distribution<Integer> d2 = builder.parse( "19/0.35, 21/0.65" );
+        Distribution<Integer> d3 = builder.parse("20/0.1, 22/0.9");
+        Distribution<Integer> d4 = builder.parse( "21/0.8, 23/0.2" );
 
 
         beanHand.setAgeDistr(d1);
@@ -1011,10 +1014,10 @@ public class ImperfectBeanFieldTest {
         assertSame( d4, traitDrlClass.get(traitDrl, "ageDistr") );
 
 
-        assertEquals( 20, ((IImperfectField) beanHand.getAge()).getCrisp() );
-        assertEquals( 21, ((IImperfectField) traitHand.getAge()).getCrisp() );
-        assertEquals( 22, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCrisp() );
-        assertEquals( 21, ((IImperfectField) traitDrlClass.get(traitDrl, "age")).getCrisp() );
+        assertEquals( 20, ((ImperfectField) beanHand.getAge()).getCrisp() );
+        assertEquals( 21, ((ImperfectField) traitHand.getAge()).getCrisp() );
+        assertEquals( 22, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCrisp() );
+        assertEquals( 21, ((ImperfectField) traitDrlClass.get(traitDrl, "age")).getCrisp() );
 
         checkConsistency();
     }
@@ -1038,15 +1041,15 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "ageValue" ) );
         System.out.println( traitDrlClass.get(traitDrl, "ageValue" ) );
 
-        assertEquals( 33, ((IImperfectField) beanHand.getAge()).getCrisp() );
-        assertEquals( 26, ((IImperfectField) traitHand.getAge()).getCrisp() );
-        assertEquals( 14, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCrisp() );
-        assertEquals( 18, ((IImperfectField) traitDrlClass.get(traitDrl, "age")).getCrisp() );
+        assertEquals( 33, ((ImperfectField) beanHand.getAge()).getCrisp() );
+        assertEquals( 26, ((ImperfectField) traitHand.getAge()).getCrisp() );
+        assertEquals( 14, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCrisp() );
+        assertEquals( 18, ((ImperfectField) traitDrlClass.get(traitDrl, "age")).getCrisp() );
 
-        assertEquals( 1.0, ((IDistribution) beanHand.getAgeDistr()).getDegree( 33 ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitHand.getAgeDistr()).getDegree( 26 ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) beanDrlClass.get(beanDrl, "ageDistr")).getDegree( 14 ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitDrlClass.get(traitDrl, "ageDistr")).getDegree( 18 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanHand.getAgeDistr()).getDegree( 33 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitHand.getAgeDistr()).getDegree( 26 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanDrlClass.get(beanDrl, "ageDistr")).getDegree( 14 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitDrlClass.get(traitDrl, "ageDistr")).getDegree( 18 ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -1059,19 +1062,19 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnInteger_updateAge() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "updateAge", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "updateAge", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateAge", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateAge", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "updateAge", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "updateAge", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateAge", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateAge", ImperfectField.class);
 
-        IDistributionStrategies<Integer> builder = ChanceStrategyFactory.buildStrategies( "probability", "dirichlet", "simple", Integer.class );
-        IImperfectField<Integer> fld1 = new ImperfectField<Integer>( builder, builder.parse( "18/0.3, 19/0.7" ) );
-        IImperfectField<Integer> fld2 = new ImperfectField<Integer>( builder, builder.parse( "16/0.5, 19/0.25, 23/0.25") );
+        DistributionStrategies<Integer> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DIRICHLET, DegreeType.SIMPLE, Integer.class );
+        ImperfectField<Integer> fld1 = new ImperfectFieldImpl<Integer>( builder, builder.parse( "18/0.3, 19/0.7" ) );
+        ImperfectField<Integer> fld2 = new ImperfectFieldImpl<Integer>( builder, builder.parse( "16/0.5, 19/0.25, 23/0.25") );
 
         beanHand.updateAge( fld1 );
         traitHand.updateAge( fld2 );
-        invokeUpdate( beanDrl, "age", fld1,IImperfectField.class );
-        invokeUpdate( traitDrl, "age", fld2, IImperfectField.class );
+        invokeUpdate( beanDrl, "age", fld1,ImperfectField.class );
+        invokeUpdate( traitDrl, "age", fld2, ImperfectField.class );
 
         assertNotSame( fld1, beanHand.getAge() );
         assertNotSame( fld2, traitHand.getAge() );
@@ -1088,10 +1091,10 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 0.25, traitHand.getAge().getCurrent().getDegree( 23 ).getValue(), 1e-2 );
 
-        assertEquals( 0.66, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 19 ).getValue(), 1e-2 );
-        assertEquals( 0.30, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 18 ).getValue(), 1e-2 );
+        assertEquals( 0.66, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 19 ).getValue(), 1e-2 );
+        assertEquals( 0.30, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 18 ).getValue(), 1e-2 );
 
-        assertEquals( 0.25, ((IImperfectField) traitDrlClass.get(traitDrl, "age")).getCurrent().getDegree( 23 ).getValue(), 1e-2 );
+        assertEquals( 0.25, ((ImperfectField) traitDrlClass.get(traitDrl, "age")).getCurrent().getDegree( 23 ).getValue(), 1e-2 );
 
         checkConsistency();
     }
@@ -1104,19 +1107,19 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnInteger_updateAgeDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "updateAgeDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "updateAgeDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateAgeDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateAgeDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "updateAgeDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "updateAgeDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateAgeDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateAgeDistr", Distribution.class);
 
-        IDistributionStrategies<Integer> builder = ChanceStrategyFactory.buildStrategies( "probability", "dirichlet", "simple", Integer.class );
-        IDistribution<Integer> d1 = builder.parse( "18/0.3, 19/0.7" );
-        IDistribution<Integer> d2 = builder.parse( "16/0.5, 19/0.25, 23/0.25");
+        DistributionStrategies<Integer> builder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DIRICHLET, DegreeType.SIMPLE, Integer.class );
+        Distribution<Integer> d1 = builder.parse( "18/0.3, 19/0.7" );
+        Distribution<Integer> d2 = builder.parse( "16/0.5, 19/0.25, 23/0.25");
 
         beanHand.updateAgeDistr( d1 );
         traitHand.updateAgeDistr( d2 );
-        invokeUpdate( beanDrl, "ageDistr", d1, IDistribution.class );
-        invokeUpdate( traitDrl, "ageDistr", d2, IDistribution.class );
+        invokeUpdate( beanDrl, "ageDistr", d1, Distribution.class );
+        invokeUpdate( traitDrl, "ageDistr", d2, Distribution.class );
 
         assertNotSame( d1, beanHand.getAgeDistr() );
         assertNotSame( d2, traitHand.getAgeDistr() );
@@ -1133,10 +1136,10 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 0.25, traitHand.getAge().getCurrent().getDegree( 23 ).getValue(), 1e-2 );
 
-        assertEquals( 0.66, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 19 ).getValue(), 1e-2 );
-        assertEquals( 0.30, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 18 ).getValue(), 1e-2 );
+        assertEquals( 0.66, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 19 ).getValue(), 1e-2 );
+        assertEquals( 0.30, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 18 ).getValue(), 1e-2 );
 
-        assertEquals( 0.25, ((IImperfectField) traitDrlClass.get(traitDrl, "age")).getCurrent().getDegree( 23 ).getValue(), 1e-2 );
+        assertEquals( 0.25, ((ImperfectField) traitDrlClass.get(traitDrl, "age")).getCurrent().getDegree( 23 ).getValue(), 1e-2 );
 
         checkConsistency();
     }
@@ -1174,10 +1177,10 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 1.0, traitHand.getAge().getCurrent().getDegree( 23 ).getValue(), 1e-16 );
 
-        assertEquals( 0.94, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 19 ).getValue(), 1e-2 );
-        assertEquals( 0.02, ((IImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 18 ).getValue(), 1e-2 );
+        assertEquals( 0.94, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 19 ).getValue(), 1e-2 );
+        assertEquals( 0.02, ((ImperfectField) beanDrlClass.get(beanDrl, "age")).getCurrent().getDegree( 18 ).getValue(), 1e-2 );
 
-        assertEquals( 1.0, ((IImperfectField) traitDrlClass.get(traitDrl, "age")).getCurrent().getDegree( 23 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) traitDrlClass.get(traitDrl, "age")).getCurrent().getDegree( 23 ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -1214,10 +1217,10 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnCheese_getLikes() {
 
-        checkReturnType( beanHand.getClass(), "getLikes", IImperfectField.class );
-        checkReturnType( traitHand.getClass(), "getLikes", IImperfectField.class );
-        checkReturnType( beanDrl.getClass(), "getLikes", IImperfectField.class );
-        checkReturnType( traitDrl.getClass(), "getLikes", IImperfectField.class );
+        checkReturnType( beanHand.getClass(), "getLikes", ImperfectField.class );
+        checkReturnType( traitHand.getClass(), "getLikes", ImperfectField.class );
+        checkReturnType( beanDrl.getClass(), "getLikes", ImperfectField.class );
+        checkReturnType( traitDrl.getClass(), "getLikes", ImperfectField.class );
 
         assertNotNull( beanHand.getLikes() );
         assertNotNull( traitHand.getLikes() );
@@ -1229,20 +1232,20 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "likes") );
         System.out.println( traitDrlClass.get(traitDrl, "likes") );
 
-        assertEquals( javaCheddar, ((IImperfectField) beanHand.getLikes()).getCrisp() );
-        assertEquals( null, ((IImperfectField) traitHand.getLikes()).getCrisp() );
-        assertEquals( drlCheddar, ((IImperfectField) beanDrlClass.get(beanDrl, "likes")).getCrisp() );
-        assertEquals( null, ((IImperfectField) traitDrlClass.get(traitDrl, "likes")).getCrisp() );
+        assertEquals( javaCheddar, ((ImperfectField) beanHand.getLikes()).getCrisp() );
+        assertEquals( null, ((ImperfectField) traitHand.getLikes()).getCrisp() );
+        assertEquals( drlCheddar, ((ImperfectField) beanDrlClass.get(beanDrl, "likes")).getCrisp() );
+        assertEquals( null, ((ImperfectField) traitDrlClass.get(traitDrl, "likes")).getCrisp() );
 
         checkConsistency();
     }
 
     @Test
     public void testProbabilityOnCheese_getDistributionLikes() {
-        checkReturnType( beanHand.getClass(), "getLikesDistr", IDistribution.class );
-        checkReturnType( traitHand.getClass(), "getLikesDistr", IDistribution.class );
-        checkReturnType( beanDrl.getClass(), "getLikesDistr", IDistribution.class );
-        checkReturnType( traitDrl.getClass(), "getLikesDistr", IDistribution.class);
+        checkReturnType( beanHand.getClass(), "getLikesDistr", Distribution.class );
+        checkReturnType( traitHand.getClass(), "getLikesDistr", Distribution.class );
+        checkReturnType( beanDrl.getClass(), "getLikesDistr", Distribution.class );
+        checkReturnType( traitDrl.getClass(), "getLikesDistr", Distribution.class);
 
         assertNotNull( beanHand.getLikesDistr() );
         assertNotNull( traitHand.getLikesDistr() );
@@ -1254,10 +1257,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "likesDistr" ) );
         System.out.println( traitDrlClass.get(traitDrl, "likesDistr" ) );
 
-        assertEquals( 0.6, ((IDistribution) beanHand.getLikesDistr()).getDegree( javaCheddar ).getValue(), 1e-16 );
-        assertEquals( 0.0, ((IDistribution) traitHand.getLikesDistr()).getDegree( javaCheddar ).getValue(), 1e-16 );
-        assertEquals( 0.6, ((IDistribution) beanDrlClass.get(beanDrl, "likesDistr")).getDegree( drlCheddar ).getValue(), 1e-16 );
-        assertEquals( 0.0, ((IDistribution) traitDrlClass.get(traitDrl, "likesDistr")).getDegree( drlCheddar ).getValue(), 1e-16 );
+        assertEquals( 0.6, ((Distribution) beanHand.getLikesDistr()).getDegree( javaCheddar ).getValue(), 1e-16 );
+        assertEquals( 0.0, ((Distribution) traitHand.getLikesDistr()).getDegree( javaCheddar ).getValue(), 1e-16 );
+        assertEquals( 0.6, ((Distribution) beanDrlClass.get(beanDrl, "likesDistr")).getDegree( drlCheddar ).getValue(), 1e-16 );
+        assertEquals( 0.0, ((Distribution) traitDrlClass.get(traitDrl, "likesDistr")).getDegree( drlCheddar ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -1295,16 +1298,16 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnCheese_setLikes() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setLikes", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setLikes", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setLikes", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setLikes", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setLikes", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setLikes", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setLikes", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setLikes", ImperfectField.class);
 
-        IDistributionStrategies javaBuilder = ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", ImpBean.Cheese.class );
-        IImperfectField fld1 = new ImperfectField( javaBuilder, javaBuilder.parse( "cheddar/0.6" ) );
+        DistributionStrategies javaBuilder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.BASIC, DegreeType.SIMPLE, ImpBean.Cheese.class );
+        ImperfectField fld1 = new ImperfectFieldImpl( javaBuilder, javaBuilder.parse( "cheddar/0.6" ) );
 
-        IDistributionStrategies drlBuilder = ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", drlCheese.getFactClass() );
-        IImperfectField fld2 = new ImperfectField( drlBuilder, drlBuilder.parse( "cheddar/0.6" ) );
+        DistributionStrategies drlBuilder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.BASIC, DegreeType.SIMPLE, drlCheese.getFactClass() );
+        ImperfectField fld2 = new ImperfectFieldImpl( drlBuilder, drlBuilder.parse( "cheddar/0.6" ) );
 
 
         beanHand.setLikes( fld1 );
@@ -1322,10 +1325,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "likes") );
         System.out.println( traitDrlClass.get(traitDrl, "likes") );
 
-        assertEquals( javaCheddar, ((IImperfectField) beanHand.getLikes()).getCrisp() );
-        assertEquals( javaCheddar, ((IImperfectField) traitHand.getLikes()).getCrisp() );
-        assertEquals( drlCheddar, ((IImperfectField) beanDrlClass.get(beanDrl, "likes")).getCrisp() );
-        assertEquals( drlCheddar, ((IImperfectField) traitDrlClass.get(traitDrl, "likes")).getCrisp() );
+        assertEquals( javaCheddar, ((ImperfectField) beanHand.getLikes()).getCrisp() );
+        assertEquals( javaCheddar, ((ImperfectField) traitHand.getLikes()).getCrisp() );
+        assertEquals( drlCheddar, ((ImperfectField) beanDrlClass.get(beanDrl, "likes")).getCrisp() );
+        assertEquals( drlCheddar, ((ImperfectField) traitDrlClass.get(traitDrl, "likes")).getCrisp() );
 
         assertEquals( 0.6, fld1.getCurrent().getDegree( javaCheddar ).getValue(), 1e-16 );
         assertEquals( 0.6, fld2.getCurrent().getDegree( drlCheddar ).getValue(), 1e-16 );
@@ -1338,19 +1341,19 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnCheese_setLikesDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setLikesDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setLikesDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setLikesDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setLikesDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setLikesDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setLikesDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setLikesDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setLikesDistr", Distribution.class);
 
-        IDistributionStrategies javaBuilder = ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", javaCheese );
+        DistributionStrategies javaBuilder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.BASIC, DegreeType.SIMPLE, javaCheese );
 
-        IDistributionStrategies drlBuilder = ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", drlCheese.getFactClass() );
+        DistributionStrategies drlBuilder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.BASIC, DegreeType.SIMPLE, drlCheese.getFactClass() );
 
-        IDistribution d1 = javaBuilder.parse( "cheddar/0.6" );
-        IDistribution d2 = javaBuilder.parse( "mozzarella/0.3" );
-        IDistribution d3 = drlBuilder.parse( "brie/0.8" );
-        IDistribution d4 = drlBuilder.parse( "stilton/0.51" );
+        Distribution d1 = javaBuilder.parse( "cheddar/0.6" );
+        Distribution d2 = javaBuilder.parse( "mozzarella/0.3" );
+        Distribution d3 = drlBuilder.parse( "brie/0.8" );
+        Distribution d4 = drlBuilder.parse( "stilton/0.51" );
 
 
         beanHand.setLikesDistr(d1);
@@ -1372,10 +1375,10 @@ public class ImperfectBeanFieldTest {
         Object c3 = newDrlCheese( "brie" );
         Object c4 = newDrlCheese( "stilton" );
 
-        assertEquals( new ImpBean.Cheese( "cheddar" ), ((IImperfectField) beanHand.getLikes()).getCrisp() );
-        assertEquals( new ImpBean.Cheese( "mozzarella" ), ((IImperfectField) traitHand.getLikes()).getCrisp() );
-        assertEquals( c3, ((IImperfectField) beanDrlClass.get(beanDrl, "likes")).getCrisp() );
-        assertEquals( c4, ((IImperfectField) traitDrlClass.get(traitDrl, "likes")).getCrisp() );
+        assertEquals( new ImpBean.Cheese( "cheddar" ), ((ImperfectField) beanHand.getLikes()).getCrisp() );
+        assertEquals( new ImpBean.Cheese( "mozzarella" ), ((ImperfectField) traitHand.getLikes()).getCrisp() );
+        assertEquals( c3, ((ImperfectField) beanDrlClass.get(beanDrl, "likes")).getCrisp() );
+        assertEquals( c4, ((ImperfectField) traitDrlClass.get(traitDrl, "likes")).getCrisp() );
 
         checkConsistency();
     }
@@ -1404,15 +1407,15 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "likesValue" ) );
         System.out.println( traitDrlClass.get(traitDrl, "likesValue" ) );
 
-        assertEquals( c1, ((IImperfectField) beanHand.getLikes()).getCrisp() );
-        assertEquals( c2, ((IImperfectField) traitHand.getLikes()).getCrisp() );
-        assertEquals( c3, ((IImperfectField) beanDrlClass.get(beanDrl, "likes")).getCrisp() );
-        assertEquals( c4, ((IImperfectField) traitDrlClass.get(traitDrl, "likes")).getCrisp() );
+        assertEquals( c1, ((ImperfectField) beanHand.getLikes()).getCrisp() );
+        assertEquals( c2, ((ImperfectField) traitHand.getLikes()).getCrisp() );
+        assertEquals( c3, ((ImperfectField) beanDrlClass.get(beanDrl, "likes")).getCrisp() );
+        assertEquals( c4, ((ImperfectField) traitDrlClass.get(traitDrl, "likes")).getCrisp() );
 
-        assertEquals( 1.0, ((IDistribution) beanHand.getLikesDistr()).getDegree( c1 ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitHand.getLikesDistr()).getDegree( c2 ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) beanDrlClass.get(beanDrl, "likesDistr")).getDegree( c3 ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) traitDrlClass.get(traitDrl, "likesDistr")).getDegree( c4 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanHand.getLikesDistr()).getDegree( c1 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitHand.getLikesDistr()).getDegree( c2 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanDrlClass.get(beanDrl, "likesDistr")).getDegree( c3 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) traitDrlClass.get(traitDrl, "likesDistr")).getDegree( c4 ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -1425,22 +1428,22 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnCheese_updateLikes() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "updateLikes", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "updateLikes", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateLikes", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateLikes", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "updateLikes", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "updateLikes", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateLikes", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateLikes", ImperfectField.class);
 
 
-        IDistributionStrategies javaBuilder = ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", ImpBean.Cheese.class );
-        IImperfectField fld1 = new ImperfectField( javaBuilder, javaBuilder.parse( "cheddar/0.5" ) );
+        DistributionStrategies javaBuilder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.BASIC, DegreeType.SIMPLE, ImpBean.Cheese.class );
+        ImperfectField fld1 = new ImperfectFieldImpl( javaBuilder, javaBuilder.parse( "cheddar/0.5" ) );
 
-        IDistributionStrategies drlBuilder = ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", drlCheese.getFactClass() );
-        IImperfectField fld2 = new ImperfectField( drlBuilder, drlBuilder.parse( "stilton/0.8" ) );
+        DistributionStrategies drlBuilder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.BASIC, DegreeType.SIMPLE, drlCheese.getFactClass() );
+        ImperfectField fld2 = new ImperfectFieldImpl( drlBuilder, drlBuilder.parse( "stilton/0.8" ) );
 
         beanHand.updateLikes( fld1 );
         traitHand.updateLikes( fld1 );
-        invokeUpdate( beanDrl, "likes", fld2, IImperfectField.class );
-        invokeUpdate( traitDrl, "likes", fld2, IImperfectField.class );
+        invokeUpdate( beanDrl, "likes", fld2, ImperfectField.class );
+        invokeUpdate( traitDrl, "likes", fld2, ImperfectField.class );
 
         assertNotSame( fld1, beanHand.getLikes() );
         assertNotSame( fld2, traitHand.getLikes() );
@@ -1456,9 +1459,9 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 0.5, traitHand.getLikes().getCurrent().getDegree( new ImpBean.Cheese("cheddar") ).getValue(), 1e-16 );
 
-        assertEquals( 0.12, ((IImperfectField) beanDrlClass.get(beanDrl, "likes")).getCurrent().getDegree( newDrlCheese( "cheddar" ) ).getValue(), 1e-16 );
+        assertEquals( 0.12, ((ImperfectField) beanDrlClass.get(beanDrl, "likes")).getCurrent().getDegree( newDrlCheese( "cheddar" ) ).getValue(), 1e-16 );
 
-        assertEquals( 0.2, ((IImperfectField) traitDrlClass.get(traitDrl, "likes")).getCurrent().getDegree( newDrlCheese( "cheddar" ) ).getValue(), 1e-16 );
+        assertEquals( 0.2, ((ImperfectField) traitDrlClass.get(traitDrl, "likes")).getCurrent().getDegree( newDrlCheese( "cheddar" ) ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -1471,22 +1474,22 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testProbabilityOnCheese_updateLikesDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "updateLikesDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "updateLikesDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateLikesDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateLikesDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "updateLikesDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "updateLikesDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "updateLikesDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "updateLikesDistr", Distribution.class);
 
-        IDistributionStrategies javaBuilder = ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", ImpBean.Cheese.class );
-        IDistribution d1 = javaBuilder.parse( "cheddar/0.5" );
+        DistributionStrategies javaBuilder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.BASIC, DegreeType.SIMPLE, ImpBean.Cheese.class );
+        Distribution d1 = javaBuilder.parse( "cheddar/0.5" );
 
-        IDistributionStrategies drlBuilder = ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", drlCheese.getFactClass() );
-        IDistribution d2 = drlBuilder.parse( "stilton/0.8" );
+        DistributionStrategies drlBuilder = ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.BASIC, DegreeType.SIMPLE, drlCheese.getFactClass() );
+        Distribution d2 = drlBuilder.parse( "stilton/0.8" );
 
 
         beanHand.updateLikesDistr( d1 );
         traitHand.updateLikesDistr( d1 );
-        invokeUpdate( beanDrl, "likesDistr", d2, IDistribution.class );
-        invokeUpdate( traitDrl, "likesDistr", d2, IDistribution.class );
+        invokeUpdate( beanDrl, "likesDistr", d2, Distribution.class );
+        invokeUpdate( traitDrl, "likesDistr", d2, Distribution.class );
 
         assertNotSame( d1, beanHand.getLikesDistr() );
         assertNotSame( d1, traitHand.getLikesDistr() );
@@ -1502,9 +1505,9 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 0.5, traitHand.getLikes().getCurrent().getDegree( new ImpBean.Cheese("stilton") ).getValue(), 1e-16 );
 
-        assertEquals( 0.88, ((IImperfectField) beanDrlClass.get(beanDrl, "likes")).getCurrent().getDegree( newDrlCheese( "stilton" ) ).getValue(), 1e-16 );
+        assertEquals( 0.88, ((ImperfectField) beanDrlClass.get(beanDrl, "likes")).getCurrent().getDegree( newDrlCheese( "stilton" ) ).getValue(), 1e-16 );
 
-        assertEquals( 0.8, ((IImperfectField) traitDrlClass.get(traitDrl, "likes")).getCurrent().getDegree( newDrlCheese( "stilton" ) ).getValue(), 1e-16 );
+        assertEquals( 0.8, ((ImperfectField) traitDrlClass.get(traitDrl, "likes")).getCurrent().getDegree( newDrlCheese( "stilton" ) ).getValue(), 1e-16 );
 
         checkConsistency();
     }
@@ -1542,9 +1545,9 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 1.0, traitHand.getLikes().getCurrent().getDegree( c1 ).getValue(), 1e-16 );
 
-        assertEquals( 1.0, ((IImperfectField) beanDrlClass.get(beanDrl, "likes")).getCurrent().getDegree( c2 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) beanDrlClass.get(beanDrl, "likes")).getCurrent().getDegree( c2 ).getValue(), 1e-16 );
 
-        assertEquals( 1.0, ((IImperfectField) traitDrlClass.get(traitDrl, "likes")).getCurrent().getDegree( c2 ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) traitDrlClass.get(traitDrl, "likes")).getCurrent().getDegree( c2 ).getValue(), 1e-16 );
 
         assertEquals( c1, beanHand.getLikesValue() );
         assertEquals( c1, traitHand.getLikesValue() );
@@ -1599,11 +1602,11 @@ public class ImperfectBeanFieldTest {
         assertEquals( Weight.FAT, traitHand.getBodyValue() );
 
         assertEquals( 65.0, ( (Double) beanDrlClass.get( beanDrl, "weight" ) ), 1e-16 );
-        assertEquals( 0.65, ( (IDistribution) beanDrlClass.get( beanDrl, "bodyDistr" ) ).getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 0.65, ( (Distribution) beanDrlClass.get( beanDrl, "bodyDistr" ) ).getDegree( Weight.FAT ).getValue(), 1e-16 );
         assertEquals( Weight.FAT, beanDrlClass.get( beanDrl, "bodyValue" ) );
 
         assertEquals( 65.0, ( (Double) traitDrlClass.get( traitDrl, "weight" ) ), 1e-16 );
-        assertEquals( 0.65, ( (IDistribution) traitDrlClass.get( traitDrl, "bodyDistr" ) ).getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 0.65, ( (Distribution) traitDrlClass.get( traitDrl, "bodyDistr" ) ).getDegree( Weight.FAT ).getValue(), 1e-16 );
         assertEquals( Weight.FAT, traitDrlClass.get( traitDrl, "bodyValue" ) );
 
         checkConsistency();
@@ -1642,11 +1645,11 @@ public class ImperfectBeanFieldTest {
         assertEquals( Weight.FAT, traitHand.getBodyValue() );
 
         assertEquals( 68.0, (Double) beanDrlClass.get( beanDrl, "weight" ), 1e-16 );
-        assertEquals( 0.68, ( (IDistribution<Weight>) beanDrlClass.get( beanDrl, "bodyDistr" ) ).getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 0.68, ( (Distribution<Weight>) beanDrlClass.get( beanDrl, "bodyDistr" ) ).getDegree( Weight.FAT ).getValue(), 1e-16 );
         assertEquals( Weight.FAT, beanDrlClass.get( beanDrl, "bodyValue" ) );
 
         assertEquals( 68.0, (Double) traitDrlClass.get( traitDrl, "weight" ), 1e-16 );
-        assertEquals( 0.68, ( (IDistribution<Weight>) traitDrlClass.get( traitDrl, "bodyDistr" ) ).getDegree(Weight.FAT).getValue(), 1e-16 );
+        assertEquals( 0.68, ( (Distribution<Weight>) traitDrlClass.get( traitDrl, "bodyDistr" ) ).getDegree(Weight.FAT).getValue(), 1e-16 );
         assertEquals( Weight.FAT, traitDrlClass.get( traitDrl, "bodyValue" ) );
 
         checkConsistency();
@@ -1656,10 +1659,10 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnDouble_getBody() {
 
-        checkReturnType( beanHand.getClass(), "getBody", IImperfectField.class );
-        checkReturnType( traitHand.getClass(), "getBody", IImperfectField.class );
-        checkReturnType( beanDrl.getClass(), "getBody", IImperfectField.class );
-        checkReturnType( traitDrl.getClass(), "getBody", IImperfectField.class );
+        checkReturnType( beanHand.getClass(), "getBody", ImperfectField.class );
+        checkReturnType( traitHand.getClass(), "getBody", ImperfectField.class );
+        checkReturnType( beanDrl.getClass(), "getBody", ImperfectField.class );
+        checkReturnType( traitDrl.getClass(), "getBody", ImperfectField.class );
 
         assertNotNull( beanHand.getBody() );
         assertNotNull( traitHand.getBody() );
@@ -1671,15 +1674,15 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "body") );
         System.out.println( traitDrlClass.get(traitDrl, "body") );
 
-        assertEquals( Weight.FAT, ((IImperfectField) beanHand.getBody()).getCrisp() );
-        assertEquals( Weight.FAT, ((IImperfectField) traitHand.getBody()).getCrisp() );
-        assertEquals( Weight.FAT, ((IImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
-        assertEquals( Weight.FAT, ((IImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
+        assertEquals( Weight.FAT, ((ImperfectField) beanHand.getBody()).getCrisp() );
+        assertEquals( Weight.FAT, ((ImperfectField) traitHand.getBody()).getCrisp() );
+        assertEquals( Weight.FAT, ((ImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
+        assertEquals( Weight.FAT, ((ImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
 
         assertEquals( 0.35, beanHand.getBody().getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
         assertEquals( 0.35, traitHand.getBody().getCurrent().getDegree( Weight.SLIM ).getValue() );
-        assertEquals( 0.35, ((IImperfectField) beanDrlClass.get(beanDrl, "body")).getCurrent().getDegree( Weight.SLIM ).getValue() );
-        assertEquals( 0.35, ((IImperfectField) traitDrlClass.get(traitDrl, "body")).getCurrent().getDegree( Weight.SLIM ).getValue() );
+        assertEquals( 0.35, ((ImperfectField) beanDrlClass.get(beanDrl, "body")).getCurrent().getDegree( Weight.SLIM ).getValue() );
+        assertEquals( 0.35, ((ImperfectField) traitDrlClass.get(traitDrl, "body")).getCurrent().getDegree( Weight.SLIM ).getValue() );
 
         checkConsistency();
 
@@ -1688,10 +1691,10 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnDouble_getBodyDistr() {
 
-        checkReturnType( beanHand.getClass(), "getBodyDistr", IDistribution.class );
-        checkReturnType( traitHand.getClass(), "getBodyDistr", IDistribution.class );
-        checkReturnType( beanDrl.getClass(), "getBodyDistr", IDistribution.class );
-        checkReturnType( traitDrl.getClass(), "getBodyDistr", IDistribution.class );
+        checkReturnType( beanHand.getClass(), "getBodyDistr", Distribution.class );
+        checkReturnType( traitHand.getClass(), "getBodyDistr", Distribution.class );
+        checkReturnType( beanDrl.getClass(), "getBodyDistr", Distribution.class );
+        checkReturnType( traitDrl.getClass(), "getBodyDistr", Distribution.class );
 
         assertNotNull( beanHand.getBodyDistr() );
         assertNotNull( traitHand.getBodyDistr() );
@@ -1705,8 +1708,8 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 0.35, beanHand.getBodyDistr().getDegree( Weight.SLIM ).getValue(), 1e-16 );
         assertEquals( 0.35, traitHand.getBodyDistr().getDegree( Weight.SLIM ).getValue() );
-        assertEquals( 0.35, ((IDistribution) beanDrlClass.get(beanDrl, "bodyDistr")).getDegree( Weight.SLIM ).getValue() );
-        assertEquals( 0.35, ((IDistribution) traitDrlClass.get(traitDrl, "bodyDistr")).getDegree( Weight.SLIM ).getValue() );
+        assertEquals( 0.35, ((Distribution) beanDrlClass.get(beanDrl, "bodyDistr")).getDegree( Weight.SLIM ).getValue() );
+        assertEquals( 0.35, ((Distribution) traitDrlClass.get(traitDrl, "bodyDistr")).getDegree( Weight.SLIM ).getValue() );
 
         checkConsistency();
 
@@ -1742,22 +1745,22 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnDouble_setBody() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setBody", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setBody", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setBody", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setBody", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setBody", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setBody", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setBody", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setBody", ImperfectField.class);
 
-        IDistributionStrategies<Weight> strats = ChanceStrategyFactory.<Weight>buildStrategies(
-                "fuzzy",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Weight> strats = ChanceStrategyFactory.<Weight>buildStrategies(
+                ImpKind.FUZZINESS,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Weight.class);
-        IDistributionStrategies<Double> subStrats = ChanceStrategyFactory.<Double>buildStrategies(
-                "possibility",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Double> subStrats = ChanceStrategyFactory.<Double>buildStrategies(
+                ImpKind.POSSIBILITY,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Double.class);
-        IImperfectField<Weight> fld = new LinguisticImperfectField<Weight,Double>( strats, subStrats, "FAT/0.4, SLIM/0.6" );
+        ImperfectField<Weight> fld = new LinguisticImperfectField<Weight,Double>( strats, subStrats, "FAT/0.4, SLIM/0.6" );
 
         beanHand.setBody( fld );
         traitHand.setBody( fld );
@@ -1774,10 +1777,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "body") );
         System.out.println( traitDrlClass.get(traitDrl, "body") );
 
-        assertEquals( Weight.SLIM, ((IImperfectField) beanHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
 
         assertEquals( 0.4, fld.getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
 
@@ -1793,22 +1796,22 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnDouble_setBodyDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setBodyDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setBodyDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setBodyDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setBodyDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setBodyDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setBodyDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setBodyDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setBodyDistr", Distribution.class);
 
-        IDistributionStrategies<Weight> strats = ChanceStrategyFactory.<Weight>buildStrategies(
-                "fuzzy",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Weight> strats = ChanceStrategyFactory.<Weight>buildStrategies(
+                ImpKind.FUZZINESS,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Weight.class);
-        IDistributionStrategies<Double> subStrats = ChanceStrategyFactory.<Double>buildStrategies(
-                "possibility",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Double> subStrats = ChanceStrategyFactory.<Double>buildStrategies(
+                ImpKind.POSSIBILITY,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Double.class);
-        IDistribution<Weight> d = strats.parse( "FAT/0.4, SLIM/0.6" );
+        Distribution<Weight> d = strats.parse( "FAT/0.4, SLIM/0.6" );
 
         beanHand.setBodyDistr( d );
         traitHand.setBodyDistr( d );
@@ -1825,10 +1828,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "bodyDistr") );
         System.out.println( traitDrlClass.get(traitDrl, "bodyDistr") );
 
-        assertEquals( Weight.SLIM, ((IImperfectField) beanHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
 
         assertEquals( 0.4, d.getDegree( Weight.FAT ).getValue(), 1e-16 );
 
@@ -1868,10 +1871,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "bodyValue") );
         System.out.println( traitDrlClass.get(traitDrl, "bodyValue") );
 
-        assertEquals( Weight.SLIM, ((IImperfectField) beanHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
 
         assertEquals( 0.0, beanHand.getBodyDistr().getDegree( Weight.FAT ).getValue(), 1e-16 );
         assertEquals( 1.0, beanHand.getBodyDistr().getDegree( Weight.SLIM ).getValue(), 1e-16 );
@@ -1879,11 +1882,11 @@ public class ImperfectBeanFieldTest {
         assertEquals( 0.0, traitHand.getBodyDistr().getDegree( Weight.FAT ).getValue(), 1e-16 );
         assertEquals( 1.0, traitHand.getBodyDistr().getDegree( Weight.SLIM ).getValue(), 1e-16 );
 
-        assertEquals( 0.0, ((IDistribution) beanDrlClass.get(beanDrl, "bodyDistr")).getDegree( Weight.FAT ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) beanDrlClass.get(beanDrl, "bodyDistr")).getDegree( Weight.SLIM ).getValue(), 1e-16 );
+        assertEquals( 0.0, ((Distribution) beanDrlClass.get(beanDrl, "bodyDistr")).getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanDrlClass.get(beanDrl, "bodyDistr")).getDegree( Weight.SLIM ).getValue(), 1e-16 );
 
-        assertEquals( 0.0,  ((IDistribution) traitDrlClass.get(traitDrl, "bodyDistr")).getDegree( Weight.FAT ).getValue(), 1e-16 );
-        assertEquals( 1.0,  ((IDistribution) traitDrlClass.get(traitDrl, "bodyDistr")).getDegree( Weight.SLIM ).getValue(), 1e-16 );
+        assertEquals( 0.0,  ((Distribution) traitDrlClass.get(traitDrl, "bodyDistr")).getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 1.0,  ((Distribution) traitDrlClass.get(traitDrl, "bodyDistr")).getDegree( Weight.SLIM ).getValue(), 1e-16 );
 
         assertEquals( 33.3, beanHand.getWeight(), 0.1 );
         assertEquals( 33.3, traitHand.getWeight(), 0.1 );
@@ -1897,37 +1900,37 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnDouble_updateBody() {
 
-        checkFirstAndOnlyArgType( beanHand.getClass(), "updateBody", IImperfectField.class );
-        checkFirstAndOnlyArgType( traitHand.getClass(), "updateBody", IImperfectField.class );
-        checkFirstAndOnlyArgType( beanDrl.getClass(), "updateBody", IImperfectField.class );
-        checkFirstAndOnlyArgType( traitDrl.getClass(), "updateBody", IImperfectField.class );
+        checkFirstAndOnlyArgType( beanHand.getClass(), "updateBody", ImperfectField.class );
+        checkFirstAndOnlyArgType( traitHand.getClass(), "updateBody", ImperfectField.class );
+        checkFirstAndOnlyArgType( beanDrl.getClass(), "updateBody", ImperfectField.class );
+        checkFirstAndOnlyArgType( traitDrl.getClass(), "updateBody", ImperfectField.class );
 
-        IDistributionStrategies<Weight> strats = ChanceStrategyFactory.<Weight>buildStrategies(
-                "fuzzy",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Weight> strats = ChanceStrategyFactory.<Weight>buildStrategies(
+                ImpKind.FUZZINESS,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Weight.class);
-        IDistributionStrategies<Double> subStrats = ChanceStrategyFactory.<Double>buildStrategies(
-                "possibility",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Double> subStrats = ChanceStrategyFactory.<Double>buildStrategies(
+                ImpKind.POSSIBILITY,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Double.class);
-        IImperfectField<Weight> fld = new LinguisticImperfectField<Weight,Double>( strats, subStrats, "FAT/0.2, SLIM/0.8" );
+        ImperfectField<Weight> fld = new LinguisticImperfectField<Weight,Double>( strats, subStrats, "FAT/0.2, SLIM/0.8" );
 
         beanHand.updateBody( fld );
         traitHand.updateBody( fld );
-        invokeUpdate( beanDrl, "body", fld, IImperfectField.class );
-        invokeUpdate( traitDrl, "body", fld, IImperfectField.class );
+        invokeUpdate( beanDrl, "body", fld, ImperfectField.class );
+        invokeUpdate( traitDrl, "body", fld, ImperfectField.class );
 
         System.out.println( beanHand.getBody() );
         System.out.println( traitHand.getBody() );
         System.out.println( beanDrlClass.get(beanDrl, "body") );
         System.out.println( traitDrlClass.get(traitDrl, "body") );
 
-        assertEquals( Weight.SLIM, ((IImperfectField) beanHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
 
         assertEquals( 0.65, beanHand.getBody().getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
         assertEquals( 0.8, beanHand.getBody().getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
@@ -1940,13 +1943,13 @@ public class ImperfectBeanFieldTest {
         assertEquals( Weight.SLIM, traitHand.getBodyValue() );
         assertEquals( 48, traitHand.getWeight(), 0.25 );
 
-        assertEquals( 0.65, ((IImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
-        assertEquals( 0.8, ((IImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
+        assertEquals( 0.65, ((ImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 0.8, ((ImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
         assertEquals( Weight.SLIM, ((Weight) beanDrlClass.get( beanDrl, "bodyValue" )) );
         assertEquals( 48, ((Double) beanDrlClass.get( beanDrl, "weight" )), 0.25 );
 
-        assertEquals( 0.65, ((IImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
-        assertEquals( 0.8, ((IImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
+        assertEquals( 0.65, ((ImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 0.8, ((ImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
         assertEquals( Weight.SLIM, ((Weight) traitDrlClass.get( traitDrl, "bodyValue" )) );
         assertEquals( 48, ((Double) traitDrlClass.get( traitDrl, "weight" )), 0.25 );
 
@@ -1959,37 +1962,37 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnDouble_updateBodyDistr() {
 
-        checkFirstAndOnlyArgType( beanHand.getClass(), "updateBodyDistr", IDistribution.class );
-        checkFirstAndOnlyArgType( traitHand.getClass(), "updateBodyDistr", IDistribution.class );
-        checkFirstAndOnlyArgType( beanDrl.getClass(), "updateBodyDistr", IDistribution.class );
-        checkFirstAndOnlyArgType( traitDrl.getClass(), "updateBodyDistr", IDistribution.class );
+        checkFirstAndOnlyArgType( beanHand.getClass(), "updateBodyDistr", Distribution.class );
+        checkFirstAndOnlyArgType( traitHand.getClass(), "updateBodyDistr", Distribution.class );
+        checkFirstAndOnlyArgType( beanDrl.getClass(), "updateBodyDistr", Distribution.class );
+        checkFirstAndOnlyArgType( traitDrl.getClass(), "updateBodyDistr", Distribution.class );
 
-        IDistributionStrategies<Weight> strats = ChanceStrategyFactory.<Weight>buildStrategies(
-                "fuzzy",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Weight> strats = ChanceStrategyFactory.<Weight>buildStrategies(
+                ImpKind.FUZZINESS,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Weight.class);
-        IDistributionStrategies<Double> subStrats = ChanceStrategyFactory.<Double>buildStrategies(
-                "possibility",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Double> subStrats = ChanceStrategyFactory.<Double>buildStrategies(
+                ImpKind.POSSIBILITY,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Double.class);
-        IDistribution<Weight> fld = strats.parse( "FAT/0.2, SLIM/0.8" );
+        Distribution<Weight> fld = strats.parse( "FAT/0.2, SLIM/0.8" );
 
         beanHand.updateBodyDistr( fld );
         traitHand.updateBodyDistr( fld );
-        invokeUpdate( beanDrl, "bodyDistr", fld, IDistribution.class );
-        invokeUpdate( traitDrl, "bodyDistr", fld, IDistribution.class );
+        invokeUpdate( beanDrl, "bodyDistr", fld, Distribution.class );
+        invokeUpdate( traitDrl, "bodyDistr", fld, Distribution.class );
 
         System.out.println( beanHand.getBody() );
         System.out.println( traitHand.getBody() );
         System.out.println( beanDrlClass.get(beanDrl, "body") );
         System.out.println( traitDrlClass.get(traitDrl, "body") );
 
-        assertEquals( Weight.SLIM, ((IImperfectField) beanHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
 
         assertEquals( 0.65, beanHand.getBody().getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
         assertEquals( 0.8, beanHand.getBody().getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
@@ -2002,13 +2005,13 @@ public class ImperfectBeanFieldTest {
         assertEquals( Weight.SLIM, traitHand.getBodyValue() );
         assertEquals( 48, traitHand.getWeight(), 0.25 );
 
-        assertEquals( 0.65, ((IImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
-        assertEquals( 0.8, ((IImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
+        assertEquals( 0.65, ((ImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 0.8, ((ImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
         assertEquals( Weight.SLIM, ((Weight) beanDrlClass.get( beanDrl, "bodyValue" )) );
         assertEquals( 48, ((Double) beanDrlClass.get( beanDrl, "weight" )), 0.25 );
 
-        assertEquals( 0.65, ((IImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
-        assertEquals( 0.8, ((IImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
+        assertEquals( 0.65, ((ImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 0.8, ((ImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
         assertEquals( Weight.SLIM, ((Weight) traitDrlClass.get( traitDrl, "bodyValue" )) );
         assertEquals( 48, ((Double) traitDrlClass.get( traitDrl, "weight" )), 0.25 );
 
@@ -2035,10 +2038,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "body") );
         System.out.println( traitDrlClass.get(traitDrl, "body") );
 
-        assertEquals( Weight.SLIM, ((IImperfectField) beanHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitHand.getBody()).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
-        assertEquals( Weight.SLIM, ((IImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitHand.getBody()).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) beanDrlClass.get(beanDrl, "body")).getCrisp() );
+        assertEquals( Weight.SLIM, ((ImperfectField) traitDrlClass.get(traitDrl, "body")).getCrisp() );
 
         assertEquals( 0.65, beanHand.getBody().getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
         assertEquals( 1.0, beanHand.getBody().getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
@@ -2051,13 +2054,13 @@ public class ImperfectBeanFieldTest {
         assertEquals( Weight.SLIM, traitHand.getBodyValue() );
         assertEquals( 46.5, traitHand.getWeight(), 0.25 );
 
-        assertEquals( 0.65, ((IImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
+        assertEquals( 0.65, ((ImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) beanDrlClass.get( beanDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
         assertEquals( Weight.SLIM, ((Weight) beanDrlClass.get( beanDrl, "bodyValue" )) );
         assertEquals( 46.5, ((Double) beanDrlClass.get( beanDrl, "weight" )), 0.25 );
 
-        assertEquals( 0.65, ((IImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
+        assertEquals( 0.65, ((ImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.FAT ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) traitDrlClass.get( traitDrl, "body" )).getCurrent().getDegree( Weight.SLIM ).getValue(), 1e-16 );
         assertEquals( Weight.SLIM, ((Weight) traitDrlClass.get( traitDrl, "bodyValue" )) );
         assertEquals( 46.5, ((Double) traitDrlClass.get( traitDrl, "weight" )), 0.25 );
 
@@ -2110,11 +2113,11 @@ public class ImperfectBeanFieldTest {
         assertEquals( Price.BLOODY_HELL, traitHand.getPriceValue() );
 
         assertEquals( 0, ( (Integer) beanDrlClass.get( beanDrl, "bucks" ) ).intValue() );
-        assertEquals( 0.0, ( (IDistribution) beanDrlClass.get( beanDrl, "priceDistr" ) ).getDegree( Price.CHEAP ).getValue() );
+        assertEquals( 0.0, ( (Distribution) beanDrlClass.get( beanDrl, "priceDistr" ) ).getDegree( Price.CHEAP ).getValue() );
         assertEquals( Price.BLOODY_HELL, beanDrlClass.get( beanDrl, "priceValue" ) );
 
         assertEquals( 0, ( (Integer) traitDrlClass.get( traitDrl, "bucks" ) ).intValue() );
-        assertEquals( 0.0, ( (IDistribution) traitDrlClass.get( traitDrl, "priceDistr" ) ).getDegree( Price.REASONABLE ).getValue() );
+        assertEquals( 0.0, ( (Distribution) traitDrlClass.get( traitDrl, "priceDistr" ) ).getDegree( Price.REASONABLE ).getValue() );
         assertEquals( Price.BLOODY_HELL, traitDrlClass.get( traitDrl, "priceValue" ) );
 
         checkConsistency();
@@ -2153,11 +2156,11 @@ public class ImperfectBeanFieldTest {
         assertEquals( Price.REASONABLE, traitHand.getPriceValue() );
 
         assertEquals( 37, ((Integer) beanDrlClass.get( beanDrl, "bucks" )).intValue() );
-        assertEquals( 0.3, ( (IDistribution<Price>) beanDrlClass.get( beanDrl, "priceDistr" ) ).getDegree( Price.CHEAP ).getValue(), 1e-16 );
+        assertEquals( 0.3, ( (Distribution<Price>) beanDrlClass.get( beanDrl, "priceDistr" ) ).getDegree( Price.CHEAP ).getValue(), 1e-16 );
         assertEquals( Price.REASONABLE, beanDrlClass.get( beanDrl, "priceValue" ) );
 
         assertEquals( 37, ((Integer) traitDrlClass.get( traitDrl, "bucks" )).intValue() );
-        assertEquals( 0.3, ( (IDistribution<Price>) traitDrlClass.get( traitDrl, "priceDistr" ) ).getDegree(Price.CHEAP).getValue(), 1e-16 );
+        assertEquals( 0.3, ( (Distribution<Price>) traitDrlClass.get( traitDrl, "priceDistr" ) ).getDegree(Price.CHEAP).getValue(), 1e-16 );
         assertEquals( Price.REASONABLE, traitDrlClass.get( traitDrl, "priceValue" ) );
 
         checkConsistency();
@@ -2167,10 +2170,10 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnInteger_getBody() {
 
-        checkReturnType( beanHand.getClass(), "getPrice", IImperfectField.class );
-        checkReturnType( traitHand.getClass(), "getPrice", IImperfectField.class );
-        checkReturnType( beanDrl.getClass(), "getPrice", IImperfectField.class );
-        checkReturnType( traitDrl.getClass(), "getPrice", IImperfectField.class );
+        checkReturnType( beanHand.getClass(), "getPrice", ImperfectField.class );
+        checkReturnType( traitHand.getClass(), "getPrice", ImperfectField.class );
+        checkReturnType( beanDrl.getClass(), "getPrice", ImperfectField.class );
+        checkReturnType( traitDrl.getClass(), "getPrice", ImperfectField.class );
 
         assertNotNull( beanHand.getPrice() );
         assertNotNull( traitHand.getPrice() );
@@ -2182,15 +2185,15 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "price") );
         System.out.println( traitDrlClass.get(traitDrl, "price") );
 
-        assertEquals( Price.BLOODY_HELL, ((IImperfectField) beanHand.getPrice()).getCrisp() );
-        assertEquals( Price.BLOODY_HELL, ((IImperfectField) traitHand.getPrice()).getCrisp() );
-        assertEquals( Price.BLOODY_HELL, ((IImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
-        assertEquals( Price.BLOODY_HELL, ((IImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
+        assertEquals( Price.BLOODY_HELL, ((ImperfectField) beanHand.getPrice()).getCrisp() );
+        assertEquals( Price.BLOODY_HELL, ((ImperfectField) traitHand.getPrice()).getCrisp() );
+        assertEquals( Price.BLOODY_HELL, ((ImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
+        assertEquals( Price.BLOODY_HELL, ((ImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
 
         assertEquals( 0.0, beanHand.getPrice().getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
         assertEquals( 0.0, traitHand.getPrice().getCurrent().getDegree( Price.BLOODY_HELL ).getValue() );
-        assertEquals( 0.0, ((IImperfectField) beanDrlClass.get(beanDrl, "price")).getCurrent().getDegree( Price.BLOODY_HELL ).getValue() );
-        assertEquals( 0.0, ((IImperfectField) traitDrlClass.get(traitDrl, "price")).getCurrent().getDegree( Price.BLOODY_HELL ).getValue() );
+        assertEquals( 0.0, ((ImperfectField) beanDrlClass.get(beanDrl, "price")).getCurrent().getDegree( Price.BLOODY_HELL ).getValue() );
+        assertEquals( 0.0, ((ImperfectField) traitDrlClass.get(traitDrl, "price")).getCurrent().getDegree( Price.BLOODY_HELL ).getValue() );
 
         checkConsistency();
 
@@ -2199,10 +2202,10 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnInteger_getPriceDistr() {
 
-        checkReturnType( beanHand.getClass(), "getPriceDistr", IDistribution.class );
-        checkReturnType( traitHand.getClass(), "getPriceDistr", IDistribution.class );
-        checkReturnType( beanDrl.getClass(), "getPriceDistr", IDistribution.class );
-        checkReturnType( traitDrl.getClass(), "getPriceDistr", IDistribution.class );
+        checkReturnType( beanHand.getClass(), "getPriceDistr", Distribution.class );
+        checkReturnType( traitHand.getClass(), "getPriceDistr", Distribution.class );
+        checkReturnType( beanDrl.getClass(), "getPriceDistr", Distribution.class );
+        checkReturnType( traitDrl.getClass(), "getPriceDistr", Distribution.class );
 
         assertNotNull( beanHand.getPriceDistr() );
         assertNotNull( traitHand.getPriceDistr() );
@@ -2216,8 +2219,8 @@ public class ImperfectBeanFieldTest {
 
         assertEquals( 0.0, beanHand.getPriceDistr().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
         assertEquals( 0.0, traitHand.getPriceDistr().getDegree( Price.BLOODY_HELL ).getValue() );
-        assertEquals( 0.0, ((IDistribution) beanDrlClass.get(beanDrl, "priceDistr")).getDegree( Price.BLOODY_HELL ).getValue() );
-        assertEquals( 0.0, ((IDistribution) traitDrlClass.get(traitDrl, "priceDistr")).getDegree( Price.BLOODY_HELL ).getValue() );
+        assertEquals( 0.0, ((Distribution) beanDrlClass.get(beanDrl, "priceDistr")).getDegree( Price.BLOODY_HELL ).getValue() );
+        assertEquals( 0.0, ((Distribution) traitDrlClass.get(traitDrl, "priceDistr")).getDegree( Price.BLOODY_HELL ).getValue() );
 
         checkConsistency();
 
@@ -2253,22 +2256,22 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnInteger_setPrice() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setPrice", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setPrice", IImperfectField.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setPrice", IImperfectField.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setPrice", IImperfectField.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setPrice", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setPrice", ImperfectField.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setPrice", ImperfectField.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setPrice", ImperfectField.class);
 
-        IDistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
-                "fuzzy",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
+                ImpKind.FUZZINESS,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Price.class);
-        IDistributionStrategies<Integer> subStrats = ChanceStrategyFactory.<Integer>buildStrategies(
-                "possibility",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Integer> subStrats = ChanceStrategyFactory.<Integer>buildStrategies(
+                ImpKind.POSSIBILITY,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Integer.class);
-        IImperfectField<Price> fld = new LinguisticImperfectField<Price,Integer>( strats, subStrats, "EXPENSIVE/0.4, CHEAP/0.7" );
+        ImperfectField<Price> fld = new LinguisticImperfectField<Price,Integer>( strats, subStrats, "EXPENSIVE/0.4, CHEAP/0.7" );
 
         beanHand.setPrice( fld );
         traitHand.setPrice( fld );
@@ -2285,10 +2288,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "price") );
         System.out.println( traitDrlClass.get(traitDrl, "price") );
 
-        assertEquals( Price.CHEAP, ((IImperfectField) beanHand.getPrice()).getCrisp() );
-        assertEquals( Price.CHEAP, ((IImperfectField) traitHand.getPrice()).getCrisp() );
-        assertEquals( Price.CHEAP, ((IImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
-        assertEquals( Price.CHEAP, ((IImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
+        assertEquals( Price.CHEAP, ((ImperfectField) beanHand.getPrice()).getCrisp() );
+        assertEquals( Price.CHEAP, ((ImperfectField) traitHand.getPrice()).getCrisp() );
+        assertEquals( Price.CHEAP, ((ImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
+        assertEquals( Price.CHEAP, ((ImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
 
         assertEquals( 0.4, fld.getCurrent().getDegree( Price.EXPENSIVE ).getValue(), 1e-16 );
 
@@ -2304,22 +2307,22 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnInteger_setBodyDistr() {
 
-        checkFirstAndOnlyArgType(beanHand.getClass(), "setBodyDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitHand.getClass(), "setBodyDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(beanDrl.getClass(), "setBodyDistr", IDistribution.class);
-        checkFirstAndOnlyArgType(traitDrl.getClass(), "setBodyDistr", IDistribution.class);
+        checkFirstAndOnlyArgType(beanHand.getClass(), "setBodyDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitHand.getClass(), "setBodyDistr", Distribution.class);
+        checkFirstAndOnlyArgType(beanDrl.getClass(), "setBodyDistr", Distribution.class);
+        checkFirstAndOnlyArgType(traitDrl.getClass(), "setBodyDistr", Distribution.class);
 
-        IDistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
-                "fuzzy",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
+                ImpKind.FUZZINESS,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Price.class);
-        IDistributionStrategies<Integer> subStrats = ChanceStrategyFactory.<Integer>buildStrategies(
-                "possibility",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Integer> subStrats = ChanceStrategyFactory.<Integer>buildStrategies(
+                ImpKind.POSSIBILITY,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Integer.class);
-        IDistribution<Price> d = strats.parse( "REASONABLE/0.4, INEXPENSIVE/0.6" );
+        Distribution<Price> d = strats.parse( "REASONABLE/0.4, INEXPENSIVE/0.6" );
 
         beanHand.setPriceDistr( d );
         traitHand.setPriceDistr( d );
@@ -2336,10 +2339,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "priceDistr") );
         System.out.println( traitDrlClass.get(traitDrl, "priceDistr") );
 
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) beanHand.getPrice()).getCrisp() );
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) traitHand.getPrice()).getCrisp() );
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) beanHand.getPrice()).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) traitHand.getPrice()).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
 
         assertEquals( 0.4, d.getDegree( Price.REASONABLE ).getValue(), 1e-16 );
 
@@ -2379,10 +2382,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "priceValue") );
         System.out.println( traitDrlClass.get(traitDrl, "priceValue") );
 
-        assertEquals( Price.EXPENSIVE, ((IImperfectField) beanHand.getPrice()).getCrisp() );
-        assertEquals( Price.EXPENSIVE, ((IImperfectField) traitHand.getPrice()).getCrisp() );
-        assertEquals( Price.EXPENSIVE, ((IImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
-        assertEquals( Price.EXPENSIVE, ((IImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
+        assertEquals( Price.EXPENSIVE, ((ImperfectField) beanHand.getPrice()).getCrisp() );
+        assertEquals( Price.EXPENSIVE, ((ImperfectField) traitHand.getPrice()).getCrisp() );
+        assertEquals( Price.EXPENSIVE, ((ImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
+        assertEquals( Price.EXPENSIVE, ((ImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
 
         assertEquals( 0.0, beanHand.getPriceDistr().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
         assertEquals( 1.0, beanHand.getPriceDistr().getDegree( Price.EXPENSIVE ).getValue(), 1e-16 );
@@ -2390,11 +2393,11 @@ public class ImperfectBeanFieldTest {
         assertEquals( 0.0, traitHand.getPriceDistr().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
         assertEquals( 1.0, traitHand.getPriceDistr().getDegree( Price.EXPENSIVE ).getValue(), 1e-16 );
 
-        assertEquals( 0.0, ((IDistribution) beanDrlClass.get(beanDrl, "priceDistr")).getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IDistribution) beanDrlClass.get(beanDrl, "priceDistr")).getDegree( Price.EXPENSIVE ).getValue(), 1e-16 );
+        assertEquals( 0.0, ((Distribution) beanDrlClass.get(beanDrl, "priceDistr")).getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((Distribution) beanDrlClass.get(beanDrl, "priceDistr")).getDegree( Price.EXPENSIVE ).getValue(), 1e-16 );
 
-        assertEquals( 0.0,  ((IDistribution) traitDrlClass.get(traitDrl, "priceDistr")).getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
-        assertEquals( 1.0,  ((IDistribution) traitDrlClass.get(traitDrl, "priceDistr")).getDegree( Price.EXPENSIVE ).getValue(), 1e-16 );
+        assertEquals( 0.0,  ((Distribution) traitDrlClass.get(traitDrl, "priceDistr")).getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
+        assertEquals( 1.0,  ((Distribution) traitDrlClass.get(traitDrl, "priceDistr")).getDegree( Price.EXPENSIVE ).getValue(), 1e-16 );
 
         assertEquals( 50, beanHand.getBucks().intValue() );
         assertEquals( 50, traitHand.getBucks().intValue() );
@@ -2408,22 +2411,22 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnInteger_updatePrice() {
 
-        checkFirstAndOnlyArgType( beanHand.getClass(), "updatePrice", IImperfectField.class );
-        checkFirstAndOnlyArgType( traitHand.getClass(), "updatePrice", IImperfectField.class );
-        checkFirstAndOnlyArgType( beanDrl.getClass(), "updatePrice", IImperfectField.class );
-        checkFirstAndOnlyArgType( traitDrl.getClass(), "updatePrice", IImperfectField.class );
+        checkFirstAndOnlyArgType( beanHand.getClass(), "updatePrice", ImperfectField.class );
+        checkFirstAndOnlyArgType( traitHand.getClass(), "updatePrice", ImperfectField.class );
+        checkFirstAndOnlyArgType( beanDrl.getClass(), "updatePrice", ImperfectField.class );
+        checkFirstAndOnlyArgType( traitDrl.getClass(), "updatePrice", ImperfectField.class );
 
-        IDistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
-                "fuzzy",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
+                ImpKind.FUZZINESS,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Price.class);
-        IDistributionStrategies<Integer> subStrats = ChanceStrategyFactory.<Integer>buildStrategies(
-                "possibility",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Integer> subStrats = ChanceStrategyFactory.<Integer>buildStrategies(
+                ImpKind.POSSIBILITY,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Integer.class);
-        IDistribution<Price> d = strats.parse( "REASONABLE/0.1, INEXPENSIVE/0.1" );
+        Distribution<Price> d = strats.parse( "REASONABLE/0.1, INEXPENSIVE/0.1" );
 
         beanHand.setPriceDistr( d );
         traitHand.setPriceDistr( d );
@@ -2431,22 +2434,22 @@ public class ImperfectBeanFieldTest {
         traitDrlClass.set( traitDrl, "priceDistr", d );
 
 
-        IImperfectField<Price> fld = new LinguisticImperfectField<Price,Integer>( strats, subStrats, "BLOODY_HELL/0.2, REASONABLE/0.2, EXPENSIVE/0.2, CHEAP/0.2, INEXPENSIVE/0.4" );
+        ImperfectField<Price> fld = new LinguisticImperfectField<Price,Integer>( strats, subStrats, "BLOODY_HELL/0.2, REASONABLE/0.2, EXPENSIVE/0.2, CHEAP/0.2, INEXPENSIVE/0.4" );
 
         beanHand.updatePrice( fld );
         traitHand.updatePrice( fld );
-        invokeUpdate( beanDrl, "price", fld, IImperfectField.class );
-        invokeUpdate( traitDrl, "price", fld, IImperfectField.class );
+        invokeUpdate( beanDrl, "price", fld, ImperfectField.class );
+        invokeUpdate( traitDrl, "price", fld, ImperfectField.class );
 
         System.out.println( beanHand.getPrice() );
         System.out.println( traitHand.getPrice() );
         System.out.println( beanDrlClass.get(beanDrl, "price") );
         System.out.println( traitDrlClass.get(traitDrl, "price") );
 
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) beanHand.getPrice()).getCrisp() );
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) traitHand.getPrice()).getCrisp() );
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) beanHand.getPrice()).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) traitHand.getPrice()).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
 
         assertEquals( 0.2, beanHand.getPrice().getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
         assertEquals( 0.4, beanHand.getPrice().getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
@@ -2459,13 +2462,13 @@ public class ImperfectBeanFieldTest {
         assertEquals( Price.INEXPENSIVE, traitHand.getPriceValue() );
         assertEquals( 42, traitHand.getBucks().intValue() );
 
-        assertEquals( 0.2, ((IImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
-        assertEquals( 0.4, ((IImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
+        assertEquals( 0.2, ((ImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
+        assertEquals( 0.4, ((ImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
         assertEquals( Price.INEXPENSIVE, ((Price) beanDrlClass.get( beanDrl, "priceValue" )) );
         assertEquals( 42, ((Integer) beanDrlClass.get( beanDrl, "bucks" )).intValue() );
 
-        assertEquals( 0.2, ((IImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
-        assertEquals( 0.4, ((IImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
+        assertEquals( 0.2, ((ImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
+        assertEquals( 0.4, ((ImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
         assertEquals( Price.INEXPENSIVE, ((Price) traitDrlClass.get( traitDrl, "priceValue" )) );
         assertEquals( 42, ((Integer) traitDrlClass.get( traitDrl, "bucks" )).intValue() );
 
@@ -2478,18 +2481,18 @@ public class ImperfectBeanFieldTest {
     @Test
     public void testFuzzyOnInteger_updateBodyDistr() {
 
-        checkFirstAndOnlyArgType( beanHand.getClass(), "updateBodyDistr", IDistribution.class );
-        checkFirstAndOnlyArgType( traitHand.getClass(), "updateBodyDistr", IDistribution.class );
-        checkFirstAndOnlyArgType( beanDrl.getClass(), "updateBodyDistr", IDistribution.class );
-        checkFirstAndOnlyArgType( traitDrl.getClass(), "updateBodyDistr", IDistribution.class );
+        checkFirstAndOnlyArgType( beanHand.getClass(), "updateBodyDistr", Distribution.class );
+        checkFirstAndOnlyArgType( traitHand.getClass(), "updateBodyDistr", Distribution.class );
+        checkFirstAndOnlyArgType( beanDrl.getClass(), "updateBodyDistr", Distribution.class );
+        checkFirstAndOnlyArgType( traitDrl.getClass(), "updateBodyDistr", Distribution.class );
 
-        IDistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
-                "fuzzy",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
+                ImpKind.FUZZINESS,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Price.class);
 
-        IDistribution<Price> d = strats.parse( "REASONABLE/0.1, INEXPENSIVE/0.1" );
+        Distribution<Price> d = strats.parse( "REASONABLE/0.1, INEXPENSIVE/0.1" );
 
         beanHand.setPriceDistr( d );
         traitHand.setPriceDistr( d );
@@ -2498,22 +2501,22 @@ public class ImperfectBeanFieldTest {
 
 
 
-        IDistribution<Price> fld = strats.parse( "BLOODY_HELL/0.2, REASONABLE/0.2, EXPENSIVE/0.2, CHEAP/0.2, INEXPENSIVE/0.4" );
+        Distribution<Price> fld = strats.parse( "BLOODY_HELL/0.2, REASONABLE/0.2, EXPENSIVE/0.2, CHEAP/0.2, INEXPENSIVE/0.4" );
 
         beanHand.updatePriceDistr( fld );
         traitHand.updatePriceDistr( fld );
-        invokeUpdate( beanDrl, "priceDistr", fld, IDistribution.class );
-        invokeUpdate( traitDrl, "priceDistr", fld, IDistribution.class );
+        invokeUpdate( beanDrl, "priceDistr", fld, Distribution.class );
+        invokeUpdate( traitDrl, "priceDistr", fld, Distribution.class );
 
         System.out.println( beanHand.getBody() );
         System.out.println( traitHand.getBody() );
         System.out.println( beanDrlClass.get(beanDrl, "price") );
         System.out.println( traitDrlClass.get(traitDrl, "price") );
 
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) beanHand.getPrice()).getCrisp() );
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) traitHand.getPrice()).getCrisp() );
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
-        assertEquals( Price.INEXPENSIVE, ((IImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) beanHand.getPrice()).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) traitHand.getPrice()).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
+        assertEquals( Price.INEXPENSIVE, ((ImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
 
         assertEquals( 0.2, beanHand.getPrice().getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
         assertEquals( 0.4, beanHand.getPrice().getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
@@ -2525,13 +2528,13 @@ public class ImperfectBeanFieldTest {
         assertEquals( Price.INEXPENSIVE, traitHand.getPriceValue() );
         assertEquals( 42, traitHand.getBucks().intValue() );
 
-        assertEquals( 0.2, ((IImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
-        assertEquals( 0.4, ((IImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
+        assertEquals( 0.2, ((ImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
+        assertEquals( 0.4, ((ImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
         assertEquals( Price.INEXPENSIVE, ((Price) beanDrlClass.get( beanDrl, "priceValue" )) );
         assertEquals( 42, ((Integer) beanDrlClass.get( beanDrl, "bucks" )).intValue() );
 
-        assertEquals( 0.2, ((IImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
-        assertEquals( 0.4, ((IImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
+        assertEquals( 0.2, ((ImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
+        assertEquals( 0.4, ((ImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.INEXPENSIVE ).getValue(), 1e-16 );
         assertEquals( Price.INEXPENSIVE, ((Price) traitDrlClass.get( traitDrl, "priceValue" )) );
         assertEquals( 42, ((Integer) traitDrlClass.get( traitDrl, "bucks" )).intValue() );
 
@@ -2548,13 +2551,13 @@ public class ImperfectBeanFieldTest {
         checkFirstAndOnlyArgType( beanDrl.getClass(), "updatePriceValue", Price.class );
         checkFirstAndOnlyArgType( traitDrl.getClass(), "updatePriceValue", Price.class );
 
-        IDistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
-                "fuzzy",
-                "linguistic",
-                "simple",
+        DistributionStrategies<Price> strats = ChanceStrategyFactory.<Price>buildStrategies(
+                ImpKind.FUZZINESS,
+                ImpType.LINGUISTIC,
+                DegreeType.SIMPLE,
                 Price.class);
 
-        IDistribution<Price> d = strats.parse( "BLOODY_HELL/0.1, INEXPENSIVE/0.1" );
+        Distribution<Price> d = strats.parse( "BLOODY_HELL/0.1, INEXPENSIVE/0.1" );
 
         beanHand.setPriceDistr( d );
         traitHand.setPriceDistr( d );
@@ -2573,10 +2576,10 @@ public class ImperfectBeanFieldTest {
         System.out.println( beanDrlClass.get(beanDrl, "price") );
         System.out.println( traitDrlClass.get(traitDrl, "price") );
 
-        assertEquals( Price.CHEAP, ((IImperfectField) beanHand.getPrice()).getCrisp() );
-        assertEquals( Price.CHEAP, ((IImperfectField) traitHand.getPrice()).getCrisp() );
-        assertEquals( Price.CHEAP, ((IImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
-        assertEquals( Price.CHEAP, ((IImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
+        assertEquals( Price.CHEAP, ((ImperfectField) beanHand.getPrice()).getCrisp() );
+        assertEquals( Price.CHEAP, ((ImperfectField) traitHand.getPrice()).getCrisp() );
+        assertEquals( Price.CHEAP, ((ImperfectField) beanDrlClass.get(beanDrl, "price")).getCrisp() );
+        assertEquals( Price.CHEAP, ((ImperfectField) traitDrlClass.get(traitDrl, "price")).getCrisp() );
 
         assertEquals( 0.1, beanHand.getPrice().getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
         assertEquals( 1.0, beanHand.getPrice().getCurrent().getDegree( Price.CHEAP ).getValue(), 1e-16 );
@@ -2588,13 +2591,13 @@ public class ImperfectBeanFieldTest {
         assertEquals( Price.CHEAP, traitHand.getPriceValue() );
         assertEquals( 41, traitHand.getBucks().intValue() );
 
-        assertEquals( 0.1, ((IImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.CHEAP ).getValue(), 1e-16 );
+        assertEquals( 0.1, ((ImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) beanDrlClass.get( beanDrl, "price" )).getCurrent().getDegree( Price.CHEAP ).getValue(), 1e-16 );
         assertEquals( Price.CHEAP, ((Price) beanDrlClass.get( beanDrl, "priceValue" )) );
         assertEquals( 41, ((Integer) beanDrlClass.get( beanDrl, "bucks" )).intValue() );
 
-        assertEquals( 0.1, ((IImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
-        assertEquals( 1.0, ((IImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.CHEAP ).getValue(), 1e-16 );
+        assertEquals( 0.1, ((ImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.BLOODY_HELL ).getValue(), 1e-16 );
+        assertEquals( 1.0, ((ImperfectField) traitDrlClass.get( traitDrl, "price" )).getCurrent().getDegree( Price.CHEAP ).getValue(), 1e-16 );
         assertEquals( Price.CHEAP, ((Price) traitDrlClass.get( traitDrl, "priceValue" )) );
         assertEquals( 41, ((Integer) traitDrlClass.get( traitDrl, "bucks" )).intValue() );
 
@@ -2631,19 +2634,19 @@ public class ImperfectBeanFieldTest {
         assertEquals( traitHand.getBody().getCrisp(), traitHand.getBodyValue() );
         assertEquals( traitHand.getPrice().getCrisp(), traitHand.getPriceValue() );
 
-        assertEquals( ((IImperfectField) beanDrlClass.get( beanDrl, "name" )).getCrisp(), beanDrlClass.get( beanDrl, "nameValue" ) );
-        assertEquals( ((IImperfectField) beanDrlClass.get( beanDrl, "age" )).getCrisp(), beanDrlClass.get( beanDrl, "ageValue" ) );
-        assertEquals( ((IImperfectField) beanDrlClass.get( beanDrl, "flag" )).getCrisp(), beanDrlClass.get( beanDrl, "flagValue" ) );
-        assertEquals( ((IImperfectField) beanDrlClass.get( beanDrl, "likes" )).getCrisp(), beanDrlClass.get( beanDrl, "likesValue" ) );
-        assertEquals( ((IImperfectField) beanDrlClass.get( beanDrl, "body" )).getCrisp(), beanDrlClass.get( beanDrl, "bodyValue" ) );
-        assertEquals( ((IImperfectField) beanDrlClass.get( beanDrl, "price" )).getCrisp(), beanDrlClass.get( beanDrl, "priceValue" ) );
+        assertEquals( ((ImperfectField) beanDrlClass.get( beanDrl, "name" )).getCrisp(), beanDrlClass.get( beanDrl, "nameValue" ) );
+        assertEquals( ((ImperfectField) beanDrlClass.get( beanDrl, "age" )).getCrisp(), beanDrlClass.get( beanDrl, "ageValue" ) );
+        assertEquals( ((ImperfectField) beanDrlClass.get( beanDrl, "flag" )).getCrisp(), beanDrlClass.get( beanDrl, "flagValue" ) );
+        assertEquals( ((ImperfectField) beanDrlClass.get( beanDrl, "likes" )).getCrisp(), beanDrlClass.get( beanDrl, "likesValue" ) );
+        assertEquals( ((ImperfectField) beanDrlClass.get( beanDrl, "body" )).getCrisp(), beanDrlClass.get( beanDrl, "bodyValue" ) );
+        assertEquals( ((ImperfectField) beanDrlClass.get( beanDrl, "price" )).getCrisp(), beanDrlClass.get( beanDrl, "priceValue" ) );
 
-        assertEquals( ((IImperfectField) traitDrlClass.get( traitDrl, "name" )).getCrisp(), traitDrlClass.get( traitDrl, "nameValue" ) );
-        assertEquals( ((IImperfectField) traitDrlClass.get( traitDrl, "age" )).getCrisp(), traitDrlClass.get( traitDrl, "ageValue" ) );
-        assertEquals( ((IImperfectField) traitDrlClass.get( traitDrl, "flag" )).getCrisp(), traitDrlClass.get( traitDrl, "flagValue" ) );
-        assertEquals( ((IImperfectField) traitDrlClass.get( traitDrl, "likes" )).getCrisp(), traitDrlClass.get( traitDrl, "likesValue" ) );
-        assertEquals( ((IImperfectField) traitDrlClass.get( traitDrl, "body" )).getCrisp(), traitDrlClass.get( traitDrl, "bodyValue" ) );
-        assertEquals( ((IImperfectField) traitDrlClass.get( traitDrl, "price" )).getCrisp(), traitDrlClass.get( traitDrl, "priceValue" ) );
+        assertEquals( ((ImperfectField) traitDrlClass.get( traitDrl, "name" )).getCrisp(), traitDrlClass.get( traitDrl, "nameValue" ) );
+        assertEquals( ((ImperfectField) traitDrlClass.get( traitDrl, "age" )).getCrisp(), traitDrlClass.get( traitDrl, "ageValue" ) );
+        assertEquals( ((ImperfectField) traitDrlClass.get( traitDrl, "flag" )).getCrisp(), traitDrlClass.get( traitDrl, "flagValue" ) );
+        assertEquals( ((ImperfectField) traitDrlClass.get( traitDrl, "likes" )).getCrisp(), traitDrlClass.get( traitDrl, "likesValue" ) );
+        assertEquals( ((ImperfectField) traitDrlClass.get( traitDrl, "body" )).getCrisp(), traitDrlClass.get( traitDrl, "bodyValue" ) );
+        assertEquals( ((ImperfectField) traitDrlClass.get( traitDrl, "price" )).getCrisp(), traitDrlClass.get( traitDrl, "priceValue" ) );
 
     }
 

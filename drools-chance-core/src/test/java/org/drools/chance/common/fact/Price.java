@@ -19,9 +19,9 @@ package org.drools.chance.common.fact;
 import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTrapez;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
-import org.drools.chance.distribution.fuzzy.linguistic.ILinguistic;
+import org.drools.chance.distribution.fuzzy.linguistic.Linguistic;
 
-public enum Price implements ILinguistic<Integer> {
+public enum Price implements Linguistic<Integer> {
 
 	INEXPENSIVE("inexpensive", new FuzzyTrapez(0,0,20,30)),
 
@@ -47,7 +47,7 @@ public enum Price implements ILinguistic<Integer> {
 		this.set = set;
 	}
 
-	public ILinguistic parse(String label) {
+	public Linguistic parse(String label) {
 		return Price.valueOf(label);
 	}
 	

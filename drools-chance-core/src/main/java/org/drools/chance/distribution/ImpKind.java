@@ -17,13 +17,17 @@
 package org.drools.chance.distribution;
 
 
-import java.util.Set;
+public enum ImpKind {
 
-public interface IDiscreteDomainDistribution<T> extends Iterable<T> {
+    FUZZINESS           ("fuzzy"),
+    PROBABILITY         ("probability"),
+    POSSIBILITY         ("possibility"),
+    BELIEF              ("belief");
 
+    private String kind;
     
-    public Set<T> getSupport();
-
-    public int size();
+    ImpKind( String kind ) {
+        this.kind = kind;
+    }
 
 }

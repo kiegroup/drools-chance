@@ -18,9 +18,9 @@ package org.drools.chance.common.fact;
 
 import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
-import org.drools.chance.distribution.fuzzy.linguistic.ILinguistic;
+import org.drools.chance.distribution.fuzzy.linguistic.Linguistic;
 
-public enum Weight implements ILinguistic<Double> {
+public enum Weight implements Linguistic<Double> {
 	
 	SLIM("slim", new FuzzyTriangle(-0.01, 0, 100)),
 	
@@ -39,7 +39,7 @@ public enum Weight implements ILinguistic<Double> {
 		this.set = set;
 	}
 
-	public ILinguistic parse(String label) {
+	public Linguistic parse(String label) {
 		return Weight.valueOf(label);
 	}
 	

@@ -22,24 +22,19 @@ import java.util.Hashtable;
 
 public  class DegreeTypeRegistry {
 
-    private Hashtable<String,Class<? extends IDegree>> degreeTable = new Hashtable(7);
-
+    private Hashtable<DegreeType,Class<? extends Degree>> degreeTable = new Hashtable(7);
 
     private static DegreeTypeRegistry instance = null;
 
-    private DegreeTypeRegistry (){
-
-    }
-
 
     public static DegreeTypeRegistry getSingleInstance(){
-        if (instance==null)
+        if ( instance == null ) {
             instance=new DegreeTypeRegistry();
-
-        return  instance;
+        }
+        return instance;
     }
 
-    public boolean registerDegreeType(String name,Class degreeType){
+    public boolean registerDegreeType( DegreeType name,Class degreeType){
 
         degreeTable.put( name, degreeType);
         return true;
@@ -47,20 +42,22 @@ public  class DegreeTypeRegistry {
     }
 
 
-    public Constructor getConstructorByString(String name) {
+    public Constructor getConstructorByString( DegreeType name ) {
         try {
-            return degreeTable.get(name).getConstructor(String.class);
+            return degreeTable.get( name ).getConstructor( String.class );
         } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            System.exit(-2);
             return null;
         }
     }
 
-    public Class<? extends IDegree> getDegreeClass( String name ) {
+    public Class<? extends Degree> getDegreeClass( DegreeType name ) {
         return degreeTable.get( name );
     }
 
 
-    public IDegree buildDegree( String name, double val ) {
+    public Degree buildDegree( DegreeType name, double val ) {
         try {
             return degreeTable.get( name ).getConstructor( double.class ).newInstance( val );
         } catch (NoSuchMethodException e) {
@@ -75,7 +72,7 @@ public  class DegreeTypeRegistry {
         return null;
     }
 
-    public IDegree buildDegree( String name, String val ) {
+    public Degree buildDegree( DegreeType name, String val ) {
         try {
             return degreeTable.get( name ).getConstructor( String.class ).newInstance( val );
         } catch (NoSuchMethodException e) {

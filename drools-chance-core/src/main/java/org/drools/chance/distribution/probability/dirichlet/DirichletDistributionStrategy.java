@@ -16,12 +16,13 @@
 
 package org.drools.chance.distribution.probability.dirichlet;
 
+import org.drools.chance.degree.Degree;
+import org.drools.chance.degree.DegreeType;
 import org.drools.chance.degree.DegreeTypeRegistry;
-import org.drools.chance.degree.IDegree;
-import org.drools.chance.distribution.IDiscreteDomainDistribution;
-import org.drools.chance.distribution.IDiscreteProbabilityDistribution;
-import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.IDistributionStrategies;
+import org.drools.chance.distribution.DiscreteDomainDistribution;
+import org.drools.chance.distribution.DiscreteProbabilityDistribution;
+import org.drools.chance.distribution.Distribution;
+import org.drools.chance.distribution.DistributionStrategies;
 import org.drools.chance.utils.ValueSortedMap;
 
 import java.lang.reflect.Constructor;
@@ -33,18 +34,18 @@ import java.util.*;
  * Strategy and level III factory for Dirichlet probability distributions
  * @param <T>
  */
-public class DirichletDistributionStrategy<T>  implements IDistributionStrategies<T> {
+public class DirichletDistributionStrategy<T>  implements DistributionStrategies<T> {
 
 
 
-    private String degreeType;
+    private DegreeType degreeType;
     private Class<T> domainType;
 
     private Constructor degreeStringConstr = null;
 
 
 
-    DirichletDistributionStrategy(String degreeType, Class<T> domainType){
+    DirichletDistributionStrategy(DegreeType degreeType, Class<T> domainType){
         this.degreeType = degreeType;
         this.domainType = domainType;
     }
@@ -58,8 +59,8 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 
 
 
-	public IDistribution<T> merge(IDistribution<T> current,
-			IDistribution<T> newBit) {
+	public Distribution<T> merge(Distribution<T> current,
+			Distribution<T> newBit) {
 		if (current instanceof DirichletDistribution && newBit instanceof DirichletDistribution) {
             DirichletDistribution<T> curr = (DirichletDistribution<T>) current;
             Map<T,Double> a1 = curr.getAlphaWeights();
@@ -86,11 +87,11 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
             curr.setMass(m);
             return curr;
 
-        } else if ( current instanceof DirichletDistribution && newBit instanceof IDiscreteDomainDistribution) {
+        } else if ( current instanceof DirichletDistribution && newBit instanceof DiscreteDomainDistribution) {
 
             DirichletDistribution<T> curr = (DirichletDistribution<T>) current;
             Map<T,Double> a1 = curr.getAlphaWeights();
-            Map<T,IDegree> a2 = ((IDiscreteProbabilityDistribution<T>) newBit).getDistribution();
+            Map<T,Degree> a2 = ((DiscreteProbabilityDistribution<T>) newBit).getDistribution();
             double m = curr.getMass();
 
             for (T key : a1.keySet()) {
@@ -118,14 +119,14 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 	}
 
 
-	public IDistribution<T> merge(IDistribution<T> current,
-			IDistribution<T> newBit, String strategy) {
+	public Distribution<T> merge(Distribution<T> current,
+			Distribution<T> newBit, String strategy) {
 		return merge(current,newBit);
 	}
 
 
-	public IDistribution<T> merge(IDistribution<T> current,
-			IDistribution<T> newBit, Object... params) {
+	public Distribution<T> merge(Distribution<T> current,
+			Distribution<T> newBit, Object... params) {
 		return merge(current,newBit);
 	}
 
@@ -138,8 +139,8 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 
 
 
-    public IDistribution<T> mergeAsNew(IDistribution<T> current,
-			IDistribution<T> newBit) {
+    public Distribution<T> mergeAsNew(Distribution<T> current,
+			Distribution<T> newBit) {
 		if (current instanceof DirichletDistribution && newBit instanceof DirichletDistribution) {
             DirichletDistribution<T> distr = new DirichletDistribution<T>();
             Map<T,Double> a = distr.getAlphaWeights();
@@ -172,7 +173,7 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
             distr.setMass(m);
             return distr;
 
-        } else if ( current instanceof DirichletDistribution && newBit instanceof IDiscreteDomainDistribution) {
+        } else if ( current instanceof DirichletDistribution && newBit instanceof DiscreteDomainDistribution) {
 
             DirichletDistribution<T> distr = new DirichletDistribution<T>();
             Map<T,Double> a = distr.getAlphaWeights();
@@ -180,7 +181,7 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 
             DirichletDistribution<T> curr = (DirichletDistribution<T>) current;
             Map<T,Double> a1 = curr.getAlphaWeights();
-            Map<T,IDegree> a2 = ((IDiscreteProbabilityDistribution<T>) newBit).getDistribution();
+            Map<T,Degree> a2 = ((DiscreteProbabilityDistribution<T>) newBit).getDistribution();
 
 
             for (T key : a1.keySet()) {
@@ -212,25 +213,25 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 	}
 
 
-	public IDistribution<T> mergeAsNew(IDistribution<T> current,
-			IDistribution<T> newBit, String strategy) {
+	public Distribution<T> mergeAsNew(Distribution<T> current,
+			Distribution<T> newBit, String strategy) {
 		return mergeAsNew(current, newBit);
 	}
 
 
-	public IDistribution<T> mergeAsNew(IDistribution<T> current,
-			IDistribution<T> newBit, Object... params) {
+	public Distribution<T> mergeAsNew(Distribution<T> current,
+			Distribution<T> newBit, Object... params) {
 		return mergeAsNew(current, newBit);
 	}
 
 
 
-    public IDistribution<T> newDistribution() {
+    public Distribution<T> newDistribution() {
 		DirichletDistribution<T> dist = new DirichletDistribution<T>();        ;
         return dist;
 	}
 
-	public IDistribution<T> newDistribution(Set<T> focalElements) {
+	public Distribution<T> newDistribution(Set<T> focalElements) {
 		DirichletDistribution<T> dist = new DirichletDistribution<T>();
         for (T value : focalElements) {
             dist.getAlphaWeights().put(value,1.0);
@@ -239,7 +240,7 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
         return dist;
 	}
 
-    public IDistribution<T> newDistribution(Map<? extends T, ? extends IDegree> elements) {
+    public Distribution<T> newDistribution(Map<? extends T, ? extends Degree> elements) {
         DirichletDistribution<T> dist = new DirichletDistribution<T>();
         double m = 0;
         for (T value : elements.keySet()) {
@@ -257,18 +258,18 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 
 
 
-    public T toCrispValue(IDistribution<T> dist) {
+    public T toCrispValue(Distribution<T> dist) {
         ValueSortedMap<T,Double> aw = ((DirichletDistribution<T>) dist).getAlphaWeights();
 		return aw.isEmpty() ? null : (T) aw.keySet().iterator().next();
 	}
 
 
-	public T toCrispValue(IDistribution<T> dist, String strategy) {
+	public T toCrispValue(Distribution<T> dist, String strategy) {
 		return toCrispValue(dist);
 	}
 
 
-	public T toCrispValue(IDistribution<T> dist, Object... params) {
+	public T toCrispValue(Distribution<T> dist, Object... params) {
 		return toCrispValue(dist);
 	}
 
@@ -276,7 +277,7 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 
 
 
-    public T sample(IDistribution<T> dist) {
+    public T sample(Distribution<T> dist) {
         DirichletDistribution<T> diric = (DirichletDistribution<T>) dist;
         Iterator<T> iter = diric.getSupport().iterator();
 
@@ -293,11 +294,11 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 		return result;
     }
 
-    public T sample(IDistribution<T> dist, String strategy) {
+    public T sample(Distribution<T> dist, String strategy) {
         return sample(dist);
     }
 
-    public T sample(IDistribution<T> dist, Object... params) {
+    public T sample(Distribution<T> dist, Object... params) {
         return sample(dist);
     }
 
@@ -308,23 +309,23 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 
 
 
-    public IDistribution<T> toDistribution(T value) {
+    public Distribution<T> toDistribution(T value) {
 		return buildDistributionFromSingleObservation(value,1.0);
 	}
 
 
-	public IDistribution<T> toDistribution(T value, String strategy) {
+	public Distribution<T> toDistribution(T value, String strategy) {
 		if ("spike".equals(strategy)) {
             return buildDistributionFromSingleObservation(value,Double.MAX_VALUE);
         }
         return toDistribution(value);
 	}
 
-	public IDistribution<T> toDistribution(T value, Object... params) {
+	public Distribution<T> toDistribution(T value, Object... params) {
 		return toDistribution(value);
 	}
 
-    protected IDistribution<T> buildDistributionFromSingleObservation(T value, double wgt) {
+    protected Distribution<T> buildDistributionFromSingleObservation(T value, double wgt) {
         DirichletDistribution<T> dist = new DirichletDistribution<T>();
             dist.getAlphaWeights().put(value,wgt);
             dist.setMass(wgt);
@@ -337,7 +338,7 @@ public class DirichletDistributionStrategy<T>  implements IDistributionStrategie
 
 
 
-    public IDistribution<T> parse(String distrAsString) {
+    public Distribution<T> parse(String distrAsString) {
         DirichletDistribution<T> dist = new DirichletDistribution<T>();
         double m = 0;
 

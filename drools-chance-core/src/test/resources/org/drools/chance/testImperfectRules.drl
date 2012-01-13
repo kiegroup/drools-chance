@@ -16,12 +16,12 @@
  package org.drools.chance.trait.drl
 
 import org.drools.chance.builder.Imperfect;
-import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.common.IImperfectField;
-
+import org.drools.chance.distribution.Distribution;
 
 import org.drools.chance.common.fact.Weight;
 import org.drools.chance.common.fact.Price;
+
+import org.drools.chance.degree.DegreeType;
 
 
 global java.util.List list;
@@ -44,28 +44,28 @@ declare ImpBean
     @typesafe( false )
 
 	name    : String
-	                @Imperfect( kind="probability", type="discrete", degree="simple" )
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DISCRETE, degree=DegreeType.SIMPLE )
 
 	flag    : Boolean
-	                @Imperfect( kind="probability", type="discrete", degree="simple" )
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DISCRETE, degree=DegreeType.SIMPLE )
 
 	age     : Integer
-	                @Imperfect( kind="probability", type="dirichlet", degree="simple" )
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DIRICHLET, degree=DegreeType.SIMPLE )
 
     body    : Weight
-                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="weight" )
+                    @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, degree=DegreeType.SIMPLE, support="weight" )
 
     weight  : Double
 
 
     price   : Price
-                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="bucks" )
+                    @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, degree=DegreeType.SIMPLE, support="bucks" )
 
     bucks   : Integer
 
 
     likes   : Cheese
-                    @Imperfect( kind="probability", type="basic", degree="simple" )
+                    @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.BASIC, degree=DegreeType.SIMPLE )
 end
 
 
@@ -100,7 +100,7 @@ then
             System.out.println(" \t\t Initial Imp distr (name) : " + imp.getNameDistr( ) );
             System.out.println(" \t\t Initial Imp alive (name) : " + imp.getNameValue( ) );
 
-        IDistribution nameDist = imp.getName().getStrategies().parse("john/0.7,adam/0.3");
+        Distribution nameDist = imp.getName().getStrategies().parse("john/0.7,adam/0.3");
         imp.setNameDistr( nameDist );
 
             System.out.println(" \t\t After setting new distr (name) : " + imp.getName( ) );
@@ -128,7 +128,7 @@ then
             System.out.println(" \t\t Initial Imp distr (flag) : " + imp.getFlagDistr( ) );
             System.out.println(" \t\t Initial Imp alive (flag) : " + imp.getFlagValue( ) );
 
-        IDistribution flagDist = imp.getFlag().getStrategies().parse("true/0.6,false/0.4");
+        Distribution flagDist = imp.getFlag().getStrategies().parse("true/0.6,false/0.4");
         imp.setFlagDistr( flagDist );
 
             System.out.println(" \t\t After setting new distr (flag) : " + imp.getFlag( ) );
@@ -155,7 +155,7 @@ then
             System.out.println(" \t\t Initial Imp distr (likes) : " + imp.getLikesDistr( ) );
             System.out.println(" \t\t Initial Imp alive (likes) : " + imp.getLikesValue( ) );
 
-        IDistribution likesDist = imp.getLikes().getStrategies().parse("stilton/0.7");
+        Distribution likesDist = imp.getLikes().getStrategies().parse("stilton/0.7");
         imp.setLikesDistr( likesDist );
 
             System.out.println(" \t\t After setting new distr (likes) : " + imp.getLikes( ) );
@@ -183,7 +183,7 @@ then
             System.out.println(" \t\t Initial Imp distr (age) : " + imp.getAgeDistr( ) );
             System.out.println(" \t\t Initial Imp alive (age) : " + imp.getAgeValue( ) );
 
-        IDistribution ageDist = imp.getAge().getStrategies().parse("18/4,19/8");
+        Distribution ageDist = imp.getAge().getStrategies().parse("18/4,19/8");
         imp.setAgeDistr( ageDist );
 
             System.out.println(" \t\t After setting new distr (age) : " + imp.getAge( ) );
@@ -215,8 +215,8 @@ then
 
 
 
-        IDistribution priceDist = imp.getPrice().getStrategies().parse("INEXPENSIVE/0.4,CHEAP/0.6");
-        IDistribution priceDist2 = imp.getPrice().getStrategies().parse("REASONABLE/0.7,EXPENSIVE/0.3");
+        Distribution priceDist = imp.getPrice().getStrategies().parse("INEXPENSIVE/0.4,CHEAP/0.6");
+        Distribution priceDist2 = imp.getPrice().getStrategies().parse("REASONABLE/0.7,EXPENSIVE/0.3");
         imp.setPriceDistr( priceDist );
 
             System.out.println(" \t\t After setting new distr (price) : " + imp.getPrice( ) );
@@ -256,8 +256,8 @@ then
 
 
 
-        IDistribution bodyDist = imp.getBody().getStrategies().parse("SLIM/0.7");
-        IDistribution bodyDist2 = imp.getBody().getStrategies().parse("SLIM/0.8,FAT/0.2");
+        Distribution bodyDist = imp.getBody().getStrategies().parse("SLIM/0.7");
+        Distribution bodyDist2 = imp.getBody().getStrategies().parse("SLIM/0.8,FAT/0.2");
         imp.setBodyDistr( bodyDist );
 
             System.out.println(" \t\t After setting new distr (body) : " + imp.getBody( ) );

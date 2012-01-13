@@ -16,14 +16,14 @@
 
 package org.drools.chance.distribution;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 
 import java.util.Map;
 import java.util.Set;
 
 
 /**
- * Companion and Level III factory to an IDistribution<T>,
+ * Companion and Level III factory to an Distribution<T>,
  * classes implementing this interface are meant to be a stub for all the algorithms
  * required to manipulate a specific type of distribution.
  *
@@ -31,7 +31,7 @@ import java.util.Set;
  * to choose different strategies using either a String selctor or passing generic parameters
  * @param <T>
  */
-public interface IDistributionStrategies<T> {
+public interface DistributionStrategies<T> {
 
 
 
@@ -42,9 +42,9 @@ public interface IDistributionStrategies<T> {
      * @param value     the value used to generate a distribution
      * @return
      */
-	IDistribution<T> toDistribution(T value);
-	IDistribution<T> toDistribution(T value, String strategy);
-	IDistribution<T> toDistribution(T value, Object... params);
+	Distribution<T> toDistribution(T value);
+	Distribution<T> toDistribution(T value, String strategy);
+	Distribution<T> toDistribution(T value, Object... params);
 
 
     /**
@@ -53,7 +53,7 @@ public interface IDistributionStrategies<T> {
      * @param distrAsString
      * @return
      */
-    IDistribution<T> parse(String distrAsString);
+    Distribution<T> parse(String distrAsString);
 
 
 
@@ -64,7 +64,7 @@ public interface IDistributionStrategies<T> {
      * basic mass assignment with mass 1 assigned to the universe set, ...
      * @return
      */
-	IDistribution<T> newDistribution();
+	Distribution<T> newDistribution();
 
     /**
      * Factory method
@@ -74,7 +74,7 @@ public interface IDistributionStrategies<T> {
      * @param   focalElements
      * @return
      */
-	IDistribution<T> newDistribution(Set<T> focalElements);
+	Distribution<T> newDistribution(Set<T> focalElements);
 
     /**
      * Factory method
@@ -83,7 +83,7 @@ public interface IDistributionStrategies<T> {
      * @param elements
      * @return
      */
-	IDistribution<T> newDistribution(Map<? extends T, ? extends IDegree> elements);
+	Distribution<T> newDistribution(Map<? extends T, ? extends Degree> elements);
 
     
 
@@ -95,9 +95,9 @@ public interface IDistributionStrategies<T> {
      * @param dist the distribution to convert
      * @return a representative value in the domain T
      */
-	T toCrispValue(IDistribution<T> dist);
-	T toCrispValue(IDistribution<T> dist, String strategy);
-	T toCrispValue(IDistribution<T> dist, Object... params);
+	T toCrispValue(Distribution<T> dist);
+	T toCrispValue(Distribution<T> dist, String strategy);
+	T toCrispValue(Distribution<T> dist, Object... params);
 
     /**
      * Samples a distribution and returns an element of the domain
@@ -106,9 +106,9 @@ public interface IDistributionStrategies<T> {
      * @param dist
      * @return
      */
-    T sample(IDistribution<T> dist);
-	T sample(IDistribution<T> dist, String strategy);
-    T sample(IDistribution<T> dist, Object... params);
+    T sample(Distribution<T> dist);
+	T sample(Distribution<T> dist, String strategy);
+    T sample(Distribution<T> dist, Object... params);
 
 
     /**
@@ -119,9 +119,9 @@ public interface IDistributionStrategies<T> {
      * @param newBit
      * @return the original distribution, updated
      */
-    IDistribution<T> merge(IDistribution<T> current, IDistribution<T> newBit);
-    IDistribution<T> merge(IDistribution<T> current, IDistribution<T> newBit, String strategy);
-	IDistribution<T> merge(IDistribution<T> current, IDistribution<T> newBit, Object... params);
+    Distribution<T> merge(Distribution<T> current, Distribution<T> newBit);
+    Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, String strategy);
+	Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, Object... params);
 
 
 
@@ -133,9 +133,9 @@ public interface IDistributionStrategies<T> {
      * @param newBit
      * @return a copy of the original distribution, updated
      */
-    IDistribution<T> mergeAsNew(IDistribution<T> current, IDistribution<T> newBit);
-    IDistribution<T> mergeAsNew(IDistribution<T> current, IDistribution<T> newBit, String strategy);
-	IDistribution<T> mergeAsNew(IDistribution<T> current, IDistribution<T> newBit, Object... params);
+    Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit);
+    Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit, String strategy);
+	Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params);
 
 
 }

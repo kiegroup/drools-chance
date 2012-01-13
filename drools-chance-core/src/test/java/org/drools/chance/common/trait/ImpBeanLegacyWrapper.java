@@ -17,10 +17,13 @@
 package org.drools.chance.common.trait;
 
 import org.drools.chance.common.ChanceStrategyFactory;
-import org.drools.chance.common.IImperfectField;
 import org.drools.chance.common.ImperfectField;
+import org.drools.chance.common.ImperfectFieldImpl;
 import org.drools.chance.common.fact.Price;
 import org.drools.chance.common.fact.Weight;
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
 import org.drools.core.util.TripleStore;
 import org.drools.factmodel.traits.TraitProxy;
@@ -128,44 +131,44 @@ public class ImpBeanLegacyWrapper extends TripleBasedStruct {
 
 
         if ( ! store.contains( propertyKey( "name_$$Imp" ) ) ) {
-            IImperfectField fld = new ImperfectField(
-                    ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", String.class )
+            ImperfectField fld = new ImperfectFieldImpl(
+                    ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, String.class )
             );
             store.put( property( "name_$$Imp", fld ) );
         }
         if ( ! store.contains( propertyKey( "flag_$$Imp" ) ) ) {
-            IImperfectField fld = new ImperfectField(
-                    ChanceStrategyFactory.buildStrategies( "probability", "discrete", "simple", Boolean.class )
+            ImperfectField fld = new ImperfectFieldImpl(
+                    ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DISCRETE, DegreeType.SIMPLE, Boolean.class )
             );
             store.put( property( "flag_$$Imp", fld ) );
         }
         if ( ! store.contains( propertyKey( "age_$$Imp" ) ) ) {
-            IImperfectField fld = new ImperfectField(
-                    ChanceStrategyFactory.buildStrategies( "probability", "dirichlet", "simple", Integer.class )
+            ImperfectField fld = new ImperfectFieldImpl(
+                    ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.DIRICHLET, DegreeType.SIMPLE, Integer.class )
             );
             store.put( property( "age_$$Imp", fld ) );
         }
         if ( ! store.contains( propertyKey( "likes_$$Imp" ) ) ) {
-            IImperfectField fld = new ImperfectField(
-                    ChanceStrategyFactory.buildStrategies( "probability", "basic", "simple", String.class )
+            ImperfectField fld = new ImperfectFieldImpl(
+                    ChanceStrategyFactory.buildStrategies( ImpKind.PROBABILITY, ImpType.BASIC, DegreeType.SIMPLE, String.class )
             );
             store.put( property( "likes_$$Imp", fld ) );
         }
 
 
         if ( ! store.contains( propertyKey( "body_$$Imp" ) ) ) {
-            IImperfectField fld = new LinguisticImperfectField(
-                    ChanceStrategyFactory.buildStrategies( "fuzzy", "linguistic", "simple", Weight.class ),
-                    ChanceStrategyFactory.buildStrategies( "possibility", "linguistic", "simple", Double.class ),
+            ImperfectField fld = new LinguisticImperfectField(
+                    ChanceStrategyFactory.buildStrategies( ImpKind.FUZZINESS, ImpType.LINGUISTIC, DegreeType.SIMPLE, Weight.class ),
+                    ChanceStrategyFactory.buildStrategies( ImpKind.POSSIBILITY, ImpType.LINGUISTIC, DegreeType.SIMPLE, Double.class ),
                     null
             );
             store.put( property( "body_$$Imp", fld ) );
         }
 
         if ( ! store.contains( propertyKey( "price_$$Imp" ) ) ) {
-            IImperfectField fld = new LinguisticImperfectField(
-                    ChanceStrategyFactory.buildStrategies( "fuzzy", "linguistic", "simple", Price.class ),
-                    ChanceStrategyFactory.buildStrategies( "possibility", "linguistic", "simple", Integer.class ),
+            ImperfectField fld = new LinguisticImperfectField(
+                    ChanceStrategyFactory.buildStrategies( ImpKind.FUZZINESS, ImpType.LINGUISTIC, DegreeType.SIMPLE, Price.class ),
+                    ChanceStrategyFactory.buildStrategies( ImpKind.POSSIBILITY, ImpType.LINGUISTIC, DegreeType.SIMPLE, Integer.class ),
                     null
             );
             store.put( property( "price_$$Imp", fld ) );

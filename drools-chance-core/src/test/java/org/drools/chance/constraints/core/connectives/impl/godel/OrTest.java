@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.drools.chance.constraints.core.connectives.IConnectiveCore;
 import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 
@@ -54,10 +54,10 @@ public class OrTest extends TestCase {
 
 
     public void testEvalBinarySimple() throws Exception {
-        IDegree s1 = new SimpleDegree(0.2);
-        IDegree s2 = new SimpleDegree(0.6);
+        Degree s1 = new SimpleDegree(0.2);
+        Degree s2 = new SimpleDegree(0.6);
 
-        IDegree s0 = or.eval(s1, s2);
+        Degree s0 = or.eval(s1, s2);
 
         assertNotNull(s0);
         assertTrue(s0 instanceof SimpleDegree);
@@ -66,10 +66,10 @@ public class OrTest extends TestCase {
 
 
     public void testEvalBinaryInterval() throws Exception {
-        IDegree s1 = new IntervalDegree(0.3,0.7);
-        IDegree s2 = new IntervalDegree(0.45, 0.5);
+        Degree s1 = new IntervalDegree(0.3,0.7);
+        Degree s2 = new IntervalDegree(0.45, 0.5);
 
-        IDegree s0 = or.eval(s1,s2);
+        Degree s0 = or.eval(s1,s2);
 
         assertNotNull(s0);
         assertTrue(s0 instanceof IntervalDegree);
@@ -79,8 +79,8 @@ public class OrTest extends TestCase {
 
 
     public void testEvalUnary() throws Exception {
-        IDegree s1 = new SimpleDegree(0.3);
-        IDegree s0 = or.eval(s1);
+        Degree s1 = new SimpleDegree(0.3);
+        Degree s0 = or.eval(s1);
 
         assertNotNull(s0);
         assertEquals(s0.getClass(),s1.getClass());
@@ -90,11 +90,11 @@ public class OrTest extends TestCase {
 
 
     public void testEvalNarySimple() throws Exception {
-        IDegree s1 = new SimpleDegree(0.2);
-        IDegree s2 = new SimpleDegree(0.6);
-        IDegree s3 = new SimpleDegree(0.1);
+        Degree s1 = new SimpleDegree(0.2);
+        Degree s2 = new SimpleDegree(0.6);
+        Degree s3 = new SimpleDegree(0.1);
 
-        IDegree s0 = or.eval(s1, s2, s3);
+        Degree s0 = or.eval(s1, s2, s3);
 
         assertNotNull(s0);
         assertTrue(s0 instanceof SimpleDegree);
@@ -105,11 +105,11 @@ public class OrTest extends TestCase {
 
 
     public void testEvalNaryInterval() throws Exception {
-        IDegree s1 = new IntervalDegree(0.3,0.7);
-        IDegree s2 = new IntervalDegree(0.45, 0.5);
-        IDegree s3 = new IntervalDegree(0.1, 0.9);
+        Degree s1 = new IntervalDegree(0.3,0.7);
+        Degree s2 = new IntervalDegree(0.45, 0.5);
+        Degree s3 = new IntervalDegree(0.1, 0.9);
 
-        IDegree s0 = or.eval(s1,s2,s3);
+        Degree s0 = or.eval(s1,s2,s3);
 
         assertNotNull(s0);
         assertTrue(s0 instanceof IntervalDegree);
@@ -119,10 +119,10 @@ public class OrTest extends TestCase {
 
 
     public void testNeutralInterval() throws Exception {
-        IDegree s1 = new IntervalDegree(0.3,0.7);
-        IDegree s2 = IntervalDegree.FALSE;
+        Degree s1 = new IntervalDegree(0.3,0.7);
+        Degree s2 = IntervalDegree.FALSE;
 
-        IDegree s0 = or.eval(s1,s2);
+        Degree s0 = or.eval(s1,s2);
 
         assertNotNull(s0);
         assertTrue(s0 instanceof IntervalDegree);
@@ -130,10 +130,10 @@ public class OrTest extends TestCase {
     }
 
     public void testNeutralSimple() throws Exception {
-        IDegree s1 = new SimpleDegree(0.4);
-        IDegree s2 = SimpleDegree.FALSE;
+        Degree s1 = new SimpleDegree(0.4);
+        Degree s2 = SimpleDegree.FALSE;
 
-        IDegree s0 = or.eval(s1,s2);
+        Degree s0 = or.eval(s1,s2);
 
         assertNotNull(s0);
         assertTrue(s0 instanceof SimpleDegree);

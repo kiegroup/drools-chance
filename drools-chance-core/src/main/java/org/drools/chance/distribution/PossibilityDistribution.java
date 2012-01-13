@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package org.drools.chance.constraints.core.connectives;
+package org.drools.chance.distribution;
 
-import org.drools.chance.constraints.core.IConstraintCore;
-import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
-import org.drools.chance.degree.Degree;
-
-public interface IConnectiveCore extends IConstraintCore {
-
-    Degree eval(Degree deg);
-    Degree eval(Degree left, Degree right);
-    Degree eval(Degree... degs);
-
-
-    LOGICCONNECTIVES getType();
+public interface PossibilityDistribution<T> extends Distribution<T> {
+	
+	
 
 }

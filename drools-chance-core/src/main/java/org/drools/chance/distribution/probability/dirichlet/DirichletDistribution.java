@@ -16,10 +16,10 @@
 
 package org.drools.chance.distribution.probability.dirichlet;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
-import org.drools.chance.distribution.IDiscreteProbabilityDistribution;
+import org.drools.chance.distribution.DiscreteProbabilityDistribution;
 import org.drools.chance.utils.ValueSortedMap;
 
 import java.util.Collection;
@@ -33,17 +33,17 @@ import java.util.Set;
  * TODO
  * @param <T>
  */
-public class DirichletDistribution<T> implements IDiscreteProbabilityDistribution<T>  {
+public class DirichletDistribution<T> implements DiscreteProbabilityDistribution<T> {
 
     private ValueSortedMap<T,Double> alphaWeightMap = new ValueSortedMap<T,Double>();
     private double mass = 0;
 
 
-    public IDegree getDegree(T value) {
+    public Degree getDegree(T value) {
         return new SimpleDegree(getExpectation(value));
     }
 
-    public IDegree get(T value) {
+    public Degree get(T value) {
         return getDegree( value );
     }
 
@@ -125,16 +125,16 @@ public class DirichletDistribution<T> implements IDiscreteProbabilityDistributio
     /**
      * @return An ordered simple distribution based on the maximum likelihood principle
      */
-    public Map<T, IDegree> getDistribution() {
-        ValueSortedMap<T,IDegree> vsMap = new ValueSortedMap<T,IDegree>();
+    public Map<T, Degree> getDistribution() {
+        ValueSortedMap<T,Degree> vsMap = new ValueSortedMap<T,Degree>();
         for (T x : alphaWeightMap.keySet())
             vsMap.put(x,new SimpleDegree(getMode(x)));
         return vsMap;
     }
 
 
-    public double getLikelihood(IDiscreteProbabilityDistribution<T> testDistribution) {
-        Map<T,IDegree> distr = testDistribution.getDistribution();
+    public double getLikelihood(DiscreteProbabilityDistribution<T> testDistribution) {
+        Map<T,Degree> distr = testDistribution.getDistribution();
         double A = -lnGamma(mass);
         Iterator<T> iter = alphaWeightMap.keySet().iterator();
         while (iter.hasNext()) {
@@ -148,7 +148,7 @@ public class DirichletDistribution<T> implements IDiscreteProbabilityDistributio
         return Math.exp(A);
     }
 
-    public SimpleDegree getLikelihoodDegree(IDiscreteProbabilityDistribution<T> testDistribution) {
+    public SimpleDegree getLikelihoodDegree(DiscreteProbabilityDistribution<T> testDistribution) {
         return new SimpleDegree(getLikelihood(testDistribution));
     }
 

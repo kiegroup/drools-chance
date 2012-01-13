@@ -18,7 +18,7 @@ package org.drools.chance.constraints.core.connectives.impl.lukas;
 
 import org.drools.chance.constraints.core.connectives.impl.AbstractConnective;
 import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,15 +43,15 @@ public class Not extends AbstractConnective {
         return LOGICCONNECTIVES.NOT;
     }
 
-    public IDegree eval(IDegree deg) {
+    public Degree eval(Degree deg) {
         return deg.True().sub(deg);
     }
 
-    public IDegree eval(IDegree left, IDegree right) {
+    public Degree eval(Degree left, Degree right) {
         return eval(left);
     }
 
-    public IDegree eval(IDegree... degs) {
+    public Degree eval(Degree... degs) {
         return eval(degs[0]);
     }
 

@@ -16,8 +16,8 @@
 
 package org.drools.chance.builder;
 
-import org.drools.chance.common.IImperfectField;
-import org.drools.chance.distribution.IDistribution;
+import org.drools.chance.common.ImperfectField;
+import org.drools.chance.distribution.Distribution;
 import org.drools.factmodel.AnnotationDefinition;
 import org.drools.factmodel.BuildUtils;
 import org.drools.factmodel.ClassDefinition;
@@ -71,7 +71,7 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
     protected void buildSetter(ClassWriter cw, FieldDefinition field, String name, String type, String generic) {
 
         if ( field instanceof ImperfectFieldDefinition ) {
-            super.buildSetter( cw, null, name, IImperfectField.class.getName(), type );
+            super.buildSetter( cw, null, name, ImperfectField.class.getName(), type );
 
             if ( ImperfectFieldDefinition.isLinguistic( field ) ) {
                 ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
@@ -81,11 +81,11 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
             super.buildSetter( cw, null, name, type, null );
         }
 
-        super.buildSetter( cw, null, name+"Distr", IDistribution.class.getName(), type );
+        super.buildSetter( cw, null, name+"Distr", Distribution.class.getName(), type );
         super.buildSetter( cw, null, name+"Value", type, null );
 //        super.buildSetter( cw, field, name+"Core", type, null );
 
-        buildUpdater( cw, field, name+"Distr", IDistribution.class.getName(), type );
+        buildUpdater( cw, field, name+"Distr", Distribution.class.getName(), type );
         buildUpdater( cw, field, name+"Value", type, null );
 
     }
@@ -94,7 +94,7 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
     protected void buildGetter(ClassWriter cw, FieldDefinition field, String name, String type, String generic) {
 
         if ( field instanceof ImperfectFieldDefinition ) {
-            super.buildGetter(cw, null, name, IImperfectField.class.getName(), type);
+            super.buildGetter(cw, null, name, ImperfectField.class.getName(), type);
 
             if ( ImperfectFieldDefinition.isLinguistic( field ) ) {
                 ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
@@ -104,7 +104,7 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
             super.buildGetter(cw, null, name, type, null);
         }
 
-        super.buildGetter( cw, null, name+"Distr", IDistribution.class.getName(), type );
+        super.buildGetter( cw, null, name+"Distr", Distribution.class.getName(), type );
         super.buildGetter( cw, null, name+"Value", type, null );
 //        super.buildGetter( cw, field, name+"Core", type, null );
 
@@ -136,7 +136,7 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
 
                 FieldDefinition fieldDistr = new VirtualFieldDefinition();
                 fieldDistr.setName( field.getName() + "Distr" );
-                fieldDistr.setTypeName( IDistribution.class.getName() );
+                fieldDistr.setTypeName( Distribution.class.getName() );
                 fieldDistr.setInherited( field.isInherited() );
 
                 trait.addField( fieldDistr );

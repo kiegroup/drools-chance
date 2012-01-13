@@ -20,6 +20,7 @@ import org.drools.chance.builder.Imperfect;
 import org.drools.chance.common.fact.Weight;
 import org.drools.chance.common.fact.Price;
 
+import org.drools.chance.degree.DegreeType;
 
 
 declare Cheese
@@ -38,28 +39,28 @@ end
 
 declare BeanImp
 	name    : String    = "john/0.3, philip/0.7"
-	                @Imperfect( kind="probability", type="discrete", degree="simple" )
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DISCRETE, degree=DegreeType.SIMPLE )
 
 	flag    : Boolean    = "true/0.75, false/0.25"
-	                @Imperfect( kind="probability", type="discrete", degree="simple" )
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DISCRETE, degree=DegreeType.SIMPLE )
 
 	age     : Integer   = "18/0.02, 19/0.01, 20/0.04"
-	                @Imperfect( kind="probability", type="dirichlet", degree="simple" )
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DIRICHLET, degree=DegreeType.SIMPLE )
 
     body    : Weight    = "SLIM/0.6, FAT/0.4"
-                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="weight" )
+                    @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, degree=DegreeType.SIMPLE, support="weight" )
 
     weight  : Double    = 65.0
 
 
     price   : Price
-                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="bucks" )
+                    @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, degree=DegreeType.SIMPLE, support="bucks" )
 
     bucks   : Integer
 
 
     likes   : Cheese    = "cheddar/0.6"
-                    @Imperfect( kind="probability", type="basic", degree="simple" )
+                    @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.BASIC, degree=DegreeType.SIMPLE )
 
 end
 
@@ -70,28 +71,28 @@ declare ImpTrait
     @typesafe( false )
 
 	name    : String
-	                @Imperfect( kind="probability", type="discrete", degree="simple" )
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DISCRETE, degree=DegreeType.SIMPLE )
 
 	flag    : Boolean
-	                @Imperfect( kind="probability", type="discrete", degree="simple" )
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DISCRETE, degree=DegreeType.SIMPLE )
 
 	age     : Integer
-	                @Imperfect( kind="probability", type="dirichlet", degree="simple" )
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DIRICHLET, degree=DegreeType.SIMPLE )
 
     body    : Weight
-                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="weight" )
+                    @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, degree=DegreeType.SIMPLE, support="weight" )
 
     weight  : Double
 
 
     price   : Price
-                    @Imperfect( kind="fuzzy", type="linguistic", degree="simple", support="bucks" )
+                    @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, degree=DegreeType.SIMPLE, support="bucks" )
 
     bucks   : Integer
 
 
     likes   : Cheese
-                    @Imperfect( kind="probability", type="basic", degree="simple" )
+                    @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.BASIC, degree=DegreeType.SIMPLE )
 end
 
 

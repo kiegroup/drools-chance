@@ -17,10 +17,13 @@
 package org.drools.chance.distribution;
 
 
-public interface IContinuousPossibilityDistribution<T> extends
-        IContinuousDomainDistribution<T>, IPossibilityDistribution<T> {
-	
-		
-	
+import java.util.Set;
+
+public interface DiscreteDomainDistribution<T> extends Iterable<T> {
+
+    
+    public Set<T> getSupport();
+
+    public int size();
 
 }

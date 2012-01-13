@@ -16,12 +16,13 @@
 
 package org.drools.chance.distribution.probability.discrete;
 
+import org.drools.chance.degree.Degree;
+import org.drools.chance.degree.DegreeType;
 import org.drools.chance.degree.DegreeTypeRegistry;
-import org.drools.chance.degree.IDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
-import org.drools.chance.distribution.IDiscreteProbabilityDistribution;
-import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.IDistributionStrategies;
+import org.drools.chance.distribution.DiscreteProbabilityDistribution;
+import org.drools.chance.distribution.Distribution;
+import org.drools.chance.distribution.DistributionStrategies;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -32,18 +33,18 @@ import java.util.*;
  * Strategy and level III factory for discrete probability distributions
  * @param <T>
  */
-public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies<T> {
+public class DiscreteDistributionStrategy<T>  implements DistributionStrategies<T> {
 
 
 
-    private String degreeType;
+    private DegreeType degreeType;
     private Class<T> domainType;
 
     private Constructor degreeStringConstr = null;
 
 
 
-    DiscreteDistributionStrategy(String degreeType, Class<T> domainType){
+    DiscreteDistributionStrategy(DegreeType degreeType, Class<T> domainType){
         this.degreeType = degreeType;
         this.domainType = domainType;
     }
@@ -60,14 +61,14 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
 
 
 
-    public IDistribution<T> merge(IDistribution<T> current,
-                                  IDistribution<T> newBit) {
+    public Distribution<T> merge(Distribution<T> current,
+                                  Distribution<T> newBit) {
         //ToDo iterare sull indice piu corto
-    	IDiscreteProbabilityDistribution<T> currentDD= (IDiscreteProbabilityDistribution<T>) current;
-    	IDiscreteProbabilityDistribution<T> newBitDD= (IDiscreteProbabilityDistribution<T>) newBit;
-        Map<T,IDegree> map = new HashMap<T,IDegree>();
+    	DiscreteProbabilityDistribution<T> currentDD= (DiscreteProbabilityDistribution<T>) current;
+    	DiscreteProbabilityDistribution<T> newBitDD= (DiscreteProbabilityDistribution<T>) newBit;
+        Map<T,Degree> map = new HashMap<T,Degree>();
 
-         IDegree denominator=null;
+         Degree denominator=null;
          int i=0;
 
         for( Iterator<T> currIt = currentDD.getSupport().iterator(); currIt.hasNext() ;){
@@ -91,7 +92,7 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
         for( Iterator<T> currIt = currentDD.getSupport().iterator(); currIt.hasNext() ;){
                 T tempT = currIt.next();
                 if (newBitDD.getDistribution().containsKey(tempT)) {
-                   IDegree temp =  (newBitDD.getDegree(tempT).mul(current.getDegree(tempT))).div(denominator);
+                   Degree temp =  (newBitDD.getDegree(tempT).mul(current.getDegree(tempT))).div(denominator);
                     map.put(tempT,temp);
                 }
         }
@@ -102,14 +103,14 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
     }
 
 
-	public IDistribution<T> merge(IDistribution<T> current,
-			IDistribution<T> newBit, String strategy) {
+	public Distribution<T> merge(Distribution<T> current,
+			Distribution<T> newBit, String strategy) {
 		return merge(current,newBit);
 	}
 
 
-	public IDistribution<T> merge(IDistribution<T> current,
-			IDistribution<T> newBit, Object... params) {
+	public Distribution<T> merge(Distribution<T> current,
+			Distribution<T> newBit, Object... params) {
 		  return merge(current,newBit);
 	}
 
@@ -118,13 +119,13 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
 
 
 
-    public IDistribution<T> mergeAsNew(IDistribution<T> current,
-			IDistribution<T> newBit) {
-    	IDiscreteProbabilityDistribution<T> currentDD= (IDiscreteProbabilityDistribution<T>) current;
-    	IDiscreteProbabilityDistribution<T> newBitDD= (IDiscreteProbabilityDistribution<T>) newBit;
+    public Distribution<T> mergeAsNew(Distribution<T> current,
+			Distribution<T> newBit) {
+    	DiscreteProbabilityDistribution<T> currentDD= (DiscreteProbabilityDistribution<T>) current;
+    	DiscreteProbabilityDistribution<T> newBitDD= (DiscreteProbabilityDistribution<T>) newBit;
     	DiscreteDistribution<T> ret=new DiscreteDistribution<T>();
 
-        IDegree denominator=null;
+        Degree denominator=null;
         int i=0;
 
         if (newBitDD.getSupport().size() < currentDD.getSupport().size()) {
@@ -144,7 +145,7 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
             for( Iterator<T> newBitIt = newBitDD.getSupport().iterator(); newBitIt.hasNext() ;){
                 T tempT = newBitIt.next();
                 if (currentDD.getDistribution().containsKey(tempT)) {
-                    IDegree temp = (currentDD.getDegree(tempT).mul( newBit.getDegree(tempT))).div(denominator);
+                    Degree temp = (currentDD.getDegree(tempT).mul( newBit.getDegree(tempT))).div(denominator);
                     ret.put(tempT, temp);
                 }
             }
@@ -165,7 +166,7 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
             for( Iterator<T> currIt = currentDD.getSupport().iterator(); currIt.hasNext() ;){
                 T tempT = currIt.next();
                 if (newBitDD.getDistribution().containsKey(tempT)) {
-                    IDegree temp = (newBitDD.getDegree(tempT).mul(current.getDegree(tempT))).div(denominator) ;
+                    Degree temp = (newBitDD.getDegree(tempT).mul(current.getDegree(tempT))).div(denominator) ;
                     ret.put(tempT, temp);
                 }
             }
@@ -175,21 +176,21 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
 	}
 
 
-	public IDistribution<T> mergeAsNew(IDistribution<T> current,
-			IDistribution<T> newBit, String strategy) {
+	public Distribution<T> mergeAsNew(Distribution<T> current,
+			Distribution<T> newBit, String strategy) {
 		         return this.mergeAsNew(current,newBit);
 
 	}
 
 
-	public IDistribution<T> mergeAsNew(IDistribution<T> current,
-			IDistribution<T> newBit, Object... params) {
+	public Distribution<T> mergeAsNew(Distribution<T> current,
+			Distribution<T> newBit, Object... params) {
         return this.mergeAsNew(current,newBit);
 
 	}
 
 
-    public IDistribution<T> newDistribution() {
+    public Distribution<T> newDistribution() {
         if ( Boolean.class.equals( domainType ) ) {
             return createUniformDistribution( (Collection<T>) Arrays.asList( Boolean.TRUE, Boolean.FALSE ) );
         } else {
@@ -199,11 +200,11 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
 
 	}
 
-	public IDistribution<T> newDistribution(Set<T> focalElements) {
+	public Distribution<T> newDistribution(Set<T> focalElements) {
 		return createUniformDistribution( focalElements );
 	}
 
-    private IDistribution<T> createUniformDistribution( Collection<T> focalElements) {
+    private Distribution<T> createUniformDistribution( Collection<T> focalElements) {
         DiscreteDistribution<T> ret = new DiscreteDistribution<T>();
                 for( Iterator<? extends T> currIt = focalElements.iterator(); currIt.hasNext() ; ) {
                     ret.put( currIt.next(), DegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 1.0 / focalElements.size()) );
@@ -211,7 +212,7 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
         return ret;
 	}
 
-    public IDistribution<T> newDistribution(Map<? extends T, ? extends IDegree> elements) {
+    public Distribution<T> newDistribution(Map<? extends T, ? extends Degree> elements) {
         DiscreteDistribution<T> ret = new DiscreteDistribution<T>();
         for( Iterator<? extends T> currIt = elements.keySet().iterator(); currIt.hasNext() ;) {
               T temp=currIt.next();
@@ -220,22 +221,22 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
        return ret;
     }
 
-    public T toCrispValue(IDistribution<T> dist) {
+    public T toCrispValue(Distribution<T> dist) {
 		return ((DiscreteDistribution<T>) dist).getBest();
 
 	}
 
 
-	public T toCrispValue(IDistribution<T> dist, String strategy) {
+	public T toCrispValue(Distribution<T> dist, String strategy) {
 		return ((DiscreteDistribution<T>) dist).getBest();
 	}
 
 
-	public T toCrispValue(IDistribution<T> dist, Object... params) {
+	public T toCrispValue(Distribution<T> dist, Object... params) {
 		return ((DiscreteDistribution<T>) dist).getBest();
 	}
 
-    public T sample(IDistribution<T> dist) {
+    public T sample(Distribution<T> dist) {
 //       double p = Math.random();
 //		double acc = 0.0;
 //		T result = null;
@@ -249,39 +250,36 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
         return null;
     }
 
-    public T sample(IDistribution<T> dist, String strategy) {
+    public T sample(Distribution<T> dist, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public T sample(IDistribution<T> dist, Object... params) {
+    public T sample(Distribution<T> dist, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 
-    public IDistribution<T> toDistribution(T value) {
+    public Distribution<T> toDistribution(T value) {
     	DiscreteDistribution<T> dist = new DiscreteDistribution<T>();
         dist.put(value, new SimpleDegree(1.0));
 		return dist;
 	}
 
 
-	public IDistribution<T> toDistribution(T value, String strategy) {
+	public Distribution<T> toDistribution(T value, String strategy) {
 		DiscreteDistribution<T> dist = new DiscreteDistribution<T>();
         dist.put(value, new SimpleDegree(1.0));
 		return dist;
 	}
 
-	public IDistribution<T> toDistribution(T value, Object... params) {
+	public Distribution<T> toDistribution(T value, Object... params) {
 		DiscreteDistribution<T> dist = new DiscreteDistribution<T>();
         dist.put(value, new SimpleDegree(1.0));
 		return dist;
 	}
 
-    public IDistribution<T> parse(String distrAsString) {
+    public Distribution<T> parse(String distrAsString) {
         DiscreteDistribution<T> dist = new DiscreteDistribution<T>();
-        double m = 0;
-
-
 
         StringTokenizer tok = new StringTokenizer(distrAsString,",");
 
@@ -290,8 +288,8 @@ public class DiscreteDistributionStrategy<T>  implements IDistributionStrategies
             StringTokenizer sub = new StringTokenizer(pair,"/");
 
             try {
-                T value = (T) domainType.getConstructor(String.class).newInstance(sub.nextToken().trim());
-                IDegree deg= (IDegree) getDegreeStringConstructor().newInstance(sub.nextToken().trim());
+                T value = (T) domainType.getConstructor( String.class ).newInstance( sub.nextToken().trim() );
+                Degree deg = (Degree) getDegreeStringConstructor().newInstance( sub.nextToken().trim() );
 
                 dist.put(value,deg);
             } catch (NoSuchMethodException nsme) {

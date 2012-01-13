@@ -18,10 +18,13 @@ package org.drools.chance.common.fact;
 
 
 import org.drools.chance.common.ChanceStrategyFactory;
-import org.drools.chance.common.IImperfectField;
 import org.drools.chance.common.ImperfectField;
+import org.drools.chance.common.ImperfectFieldImpl;
 import org.drools.chance.common.trait.ImpBean;
-import org.drools.chance.distribution.IDistribution;
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.Distribution;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
 import org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartitionStrategyFactory;
 import org.drools.chance.distribution.probability.BasicDistributionStrategyFactory;
@@ -37,21 +40,21 @@ public class BeanImp implements ImpBean {
 
 
     // an "history field" for every @Imperfect field in the managed bean
-    private IImperfectField<String> name_$$Imp = new ImperfectField<String>(
+    private ImperfectField<String> name_$$Imp = new ImperfectFieldImpl<String>(
             ChanceStrategyFactory.<String>buildStrategies(
-                    "probability",
-                    "discrete",
-                    "simple",
+                    ImpKind.PROBABILITY,
+                    ImpType.DISCRETE,
+                    DegreeType.SIMPLE,
                     String.class)
     );
 
 
 
-    private IImperfectField<Boolean> flag_$$Imp = new ImperfectField<Boolean>(
+    private ImperfectField<Boolean> flag_$$Imp = new ImperfectFieldImpl<Boolean>(
             ChanceStrategyFactory.<Boolean>buildStrategies(
-                    "probability",
-                    "discrete",
-                    "simple",
+                    ImpKind.PROBABILITY,
+                    ImpType.DISCRETE,
+                    DegreeType.SIMPLE,
                     Boolean.class),
             "true/0.66, false/0.34"
     );
@@ -59,12 +62,12 @@ public class BeanImp implements ImpBean {
 
 
     // an "history field" for every @Imperfect field in the managed bean
-//	private IImperfectField<Integer> age;
-    private IImperfectField<Integer> age_$$Imp = new ImperfectField<Integer>(
+//	private ImperfectField<Integer> age;
+    private ImperfectField<Integer> age_$$Imp = new ImperfectFieldImpl<Integer>(
             ChanceStrategyFactory.<Integer>buildStrategies(
-                    "probability",
-                    "dirichlet",
-                    "simple",
+                    ImpKind.PROBABILITY,
+                    ImpType.DIRICHLET,
+                    DegreeType.SIMPLE,
                     Integer.class),
             "18/0.02, 19/0.01, 20/0.04"
     );
@@ -73,43 +76,43 @@ public class BeanImp implements ImpBean {
 
 
 
-    //    private IImperfectField<Weight> body;
-    private IImperfectField<Weight> body_$$Imp = new LinguisticImperfectField<Weight,Double>(
+    //    private ImperfectField<Weight> body;
+    private ImperfectField<Weight> body_$$Imp = new LinguisticImperfectField<Weight,Double>(
             ChanceStrategyFactory.<Weight>buildStrategies(
-                    "fuzzy",
-                    "linguistic",
-                    "simple",
+                    ImpKind.FUZZINESS,
+                    ImpType.LINGUISTIC,
+                    DegreeType.SIMPLE,
                     Weight.class),
             ChanceStrategyFactory.<Double>buildStrategies(
-                    "possibility",
-                    "linguistic",
-                    "simple",
+                    ImpKind.POSSIBILITY,
+                    ImpType.LINGUISTIC,
+                    DegreeType.SIMPLE,
                     Double.class),
             null
     );
 
 
-    private IImperfectField<Cheese> likes_$$Imp = new ImperfectField<Cheese>(
+    private ImperfectField<Cheese> likes_$$Imp = new ImperfectFieldImpl<Cheese>(
             ChanceStrategyFactory.<Cheese>buildStrategies(
-                    "probability",
-                    "basic",
-                    "simple",
+                    ImpKind.PROBABILITY,
+                    ImpType.BASIC,
+                    DegreeType.SIMPLE,
                     Cheese.class),
             "cheddar/0.6"
     );
 
 
-    //    private IImperfectField<Weight> body;
-    private IImperfectField<Price> price_$$Imp = new LinguisticImperfectField<Price,Integer>(
+    //    private ImperfectField<Weight> body;
+    private ImperfectField<Price> price_$$Imp = new LinguisticImperfectField<Price,Integer>(
             ChanceStrategyFactory.<Price>buildStrategies(
-                    "fuzzy",
-                    "linguistic",
-                    "simple",
+                    ImpKind.FUZZINESS,
+                    ImpType.LINGUISTIC,
+                    DegreeType.SIMPLE,
                     Price.class),
             ChanceStrategyFactory.<Integer>buildStrategies(
-                    "possibility",
-                    "linguistic",
-                    "simple",
+                    ImpKind.POSSIBILITY,
+                    ImpType.LINGUISTIC,
+                    DegreeType.SIMPLE,
                     Integer.class),
             null
     );
@@ -130,16 +133,16 @@ public class BeanImp implements ImpBean {
     // Inherited constructors
     public BeanImp() {
 
-        age_$$Imp.setValue( new DirichletDistributionStrategyFactory<Integer>().buildStrategies( "simple", Integer.class).parse( "18/0.02, 19/0.01, 20/0.04" ),
+        age_$$Imp.setValue( new DirichletDistributionStrategyFactory<Integer>().buildStrategies( DegreeType.SIMPLE, Integer.class).parse( "18/0.02, 19/0.01, 20/0.04" ),
                 false );
-        name_$$Imp.setValue( new DiscreteDistributionStrategyFactory<String>().buildStrategies("simple", String.class).parse("john/0.3, philip/0.7" ),
+        name_$$Imp.setValue( new DiscreteDistributionStrategyFactory<String>().buildStrategies( DegreeType.SIMPLE, String.class).parse( "john/0.3, philip/0.7" ),
                 false );
-        body_$$Imp.setValue( new ShapedFuzzyPartitionStrategyFactory<Weight>().buildStrategies("simple", Weight.class).parse("SLIM/0.5, FAT/0.5" ),
+        body_$$Imp.setValue( new ShapedFuzzyPartitionStrategyFactory<Weight>().buildStrategies( DegreeType.SIMPLE, Weight.class).parse( "SLIM/0.5, FAT/0.5" ),
                 false );
-        likes_$$Imp.setValue( new BasicDistributionStrategyFactory<Cheese>().buildStrategies("simple", Cheese.class).parse("cheddar/0.6" ),
+        likes_$$Imp.setValue( new BasicDistributionStrategyFactory<Cheese>().buildStrategies( DegreeType.SIMPLE, Cheese.class).parse( "cheddar/0.6" ),
                 false );
 
-        body_$$Imp.setValue( new ShapedFuzzyPartitionStrategyFactory<Weight>().buildStrategies("simple", Weight.class).parse("SLIM/0.6, FAT/0.4"), false );
+        body_$$Imp.setValue( new ShapedFuzzyPartitionStrategyFactory<Weight>().buildStrategies( DegreeType.SIMPLE, Weight.class ).parse("SLIM/0.6, FAT/0.4"), false );
 
         weight = 65.0;
 
@@ -169,7 +172,7 @@ public class BeanImp implements ImpBean {
 
 
         if ( weight != null ) {
-            IDistribution dist = ((LinguisticImperfectField<Weight, Double>) body_$$Imp).fuzzify(weight);
+            Distribution dist = ((LinguisticImperfectField<Weight, Double>) body_$$Imp).fuzzify(weight);
             body_$$Imp.setValue(dist, false);
             body = body_$$Imp.getCrisp();
         } else {
@@ -185,7 +188,7 @@ public class BeanImp implements ImpBean {
 
 
         if ( bucks != null ) {
-            IDistribution dist = ((LinguisticImperfectField<Price, Integer>) price_$$Imp).fuzzify( bucks );
+            Distribution dist = ((LinguisticImperfectField<Price, Integer>) price_$$Imp).fuzzify( bucks );
             price_$$Imp.setValue(dist, false);
             price = price_$$Imp.getCrisp();
         } else {
@@ -211,11 +214,11 @@ public class BeanImp implements ImpBean {
 
 
 
-    public IImperfectField<String> getName() {
+    public ImperfectField<String> getName() {
         return name_$$Imp;
     }
 
-    public IDistribution<String> getNameDistr() {
+    public Distribution<String> getNameDistr() {
         return name_$$Imp.getCurrent();
     }
 
@@ -224,12 +227,12 @@ public class BeanImp implements ImpBean {
     }
 
 
-    public void setName(IImperfectField<String> x) {
+    public void setName(ImperfectField<String> x) {
         name_$$Imp = x;
         name = name_$$Imp.getCrisp();
     }
 
-    public void updateName(IImperfectField<String> x) {
+    public void updateName(ImperfectField<String> x) {
         name_$$Imp.update( x.getCurrent() );
         name = name_$$Imp.getCrisp();
     }
@@ -248,11 +251,11 @@ public class BeanImp implements ImpBean {
     }
 
 
-    public void setNameDistr(IDistribution<String> field_dist) {
+    public void setNameDistr(Distribution<String> field_dist) {
         name_$$Imp.setValue(field_dist,false);
         name = (name_$$Imp.getCrisp());	}
 
-    public void updateNameDistr(IDistribution<String> field_bit) {
+    public void updateNameDistr(Distribution<String> field_bit) {
         name_$$Imp.update(field_bit);
         name = name_$$Imp.getCrisp();
     }
@@ -260,11 +263,11 @@ public class BeanImp implements ImpBean {
 
 
 
-    public IImperfectField<Boolean> getFlag() {
+    public ImperfectField<Boolean> getFlag() {
         return flag_$$Imp;
     }
 
-    public IDistribution<Boolean> getFlagDistr() {
+    public Distribution<Boolean> getFlagDistr() {
         return flag_$$Imp.getCurrent();
     }
 
@@ -272,12 +275,12 @@ public class BeanImp implements ImpBean {
         return flag;
     }
 
-    public void setFlag(IImperfectField<Boolean> x) {
+    public void setFlag(ImperfectField<Boolean> x) {
         flag_$$Imp = x;
         flag = flag_$$Imp.getCrisp();
     }
 
-    public void setFlagDistr(IDistribution<Boolean> x) {
+    public void setFlagDistr(Distribution<Boolean> x) {
         flag_$$Imp.setValue( x, false );
         flag = flag_$$Imp.getCrisp();
     }
@@ -287,12 +290,12 @@ public class BeanImp implements ImpBean {
         flag = flag_$$Imp.getCrisp();
     }
 
-    public void updateFlag(IImperfectField<Boolean> x) {
+    public void updateFlag(ImperfectField<Boolean> x) {
         flag_$$Imp.update( x.getCurrent() );
         flag = flag_$$Imp.getCrisp();
     }
 
-    public void updateFlagDistr(IDistribution<Boolean> x) {
+    public void updateFlagDistr(Distribution<Boolean> x) {
         flag_$$Imp.update( x );
         flag = flag_$$Imp.getCrisp();
     }
@@ -313,11 +316,11 @@ public class BeanImp implements ImpBean {
 
     // Extended getters and setters for field : age
 
-    public IImperfectField<Integer> getAge() {
+    public ImperfectField<Integer> getAge() {
         return age_$$Imp;
     }
 
-    public IDistribution<Integer> getAgeDistr() {
+    public Distribution<Integer> getAgeDistr() {
         return age_$$Imp.getCurrent();
     }
 
@@ -326,12 +329,12 @@ public class BeanImp implements ImpBean {
     }
 
 
-    public void setAge(IImperfectField<Integer> x) {
+    public void setAge(ImperfectField<Integer> x) {
         age_$$Imp = x;
         age = age_$$Imp.getCrisp();
     }
 
-    public void updateAge(IImperfectField<Integer> x) {
+    public void updateAge(ImperfectField<Integer> x) {
         age_$$Imp.update( x.getCurrent() );
         age = age_$$Imp.getCrisp();
     }
@@ -350,11 +353,11 @@ public class BeanImp implements ImpBean {
     }
 
 
-    public void setAgeDistr(IDistribution<Integer> field_dist) {
+    public void setAgeDistr(Distribution<Integer> field_dist) {
         age_$$Imp.setValue(field_dist,false);
         age = (age_$$Imp.getCrisp());	}
 
-    public void updateAgeDistr(IDistribution<Integer> field_bit) {
+    public void updateAgeDistr(Distribution<Integer> field_bit) {
         age_$$Imp.update(field_bit);
         age = age_$$Imp.getCrisp();
     }
@@ -371,7 +374,7 @@ public class BeanImp implements ImpBean {
     }
 
     public void setBucks(Integer w) {
-        IDistribution dist = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).fuzzify(w);
+        Distribution dist = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).fuzzify(w);
         price_$$Imp.setValue(dist,false);
         price = price_$$Imp.getCrisp();
 
@@ -381,11 +384,11 @@ public class BeanImp implements ImpBean {
 
 
 
-    public IImperfectField<Price> getPrice() {
+    public ImperfectField<Price> getPrice() {
         return price_$$Imp;
     }
 
-    public IDistribution<Price> getPriceDistr() {
+    public Distribution<Price> getPriceDistr() {
         return price_$$Imp.getCurrent();
     }
 
@@ -393,14 +396,14 @@ public class BeanImp implements ImpBean {
         return price;
     }
 
-    public void setPrice(IImperfectField<Price> x) {
+    public void setPrice(ImperfectField<Price> x) {
         price_$$Imp.setValue( x.getCurrent(), false );
         price = price_$$Imp.getCrisp();
 
         bucks = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).defuzzify().intValue();
     }
 
-    public void setPriceDistr(IDistribution<Price> x) {
+    public void setPriceDistr(Distribution<Price> x) {
         price_$$Imp.setValue( x, false );
         price = price_$$Imp.getCrisp();
 
@@ -417,7 +420,7 @@ public class BeanImp implements ImpBean {
 
 
 
-    public void updatePrice(IImperfectField<Price> price_bit) {
+    public void updatePrice(ImperfectField<Price> price_bit) {
         price_$$Imp.update( price_bit.getCurrent() );
         price = price_$$Imp.getCrisp();
 
@@ -432,7 +435,7 @@ public class BeanImp implements ImpBean {
     }
 
 
-    public void updatePriceDistr(IDistribution<Price> price_bit) {
+    public void updatePriceDistr(Distribution<Price> price_bit) {
         price_$$Imp.update(price_bit);
         price = price_$$Imp.getCrisp();
 
@@ -446,11 +449,11 @@ public class BeanImp implements ImpBean {
 
 
 
-    public IImperfectField<Cheese> getLikes() {
+    public ImperfectField<Cheese> getLikes() {
         return likes_$$Imp;
     }
 
-    public IDistribution<Cheese> getLikesDistr() {
+    public Distribution<Cheese> getLikesDistr() {
         return likes_$$Imp.getCurrent();
     }
 
@@ -459,12 +462,12 @@ public class BeanImp implements ImpBean {
     }
 
 
-    public void setLikes(IImperfectField<Cheese> x) {
+    public void setLikes(ImperfectField<Cheese> x) {
         likes_$$Imp = x;
         likes = likes_$$Imp.getCrisp();
     }
 
-    public void updateLikes(IImperfectField<Cheese> x) {
+    public void updateLikes(ImperfectField<Cheese> x) {
         likes_$$Imp.update( x.getCurrent() );
         likes = likes_$$Imp.getCrisp();
     }
@@ -482,11 +485,11 @@ public class BeanImp implements ImpBean {
     }
 
 
-    public void setLikesDistr(IDistribution<Cheese> field_dist) {
+    public void setLikesDistr(Distribution<Cheese> field_dist) {
         likes_$$Imp.setValue(field_dist,false);
         likes = (likes_$$Imp.getCrisp());	}
 
-    public void updateLikesDistr(IDistribution<Cheese> field_bit) {
+    public void updateLikesDistr(Distribution<Cheese> field_bit) {
         likes_$$Imp.update(field_bit);
         likes = likes_$$Imp.getCrisp();
     }
@@ -505,7 +508,7 @@ public class BeanImp implements ImpBean {
     }
 
     public void setWeight(Double w) {
-        IDistribution dist = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).fuzzify(w);
+        Distribution dist = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).fuzzify(w);
         body_$$Imp.setValue(dist,false);
         body = body_$$Imp.getCrisp();
 
@@ -515,11 +518,11 @@ public class BeanImp implements ImpBean {
 
 
 
-    public IImperfectField<Weight> getBody() {
+    public ImperfectField<Weight> getBody() {
         return body_$$Imp;
     }
 
-    public IDistribution<Weight> getBodyDistr() {
+    public Distribution<Weight> getBodyDistr() {
         return body_$$Imp.getCurrent();
     }
 
@@ -527,14 +530,14 @@ public class BeanImp implements ImpBean {
         return body;
     }
 
-    public void setBody(IImperfectField<Weight> x) {
+    public void setBody(ImperfectField<Weight> x) {
         body_$$Imp.setValue( x.getCurrent(), false );
         body = body_$$Imp.getCrisp();
 
         weight = ((LinguisticImperfectField<Weight,Double>) body_$$Imp).defuzzify().doubleValue();
     }
 
-    public void setBodyDistr(IDistribution<Weight> x) {
+    public void setBodyDistr(Distribution<Weight> x) {
         body_$$Imp.setValue( x, false );
         body = body_$$Imp.getCrisp();
 
@@ -551,7 +554,7 @@ public class BeanImp implements ImpBean {
 
 
 
-    public void updateBody(IImperfectField<Weight> body_bit) {
+    public void updateBody(ImperfectField<Weight> body_bit) {
         body_$$Imp.update( body_bit.getCurrent() );
         body = body_$$Imp.getCrisp();
 
@@ -566,7 +569,7 @@ public class BeanImp implements ImpBean {
     }
 
 
-    public void updateBodyDistr(IDistribution<Weight> body_bit) {
+    public void updateBodyDistr(Distribution<Weight> body_bit) {
         body_$$Imp.update(body_bit);
         body = body_$$Imp.getCrisp();
 

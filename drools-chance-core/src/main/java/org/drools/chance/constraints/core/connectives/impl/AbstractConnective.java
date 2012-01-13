@@ -17,7 +17,7 @@
 package org.drools.chance.constraints.core.connectives.impl;
 
 import org.drools.chance.constraints.core.connectives.IConnectiveCore;
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,38 +30,38 @@ public abstract class AbstractConnective implements IConnectiveCore {
 
     public abstract LOGICCONNECTIVES getType();
 
-    public abstract IDegree eval(IDegree deg);
-    public abstract IDegree eval(IDegree left, IDegree right);
-    public abstract IDegree eval(IDegree... degs);
+    public abstract Degree eval(Degree deg);
+    public abstract Degree eval(Degree left, Degree right);
+    public abstract Degree eval(Degree... degs);
 
     public abstract boolean isUnary();
     public abstract boolean isBinary();
     public abstract boolean isNary();
 
 
-    public IDegree eval(Object left,Object right) {
-        if (left instanceof IDegree && right instanceof IDegree) {
-            return eval((IDegree) left, (IDegree) right);
+    public Degree eval(Object left,Object right) {
+        if (left instanceof Degree && right instanceof Degree) {
+            return eval((Degree) left, (Degree) right);
         } else {
             throw new UnsupportedOperationException("Trying to aggregate " + left.getClass()
                         + " and " + right.getClass() + " into a Degree" );
         }
     }
 
-    public IDegree eval(Object obj) {
-        if (obj instanceof IDegree) {
-            return eval((IDegree) obj);
+    public Degree eval(Object obj) {
+        if (obj instanceof Degree) {
+            return eval((Degree) obj);
         } else {
             throw new UnsupportedOperationException("Trying to use " + obj.getClass() + " as Degree");
         }
     }
 
-    public IDegree eval(Object... objs) {
+    public Degree eval(Object... objs) {
         for (Object o : objs) {
-            if (! (o instanceof IDegree))
+            if (! (o instanceof Degree))
                 throw new UnsupportedOperationException("Trying to use " + o.getClass() + " as Degree");
         }
-        return eval((IDegree[]) objs);
+        return eval((Degree[]) objs);
     }
 
 

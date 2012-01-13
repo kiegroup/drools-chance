@@ -17,7 +17,7 @@
 package org.drools.chance.degree.interval;
 
 import junit.framework.TestCase;
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.junit.Test;
 
@@ -181,11 +181,11 @@ public class IntervalDegreeTest extends TestCase {
         IntervalDegree n = new IntervalDegree(0.0, 0.0);
 
 
-        IDegree s = x.sum(y);
+        Degree s = x.sum(y);
         assertTrue(s instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0.6,1),s);
 
-        IDegree t = y.sum(z);
+        Degree t = y.sum(z);
         assertTrue(t instanceof IntervalDegree);
         assertEquals(new IntervalDegree(1,1),t);
 
@@ -196,7 +196,7 @@ public class IntervalDegreeTest extends TestCase {
 
 
 
-        IDegree m = y.sum(n);
+        Degree m = y.sum(n);
         assertTrue(m instanceof IntervalDegree);
         assertEquals(m,y);
     }
@@ -208,11 +208,11 @@ public class IntervalDegreeTest extends TestCase {
         IntervalDegree z = new IntervalDegree(0.6, 0.8);
         IntervalDegree n = new IntervalDegree(1.0, 1.0);
 
-        IDegree s = x.mul(y);
+        Degree s = x.mul(y);
         assertTrue(s instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0.0,0.36),s);
 
-        IDegree t = y.mul(z);
+        Degree t = y.mul(z);
         assertTrue(t instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0.36,0.72),t);
 
@@ -222,7 +222,7 @@ public class IntervalDegreeTest extends TestCase {
         assertEquals(new IntervalDegree(0.6,0.8),z);
 
 
-        IDegree m = y.mul(n);
+        Degree m = y.mul(n);
         assertTrue(m instanceof IntervalDegree);
         assertEquals(m,y);
     }
@@ -235,11 +235,11 @@ public class IntervalDegreeTest extends TestCase {
         IntervalDegree z = new IntervalDegree(0.6, 0.8);
         IntervalDegree n = new IntervalDegree(0.0, 0.0);
 
-        IDegree s = y.sub(x);
+        Degree s = y.sub(x);
         assertTrue(s instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0.2,0.9),s);
 
-        IDegree t = z.sub(y);
+        Degree t = z.sub(y);
         assertTrue(t instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0.0,0.2),t);
 
@@ -248,7 +248,7 @@ public class IntervalDegreeTest extends TestCase {
         assertEquals(new IntervalDegree(0.6,0.9),y);
         assertEquals(new IntervalDegree(0.6,0.8),z);
 
-        IDegree m = y.sub(n);
+        Degree m = y.sub(n);
         assertTrue(m instanceof IntervalDegree);
         assertEquals(m,y);
     }
@@ -263,11 +263,11 @@ public class IntervalDegreeTest extends TestCase {
         IntervalDegree n = new IntervalDegree(1.0, 1.0);
         IntervalDegree v = new IntervalDegree(0.0, 0.0);
 
-        IDegree s = x.div(y);
+        Degree s = x.div(y);
         assertTrue(s instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0,0.4/0.6),s);
 
-        IDegree t = z.div(y);
+        Degree t = z.div(y);
         assertTrue(t instanceof IntervalDegree);
         assertEquals(new IntervalDegree(2.0/3.0,1.0),t);
 
@@ -276,11 +276,11 @@ public class IntervalDegreeTest extends TestCase {
         assertEquals(new IntervalDegree(0.6,0.8),z);
 
 
-        IDegree m = y.div(n);
+        Degree m = y.div(n);
         assertTrue(m instanceof IntervalDegree);
         assertEquals(m,y);
 
-        IDegree u = y.div(v);
+        Degree u = y.div(v);
         assertTrue(u instanceof IntervalDegree);
         assertEquals(u,n);
 
@@ -296,11 +296,11 @@ public class IntervalDegreeTest extends TestCase {
         IntervalDegree z = new IntervalDegree(0.6, 0.8);
         IntervalDegree n = new IntervalDegree(0.0, 0.0);
 
-        IDegree s = x.max(y);
+        Degree s = x.max(y);
         assertTrue(s instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0.6,0.9),s);
 
-        IDegree t = z.max(y);
+        Degree t = z.max(y);
         assertTrue(t instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0.6,0.9),t);
 
@@ -309,7 +309,7 @@ public class IntervalDegreeTest extends TestCase {
         assertEquals(new IntervalDegree(0.6,0.8),z);
 
 
-        IDegree m = y.max(n);
+        Degree m = y.max(n);
         assertTrue(m instanceof IntervalDegree);
         assertEquals(m,y);
 
@@ -325,11 +325,11 @@ public class IntervalDegreeTest extends TestCase {
         IntervalDegree z = new IntervalDegree(0.6, 0.8);
         IntervalDegree n = new IntervalDegree(1.0, 1.0);
 
-        IDegree s = x.min(y);
+        Degree s = x.min(y);
         assertTrue(s instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0.0,0.4),s);
 
-        IDegree t = z.min(y);
+        Degree t = z.min(y);
         assertTrue(t instanceof IntervalDegree);
         assertEquals(new IntervalDegree(0.6,0.8),t);
 
@@ -338,7 +338,7 @@ public class IntervalDegreeTest extends TestCase {
         assertEquals(new IntervalDegree(0.6,0.8),z);
 
 
-        IDegree m = y.min(n);
+        Degree m = y.min(n);
         assertTrue(m instanceof IntervalDegree);
         assertEquals(m,y);
 

@@ -33,7 +33,7 @@ import org.drools.chance.degree.simple.SimpleDegree;
  *
  * @author sotty
  */
-public interface IDegree extends Comparable<IDegree> {
+public interface Degree extends Comparable<Degree> {
 
     /**
      * @return the degree, narrowed down to a simple double value
@@ -67,19 +67,19 @@ public interface IDegree extends Comparable<IDegree> {
      * @return the representation of true / top / 1 / 100% ...,
      * according to the semantics of the current Degree
      */
-	public IDegree True();
+	public Degree True();
 
     /**
      * @return the representation of false / bot / 0 / 0% ...,
      * according to the semantics of the current Degree
      */
-	public IDegree False();
+	public Degree False();
 
     /**
      * @return the representation of unknown, according to
      * the semantics of the current Degree (if allowed)
      */
-	public IDegree Unknown();
+	public Degree Unknown();
 
 
     /**
@@ -87,7 +87,7 @@ public interface IDegree extends Comparable<IDegree> {
      * @param term
      * @return  this "+" term
      */
-    public IDegree sum(IDegree term);
+    public Degree sum(Degree term);
 
 
     /**
@@ -95,21 +95,21 @@ public interface IDegree extends Comparable<IDegree> {
      * @param factor
      * @return  this "*" factor
      */
-    public IDegree mul(IDegree factor);
+    public Degree mul(Degree factor);
 
     /**
      * Computes a new degree which is the ''quotient'' of this and div
      * @param div
      * @return  this "/" div
      */
-    public IDegree div(IDegree div);
+    public Degree div(Degree div);
 
     /**
      * Computes a new degree subtracting term to this
      * @param term
      * @return  this "-" term
      */
-    public IDegree sub(IDegree term);
+    public Degree sub(Degree term);
 
 
 
@@ -118,7 +118,7 @@ public interface IDegree extends Comparable<IDegree> {
      * @param other
      * @return  max(this, other)
      */
-    public IDegree max(IDegree other);
+    public Degree max(Degree other);
 
 
     /**
@@ -126,7 +126,7 @@ public interface IDegree extends Comparable<IDegree> {
      * @param other
      * @return  min(this, other)
      */
-    public IDegree min(IDegree other);
+    public Degree min(Degree other);
 
 
 
@@ -135,7 +135,7 @@ public interface IDegree extends Comparable<IDegree> {
      * @param val
      * @return  A degree such that this.asSimpleDegree().getValue() == val
      */
-    public IDegree fromConst(double val);
+    public Degree fromConst(double val);
 
 
     /**
@@ -143,7 +143,7 @@ public interface IDegree extends Comparable<IDegree> {
      * @param val
      * @return  A degree such that this.asSimpleDegree().getValue() == val
      */
-    public IDegree fromString(String val);
+    public Degree fromString(String val);
 
 
 }

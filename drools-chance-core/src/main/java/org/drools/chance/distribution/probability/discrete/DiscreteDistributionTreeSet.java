@@ -16,10 +16,10 @@
 
 package org.drools.chance.distribution.probability.discrete;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.ValueDegreePair;
 import org.drools.chance.degree.simple.SimpleDegree;
-import org.drools.chance.distribution.IDistribution;
+import org.drools.chance.distribution.Distribution;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,7 +28,7 @@ import java.util.TreeSet;
 
 
 @Deprecated
-public class DiscreteDistributionTreeSet<T> implements IDistribution<T>  {
+public class DiscreteDistributionTreeSet<T> implements Distribution<T> {
 
     private TreeSet<ValueDegreePair<T>> _multipleValue=new TreeSet<ValueDegreePair<T>>();
 
@@ -38,8 +38,8 @@ public class DiscreteDistributionTreeSet<T> implements IDistribution<T>  {
         super();
     }
 
-    public DiscreteDistributionTreeSet( Collection<T> values, Collection<IDegree> probabilities) {
-        IDegree[] deg=probabilities.toArray(new IDegree[probabilities.size()]);
+    public DiscreteDistributionTreeSet( Collection<T> values, Collection<Degree> probabilities) {
+        Degree[] deg=probabilities.toArray(new Degree[probabilities.size()]);
         int i=0;
         for (T value : values){
             _multipleValue.add(new ValueDegreePair<T>(value,deg[i]));
@@ -62,7 +62,7 @@ public class DiscreteDistributionTreeSet<T> implements IDistribution<T>  {
 
     //TODO : Change internal impl to act as map
     @Deprecated
-    public IDegree getDegree(T value) {
+    public Degree getDegree(T value) {
         Iterator<ValueDegreePair<T>> iter = _multipleValue.descendingIterator();
 
         if (_multipleValue.size() == 0) return SimpleDegree.FALSE;
@@ -79,7 +79,7 @@ public class DiscreteDistributionTreeSet<T> implements IDistribution<T>  {
 
 
 
-    public IDegree get(T value) {
+    public Degree get(T value) {
         return getDegree( value );
     }
 

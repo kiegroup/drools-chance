@@ -16,58 +16,58 @@
 
 package org.drools.chance.distribution.fuzzy.linguistic;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
-import org.drools.chance.distribution.IContinuousPossibilityDistribution;
-import org.drools.chance.distribution.IDiscretePossibilityDistribution;
+import org.drools.chance.distribution.ContinuousPossibilityDistribution;
+import org.drools.chance.distribution.DiscretePossibilityDistribution;
 import org.drools.chance.utils.ValueSortedMap;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class ShapedFuzzyPartition<T extends ILinguistic<Number>> implements IDiscretePossibilityDistribution<ILinguistic<Number>> {
+public class ShapedFuzzyPartition<T extends Linguistic<Number>> implements DiscretePossibilityDistribution<Linguistic<Number>> {
 
-    private ValueSortedMap<ILinguistic<Number>,IDegree> map;
+    private ValueSortedMap<Linguistic<Number>,Degree> map;
 
 
 
-    public ShapedFuzzyPartition(ILinguistic[] values) {
-        map = new ValueSortedMap<ILinguistic<Number>, IDegree>();
-        for (ILinguistic l : values) {
+    public ShapedFuzzyPartition(Linguistic[] values) {
+        map = new ValueSortedMap<Linguistic<Number>, Degree>();
+        for (Linguistic l : values) {
             map.put(l,SimpleDegree.FALSE);
         }
     }
 
-    public ShapedFuzzyPartition(Map<? extends ILinguistic,? extends IDegree> elements) {
+    public ShapedFuzzyPartition(Map<? extends Linguistic,? extends Degree> elements) {
         this.map = new ValueSortedMap();
-        for (ILinguistic ling : elements.keySet()) {
+        for (Linguistic ling : elements.keySet()) {
             map.put(ling,elements.get(ling));
         }
     }
 
 
-    public Map<ILinguistic<Number>, IDegree> getDistribution() {
+    public Map<Linguistic<Number>, Degree> getDistribution() {
         return map;
     }
 
 
-    public void reshape(ILinguistic key, IDegree deg) {
+    public void reshape(Linguistic key, Degree deg) {
         map.put(key, deg);
     }
 
 
-    public void reshape(String key, IDegree deg) {
+    public void reshape(String key, Degree deg) {
         map.put(iterator().next().parse(key), deg);
     }
 
 
 
-    public IDegree getDegree(ILinguistic key) {
+    public Degree getDegree(Linguistic key) {
         return map.get(key);
     }
 
-    public IDegree get(ILinguistic value) {
+    public Degree get(Linguistic value) {
         return getDegree( value );
     }
 
@@ -78,9 +78,9 @@ public class ShapedFuzzyPartition<T extends ILinguistic<Number>> implements IDis
 
     public String serialize() {
         StringBuilder sb = new StringBuilder();
-        Iterator<ILinguistic<Number>> iter = getSupport().iterator();
+        Iterator<Linguistic<Number>> iter = getSupport().iterator();
         while (iter.hasNext()) {
-            ILinguistic elem = iter.next();
+            Linguistic elem = iter.next();
             sb.append(elem).append("/").append(getDegree(elem).getValue());
             if (iter.hasNext())
                 sb.append(", ");
@@ -90,7 +90,7 @@ public class ShapedFuzzyPartition<T extends ILinguistic<Number>> implements IDis
 
 
 
-    public Set<ILinguistic<Number>> getSupport() {
+    public Set<Linguistic<Number>> getSupport() {
         return map.keySet();
     }
 
@@ -100,7 +100,7 @@ public class ShapedFuzzyPartition<T extends ILinguistic<Number>> implements IDis
     }
 
 
-    public Iterator<ILinguistic<Number>> iterator() {
+    public Iterator<Linguistic<Number>> iterator() {
         return getSupport().iterator();
     }
 
@@ -113,11 +113,11 @@ public class ShapedFuzzyPartition<T extends ILinguistic<Number>> implements IDis
 
 
 
-    public Map<ILinguistic<Number>,IDegree> fuzzify( Number val ) {
-        ValueSortedMap<ILinguistic<Number>,IDegree> vsmap = new ValueSortedMap<ILinguistic<Number>,IDegree>();
+    public Map<Linguistic<Number>,Degree> fuzzify( Number val ) {
+        ValueSortedMap<Linguistic<Number>,Degree> vsmap = new ValueSortedMap<Linguistic<Number>,Degree>();
         if ( val != null ) {
-            IDegree master = getDegree(iterator().next());
-            for (ILinguistic ling : getSupport()) {
+            Degree master = getDegree(iterator().next());
+            for (Linguistic ling : getSupport()) {
                 vsmap.put(ling,master.fromConst(ling.getSet().containment(val.doubleValue())));
             }
         }
@@ -125,7 +125,7 @@ public class ShapedFuzzyPartition<T extends ILinguistic<Number>> implements IDis
     }
 
 
-    public IContinuousPossibilityDistribution<Number> asInducedPossibilityDistribution() {
+    public ContinuousPossibilityDistribution<Number> asInducedPossibilityDistribution() {
         return new LinguisticPossibilityDistribution<Number>(map);
     }
 

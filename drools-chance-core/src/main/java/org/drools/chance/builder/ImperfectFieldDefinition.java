@@ -16,6 +16,9 @@
 
 package org.drools.chance.builder;
 
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
 import org.drools.core.util.StringUtils;
 import org.drools.factmodel.AnnotationDefinition;
 import org.drools.factmodel.ClassDefinition;
@@ -23,9 +26,9 @@ import org.drools.factmodel.FieldDefinition;
 
 public class ImperfectFieldDefinition extends FieldDefinition {
 
-    private String impKind;
-    private String impType;
-    private String degreeType;
+    private ImpKind impKind;
+    private ImpType impType;
+    private DegreeType degreeType;
     private String support;
     private FieldDefinition supportFieldDef;
 
@@ -37,7 +40,7 @@ public class ImperfectFieldDefinition extends FieldDefinition {
 
 
     public static boolean isLinguistic( FieldDefinition ifld ) {
-        return (ifld instanceof ImperfectFieldDefinition) && "fuzzy".equals( ((ImperfectFieldDefinition) ifld).getImpKind() );
+        return (ifld instanceof ImperfectFieldDefinition) && ImpKind.FUZZINESS.equals( ((ImperfectFieldDefinition) ifld).getImpKind() );
     }
 
 
@@ -51,27 +54,27 @@ public class ImperfectFieldDefinition extends FieldDefinition {
     }
 
 
-    public String getImpKind() {
+    public ImpKind getImpKind() {
         return impKind;
     }
 
-    public void setImpKind(String impKind) {
+    public void setImpKind(ImpKind impKind) {
         this.impKind = impKind;
     }
 
-    public String getImpType() {
+    public ImpType getImpType() {
         return impType;
     }
 
-    public void setImpType(String impType) {
+    public void setImpType(ImpType impType) {
         this.impType = impType;
     }
 
-    public String getDegreeType() {
+    public DegreeType getDegreeType() {
         return degreeType;
     }
 
-    public void setDegreeType(String degreeType) {
+    public void setDegreeType(DegreeType degreeType) {
         this.degreeType = degreeType;
     }
 
@@ -119,12 +122,12 @@ public class ImperfectFieldDefinition extends FieldDefinition {
     public static ImperfectFieldDefinition fromField( FieldDefinition field, AnnotationDefinition ia ) {
 
         ImperfectFieldDefinition ifldDef = new ImperfectFieldDefinition( field.getName(), field.getTypeName() );
-        ifldDef.setImpKind( (String) ia.getValues().get("kind").getValue() );
-        ifldDef.setImpType( (String) ia.getValues().get("type").getValue() );
+        ifldDef.setImpKind( (ImpKind) ia.getValues().get("kind").getValue() );
+        ifldDef.setImpType( (ImpType) ia.getValues().get("type").getValue() );
         if ( ia.getValues().containsKey( "history" ) ) {
             ifldDef.setHistory( (Integer) ia.getValues().get("history").getValue() );
         }
-        ifldDef.setDegreeType( (String) ia.getValues().get("degree").getValue() );
+        ifldDef.setDegreeType( (DegreeType) ia.getValues().get("degree").getValue() );
         if ( ia.getValues().containsKey( "support" ) ) {
             ifldDef.setSupport( (String) ia.getValues().get("support").getValue() );
         }

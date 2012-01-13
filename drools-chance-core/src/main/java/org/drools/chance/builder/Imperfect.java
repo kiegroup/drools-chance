@@ -16,6 +16,10 @@
 
 package org.drools.chance.builder;
 
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,11 +29,11 @@ import java.lang.annotation.Target;
 @Target( value = {ElementType.FIELD, ElementType.TYPE} )
 public @interface Imperfect {
 
-    String kind();
+    ImpKind kind();
 
-    String type();
+    ImpType type();
 
-    String degree() default "simple";
+    DegreeType degree() default DegreeType.SIMPLE;
 
     int history() default 0;
 

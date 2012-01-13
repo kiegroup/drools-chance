@@ -16,7 +16,7 @@
 
 package org.drools.chance.degree.lpad;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 
@@ -27,7 +27,7 @@ import java.util.*;
  * Class that implements the concept of degree using a simple double value.
  * Useful for many semantics (probability, possibility, many-valued truth, confidence, belief, ...)
  */
-public class LpadDegree implements IDegree {
+public class LpadDegree implements Degree {
 
 
     public double getValue() {
@@ -50,58 +50,58 @@ public class LpadDegree implements IDegree {
         return new SimpleDegree(combine());
     }
 
-    public IDegree True() {
+    public Degree True() {
         return SimpleDegree.TRUE;
     }
 
-    public IDegree False() {
+    public Degree False() {
         return SimpleDegree.FALSE;
     }
 
-    public IDegree Unknown() {
+    public Degree Unknown() {
         return SimpleDegree.FALSE;
     }
 
-    public IDegree sum(IDegree sum) {
+    public Degree sum(Degree sum) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDegree mul(IDegree mul) {
+    public Degree mul(Degree mul) {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDegree div(IDegree div) {
+    public Degree div(Degree div) {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDegree sub(IDegree sub) {
+    public Degree sub(Degree sub) {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDegree max(IDegree comp) {
+    public Degree max(Degree comp) {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDegree min(IDegree comp) {
+    public Degree min(Degree comp) {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDegree fromConst(double number) {
+    public Degree fromConst(double number) {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDegree fromString(String val) {
+    public Degree fromString(String val) {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public int compareTo(IDegree iDegree) {
+    public int compareTo(Degree iDegree) {
         return asSimpleDegree().compareTo(iDegree);
     }
 

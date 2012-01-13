@@ -18,9 +18,9 @@ package org.drools.chance.constraints.core.evaluators;
 
 import org.drools.chance.constraints.core.IConstraintCore;
 import org.drools.chance.constraints.core.connectives.IConnectiveCore;
-import org.drools.chance.degree.IDegree;
-import org.drools.chance.distribution.IDiscreteDomainDistribution;
-import org.drools.chance.distribution.IDistribution;
+import org.drools.chance.degree.Degree;
+import org.drools.chance.distribution.DiscreteDomainDistribution;
+import org.drools.chance.distribution.Distribution;
 
 import java.util.Iterator;
 
@@ -32,24 +32,24 @@ public class DiscreteEvaluatorCoreWrapper implements IConstraintCore {
     private IConnectiveCore and;
     private IConnectiveCore or;
 
-    private IDegree master;
+    private Degree master;
 
 
-    public DiscreteEvaluatorCoreWrapper(IConstraintCore core, IConnectiveCore and, IConnectiveCore or, IDegree master) {
+    public DiscreteEvaluatorCoreWrapper(IConstraintCore core, IConnectiveCore and, IConnectiveCore or, Degree master) {
         this.core = core;
         this.and = and;
         this.or = or;
         this.master = master;
     }
 
-    public IDegree eval(Object left, Object right) {
-    	IDistribution dist1 = (IDistribution) left;
-    	IDistribution dist2 = (IDistribution) right;
-        IDegree acc = master.False();
+    public Degree eval(Object left, Object right) {
+    	Distribution dist1 = (Distribution) left;
+    	Distribution dist2 = (Distribution) right;
+        Degree acc = master.False();
 
-        Iterator iter1 = ((IDiscreteDomainDistribution) dist1).iterator();
+        Iterator iter1 = ((DiscreteDomainDistribution) dist1).iterator();
         while (iter1.hasNext()) {
-            Iterator iter2 = ((IDiscreteDomainDistribution) dist2).iterator();
+            Iterator iter2 = ((DiscreteDomainDistribution) dist2).iterator();
             Object x = iter1.next();
             while (iter2.hasNext()) {
                 Object y = iter2.next();
@@ -59,11 +59,11 @@ public class DiscreteEvaluatorCoreWrapper implements IConstraintCore {
         return acc;
     }
 
-    public IDegree eval(Object obj) {
-        IDistribution dist = (IDistribution) obj;
-        IDegree acc = master.False();
+    public Degree eval(Object obj) {
+        Distribution dist = (Distribution) obj;
+        Degree acc = master.False();
 
-        Iterator iter = ((IDiscreteDomainDistribution) dist).iterator();
+        Iterator iter = ((DiscreteDomainDistribution) dist).iterator();
         while (iter.hasNext()) {
             Object x = iter.next();
             acc = or.eval(acc, and.eval(dist.getDegree(x),core.eval(x)));
@@ -71,7 +71,7 @@ public class DiscreteEvaluatorCoreWrapper implements IConstraintCore {
         return acc;
     }
 
-    public IDegree eval(Object... objs) {
+    public Degree eval(Object... objs) {
         //TODO
         throw new UnsupportedOperationException("TODO");
     }

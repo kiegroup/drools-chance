@@ -16,7 +16,7 @@
 
 package org.drools.chance.distribution.probability.discrete;
 
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.ValueDegreePair;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.junit.Test;
@@ -74,7 +74,7 @@ public class TestDiscreteDistPerformance {
 
     @Test
     public void testRefHashTable() {
-         Hashtable<String,IDegree> table = new Hashtable<String, IDegree>();
+         Hashtable<String,Degree> table = new Hashtable<String, Degree>();
         for(int i=0; i < NUMADD; i++)
             table.put("add" + i, new SimpleDegree(0.1 * i / NUMADD));
 

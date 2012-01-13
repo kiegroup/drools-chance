@@ -17,11 +17,11 @@
 package org.drools.chance.distribution;
 
 import org.drools.chance.constraints.core.connectives.impl.lukas.Not;
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 
-public class BasicDistribution<T> implements IProbabilityDistribution<T> {
+public class BasicDistribution<T> implements ProbabilityDistribution<T> {
 
-    private IDegree degree;
+    private Degree degree;
 
     private T value;
 
@@ -30,13 +30,13 @@ public class BasicDistribution<T> implements IProbabilityDistribution<T> {
     }
 
 
-    public BasicDistribution( T value, IDegree degree ) {
+    public BasicDistribution( T value, Degree degree ) {
         this.value = value;
         this.degree = degree;
     }
 
 
-    public IDegree getDegree( T value ) {
+    public Degree getDegree( T value ) {
         if ( this.value == null ) {
             return degree.Unknown();
         } else if ( value.equals( this.value ) ) {
@@ -47,7 +47,7 @@ public class BasicDistribution<T> implements IProbabilityDistribution<T> {
         }
     }
 
-    public IDegree get(T value) {
+    public Degree get(T value) {
         return getDegree( value );
     }
 
@@ -55,7 +55,7 @@ public class BasicDistribution<T> implements IProbabilityDistribution<T> {
         return value;
     }
 
-    public void set( T value, IDegree degree ) {
+    public void set( T value, Degree degree ) {
         this.value = value;
         this.degree = degree;
     }
@@ -64,7 +64,7 @@ public class BasicDistribution<T> implements IProbabilityDistribution<T> {
         set(null, null);
     }
 
-    public void setDegree( IDegree deg ) {
+    public void setDegree( Degree deg ) {
         this.degree = deg;
     }
 

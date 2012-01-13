@@ -16,8 +16,8 @@
 
 package org.drools.chance.distribution.probability.discrete;
 
-import org.drools.chance.degree.IDegree;
-import org.drools.chance.distribution.IDiscreteProbabilityDistribution;
+import org.drools.chance.degree.Degree;
+import org.drools.chance.distribution.DiscreteProbabilityDistribution;
 import org.drools.chance.utils.ValueSortedMap;
 
 import java.util.Collection;
@@ -25,19 +25,19 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution<T> {
+public class DiscreteDistribution<T> implements DiscreteProbabilityDistribution<T> {
 
-    private ValueSortedMap<T, IDegree> valueSorMap = new ValueSortedMap<T, IDegree>();
-    private IDegree falze;
+    private ValueSortedMap<T, Degree> valueSorMap = new ValueSortedMap<T, Degree>();
+    private Degree falze;
 
     public DiscreteDistribution() {
         super();
     }
 
     public DiscreteDistribution(Collection<T> values,
-                                Collection<IDegree> probabilities) {
+                                Collection<Degree> probabilities) {
         Iterator<T> vIter = values.iterator();
-        Iterator<IDegree> dIter = probabilities.iterator();
+        Iterator<Degree> dIter = probabilities.iterator();
 
         while (vIter.hasNext()) {
             put(vIter.next(), dIter.next());
@@ -46,7 +46,7 @@ public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution
 
     }
 
-    public void put(T value, IDegree prob) {
+    public void put(T value, Degree prob) {
         valueSorMap.put(value, prob);
 
         if ( falze == null ) {
@@ -58,12 +58,12 @@ public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution
         return valueSorMap.isEmpty() ? null : valueSorMap.keySet().iterator().next();
     }
 
-    public IDegree getDegree(T value) {
-        IDegree deg =  valueSorMap.get(value);
+    public Degree getDegree(T value) {
+        Degree deg =  valueSorMap.get(value);
         return deg != null ? deg : falze;
     }
 
-    public IDegree get(T value) {
+    public Degree get(T value) {
         return getDegree( value );
     }
 
@@ -75,7 +75,7 @@ public class DiscreteDistribution<T> implements IDiscreteProbabilityDistribution
         return valueSorMap.size();
     }
 
-    public Map<T, IDegree> getDistribution() {
+    public Map<T, Degree> getDistribution() {
         return valueSorMap;
     }
 

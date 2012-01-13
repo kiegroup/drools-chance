@@ -17,6 +17,8 @@
 package org.drools.chance.builder;
 
 import org.drools.RuntimeDroolsException;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
 import org.drools.factmodel.BuildUtils;
 import org.drools.factmodel.ClassDefinition;
 import org.drools.factmodel.FieldDefinition;
@@ -61,7 +63,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
                     stackSize += 2;
 
                 } else {
-                    
+
                     initImperfectField( mv, wrapperName, (ImperfectFieldDefinition) field);
 
                 }
@@ -113,20 +115,13 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
 
 
-        mv.visitTypeInsn( NEW, "org/drools/chance/common/ImperfectField" );
+        mv.visitTypeInsn(NEW, "org/drools/chance/common/ImperfectFieldImpl");
         mv.visitInsn(DUP);
-        mv.visitLdcInsn( impField.getImpKind() );
-        mv.visitLdcInsn( impField.getImpType() );
-        mv.visitLdcInsn( impField.getDegreeType() );
-        mv.visitLdcInsn( Type.getType( BuildUtils.getTypeDescriptor( impField.getTypeName() ) ) );
-        mv.visitMethodInsn( INVOKESTATIC,
-                "org/drools/chance/common/ChanceStrategyFactory",
-                "buildStrategies",
-                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)Lorg/drools/chance/distribution/IDistributionStrategies;" );
+        createImperfectField(mv, impField.getImpKind().name(), impField.getImpType().name(), impField.getDegreeType().name(), impField.getTypeName());
         mv.visitMethodInsn( INVOKESPECIAL,
-                "org/drools/chance/common/ImperfectField",
+                "org/drools/chance/common/ImperfectFieldImpl",
                 "<init>",
-                "(Lorg/drools/chance/distribution/IDistributionStrategies;)V" );
+                "(Lorg/drools/chance/distribution/DistributionStrategies;)V" );
         mv.visitVarInsn(ASTORE, 1);
 
 
@@ -195,28 +190,10 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitTypeInsn( NEW, "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField" );
         mv.visitInsn( DUP );
 
-        mv.visitLdcInsn( impField.getImpKind() );
-        mv.visitLdcInsn( impField.getImpType() );
-        mv.visitLdcInsn( impField.getDegreeType() );
-        mv.visitLdcInsn( Type.getType( BuildUtils.getTypeDescriptor( impField.getTypeName() ) ) );
-        mv.visitMethodInsn( INVOKESTATIC,
-                "org/drools/chance/common/ChanceStrategyFactory",
-                "buildStrategies",
-                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)Lorg/drools/chance/distribution/IDistributionStrategies;");
+        createImperfectField( mv, impField.getImpKind().name(), impField.getImpType().name(), impField.getDegreeType().name(), impField.getTypeName());
 
-        mv.visitLdcInsn( "possibility" );
-        mv.visitLdcInsn( "linguistic" );
-        mv.visitLdcInsn( impField.getDegreeType() );
-        mv.visitLdcInsn( Type.getType( BuildUtils.getTypeDescriptor( tfld.getTypeName() ) ) );
-        mv.visitMethodInsn( INVOKESTATIC,
-                "org/drools/chance/common/ChanceStrategyFactory",
-                "buildStrategies",
-                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)Lorg/drools/chance/distribution/IDistributionStrategies;");
+        createImperfectField( mv, ImpKind.POSSIBILITY.name(), ImpType.LINGUISTIC.name(), impField.getDegreeType().name(), tfld.getTypeName() );
 
-
-//        mv.visitLdcInsn( ""+impField.getHistory() );
-//        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(Ljava/lang/String;)Ljava/lang/Integer;");
-//        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
 
         mv.visitInsn( ACONST_NULL );
 
@@ -224,7 +201,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitMethodInsn( INVOKESPECIAL,
                 "org/drools/chance/distribution/fuzzy/linguistic/LinguisticImperfectField",
                 "<init>",
-                "(Lorg/drools/chance/distribution/IDistributionStrategies;Lorg/drools/chance/distribution/IDistributionStrategies;Ljava/lang/String;)V" );
+                "(Lorg/drools/chance/distribution/DistributionStrategies;Lorg/drools/chance/distribution/DistributionStrategies;Ljava/lang/String;)V" );
 
         mv.visitMethodInsn( INVOKEVIRTUAL,
                 wrapperName,
@@ -242,6 +219,29 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
 
 
+    private void createImperfectField( MethodVisitor mv, String ikind, String itype, String degree, String targetType ) {
+        mv.visitFieldInsn(GETSTATIC,
+                "org/drools/chance/distribution/ImpKind",
+                ikind,
+                "Lorg/drools/chance/distribution/ImpKind;");
+        mv.visitFieldInsn(GETSTATIC,
+                "org/drools/chance/distribution/ImpType",
+                itype,
+                "Lorg/drools/chance/distribution/ImpType;");
+        mv.visitFieldInsn(GETSTATIC,
+                "org/drools/chance/degree/DegreeType",
+                degree,
+                "Lorg/drools/chance/degree/DegreeType;");
+        mv.visitLdcInsn( Type.getType( BuildUtils.getTypeDescriptor( targetType ) ) );
+        mv.visitMethodInsn( INVOKESTATIC,
+                "org/drools/chance/common/ChanceStrategyFactory",
+                "buildStrategies",
+                "(Lorg/drools/chance/distribution/ImpKind;" +
+                        "Lorg/drools/chance/distribution/ImpType;" +
+                        "Lorg/drools/chance/degree/DegreeType;" +
+                        "Ljava/lang/Class;)" +
+                        "Lorg/drools/chance/distribution/DistributionStrategies;");
 
+    }
 
 }

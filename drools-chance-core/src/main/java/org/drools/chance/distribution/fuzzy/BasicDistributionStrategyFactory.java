@@ -16,41 +16,29 @@
 
 package org.drools.chance.distribution.fuzzy;
 
-import org.drools.chance.distribution.BasicDistributionStrategy;
-import org.drools.chance.distribution.IDistributionStrategies;
-import org.drools.chance.distribution.IDistributionStrategyFactory;
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.*;
 
 
 /**
  * Level II factory for discrete probability distributions
  * @param <T>
  */
-public class BasicDistributionStrategyFactory<T> implements IDistributionStrategyFactory<T> {
+public class BasicDistributionStrategyFactory<T> implements DistributionStrategyFactory<T> {
 
 
-    private static final String KIND = "fuzzy";
-    private static final String TYPE = "basic";
-
-
-
-    //private DiscreteDistributionStrategy<T> instance = new DiscreteDistributionStrategy<T>();
-
-
-
-	public <T> IDistributionStrategies buildStrategies(String degreeType, Class<T> domainType) {
+	public <T> DistributionStrategies buildStrategies(DegreeType degreeType, Class<T> domainType) {
 
         return new BasicDistributionStrategy<T>(degreeType, domainType);
 	}
 
 
-
-
-    public String getImp_Kind() {
-        return KIND;
+    public ImpKind getImp_Kind() {
+        return ImpKind.FUZZINESS;
     }
 
-    public String getImp_Model() {
-        return TYPE;
+    public ImpType getImp_Model() {
+        return ImpType.BASIC;
     }
 
 

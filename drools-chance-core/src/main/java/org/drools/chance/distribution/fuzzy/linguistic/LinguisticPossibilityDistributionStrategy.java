@@ -17,25 +17,26 @@
 package org.drools.chance.distribution.fuzzy.linguistic;
 
 import de.lab4inf.fuzzy.FuzzyAlphaCutPartition;
+import org.drools.chance.degree.DegreeType;
 import org.drools.chance.degree.DegreeTypeRegistry;
-import org.drools.chance.degree.IDegree;
-import org.drools.chance.distribution.IDistribution;
-import org.drools.chance.distribution.IDistributionStrategies;
+import org.drools.chance.degree.Degree;
+import org.drools.chance.distribution.Distribution;
+import org.drools.chance.distribution.DistributionStrategies;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Set;
 
-public class LinguisticPossibilityDistributionStrategy<T extends Number> implements IDistributionStrategies<Number> {
+public class LinguisticPossibilityDistributionStrategy<T extends Number> implements DistributionStrategies<Number> {
 
 
-    private String degreeType;
+    private DegreeType degreeType;
 	private Class<T> domainType;
 
     private Constructor degreeStringConstr = null;
 
 
-    LinguisticPossibilityDistributionStrategy(String degreeType, Class<T> domainType){
+    LinguisticPossibilityDistributionStrategy(DegreeType degreeType, Class<T> domainType){
         this.degreeType = degreeType;
         this.domainType = domainType;
     }
@@ -49,81 +50,81 @@ public class LinguisticPossibilityDistributionStrategy<T extends Number> impleme
 
 
 
-    public IDistribution<Number> toDistribution(Number value) {
+    public Distribution<Number> toDistribution(Number value) {
         return null;
     }
 
-    public IDistribution<Number> toDistribution(Number value, String strategy) {
+    public Distribution<Number> toDistribution(Number value, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> toDistribution(Number value, Object... params) {
+    public Distribution<Number> toDistribution(Number value, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> parse(String distrAsString) {
+    public Distribution<Number> parse(String distrAsString) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> newDistribution() {
+    public Distribution<Number> newDistribution() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> newDistribution(Set<Number> focalElements) {
+    public Distribution<Number> newDistribution(Set<Number> focalElements) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> newDistribution(Map<? extends Number, ? extends IDegree> elements) {
+    public Distribution<Number> newDistribution(Map<? extends Number, ? extends Degree> elements) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Number toCrispValue(IDistribution<Number> dist) {
+    public Number toCrispValue(Distribution<Number> dist) {
         FuzzyAlphaCutPartition part = ((LinguisticPossibilityDistribution) dist).getPartition();
         Number crisp = part.defuzzyfy();
         return crisp;
     }
 
-    public Number toCrispValue(IDistribution<Number> dist, String strategy) {
+    public Number toCrispValue(Distribution<Number> dist, String strategy) {
         return toCrispValue(dist);
     }
 
-    public Number toCrispValue(IDistribution<Number> dist, Object... params) {
+    public Number toCrispValue(Distribution<Number> dist, Object... params) {
         return toCrispValue(dist);
     }
 
-    public Number sample(IDistribution<Number> dist) {
+    public Number sample(Distribution<Number> dist) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Number sample(IDistribution<Number> dist, String strategy) {
+    public Number sample(Distribution<Number> dist, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Number sample(IDistribution<Number> dist, Object... params) {
+    public Number sample(Distribution<Number> dist, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> merge(IDistribution<Number> current, IDistribution<Number> newBit) {
+    public Distribution<Number> merge(Distribution<Number> current, Distribution<Number> newBit) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> merge(IDistribution<Number> current, IDistribution<Number> newBit, String strategy) {
+    public Distribution<Number> merge(Distribution<Number> current, Distribution<Number> newBit, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> merge(IDistribution<Number> current, IDistribution<Number> newBit, Object... params) {
+    public Distribution<Number> merge(Distribution<Number> current, Distribution<Number> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> mergeAsNew(IDistribution<Number> current, IDistribution<Number> newBit) {
+    public Distribution<Number> mergeAsNew(Distribution<Number> current, Distribution<Number> newBit) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> mergeAsNew(IDistribution<Number> current, IDistribution<Number> newBit, String strategy) {
+    public Distribution<Number> mergeAsNew(Distribution<Number> current, Distribution<Number> newBit, String strategy) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IDistribution<Number> mergeAsNew(IDistribution<Number> current, IDistribution<Number> newBit, Object... params) {
+    public Distribution<Number> mergeAsNew(Distribution<Number> current, Distribution<Number> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

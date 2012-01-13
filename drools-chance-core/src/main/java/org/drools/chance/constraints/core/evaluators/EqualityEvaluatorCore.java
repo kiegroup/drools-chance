@@ -17,7 +17,7 @@
 package org.drools.chance.constraints.core.evaluators;
 
 import org.drools.chance.constraints.core.IConstraintCore;
-import org.drools.chance.degree.IDegree;
+import org.drools.chance.degree.Degree;
 
 
 @Deprecated
@@ -26,22 +26,22 @@ public class EqualityEvaluatorCore implements IConstraintCore {
     /**
      * Factory instance, for quick generation of degrees of the desired type
      */
-    IDegree master;
+    Degree master;
 
 
-    public EqualityEvaluatorCore(IDegree sample) {
+    public EqualityEvaluatorCore(Degree sample) {
         master = sample;
     }
 
-    public IDegree eval(Object left, Object right) {
+    public Degree eval(Object left, Object right) {
         return left.equals(right) ? master.True() : master.False();
     }
 
-    public IDegree eval(Object obj) {
+    public Degree eval(Object obj) {
         throw new UnsupportedOperationException(" == is not unary ");
     }
 
-    public IDegree eval(Object... objs) {
+    public Degree eval(Object... objs) {
         throw new UnsupportedOperationException(" == is not "+objs.length+"-ary ");
     }
 

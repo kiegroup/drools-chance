@@ -16,35 +16,32 @@
 
 package org.drools.chance.distribution.probability.dirichlet;
 
-import org.drools.chance.distribution.IDistributionStrategies;
-import org.drools.chance.distribution.IDistributionStrategyFactory;
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.DistributionStrategies;
+import org.drools.chance.distribution.DistributionStrategyFactory;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
 
 
 /**
  * Level II factory for Dirichlet discrete probability distributions
  * @param <T>
  */
-public class DirichletDistributionStrategyFactory<T> implements IDistributionStrategyFactory<T> {
-
-
-    private static final String KIND = "probability";
-    private static final String TYPE = "dirichlet";
+public class DirichletDistributionStrategyFactory<T> implements DistributionStrategyFactory<T> {
 
 
 
-
-
-	public <T> IDistributionStrategies buildStrategies(String degreeType, Class<T> domainType) {
+	public <T> DistributionStrategies buildStrategies(DegreeType degreeType, Class<T> domainType) {
         return new DirichletDistributionStrategy<T>(degreeType, domainType);
 	}
 
 
-    public String getImp_Kind() {
-        return KIND;
+    public ImpKind getImp_Kind() {
+        return ImpKind.PROBABILITY;
     }
 
-    public String getImp_Model() {
-        return TYPE;
+    public ImpType getImp_Model() {
+        return ImpType.DIRICHLET;
     }
 
 
