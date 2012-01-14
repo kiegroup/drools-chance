@@ -39,8 +39,7 @@ end
 
 
 
-declare ImpBean
-    @format( trait )
+declare trait ImpBean
     @typesafe( false )
 
 	name    : String

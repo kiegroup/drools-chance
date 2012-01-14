@@ -21,8 +21,8 @@
 @declare{'conceptDeclare'}
 
 // @{iri}
-declare @{name} @if{ superConcepts.size > 0 } extends @foreach{ sup : superConcepts } @{ compactUpperCase( sup.name ) } @end{','} @end{}
-@@format(trait)
+declare trait @{name} @if{ superConcepts.size > 0 } extends @foreach{ sup : superConcepts } @{ compactUpperCase( sup.name ) } @end{','} @end{}
+
 
   @if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }
     @{ properties[ propKey ].name } : @{ properties[ propKey ].target.name }

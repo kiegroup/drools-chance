@@ -17,8 +17,7 @@
 
 @declare{'ioTraitRule'}
 
- declare @{context}Input
-  @@format( trait )
+ declare trait @{context}Input
 
      @foreach{ fldName : fields.keySet }
         @{fldName}   :  @{mapDatatype(fields.get(fldName))}

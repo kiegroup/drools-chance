@@ -66,8 +66,7 @@ end
 
 
 
-declare ImpTrait
-    @format( trait )
+declare trait ImpTrait
     @typesafe( false )
 
 	name    : String

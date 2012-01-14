@@ -4,12 +4,10 @@ import http.org.drools.conyard.owl.*;
 
 global java.util.List ans;
                 
-declare Manager
-    @format( trait )
+declare trait Manager
 end
 
-declare IronInstallation
-    @format( trait )
+declare trait IronInstallation
 end
 
 
