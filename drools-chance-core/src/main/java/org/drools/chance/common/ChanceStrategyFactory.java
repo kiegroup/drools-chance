@@ -134,6 +134,14 @@ public class ChanceStrategyFactory<T> {
             e.printStackTrace();
         }
 
+        try {
+            DistributionStrategyFactory factory7 = (DistributionStrategyFactory) Class.forName("org.drools.chance.distribution.belief.discrete.TBMStrategyFactory").newInstance();
+            ChanceStrategyFactory.register(factory7.getImp_Kind(), factory7.getImp_Model(), factory7);
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
+
 
 
         DegreeTypeRegistry.getSingleInstance().registerDegreeType( DegreeType.SIMPLE, SimpleDegree.class);
