@@ -17,6 +17,7 @@
 package org.drools.semantics.builder.model;
 
 
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 
@@ -26,6 +27,9 @@ public interface SemanticXSDModel extends XSDModel {
 
     public void setBindings( String bindings );
 
-    public boolean streamBindings(OutputStream os);
+    public boolean streamBindings( OutputStream os);
 
+    public void setIndex( String index );
+
+    public boolean streamIndex( OutputStream fos);
 }

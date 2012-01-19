@@ -21,54 +21,51 @@
 @declare{'semGetter'}
     @code{  }
 
-    // signature
-    public void @{ setter }(
-        @if{ ! isCollection }  @{ typeName }
-        @else{}                java.util.List<@{ typeName }>
-        @end{}
-        x ) {
 
-        @if{ max == 1 && ! isCollection }
-            if ( x == null ) {
-                x = @{ skolem( typeName ) };
-            }
-        @else{}
-            @if{ isCollection }
-                if ( x.size() < @{ min } ) {
-                    int base = x.size();
-                    for ( int j = base; j <= @{ min }; j++ ) {
-                        x.add( @{ skolem( typeName ) } );
-                    }
-                }
-            @end{}
-            @if{ isCollection and max != null }
-                if ( x.size() > @{ max } ) {
-                    throw new RuntimeException(" TODO : Semantic Inconsistency, found " + x.size() + " @{typeName} when up to @{max} were expected" );
-                }
-            @end{}
-        @end{}
+    @Transient
+    public void @{ adder }( @{ typeName } x ) {
+        boolean added = false;
 
-        @if{ ! isBaseCollection }
-            @if{ isCollection }
-                @{ baseSetter }( x.get(0) );
-            @else{}
-                @{ baseSetter }( x );
-            @end{}
-        @else{}
-            java.util.Collection removals = new java.util.ArrayList();
-            for ( Object o : @{ baseGetter }() ) {
-                if ( o instanceof @{ typeName } ) { removals.add( o ); }
-            }
-            @{ baseGetter }().removeAll( removals );
-
-                @if{ isCollection }
-                    @{ baseGetter }().addAll( x );
+        @foreach{ prop : restrictions }
+            if ( x instanceof @{prop.typeName} ) {
+                added = true;
+                @if{ prop.collection }
+                    @{prop.getter}().add( (@{prop.typeName}) x );
                 @else{}
-                    @{ baseGetter }().add( x );
+                    @{prop.setter}( (@{prop.typeName}) x );
                 @end{}
+            }
         @end{}
+
+        if ( ! added ) {
+            @{getter}().add( x );
+        }
+        //TODO Handle "only"s
 
     }
+
+
+    @Transient
+    public void @{ toggler }( @{ typeName } x ) {
+        @foreach{ prop : restrictions }
+            if ( x instanceof @{prop.typeName} ) {
+
+                // todo handle min cardinality properly
+                @if{ prop.collection }
+                    @{prop.getter}().remove( (@{prop.typeName}) x );
+                @elseif{ ! prop.target.primitive }
+                    if ( @{prop.getter}().equals( x ) ) {
+                        @{prop.setter}( null );
+                    }
+                @else{}
+                    if ( @{prop.getter}() == x ) {
+                        @{prop.setter}( @{nullify( prop.target, false )} );
+                    }
+                @end{}
+            }
+        @end{}
+    }
+
 @end{}
 
 @includeNamed{'semGetter'}

@@ -17,6 +17,11 @@
 package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
+import org.drools.semantics.builder.DLUtils;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class PropertyRelation extends Relation {
 
@@ -26,9 +31,13 @@ public class PropertyRelation extends Relation {
     private Integer minCard = 0;
     private Integer maxCard = null;
     private Concept target = null;
+    private Concept domain = null;
+    private boolean ghost = false;
 
     private boolean restricted = false;
     private PropertyRelation baseProperty;
+
+    private Set<List<PropertyRelation>> chains = new HashSet<List<PropertyRelation>>();
 
     public PropertyRelation( String subject, String property, String object, String name ) {
         this.subject = subject;
@@ -50,7 +59,15 @@ public class PropertyRelation extends Relation {
 
 
     public Integer getMinCard() {
-        return minCard;
+        int x =  minCard;
+        for ( List<PropertyRelation> chain : chains ) {
+            int m = 1;
+            for ( PropertyRelation rel : chain ) {
+                m = m * rel.getMinCard();
+            }
+            x = Math.max( x, m );
+        }
+        return x;
     }
 
     public void setMinCard(Integer minCard) {
@@ -58,7 +75,22 @@ public class PropertyRelation extends Relation {
     }
 
     public Integer getMaxCard() {
-        return maxCard;
+        Integer x = maxCard;
+        
+            for ( List<PropertyRelation> chain : chains ) {
+                Integer m = 1;
+                for ( PropertyRelation rel : chain ) {
+                    if ( rel.getMaxCard() == null ) {
+                        m = null;
+                        break;
+                    }
+                    m = m * rel.getMaxCard();
+                }
+                if ( m != null ) {
+                    x = (x == null) ? m : Math.min( x, m );
+                }
+            }
+        return x;
     }
 
     public void setMaxCard(Integer maxCard) {
@@ -72,6 +104,14 @@ public class PropertyRelation extends Relation {
 
     public void setTarget(Concept target) {
         this.target = target;
+    }
+
+    public Concept getDomain() {
+        return domain;
+    }
+
+    public void setDomain(Concept domain) {
+        this.domain = domain;
     }
 
     public String toString() {
@@ -98,6 +138,31 @@ public class PropertyRelation extends Relation {
     public void setBaseProperty(PropertyRelation baseProperty) {
         this.baseProperty = baseProperty;
     }
+
+
+
+    public boolean isCollection() {
+        return getMaxCard() == null || getMaxCard() > 1;
+    }
+
+    public boolean isSimpleBoolean() {
+        return getTarget().getName().equals("xsd:boolean") && ! isCollection();
+    }
+
+    public String getTypeName() {
+        return DLUtils.map( getTarget().getName(), true );
+    }
+
+    public String getGetter() {
+        String prefix = ( isSimpleBoolean() && ! isCollection() ) ? "is" : "get";
+        return prefix + DLUtils.compactUpperCase( getName() );
+    }
+
+    public String getSetter() {
+        return "set" + DLUtils.compactUpperCase( getName() );
+    }
+
+
 
     public String toFullString() {
         return "Property{" +
@@ -132,6 +197,30 @@ public class PropertyRelation extends Relation {
         result = 31 * result + (object != null ? object.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
+    }
+
+    public boolean isTransient() {
+        return isChain();
+    }
+
+    public void addPropertyChain(List<PropertyRelation> chain) {
+        chains.add( chain );
+    }
+
+    public boolean isChain() {
+        return chains.size() > 0;
+    }
+
+    public Set<List<PropertyRelation>> getChains() {
+        return chains;
+    }
+
+    public boolean isGhost() {
+        return ghost;
+    }
+
+    public void setGhost(boolean ghost) {
+        this.ghost = ghost;
     }
 }
 

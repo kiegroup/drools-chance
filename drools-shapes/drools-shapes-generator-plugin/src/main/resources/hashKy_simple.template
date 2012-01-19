@@ -1,0 +1,16 @@
+
+@declare{'hashKyTemplate'}
+
+    @@Override
+    public int hashCode() {
+        System.out.println("Called hashkey");
+        int result = 31;
+        @foreach{ k : keys }
+            result = 31 * result + @{k}().hashCode();
+        @end{}
+        return result;
+    }
+@end{}
+
+
+@includeNamed{'hashKyTemplate'}

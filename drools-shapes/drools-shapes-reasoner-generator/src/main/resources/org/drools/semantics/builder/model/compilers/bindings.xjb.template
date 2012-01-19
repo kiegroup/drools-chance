@@ -21,14 +21,16 @@
           xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
           xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector"
           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+          xmlns:dsh="http://jboss.org/drools/drools-chance/drools-shapes/plugins/keyPlugin"
           xmlns:annox="http://annox.dev.java.net"
+          xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
           xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
           xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
           version="2.1"
-          extensionBindingPrefixes="xjc annox inheritance ci" >
+          extensionBindingPrefixes="xjc annox inheritance ci dsh hj" >
   <bindings schemaLocation="@{modelName}.xsd" node="/xsd:schema">
 
-    <globalBindings localScoping="toplevel" >
+    <globalBindings localScoping="toplevel" optionalProperty="primitive">
       <serializable/>
       <xjc:simple/>
       <xjc:treatRestrictionLikeNewType/>
@@ -49,6 +51,10 @@
     <bindings node="//xsd:@{targetElement}[@name='@{concept.name}']">
         <class name="@{concept.name}Impl"/>
         <inheritance:implements>@{package}.@{concept.name}</inheritance:implements>
+
+        <inheritance:implements>org.jvnet.jaxb2_commons.lang.Equals</inheritance:implements>
+        <inheritance:implements>org.jvnet.jaxb2_commons.lang.HashCode</inheritance:implements>
+
         @if{ flat && concept.name != "Thing" } <inheritance:extends>org.drools.semantics.builder.model.RdfIdAble</inheritance:extends> @end{}
         <annox:annotate>
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfsClass" value="tns:@{concept.name}" />
@@ -58,6 +64,14 @@
         <ci:code><![CDATA[
           @{ extra_code[ concept.name ] }
         ]]></ci:code>
+
+
+            <dsh:keyId>
+                @foreach{ key : concept.keys }
+                <dsh:key type="@{key.target.name}">@{key.name}</dsh:key>
+                @end{}
+            </dsh:keyId>
+
 
         @foreach{ propKey : properties[ concept.name ].keySet }
 
@@ -69,6 +83,7 @@
                                        else
                                        nodeType='element'; }
 
+            @if{ ! prop.transient }
             <bindings node=".//xsd:@{nodeType}[@name='@{prop.name}']">
                 <jxb:property generateIsSetMethod="true" name="@{prop.name}" >
                     @if{ "element".equals(nodeType) && ! prop.target.primitive }
@@ -79,8 +94,10 @@
                 <annox:annotate>
                     <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="tns:@{prop.name}" />
                 </annox:annotate>
-            </bindings>
 
+                @if{ prop.ghost } <hj:ignored/> @end{}
+            </bindings>
+            @end{}
 
         @end{}
     </bindings>

@@ -18,9 +18,13 @@ package org.drools.semantics.builder.model;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDModel {
 
+
+    private String index;
 
     private String bindings;
 
@@ -40,4 +44,23 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
         }
         return true;
     }
+
+    public String getIndex() {
+        return index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public boolean streamIndex( OutputStream os ) {
+        try {
+            os.write( index.getBytes() );
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+
 }

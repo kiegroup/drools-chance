@@ -231,8 +231,13 @@ public class ShapeCaster
             compiler.setMode( mode );
             SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
 
+            File dir = new File( target + "/META-INF" );
+            if ( ! dir.exists() ) {
+                dir.mkdirs();
+            }
+
             try {
-                FileOutputStream fos = new FileOutputStream( target + getModelName() +".xsd" );
+                FileOutputStream fos = new FileOutputStream( target + "/META-INF/" + getModelName() +".xsd" );
                 xsdModel.stream( fos );
                 fos.flush();
                 fos.close();
@@ -242,8 +247,18 @@ public class ShapeCaster
 
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + "bindings.xjb" );
+                FileOutputStream fos = new FileOutputStream( target + "/META-INF/bindings.xjb" );
                 xsdModel.streamBindings( fos );
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                throw new MojoExecutionException( e.getMessage() );
+            }
+
+
+            try {
+                FileOutputStream fos = new FileOutputStream( target + "/META-INF/empire.annotation.index" );
+                xsdModel.streamIndex( fos );
                 fos.flush();
                 fos.close();
             } catch (Exception e) {

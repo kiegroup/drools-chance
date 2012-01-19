@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class FactTest {
 
@@ -68,34 +69,34 @@ public class FactTest {
 
         painting = new PaintingImpl();
 
-        painting.setStartsOn( new Date() );
-        painting.setEndsOn( new Date() );
-        painting.setHasComment("Some comment on this object");
+        painting.setStartsOnDateAsActivity( new Date() );
+        painting.setEndsOnDateAsActivity( new Date() );
+        painting.setHasCommentStringAsActivity("Some comment on this object");
 
         Stair stair = factory.createStairImpl();
-        stair.setStairLength( 10 );
-        painting.setRequiresStair( stair );
+        stair.setStairLengthIntegerAsStair( 10 );
+        painting.setRequiresStairAsPainting( stair );
 
         painting.getInvolves().add( factory.createPersonImpl() );
 
-        painting.setInvolvesLabourers( Arrays.asList( ((Labourer) factory.createLabourerImpl() ) ) );
+        painting.getInvolvesLabourersAsPainting().add( factory.createLabourerImpl() );
 
-        
         Paint paint = factory.createPaintImpl();
 
         site = factory.createSiteImpl();
-        site.setCenterX( 10 );
-        site.setCenterY( 20 );
-        site.setRadius( 100 );
-        paint.setStoredIn(site);
-        painting.setRequiresPaints( Arrays.asList( (Paint) paint ) );
+        site.setCenterXFloatAsSite( 10 );
+        site.setCenterYFloatAsSite( 20 );
+        site.setRadiusFloatAsSite( 100 );
+        paint.setStoredInSiteAsEquipment(site);
+        painting.getRequiresPaintsAsPainting().add( paint );
+        painting.addRequires( new EquipmentImpl() );
 
-        painting.getRequires().add( new EquipmentImpl() );
-        
-        
+
         pers = new LabourerImpl();
-//        p.setParticipatesIn( Arrays.asList( (Activity) painting ) );
-        painting.setInvolvesLabourers( Arrays.asList( (Labourer) pers ) );
+
+
+        pers.getParticipatesIn().add( painting );
+//        painting.getInvolvesLabourersAsPainting().add( (Labourer) pers  );
     }
 
 
@@ -114,10 +115,19 @@ public class FactTest {
     }
 
 
+    public void checkPainting( Painting painting ) {
+        assertNotNull( painting );
+        assertEquals( 3, painting.requires().size() );
+        assertEquals( 2, painting.involves().size() );
+
+
+    }
 
     @Test
     public void testFact() {
-        assertNotNull( painting );
+        checkPainting( painting );
+
+        assertEquals( 3, pers.getMakesUseOf().size() );
     }
 
 
@@ -139,11 +149,9 @@ public class FactTest {
 
         Painting p2 = (Painting) refreshOnJaxb( painting );
 
-        System.out.println( painting);
-        System.out.println( p2 );
-
         assertEquals( painting, p2 );
         assertEquals( p2, painting );
+        checkPainting( p2 );
 
     }
 
@@ -166,6 +174,7 @@ public class FactTest {
         ans = em.find( o.getClass(), key );
         em.getTransaction().commit();
 
+
         return ans;
     }
 
@@ -176,17 +185,81 @@ public class FactTest {
         EntityManager em = emf.createEntityManager();
 
         persist( painting, em );
-        Object p2 = refreshOnJPA( painting, ((PaintingImpl) painting).getHjid(), em );
+        Painting p2 = (Painting) refreshOnJPA( painting, ((PaintingImpl) painting).getHjid(), em );
 
         assertNotNull( p2 );
         assertEquals( painting, p2 );
         assertNotSame( painting, p2 );
+
+        checkPainting( p2 );
 
         em.close();
 
     }
 
 
+
+
+    @Test
+    public void testEmpireInheritance() {
+
+        Empire.init(new OpenRdfEmpireModule());
+        EmpireOptions.STRICT_MODE = false;
+
+        PersistenceProvider aProvider = Empire.get().persistenceProvider();
+
+        EntityManagerFactory emf = aProvider.createEntityManagerFactory( ObjectFactory.class.getPackage().getName()
+                , getTestEMConfigMap() );
+        EntityManager em = emf.createEntityManager();
+
+
+
+
+        IronInstallation ironi = new IronInstallationImpl();
+        Smith smith = new SmithImpl();
+        Labourer labrr = new LabourerImpl();
+        Guest guest = new GuestImpl();
+
+        ironi.getInvolves().add( smith );
+        ironi.getInvolves().add( labrr );
+        ironi.getInvolves().add( guest );
+
+        persist( ironi, em );
+
+        System.out.println( "IronI has id " + ironi.getRdfId() );
+        System.out.println( "Smith has id " + smith.getRdfId() );
+        System.out.println( "Labrr has id " + labrr.getRdfId() );
+        System.out.println( "Guest has id " + guest.getRdfId() );
+
+
+
+        IronInstallation ironBuild = (IronInstallation) refreshOnJPA( ironi, ironi.getRdfId(), em );
+
+        assertEquals( 3, ironBuild.getInvolves().size() );
+        
+        boolean x1 = false;
+        boolean x2 = false;
+        boolean x3 = false;
+        boolean x4 = false;
+        GuestImpl newGuest = null;
+
+        for( Person p : ironBuild.getInvolves() ) {
+            if ( p instanceof Smith ) x1 = true;
+            if ( p instanceof Labourer ) x2 = true;
+            if ( p instanceof Guest ) x3 = true;
+
+            if ( p instanceof GuestImpl ) {
+                x4 = true;
+                newGuest = (GuestImpl) p;
+            }
+        }
+
+        assertTrue( x1 && x2 && x3 && x4 );
+        assertNotNull( newGuest );
+
+        newGuest.withOid("abc");
+        assertTrue( newGuest.getOid().contains( "abc" ) );
+    }
 
 
 
@@ -214,6 +287,7 @@ public class FactTest {
     @Test
     public void testEmpire() {
         Empire.init(new OpenRdfEmpireModule());
+        EmpireOptions.STRICT_MODE = false;
 
         PersistenceProvider aProvider = Empire.get().persistenceProvider();
 
@@ -227,14 +301,22 @@ public class FactTest {
 
         assertTrue( p2 instanceof Painting );
         assertTrue( p2 instanceof PaintingImpl );
-        assertEquals( 10, ((Stair) ((Painting)p2).getRequiresStair()).getStairLength() );
+        assertEquals( 10, ((Stair) ((Painting)p2).getRequiresStairAsPainting()).getStairLengthIntegerAsStair() );
 
-        p2.setHasComment(" Change my mind ");
-        ((Painting)p2).getRequiresStair().setStairLength(6);
+        p2.setHasCommentStringAsActivity(" Change my mind ");
+        p2.getRequiresStairAsPainting().setStairLengthIntegerAsStair(6);
 
         assertEquals(p2, painting);
         assertNotSame( painting, p2 );
 
+        PaintingImpl p3 = new PaintingImpl();
+
+        p3.mergeFrom( p3, p2 );
+
+        assertEquals( p3, painting );
+
+        checkPainting( p2 );
+        checkPainting( p3 );
 
         em.close();
     }
@@ -244,6 +326,7 @@ public class FactTest {
     public void testRuleWithEmpire() {
 
         Empire.init(new OpenRdfEmpireModule());
+        EmpireOptions.STRICT_MODE = false;
 
         PersistenceProvider aProvider = Empire.get().persistenceProvider();
 
@@ -254,7 +337,6 @@ public class FactTest {
         persist( painting, em );
 
         Painting paintingFact = (Painting) refreshOnJPA( painting, painting.getRdfId(), em );
-
 
 
 

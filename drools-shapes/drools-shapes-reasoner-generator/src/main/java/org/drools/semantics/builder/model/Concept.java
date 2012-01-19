@@ -18,10 +18,7 @@ package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Concept {
 
@@ -30,9 +27,12 @@ public class Concept {
     @Position(2)    private     Set<Concept>                    superConcepts;
     @Position(3)    private     Map<String, PropertyRelation>   properties;
     @Position(4)    private     Set<Concept>                    equivalentConcepts;
+    @Position(5)    private     List<PropertyRelation>          keys;
+    
 
     private     boolean                         primitive               = false;
     private     boolean                         abstrakt                = false;
+    private     boolean                         anonymous               = false;
 
 
 
@@ -42,6 +42,7 @@ public class Concept {
         this.superConcepts = new HashSet();
         this.properties = new HashMap();
         this.equivalentConcepts = new HashSet();
+        this.keys = new ArrayList<PropertyRelation>();
     }
 
     public Concept(String iri, String name, Set superConcepts, Map properties, Set equivalentConcepts ) {
@@ -127,6 +128,11 @@ public class Concept {
         properties.put( propIri, prop );
     }
 
+    public void removeProperty( String propIri ) {
+        properties.remove( propIri );
+    }
+
+
     public Concept getPropertyRange( String propIri ) {
         return ((PropertyRelation) properties.get( propIri )).getTarget();
     }
@@ -158,6 +164,31 @@ public class Concept {
 
     public void setAbstrakt(boolean abstrakt) {
         this.abstrakt = abstrakt;
+    }
+
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
+    }
+
+
+    public List<PropertyRelation> getKeys() {
+        List<PropertyRelation> keys = new ArrayList<PropertyRelation>( this.keys );
+        for ( Concept sup : superConcepts ) {
+            keys.addAll( sup.getKeys() );
+        }
+        return keys;
+    }
+
+    public void setKeys(List<PropertyRelation> keys) {
+        this.keys = keys;
+    }
+    
+    public void addKey( String key ){
+        keys.add( properties.get( key ) );
     }
 
     public static class Range {

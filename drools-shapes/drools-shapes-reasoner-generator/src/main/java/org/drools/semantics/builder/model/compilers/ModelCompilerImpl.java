@@ -51,6 +51,7 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
                 if ( con.isAbstrakt() ) {
                     map.put( "abstract", con.isAbstrakt() );
                 }
+                map.put( "keys", con.getKeys() );
                 compile( name, DLUtils.getInstance(), map );
             }
         }

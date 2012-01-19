@@ -56,12 +56,11 @@
             <version>0.5.6</version>
         </dependency>
 
-	<!-- Empire can be found here: https://github.com/mhgrove/Empire -->
+        <!-- Empire can be found here: https://github.com/mhgrove/Empire -->
         <dependency>
             <groupId>com.clarkparsia</groupId>
             <artifactId>Empire-core</artifactId>
             <version>0.7</version>
-	    <scope>provided</scope>
         </dependency>
 
 
@@ -69,7 +68,7 @@
             <groupId>com.clarkparsia</groupId>
             <artifactId>Empire-sesame2</artifactId>
             <version>0.7</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
 
 
@@ -136,6 +135,16 @@
 
 
     <build>
+
+        <resources>
+             <resource>
+               <directory>${pom.basedir}/target/generated-sources/META-INF</directory>
+                 <includes>
+                     <include>**/*.*</include>
+                 </includes>
+             </resource>
+        </resources>
+
         <plugins>
 
             <plugin>
@@ -170,7 +179,24 @@
                 </executions>
                 <configuration>
                     <outputDirectory>${pom.basedir}/target</outputDirectory>
-                    <ontology>${pom.basedir}/src/main/resources/conyard.manchester.owl</ontology>
+                    <!--
+                    <ontology>${pom.basedir}/src/main/resources/mini.ttl</ontology>
+                       -->
+
+
+
+
+                    <ontology>${pom.basedir}/src/main/resources/conyard.ttl</ontology>
+
+                    <!--
+
+                    -->
+
+                    <!--
+                    <ontology>${pom.basedir}/src/main/resources/KMR_OntologyLatest.ttl</ontology>
+
+                    -->
+
                     <modelName>conyard</modelName>
                     <delegateInference>true</delegateInference>
                     <generateInterfaces>true</generateInterfaces>
@@ -200,11 +226,18 @@
                         <arg>-Xvalue-constructor</arg>
                         <arg>-Xfluent-api</arg>
                         <arg>-Xinject-code</arg>
+                        <arg>-Xkey-equality</arg>
                     </args>
-                    <removeOldOutput>true</removeOldOutput>
-                    <bindingDirectory>${pom.basedir}/target/generated-sources</bindingDirectory>
-                    <schemaDirectory>${pom.basedir}/target/generated-sources</schemaDirectory>
+                    <!--removeOldOutput>true</removeOldOutput-->
+                    <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
+                    <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
                     <persistenceXml>src/main/resources/persistence-template.xml</persistenceXml>
+
+
+                    <generateEquals>false</generateEquals>
+                    <generateHashCode>false</generateHashCode>
+
+
                 </configuration>
                 <executions>
                     <execution>
@@ -223,6 +256,11 @@
                         <groupId>org.jvnet.jaxb2_commons</groupId>
                         <artifactId>jaxb2-value-constructor</artifactId>
                         <version>3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.drools</groupId>
+                        <artifactId>drools-shapes-generator-plugin</artifactId>
+                        <version>${drools.version}</version>
                     </dependency>
 
                     <dependency>

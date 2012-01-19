@@ -48,6 +48,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.sun.tools.xjc.maven2</groupId>
+            <artifactId>maven-jaxb-plugin</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.1</version>

@@ -22,6 +22,7 @@ import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -45,7 +46,8 @@ public class DLTemplateManager {
     };
     protected static final String[] ACCESSOR_TEMPLATES_JAVA = new String[] {
             "model/java/semGetter.drlt",
-            "model/java/semSetter.drlt"
+            "model/java/semSetter.drlt",
+            "model/java/propChainGetter.drlt"
     };
     protected static final String[] FALC_TABLEAU_TEMPLATES = new String[] {
             "tableau/falc/header.drlt",
@@ -98,10 +100,10 @@ public class DLTemplateManager {
     private static void buildRegistry(TemplateRegistry registry, String[] traits) {
         for (String ntempl : traits) {
             try {
-                String path = TEMPLATE_PATH+ntempl;
+                String path = TEMPLATE_PATH + ntempl;
                 InputStream stream = ResourceFactory.newClassPathResource(path, DLTemplateManager.class).getInputStream();
 
-                registry.addNamedTemplate( path.substring(path.lastIndexOf('/') + 1),
+                registry.addNamedTemplate( path.substring(path.lastIndexOf( File.separator ) + 1),
                         TemplateCompiler.compileTemplate(stream));
             } catch (IOException e) {
                 e.printStackTrace();

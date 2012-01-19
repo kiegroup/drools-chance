@@ -21,6 +21,7 @@ import org.drools.semantics.builder.model.*;
 import org.jdom.Element;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,14 +49,16 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     }
 
     public void compile( String name, Object context, Map<String, Object> params ) {
-        XSDModel xmodel = (XSDModel) getModel();
 
-
-        Element element = new Element( "element", xmodel.getNamespace("xsd") );
+        Element element = new Element( "element", ((XSDModel) getModel()).getNamespace("xsd") );
         element.setAttribute( "name", name );
         element.setAttribute( "type", "tns:"+name );
 
-        getModel().addTrait( name, element );
+//        if ( ((List) params.get( "keys" )).size() > 0 ) {
+//            element.addContent( buildKeys( params ) );
+//        }
+
+        getModel().addTrait(name, element);
 
         if ( getCurrentMode().equals( Mode.FLAT ) ) {
             getModel().flatten();
@@ -64,6 +67,28 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             getModel().elevate();
             getModel().addTrait(name, buildAsHierarchy( name, params ) );
         }
+
+//
+    }
+
+    private Element buildKeys(Map<String, Object> params) {
+        XSDModel xmodel = (XSDModel) getModel();
+        Element keys = new Element( "key", xmodel.getNamespace( "xsd" ) );
+            keys.setAttribute( "name", params.get( "name" ) + "Key" );
+
+        Element selector = new Element( "selector", xmodel.getNamespace( "xsd" ) ); 
+            selector.setAttribute( "xpath", "" + params.get( "name" ) );
+        keys.addContent( selector );
+        
+        List<String> keyProps = (List<String>) params.get( "keys" );
+        for ( String k : keyProps ) {
+            Element key = new Element( "field", xmodel.getNamespace( "xsd" ) );
+            key.setAttribute( "xpath", "@" + k );
+            keys.addContent( key );
+        }
+        
+        return keys;
+
     }
 
     private Element buildAsHierarchy(String name, Map<String, Object> params) {
@@ -107,9 +132,9 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             PropertyRelation rel = props.get( propKey );
             Concept tgt = rel.getTarget();
 
-//            if ( rel.isRestricted() ) {
-//                continue;
-//            }
+            if ( rel.isTransient() ) {
+                continue;
+            }
 
 
             if ( tgt.isPrimitive() ) {

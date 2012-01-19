@@ -20,73 +20,47 @@
 
 @declare{'semGetter'}
 
-    // signature
-    //@Transient
-    //@javax.xml.bind.annotation.XmlTransient
-    public
-        @if{ ! isCollection }  @{ typeName }
-        @else{}                java.util.List<@{ typeName }>
-        @end{}
-            @{ getter }() {
 
-        //return value
-        @if{ ! isCollection }
-            @{ typeName } ans = null;
-        @else{}
-            java.util.List<@{ typeName }> ans = new java.util.ArrayList<@{ typeName }>();
-        @end{}
+    @Transient
+    public java.util.Set<@{ typeName }> @{ name }() {
+        java.util.Set<@{ typeName }> set = new java.util.HashSet<@{ typeName }>();
 
-        @if{ max == null || max > 0 }
-        // get what we can
-        @if{ ! isCollection }
-           // we need to fill in one item at most
-           @if{ isBaseCollection }
-               for ( Object o : @{baseGetter}() ) {
-                   if ( o instanceof @{typeName} ) { ans = (@{typeName}) o; }
-                   break;
-               }
-           @else{}
-             if ( @{baseGetter}() instanceof @{typeName} ) { ans = (@{typeName}) @baseGetter(); }
-           @end{}
-        @else{}
-            // we need to find as many items
-           @if{ isBaseCollection }
-               for ( Object o : @{baseGetter}() ) {
-                   if ( o instanceof @{typeName} ) { ans.add( (@{typeName}) o ); }
-               }
-           @else{}
-               if ( @{baseGetter}() instanceof @{typeName} ) { ans.add( (@{typeName}) @baseGetter() ); }
-           @end{}
+        set.addAll( @{getter}() );
+
+        @foreach{ prop : restrictions }
+            @if{ prop.collection }
+                set.addAll( @{prop.getter}() );
+            @else{}
+                set.add( @{prop.getter}() );
+            @end{}
         @end{}
 
-
-        @if{ max == 1 && ! isCollection }
-            if ( ans == null ) {
-                ans = @{ skolem( typeName ) };
+        @foreach{ prop : restrictions }
+            @if{ prop.minCard > 0 }
+            {
+                int j = 0;
+                for ( @{ typeName } y : set ) {
+                    if ( y instanceof @{prop.typeName} ) {
+                        j++;
+                    }
+                }
+                for ( int k = j; k < @{prop.minCard}; k++ ) {
+                    set.add(  @{ skolem( prop.target ) } );
+                }
             }
-        @else{}
-            @if{ isCollection }
-               if ( ans.size() < @{ min } ) {
-                  int base = ans.size();
-                  for ( int j = base; j <= @{ min }; j++ ) {
-                        ans.add( @{ skolem( typeName ) } );
-                  }
-               }
-            @end{}
-            @if{ isCollection and max != null }
-               if ( ans.size() > @{ max } ) {
-                   throw new RuntimeException(" TODO : Semantic Inconsistency, found " + ans.size() + " @{typeName} when up to @{max} were expected" );
-               }
+            @else{}
+                for ( @{ typeName } y : set ) {
+                    if ( y instanceof @{prop.typeName} ) {
+                        // exception?
+                    }
+                }
             @end{}
         @end{}
 
-
-
-
-        @end{}
-        return ans;
-    //method ends here
+        return set;
     }
+
+
 @end{}
 
 @includeNamed{'semGetter'}

@@ -1,0 +1,3 @@
+
+com.clarkparsia.empire.annotation.RdfsClass=@foreach{ k : klasses } @{package}.@{k.name}Impl @end{','}
+javax.persistence.NamedQuery=

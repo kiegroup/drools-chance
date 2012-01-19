@@ -27,8 +27,7 @@ import org.mvel2.templates.TemplateRuntime;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implements SemanticXSDModelCompiler {
 
@@ -57,9 +56,11 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
     protected static final String semGetterTemplateName = "semGetter.drlt";
     protected static final String semSetterTemplateName = "semSetter.drlt";
+    protected static final String propChainTemplateName = "propChainGetter.drlt";
 
     private static CompiledTemplate gettt;
     private static CompiledTemplate settt;
+    private static CompiledTemplate chant;
 
     @Override
     public CompiledOntoModel compile(OntoModel model) {
@@ -67,7 +68,25 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
         SemanticXSDModel sxsdModel = (SemanticXSDModel) super.compile(model);
         sxsdModel.setBindings( createBindings( sxsdModel ) );
 
+        sxsdModel.setIndex( createIndex( sxsdModel ) );
+        
         return sxsdModel;
+    }
+
+    
+    private String createIndex( SemanticXSDModel sxsdModel ) {
+        try {
+            String template = readFile( "empire.annotation.index.template" );
+            Map<String,Object> vars = new HashMap<String, Object>();
+                vars.put( "package", sxsdModel.getPackage() );
+                vars.put( "klasses", sxsdModel.getConcepts() );
+            String index = TemplateRuntime.eval( template, vars ).toString();
+            return index;
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            return "";
+        }
+        
     }
 
 
@@ -102,37 +121,38 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
     private Map<String,String> prepareCodeExtensions(SemanticXSDModel sxsdModel) {
         Map<String,String> code = new HashMap<String, String>( sxsdModel.getConcepts().size() );
+
+
         for ( Concept con : sxsdModel.getConcepts() ) {
             StringBuilder sb = new StringBuilder("");
 
+            Map<String, Set<PropertyRelation>> restrictions = buildRestrictionMatrix( con.getProperties().values() );
+
             for ( String propKey : con.getProperties().keySet() ) {
                 PropertyRelation prop = con.getProperties().get( propKey );
-                if ( prop.isRestricted() ) {
+                if ( ! prop.isRestricted() && ! prop.isTransient() ) {
 
-                    boolean isCollection = prop.getMaxCard() == null || prop.getMaxCard() > 1;
-                    boolean isBaseCollection = prop.getBaseProperty().getMaxCard() == null || prop.getBaseProperty().getMaxCard() > 1;
-                    String typeName = DLUtils.map( prop.getTarget().getName(), false);
-                    boolean isSimpleBoolean = prop.getTarget().getName().equals("xsd:boolean") && ! isCollection;
-                    boolean isBaseSimpleBoolean = prop.getBaseProperty().getTarget().getName().equals("xsd:boolean") && ! isBaseCollection;
-
-                    String getter = ((isSimpleBoolean && ! isCollection) ? "is" : "get") + DLUtils.compactUpperCase(prop.getName());
-                    String setter = "set" + DLUtils.compactUpperCase(prop.getName());
-                    String baseGetter = ((isBaseSimpleBoolean && ! isBaseCollection) ? "is" : "get") + DLUtils.compactUpperCase( prop.getBaseProperty().getName() );
-                    String baseSetter = "set" + DLUtils.compactUpperCase( prop.getBaseProperty().getName() );
+                    
+                    String setter = prop.getSetter();
+                    String adder = prop.getSetter().replace( "set", "add" );
+                    String toggler = prop.getSetter().replace( "set", "remove" );
 
                     Map<String,Object> vars = new HashMap<String, Object>();
-                    vars.put( "isCollection", isCollection );
-                    vars.put( "typeName", typeName );
-                    vars.put( "isSimpleBoolean", isSimpleBoolean );
-                    vars.put( "getter", getter );
+                    vars.put( "typeName", prop.getTypeName() );
+                    vars.put( "isSimpleBoolean", prop.isSimpleBoolean() );
+                    vars.put( "isCollection", prop.isCollection() );
+
+                    vars.put( "name", prop.getName() );
+                    vars.put( "getter", prop.getGetter() );
                     vars.put( "setter", setter );
-                    vars.put( "base", prop.getBaseProperty() );
-                    vars.put( "isBaseCollection", isBaseCollection );
-                    vars.put( "isBaseSimpleBoolean", prop.getTarget().getName().equals("xsd:boolean") && ! isCollection );
-                    vars.put( "baseGetter", baseGetter );
-                    vars.put( "baseSetter", baseSetter );
+                    vars.put( "adder", adder );
+                    vars.put( "toggler", toggler );
+
                     vars.put( "min", prop.getMinCard() );
                     vars.put( "max", prop.getMaxCard() );
+
+                    Set<PropertyRelation> restrs = restrictions.get( prop.getName() );
+                    vars.put( "restrictions", restrs != null ? restrs : Collections.emptySet() );
 
 
                     String getProperty = TemplateRuntime.execute( getGetterTemplate(), DLUtils.getInstance(), vars ).toString();
@@ -143,23 +163,60 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
                     sb.append( setProperty );
 
+                } else {
+                    if ( prop.isChain() ) {
+
+                        Map<String,Object> vars = new HashMap<String, Object>();
+                        vars.put( "typeName", prop.getTypeName() );
+                        vars.put( "isSimpleBoolean", prop.isSimpleBoolean() );
+                        vars.put( "isCollection", prop.isCollection() );
+                        vars.put( "getter", prop.getGetter() );
+                        vars.put( "min", prop.getMinCard() );
+                        vars.put( "max", prop.getMaxCard() );
+
+                        vars.put( "chains", prop.getChains() );
+
+                        String getChain = TemplateRuntime.execute( getChainTemplate(), DLUtils.getInstance(), vars ).toString();
+
+                        sb.append( getChain );
+                    }
                 }
             }
-            // TODO The approach I was hoping to adopt does not work with some persistency frameworks. Need to adopt the dual one
-            // code.put( con.getName(), sb.toString() );
-            code.put( con.getName(), "" );
+            code.put( con.getName(), sb.toString() );
+            //code.put( con.getName(), "" );
         }
         return code;
     }
 
+    private Map<String, Set<PropertyRelation>> buildRestrictionMatrix( Collection<PropertyRelation> rels ) {
+        Map<String, Set<PropertyRelation>> matrix = new HashMap<String, Set<PropertyRelation>>();
+        for ( PropertyRelation rel : rels ) {
+            if ( rel.isRestricted() ) {
+                Set<PropertyRelation> others = matrix.get( rel.getBaseProperty().getName() );
+                if ( others == null ) {
+                    others = new HashSet<PropertyRelation>();
+                    matrix.put( rel.getBaseProperty().getName(), others );
+                }
+                others.add( rel );
+            }
+        }
+        return matrix;
+    }
 
+
+    protected CompiledTemplate getChainTemplate() {
+        if ( chant == null ) {
+            chant = DLTemplateManager.getDataModelRegistry( ModelFactory.CompileTarget.XSDX ).getNamedTemplate( propChainTemplateName );
+        }
+        return chant;
+    }
 
     protected CompiledTemplate getGetterTemplate() {
-        if ( gettt == null ) {
-            gettt = DLTemplateManager.getDataModelRegistry( ModelFactory.CompileTarget.XSDX ).getNamedTemplate( semGetterTemplateName );
+            if ( gettt == null ) {
+                gettt = DLTemplateManager.getDataModelRegistry( ModelFactory.CompileTarget.XSDX ).getNamedTemplate( semGetterTemplateName );
+            }
+            return gettt;
         }
-        return gettt;
-    }
 
     protected CompiledTemplate getSetterTemplate() {
         if ( settt == null ) {

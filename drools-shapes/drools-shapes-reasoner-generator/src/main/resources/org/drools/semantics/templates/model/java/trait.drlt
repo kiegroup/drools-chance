@@ -51,6 +51,7 @@ public interface @{name} extends com.clarkparsia.empire.SupportsRdfId
             get@{ compactUpperCase(prop.name) }();
         @end{}
 
+    @if{ ! prop.transient }
     // @{prop.property}
     public void set@{ compactUpperCase(prop.name) }(
         @if{ prop.maxCard == 1 }
@@ -59,6 +60,18 @@ public interface @{name} extends com.clarkparsia.empire.SupportsRdfId
             java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
         @end{}
         value );
+    @end{}
+
+    @if{ ! prop.restricted && ! prop.transient }
+        @javax.persistence.Transient
+        java.util.Set<@{ map( prop.target.name, true ) }> @{ prop.name }();
+
+        @javax.persistence.Transient
+        void add@{ compactUpperCase(prop.name) }( @{ map( prop.target.name, true ) } x );
+
+        @javax.persistence.Transient
+        void remove@{ compactUpperCase(prop.name) }( @{ map( prop.target.name, true ) } x );
+    @end{}
 
   @end{}  @end{}
 

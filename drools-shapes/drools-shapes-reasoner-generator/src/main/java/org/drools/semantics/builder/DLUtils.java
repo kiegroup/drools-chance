@@ -18,6 +18,7 @@ package org.drools.semantics.builder;
 
 import org.semanticweb.owlapi.model.IRI;
 
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -195,51 +196,94 @@ public class DLUtils {
 
     public static String skolem( String dataType ) {
 
-            if ( "xsd:integer".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:int".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:string".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:dateTime".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:date".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:time".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:long".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:float".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:double".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:short".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:anySimpleType".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:boolean".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:byte".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:decimal".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:unsignedByte".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:unsignedShort".equals( dataType ) ) {
-                return "null";
-            } else if ( "xsd:unsignedInt".equals( dataType ) ) {
-                return "null";
-            } else {
-                return "new " + dataType + "Impl()";
-            }
-    
+        if ( "xsd:integer".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:int".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:string".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:dateTime".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:date".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:time".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:long".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:float".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:double".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:short".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:anySimpleType".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:boolean".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:byte".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:decimal".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:unsignedByte".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:unsignedShort".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:unsignedInt".equals( dataType ) ) {
+            return "null";
+        } else {
+            return "new " + dataType + "Impl()";
         }
-    
-    
-    
-    
-    
-    
+
+    }
+
+
+    public static String nullify( String dataType, boolean box) {
+        if ( box ) {
+            return "null";
+        }
+
+        if ( "xsd:integer".equals( dataType ) ) {
+            return "java.math.BigInteger.ZERO";
+        } else if ( "xsd:int".equals( dataType ) ) {
+            return "0";
+        } else if ( "xsd:string".equals( dataType ) ) {
+            return "new String()";
+        } else if ( "xsd:dateTime".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:date".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:time".equals( dataType ) ) {
+            return "0";
+        } else if ( "xsd:long".equals( dataType ) ) {
+            return "0";
+        } else if ( "xsd:float".equals( dataType ) ) {
+            return "0.0f";
+        } else if ( "xsd:double".equals( dataType ) ) {
+            return "0.0";
+        } else if ( "xsd:short".equals( dataType ) ) {
+            return "0";
+        } else if ( "xsd:anySimpleType".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:boolean".equals( dataType ) ) {
+            return "false";
+        } else if ( "xsd:byte".equals( dataType ) ) {
+            return "0";
+        } else if ( "xsd:decimal".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:unsignedByte".equals( dataType ) ) {
+            return "0";
+        } else if ( "xsd:unsignedShort".equals( dataType ) ) {
+            return "0";
+        } else if ( "xsd:unsignedInt".equals( dataType ) ) {
+            return "0";
+        } else {
+            return "null";
+        }
+
+    }
+
+
+
 
 
 

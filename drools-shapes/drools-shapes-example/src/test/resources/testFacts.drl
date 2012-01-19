@@ -22,8 +22,8 @@ end
 
 rule "Check nested properties and types"
 when
-    $p : Painting( $stair : requiresStair )
-    $s : Stair( stairLength == 10 ) from $stair
+    $p : Painting( $stair : requiresStairAsPainting )
+    $s : Stair( stairLengthIntegerAsStair == 10 ) from $stair
 then
     ans.add("nestedProperties");
 end
