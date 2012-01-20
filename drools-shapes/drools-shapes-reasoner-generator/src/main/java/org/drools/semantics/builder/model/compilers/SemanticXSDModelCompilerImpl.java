@@ -155,13 +155,13 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
                     vars.put( "restrictions", restrs != null ? restrs : Collections.emptySet() );
 
 
-                    String getProperty = TemplateRuntime.execute( getGetterTemplate(), DLUtils.getInstance(), vars ).toString();
-
-                    sb.append( getProperty );
-
-                    String setProperty = TemplateRuntime.execute( getSetterTemplate(), DLUtils.getInstance(), vars ).toString();
-
-                    sb.append( setProperty );
+//                    String getProperty = TemplateRuntime.execute( getGetterTemplate(), DLUtils.getInstance(), vars ).toString();
+//
+//                    sb.append( getProperty );
+//
+//                    String setProperty = TemplateRuntime.execute( getSetterTemplate(), DLUtils.getInstance(), vars ).toString();
+//
+//                    sb.append( setProperty );
 
                 } else {
                     if ( prop.isChain() ) {
@@ -176,9 +176,9 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
                         vars.put( "chains", prop.getChains() );
 
-                        String getChain = TemplateRuntime.execute( getChainTemplate(), DLUtils.getInstance(), vars ).toString();
-
-                        sb.append( getChain );
+//                        String getChain = TemplateRuntime.execute( getChainTemplate(), DLUtils.getInstance(), vars ).toString();
+//
+//                        sb.append( getChain );
                     }
                 }
             }

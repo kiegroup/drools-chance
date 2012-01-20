@@ -317,8 +317,8 @@ public class DL_99_ModelTest {
         compiler.setMode(ModelCompiler.Mode.FLAT);
         SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-        xsdModel.stream( System.out );
-        //        xsdModel.streamBindings( System.out );
+//        xsdModel.stream( System.out );
+                xsdModel.streamBindings( System.out );
 
 
         String pack = "<http://org.drools.conyard.owl#>";
@@ -372,49 +372,53 @@ public class DL_99_ModelTest {
         assertTrue( anotherheat.getSuperConcepts().contains( anotherfire ) );
 
 
-        assertTrue( checkProperty( painting, pack, "involvesPersonsAsActivity", "Person", 1, null, true) );
-        assertTrue( checkProperty( painting, pack, "involvesLabourersAsPainting", "Labourer", 1, null, true ) );
-        assertTrue( checkProperty( painting, pack, "requiresEquipmentsAsActivity", "Equipment", 0, null, true ) );
-        assertTrue( checkProperty( painting, pack, "requiresPaintsAsPainting", "Paint", 1, null, true ) );
-        assertTrue( checkProperty( painting, pack, "requiresStairAsPainting", "Stair", 1, 1, true ) );
-        assertTrue( checkProperty( painting, pack, "requires", "Equipment", 0, null, false ) );
-        assertTrue( checkProperty( painting, pack, "involves", "Person", 0, null, false ) );
+        assertTrue( checkProperty( painting, pack, "involvesPersons", "Person", 1, null, true, true) );
+        assertTrue( checkProperty( painting, pack, "involvesLabourers", "Labourer", 1, null, true, false ) );
+        assertTrue( checkProperty( painting, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
+        assertTrue( checkProperty( painting, pack, "requiresPaints", "Paint", 1, null, true, false ) );
+        assertTrue( checkProperty( painting, pack, "requiresStair", "Stair", 1, 1, true, false ) );
+        assertTrue( checkProperty( painting, pack, "requires", "Equipment", 0, null, false, true ) );
+        assertTrue( checkProperty( painting, pack, "involves", "Person", 0, null, false, true ) );
 
 
-        assertEquals( 17, ironInst.getProperties().size() );
-        assertTrue( checkProperty( ironInst, pack, "involvesMasonsAsIronInstallation", "Mason", 1, null, true ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresWeldingTorchsAsIronInstallation", "WeldingTorch", 1, null, true ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresIronBarsAsIronInstallation", "IronBar", 1, null, true ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresGrindersAsIronInstallation", "Grinder", 1, null, true ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresCraneAsIronInstallation", "Crane", 1, 1, true ) );
-        assertTrue( checkProperty( ironInst, pack, "involvesSmithsAsIronInstallation", "Smith", 1, 4, true) );
-        assertTrue( checkProperty( ironInst, pack, "involvesPersonsAsActivity", "Person", 1, null, true ) );
-        assertTrue( checkProperty( ironInst, pack, "involvesLabourersAsIronInstallation", "Labourer", 2, null, true ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresEquipmentsAsActivity", "Equipment", 0, null, true ) );
-        assertTrue( checkProperty( ironInst, pack, "hasComment", "xsd:string", 0, null, false ) );
-        assertTrue( checkProperty( ironInst, pack, "hasCommentStringAsActivity", "xsd:string", 1, 1, true ) );
+        assertEquals( 19, ironInst.getProperties().size() );
+        assertTrue( checkProperty( ironInst, pack, "involvesMasons", "Mason", 1, null, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresWeldingTorchs", "WeldingTorch", 1, null, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresIronBars", "IronBar", 1, null, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresGrinders", "Grinder", 1, null, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresCrane", "Crane", 1, 1, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "involvesSmiths", "Smith", 1, 4, true, false) );
+        assertTrue( checkProperty( ironInst, pack, "involvesPersons", "Person", 1, null, true, true ) );
+        assertTrue( checkProperty( ironInst, pack, "involvesLabourers", "Labourer", 2, null, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
+        assertTrue( checkProperty( ironInst, pack, "hasComment", "xsd:string", 0, null, false, true ) );
+        assertTrue( checkProperty( ironInst, pack, "hasCommentString", "xsd:string", 1, 1, true, true ) );
 
-        assertTrue( checkProperty( wallRais, pack, "involvesMasonsAsWallRaising", "Mason", 3, null, true ) );
-        assertTrue( checkProperty( wallRais, pack, "requiresBricksAsWallRaising", "Bricks", 1, 1, true ) );
-        assertFalse( checkProperty( wallRais, pack, "requiresBricksesAsWallRaising", "Bricks", 1, null, true ) );
+        assertTrue( checkProperty( wallRais, pack, "involvesMasons", "Mason", 3, null, true, false ) );
+        assertTrue( checkProperty( wallRais, pack, "requiresBricks", "Bricks", 1, 1, true, false ) );
+        assertFalse( checkProperty( wallRais, pack, "requiresBrickses", "Bricks", 1, null, true, true ) );
 
-        assertTrue( checkProperty( inspectn, pack, "involvesPersonsAsActivity", "Person", 1, null, true ) );
-        assertTrue( checkProperty( inspectn, pack, "involvesPersonAsInspection", "Person", 1, 1, true ) );
-        assertTrue( checkProperty( inspectn, pack, "requiresEquipmentsAsActivity", "Equipment", 0, null, true ) );
-        assertTrue( checkProperty( inspectn, pack, "requiresEquipmentsAsInspection", "Equipment", 0, 3, true ) );
+        assertTrue( checkProperty( inspectn, pack, "involvesPersons", "Person", 1, null, true, true ) );
+        assertTrue( checkProperty( inspectn, pack, "involvesPerson", "Person", 1, 1, true, false ) );
+        assertTrue( checkProperty( inspectn, pack, "requiresEquipments", "Equipment", 0, 3, true, false ) );
 
 //
         for ( Concept con : results.getConcepts() ) {
-            if ( con.getName().endsWith( "Range" ) || con.getName().endsWith( "Domain" ) || con.getName().endsWith( "Filler" ) ) {
+            if ( con.getName().endsWith( "Range" ) || con.getName().endsWith( "Domain" ) ) {
                 assertTrue( con.isAbstrakt() );
                 assertTrue( con.isAnonymous() );
                 assertFalse( con.isPrimitive() );
             }
+            if ( con.getName().endsWith( "Filler" ) ) {
+                assertFalse( con.isAbstrakt() );
+                assertTrue( con.isAnonymous() );
+                assertFalse( con.isPrimitive() );
+            }
         }
-        
+
     }
 
-    private boolean checkProperty( Concept base, String pack, String propName, String target, Integer minCard, Integer maxCard, boolean restricted ) {
+    private boolean checkProperty( Concept base, String pack, String propName, String target, Integer minCard, Integer maxCard, boolean restricted, boolean inherited ) {
 
         PropertyRelation rel = base.getProperties().get( pack.replace("#", "#"+propName) );
         if ( rel == null ) {
@@ -423,7 +427,11 @@ public class DL_99_ModelTest {
         if ( ! rel.getTarget().getName().equals( target ) ) {
             return false;
         }
-        return rel.getMinCard() == minCard && rel.getMaxCard() == maxCard && rel.getName().equals( propName ) && rel.isRestricted() == restricted;
+        return rel.getMinCard() == minCard
+                && rel.getMaxCard() == maxCard
+                && rel.getName().equals( propName )
+                && rel.isRestricted() == restricted
+                && rel.isInheritedFor( base ) == inherited;
     }
 
 

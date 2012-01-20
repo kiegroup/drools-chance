@@ -375,7 +375,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         if ( type.indexOf(".") >= 0 ) {
             type = type.substring( type.lastIndexOf(".") + 1 );
         }
-        return type + ( plural ? ( type.endsWith("s") ? "es" : "s") : "" ) + "As" + role;
+        return type + ( plural ? ( type.endsWith("s") ? "es" : "s") : "" ); // + "As" + role;
     }
 
     private PropertyRelation extractProperty( Concept con, String propIri, Concept target, Integer min, Integer max ) {
@@ -454,7 +454,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 //            if ( dirty ) {
 
             rel.setRestricted( true );
-            rel.setSubject( con.getName() );
+            rel.setSubject( con.getIri() ); 
+            rel.setDomain( con );
             rel.setName( rel.getBaseProperty().getName() + restrictedSuffix );
             rel.setProperty( restrictedPropIri );
             con.addProperty( restrictedPropIri, props.get( propIri ) + restrictedSuffix, rel );
@@ -476,8 +477,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     private PropertyRelation inheritPropertyCopy( Concept original, Concept current, String propIri ) {
         PropertyRelation rel;
         for ( Concept sup : current.getSuperConcepts() ) {
-            System.err.println( "Looking for " +propIri + " among the ancestors of " + current.getName() + ", now try " + sup.getName() );
-            String key = propIri.replace( "As"+current.getName(), "As"+sup.getName() );
+//            System.err.println( "Looking for " +propIri + " among the ancestors of " + current.getName() + ", now try " + sup.getName() );
+//            String key = propIri.replace( "As"+current.getName(), "As"+sup.getName() );
+            String key = propIri;
             rel = sup.getProperties().get( key );
             if ( rel != null ) {
                 System.err.println( "Found " +propIri + " in " + sup.getName() );
@@ -926,10 +928,11 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                                     "Filler" +
                                     (counter++);
                             filler = factory.getOWLClass( IRI.create( fillerName ) );
-                            OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
-                                    filler.getIRI(),
-                                    factory.getOWLStringLiteral("abstract") );
-                            ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, ann ) );
+                            // On a second thought, fillers could stay real...
+//                            OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
+//                                    filler.getIRI(),
+//                                    factory.getOWLStringLiteral("abstract") );
+//                            ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, ann ) );
 
                             fillerCache.put( fil, filler );
                         } else {

@@ -180,15 +180,15 @@
                 <configuration>
                     <outputDirectory>${pom.basedir}/target</outputDirectory>
                     <!--
-                    <ontology>${pom.basedir}/src/main/resources/mini.ttl</ontology>
+
                        -->
+                    <ontology>${pom.basedir}/src/main/resources/mini.ttl</ontology>
 
 
-
+                    <!--
 
                     <ontology>${pom.basedir}/src/main/resources/conyard.ttl</ontology>
 
-                    <!--
 
                     -->
 
@@ -218,6 +218,7 @@
                     <extension>true</extension>
                     <args>
                         <arg>-extension</arg>
+                        <arg>-Xjaxbindex</arg>
                         <arg>-Xannotate</arg>
                         <arg>-Xinheritance</arg>
                         <arg>-XtoString</arg>
@@ -227,6 +228,7 @@
                         <arg>-Xfluent-api</arg>
                         <arg>-Xinject-code</arg>
                         <arg>-Xkey-equality</arg>
+                        <arg>-Xsem-accessors</arg>
                     </args>
                     <!--removeOldOutput>true</removeOldOutput-->
                     <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>

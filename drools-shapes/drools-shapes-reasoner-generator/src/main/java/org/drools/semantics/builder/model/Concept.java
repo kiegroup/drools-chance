@@ -190,6 +190,17 @@ public class Concept {
     public void addKey( String key ){
         keys.add( properties.get( key ) );
     }
+    
+    
+    
+    public boolean isInherited( String propIri ) {
+        return properties.containsKey( propIri ) && properties.get( propIri ).getDomain().getIri().equals( this.getIri() );
+    }
+
+
+
+
+
 
     public static class Range {
         private Concept     concept;

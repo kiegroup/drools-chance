@@ -42,10 +42,10 @@ import org.xml.sax.SAXException;
 
 public class KeyPlugin extends Plugin {
 
-    public static String uri = "http://jboss.org/drools/drools-chance/drools-shapes/plugins/keyPlugin";
+    public static String uri = "http://jboss.org/drools/drools-chance/drools-shapes/plugins/key";
 
-    private static CompiledTemplate equalsTempl = readResource("equals.template");
-    private static CompiledTemplate hashKyTempl = readResource("hashKy.template");
+    private static CompiledTemplate equalsTempl = readResource("templates/equals.template");
+    private static CompiledTemplate hashKyTempl = readResource("templates/hashKy.template");
 
     public String getOptionName() {
         return "Xkey-equality";
@@ -72,8 +72,6 @@ public class KeyPlugin extends Plugin {
                 continue;
             }
 
-            c.markAsAcknowledged();
-
             Element keyed = c.element;
             NodeList keyList = keyed.getChildNodes();
             Key[] keys = new Key[keyList.getLength()];
@@ -81,7 +79,6 @@ public class KeyPlugin extends Plugin {
                 keys[j] = new Key( keyList.item( j ).getTextContent(),
                         DLUtils.map( keyList.item( j ).getAttributes().getNamedItem( "type" ).getTextContent(), true ) );
             }
-
 
             HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put( "klassName", co.target.shortName );
@@ -93,13 +90,7 @@ public class KeyPlugin extends Plugin {
             co.implClass.direct( equals );
             co.implClass.direct( hashKy );
 
-            try {
-
-
-            } catch ( Exception e ) {
-                e.printStackTrace();
-                System.exit(-1);
-            }
+            c.markAsAcknowledged();
 
         }
 

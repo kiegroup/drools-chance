@@ -41,7 +41,7 @@ public interface @{name} extends com.clarkparsia.empire.SupportsRdfId
     @RdfProperty("tns:@{prop.name}")
     public
         @if{ prop.maxCard == 1 }
-            @{ map( prop.target.name, false ) }@if{ !prop.target.primitive }@end{}
+            @{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}
         @else{}
             java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
         @end{}
@@ -51,27 +51,33 @@ public interface @{name} extends com.clarkparsia.empire.SupportsRdfId
             get@{ compactUpperCase(prop.name) }();
         @end{}
 
-    @if{ ! prop.transient }
+    @if{ ! prop.readOnly }
     // @{prop.property}
     public void set@{ compactUpperCase(prop.name) }(
         @if{ prop.maxCard == 1 }
-            @{ map( prop.target.name, false ) }@if{ !prop.target.primitive }@end{}
+            @{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}
         @else{}
             java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
         @end{}
         value );
     @end{}
 
-    @if{ ! prop.restricted && ! prop.transient }
-        @javax.persistence.Transient
-        java.util.Set<@{ map( prop.target.name, true ) }> @{ prop.name }();
 
-        @javax.persistence.Transient
-        void add@{ compactUpperCase(prop.name) }( @{ map( prop.target.name, true ) } x );
 
+    @if{ ! prop.restricted && ! prop.target.primitive }
         @javax.persistence.Transient
-        void remove@{ compactUpperCase(prop.name) }( @{ map( prop.target.name, true ) } x );
+    public void add@{ compactUpperCase(prop.name) }( Object x );
     @end{}
+
+    @if{ prop.maxCard == null || prop.maxCard > 1 }
+        @javax.persistence.Transient
+    public void add@{ compactUpperCase(prop.name) }( @{ map( prop.target.name, true ) } x );
+
+        @javax.persistence.Transient
+    public void remove@{ compactUpperCase(prop.name) }( Object x );
+    @end{}
+
+
 
   @end{}  @end{}
 

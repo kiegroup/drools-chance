@@ -32,7 +32,7 @@ public class PropertyRelation extends Relation {
     private Integer maxCard = null;
     private Concept target = null;
     private Concept domain = null;
-    private boolean ghost = false;
+
 
     private boolean restricted = false;
     private PropertyRelation baseProperty;
@@ -200,7 +200,7 @@ public class PropertyRelation extends Relation {
     }
 
     public boolean isTransient() {
-        return isChain();
+        return isChain() || isRestricted();
     }
 
     public void addPropertyChain(List<PropertyRelation> chain) {
@@ -215,12 +215,18 @@ public class PropertyRelation extends Relation {
         return chains;
     }
 
-    public boolean isGhost() {
-        return ghost;
+
+    public boolean isReadOnly() {
+        return isChain();
+    }
+    
+
+    public boolean isInheritedFor( Concept con ) {
+        return con != null && ! con.getIri().equals( domain.getIri() );
     }
 
-    public void setGhost(boolean ghost) {
-        this.ghost = ghost;
+    public boolean isInheritedFor( String conIri ) {
+        return conIri != null && ! conIri.equals( domain.getIri() );
     }
 }
 

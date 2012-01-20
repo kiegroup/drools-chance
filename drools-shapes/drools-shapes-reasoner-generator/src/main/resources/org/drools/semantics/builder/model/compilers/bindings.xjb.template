@@ -21,13 +21,14 @@
           xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
           xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector"
           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-          xmlns:dsh="http://jboss.org/drools/drools-chance/drools-shapes/plugins/keyPlugin"
+          xmlns:dsk="http://jboss.org/drools/drools-chance/drools-shapes/plugins/key"
+          xmlns:dsp="http://jboss.org/drools/drools-chance/drools-shapes/plugins/accessor"
           xmlns:annox="http://annox.dev.java.net"
           xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
           xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
           xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
           version="2.1"
-          extensionBindingPrefixes="xjc annox inheritance ci dsh hj" >
+          extensionBindingPrefixes="xjc annox inheritance ci dsk dsp hj" >
   <bindings schemaLocation="@{modelName}.xsd" node="/xsd:schema">
 
     <globalBindings localScoping="toplevel" optionalProperty="primitive">
@@ -66,16 +67,29 @@
         ]]></ci:code>
 
 
-            <dsh:keyId>
+            <dsk:keyId>
                 @foreach{ key : concept.keys }
-                <dsh:key type="@{key.target.name}">@{key.name}</dsh:key>
+                <dsk:key type="@{key.target.name}">@{key.name}</dsk:key>
                 @end{}
-            </dsh:keyId>
+            </dsk:keyId>
 
+        <dsp:accessors>
+        @foreach{ propKey : properties[ concept.name ].keySet }
+            @code{ prop = properties[ concept.name ][ propKey ] }
+            @if{ prop.transient }
+                <dsp:accessor name="@{prop.name}" type="@{prop.target.name}"
+                              min="@{prop.minCard}" max="@{prop.maxCard}"
+                              inherited="@{prop.isInheritedFor(concept)}" base="@{prop.baseProperty.name}" baseTpe="@{prop.baseProperty.target.name}"/>
+            @else{}
+                <dsp:property name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}" />
+            @end{}
+        @end{}
+        </dsp:accessors>
 
         @foreach{ propKey : properties[ concept.name ].keySet }
-
             @code{ prop = properties[ concept.name ][ propKey ] }
+            @if{ ! prop.transient }
+
 
             @code{ nodeType = ''; if ( prop.target.primitive &&
                                        prop.maxCard <= 1 )
@@ -83,7 +97,7 @@
                                        else
                                        nodeType='element'; }
 
-            @if{ ! prop.transient }
+
             <bindings node=".//xsd:@{nodeType}[@name='@{prop.name}']">
                 <jxb:property generateIsSetMethod="true" name="@{prop.name}" >
                     @if{ "element".equals(nodeType) && ! prop.target.primitive }
@@ -91,15 +105,15 @@
                     @end{}
                 </jxb:property>
 
+
                 <annox:annotate>
                     <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="tns:@{prop.name}" />
                 </annox:annotate>
 
-                @if{ prop.ghost } <hj:ignored/> @end{}
             </bindings>
             @end{}
-
         @end{}
+
     </bindings>
     @end{}
 
