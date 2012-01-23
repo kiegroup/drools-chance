@@ -164,8 +164,9 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                     prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
                     prop.setAttribute( "name", rel.getName() );
                     prop.setAttribute( "type", map( tgt ) );
-                    prop.setAttribute( "minOccurs", rel.getMinCard().toString() );
+                    prop.setAttribute( "minOccurs", rel.getMinCard() == 0 ? "1" : rel.getMinCard().toString() );
                     prop.setAttribute( "maxOccurs", "unbounded" );
+                    prop.setAttribute( "nillable", "false" );
                     seq.addContent( prop );
                 }
 
@@ -234,6 +235,10 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
         return type;
     }
+
+
+
+
 
 
 

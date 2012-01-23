@@ -32,7 +32,7 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
 
     
 
-    private String templateName = "trait.drlt";
+    private String templateName = "TraitInterface.template";
 
     private TemplateRegistry registry = DLTemplateManager.getDataModelRegistry(ModelFactory.CompileTarget.JAVA);
 

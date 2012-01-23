@@ -19,6 +19,7 @@ package org.drools.semantics.builder.model;
 import org.drools.definition.type.Position;
 import org.drools.semantics.builder.DLUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,10 +33,12 @@ public class PropertyRelation extends Relation {
     private Integer maxCard = null;
     private Concept target = null;
     private Concept domain = null;
+    private Concept addableTarget = null;
 
 
     private boolean restricted = false;
     private PropertyRelation baseProperty;
+    private List<PropertyRelation> restrictedProperties = new ArrayList<PropertyRelation>();
 
     private Set<List<PropertyRelation>> chains = new HashSet<List<PropertyRelation>>();
 
@@ -137,8 +140,12 @@ public class PropertyRelation extends Relation {
 
     public void setBaseProperty(PropertyRelation baseProperty) {
         this.baseProperty = baseProperty;
+        baseProperty.addRestrictedChild( this );
     }
 
+    private void addRestrictedChild(PropertyRelation propertyRelation) {
+        this.restrictedProperties.add( propertyRelation );
+    }
 
 
     public boolean isCollection() {
@@ -227,6 +234,28 @@ public class PropertyRelation extends Relation {
 
     public boolean isInheritedFor( String conIri ) {
         return conIri != null && ! conIri.equals( domain.getIri() );
+    }
+
+    public void restrictTargetTo( Concept target ) {
+        setAddableTarget(target);
+        setObject( target.getIri() );
+        for ( PropertyRelation sub : restrictedProperties ) {
+            Concept restrTarget = sub.getTarget();
+            if ( ! restrTarget.equals( target ) ) {
+                if ( ! restrTarget.getSuperConcepts().contains( target ) ) {
+                    sub.restrictTargetTo( target );
+                }
+            }
+        }
+        
+    }
+
+    public Concept getAddableTarget() {
+        return addableTarget == null ? target : addableTarget;
+    }
+
+    public void setAddableTarget(Concept addableTarget) {
+        this.addableTarget = addableTarget;
     }
 }
 

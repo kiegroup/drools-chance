@@ -18,15 +18,16 @@
 }
 
 
-@declare{'propChainGetter'}
+@declare{'chainGetter'}
 
 
     @Transient
     public
-    @if{ isCollection } java.util.List<@{ typeName }> @else{} @{ typeName } @end{}
+    @if{ max == null || max > 1 } java.util.List<@{ type }> @else{} @{ type } @end{}
 
-    @{ getter }() {
-        java.util.List<@{ typeName }> ans = new java.util.ArrayList<@{ typeName }>();
+    @{ getter( name, type ) }() {
+
+        java.util.List<@{ type }> ans = new java.util.ArrayList<@{ type }>();
 
         java.util.List temp = new java.util.ArrayList();
         java.util.List temp2 = new java.util.ArrayList();
@@ -38,7 +39,7 @@
 
             @foreach{ link : chain }
                 for ( Object o : temp ) {
-                    temp2.addAll( ((@{link.domain.name}) o).@{link.name}() );
+                    temp2.addAll( ((@{ map( link.type, true ) }) o).@{ getter( link.name, link.type ) }() );
                 }
                 temp.clear();
                 temp.addAll( temp2 );
@@ -47,13 +48,14 @@
         @end{}
 
         ans.addAll( temp );
-        return @if{ isCollection } ans; @else{} ans.get(0); @end{}
+
+        return @if{ max > 1 || max == null } ans; @else{} ans.get(0); @end{}
     }
 
 
 @end{}
 
-@includeNamed{'propChainGetter'}
+@includeNamed{'chainGetter'}
 
 
 

@@ -42,12 +42,16 @@ public class DLTemplateManager {
             "model/drl/trait.drlt"
     };
     protected static final String[] NAMED_TEMPLATES_JAVA = new String[] {
-            "model/java/trait.drlt"
+            "model/java/TraitInterface.template"
     };
+
     protected static final String[] ACCESSOR_TEMPLATES_JAVA = new String[] {
-            "model/java/semGetter.drlt",
-            "model/java/semSetter.drlt",
-            "model/java/propChainGetter.drlt"
+            "model/java/baseGetterSetter.template",
+            "model/java/baseAddRemove.template",
+            "model/java/genericAdd.template",
+            "model/java/restrictedGetterSetter.template",
+            "model/java/restrictedAddRemove.template",
+            "model/java/chainGetter.template"
     };
     protected static final String[] FALC_TABLEAU_TEMPLATES = new String[] {
             "tableau/falc/header.drlt",

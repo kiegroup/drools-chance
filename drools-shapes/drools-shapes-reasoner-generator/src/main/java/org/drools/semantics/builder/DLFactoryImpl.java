@@ -165,8 +165,8 @@ public class DLFactoryImpl implements DLFactory {
         ByteArrayResource tableauRules = new ByteArrayResource( tableau.getBytes() );
             tableauRules.setResourceType( ResourceType.DRL );
 
-        System.err.println(tableau);
-        System.err.println(" ******************************** Tableau rules ready, now infer model *************************************** ");
+//        System.err.println(tableau);
+        System.out.println(" ******************************** Tableau rules ready, now infer model *************************************** ");
 
 
 //        ClassPathResource classBuilder = new ClassPathResource( "FALC_ModelGeneratorVisitor.drl" );

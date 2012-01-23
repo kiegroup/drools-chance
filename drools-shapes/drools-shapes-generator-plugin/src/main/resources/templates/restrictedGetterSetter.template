@@ -1,0 +1,86 @@
+@comment{
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+}
+
+
+@declare{'restrictedGetterSetter'}
+
+
+    @Transient
+    public void set@{ compactUpperCase( name ) }(
+        @if{ max == null || max > 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
+        x
+    ) {
+        List<@{map( type, true )}> removals = new ArrayList<@{map( type, true )}>();
+        for ( Object o : @{ getter( base, type ) }() ) {
+            if ( o instanceof @{map( type, true )} ) {
+                removals.add( (@{map( type, true )}) o );
+            }
+        }
+
+        @{ getter( base, type ) }().removeAll( removals );
+
+        @if{ ! primitive }
+            add@{ compactUpperCase( base ) }( (Object) x );
+        @else{}
+            @{ getter( base, type ) }().add( x );
+        @end{}
+
+    }
+
+
+
+
+     @Transient
+     public
+        @if{ max > 1 || max == null } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
+
+        @{ getter( name, type ) }()  {
+
+        java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList<@{ map( type, true ) }>();
+
+        for ( @{ map( baseType, true ) } x : get@{ compactUpperCase( base ) }() ) {
+            if ( x instanceof @{ map( type, true ) } ) {
+                ans.add( (@{ map( type, true ) }) x );
+            }
+        }
+
+        if ( ans.size() < @{ min } ) {
+            for ( int j = ans.size(); j < @{ min }; j++ ) {
+                ans.add( @{ skolem( type ) } );
+            }
+        }
+
+        // TODO : max?
+
+        @if{ max == null || max > 1 }
+            return ans;
+        @else{}
+            return ans.get(0);
+        @end{}
+     }
+
+
+
+@end{}
+
+@includeNamed{'restrictedGetterSetter'}
+
+
+
+

@@ -31,10 +31,9 @@
           extensionBindingPrefixes="xjc annox inheritance ci dsk dsp hj" >
   <bindings schemaLocation="@{modelName}.xsd" node="/xsd:schema">
 
-    <globalBindings localScoping="toplevel" optionalProperty="primitive">
+    <globalBindings localScoping="toplevel" >
       <serializable/>
       <xjc:simple/>
-      <xjc:treatRestrictionLikeNewType/>
 
       <javaType name= "java.util.Date" xmlType="xsd:date" printMethod="org.drools.semantics.builder.DLUtils.marshalDate" parseMethod="org.drools.semantics.builder.DLUtils.unmarshalDate"/>
       <javaType name= "java.util.Date" xmlType="xsd:dateTime" printMethod="org.drools.semantics.builder.DLUtils.marshalDate" parseMethod="org.drools.semantics.builder.DLUtils.unmarshalDate"/>
@@ -51,17 +50,21 @@
     @foreach{ concept : concepts }
     <bindings node="//xsd:@{targetElement}[@name='@{concept.name}']">
         <class name="@{concept.name}Impl"/>
-        <inheritance:implements>@{package}.@{concept.name}</inheritance:implements>
 
+        <inheritance:implements>@{package}.@{concept.name}</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.Equals</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.HashCode</inheritance:implements>
-
         @if{ flat && concept.name != "Thing" } <inheritance:extends>org.drools.semantics.builder.model.RdfIdAble</inheritance:extends> @end{}
+
+
         <annox:annotate>
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfsClass" value="tns:@{concept.name}" />
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.Namespaces" value="tns http://@{package}#" />
           <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="@{concept.name}Impl"/>
+          <!--annox:annotate annox:class="javax.jdo.annotations.PersistenceCapable" detachable="false" identityType="javax.jdo.annotations.IdentityType.DATASTORE" /-->
         </annox:annotate>
+
+
         <ci:code><![CDATA[
           @{ extra_code[ concept.name ] }
         ]]></ci:code>
@@ -77,11 +80,17 @@
         @foreach{ propKey : properties[ concept.name ].keySet }
             @code{ prop = properties[ concept.name ][ propKey ] }
             @if{ prop.transient }
-                <dsp:accessor name="@{prop.name}" type="@{prop.target.name}"
+                <dsp:accessor name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}"
                               min="@{prop.minCard}" max="@{prop.maxCard}"
-                              inherited="@{prop.isInheritedFor(concept)}" base="@{prop.baseProperty.name}" baseTpe="@{prop.baseProperty.target.name}"/>
+                              inherited="@{prop.isInheritedFor(concept)}" base="@{prop.baseProperty.name}" baseType="@{prop.baseProperty.target.name}">
+                    @foreach{ chain : prop.chains }
+                        <dsp:chain>
+                            @foreach{ link : chain } <dsp:link type="@{link.domain.name}">@{link.name}</dsp:link>@end{}
+                        </dsp:chain>
+                    @end{}
+                </dsp:accessor>
             @else{}
-                <dsp:property name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}" />
+                <dsp:property name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}" restr="@{prop.addableTarget}" />
             @end{}
         @end{}
         </dsp:accessors>
@@ -106,9 +115,13 @@
                 </jxb:property>
 
 
-                <annox:annotate>
-                    <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="tns:@{prop.name}" />
-                </annox:annotate>
+                @if{ ! prop.target.primitive }
+                    <annox:annotate>
+                        <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="tns:@{prop.name}" />
+                    </annox:annotate>
+                @end{}
+
+
 
             </bindings>
             @end{}

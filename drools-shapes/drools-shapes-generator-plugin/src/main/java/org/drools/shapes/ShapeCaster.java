@@ -186,6 +186,11 @@ public class ShapeCaster
         if ( ! ontoFile.exists() ) {
             throw new MojoExecutionException( " File not found : " + ontology );
         }
+        
+        if ( new File( target ).exists() ) {
+            getLog().info( "Target folder " + target + " exists, skipping generation process" );
+            return;
+        }
 
         DLFactory factory = DLFactoryBuilder.newDLFactoryInstance();
         Resource res = ResourceFactory.newFileResource( ontology );

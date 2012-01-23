@@ -111,7 +111,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             String bindings = TemplateRuntime.eval( template, vars ).toString();
 
 
-            System.out.println( vars.get("extra_code") );
+//            System.out.println( vars.get("extra_code") );
             return bindings;
         } catch ( IOException ioe ) {
             ioe.printStackTrace();
@@ -239,6 +239,14 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
         finally {
             stream.close();
         }
+    }
+
+    public static String getTemplatedCode(String template, Map<String, Object> vars) {
+        return TemplateRuntime.execute (
+                DLTemplateManager.getDataModelRegistry( ModelFactory.CompileTarget.XSDX ).getNamedTemplate( template + ".template" ),
+                DLUtils.getInstance(),
+                vars ).toString();
+
     }
 }
 

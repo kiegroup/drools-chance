@@ -79,7 +79,6 @@ public class JavaInterfaceModelImpl extends ModelImpl implements JavaInterfaceMo
 
         for ( String key : getTraitNames() ) {
             File f =  new File( path + slash + key + ".java" );
-            System.out.println(f.getAbsolutePath());
             try {
                 FileOutputStream fos = new FileOutputStream( f );
                 fos.write( getTrait(key).toString().getBytes());

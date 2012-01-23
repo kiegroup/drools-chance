@@ -28,6 +28,7 @@ http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistenc
             <property name="hibernate.showSql" value="true"/>
             <property name="hibernate.formatSql" value="true"/>
             <property name="hibernate.connection.autocommit" value="false"/>
+
         </properties>
 
     </persistence-unit>

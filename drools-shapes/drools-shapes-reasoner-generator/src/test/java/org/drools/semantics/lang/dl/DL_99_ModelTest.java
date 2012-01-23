@@ -233,8 +233,8 @@ public class DL_99_ModelTest {
 
     @Test
     public void testFullKMR2XSDModelGeneration() {
-        String source = "kmr2" + File.separator + "kmr2_miniExample.manchester";
-//        String source = "kmr2/KMR_Ontology.ttl";
+//        String source = "kmr2" + File.separator + "kmr2_miniExample.manchester";
+        String source = "kmr2/KMR_OntologyLatest.ttl";
         Resource res = ResourceFactory.newClassPathResource( source );
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
@@ -372,16 +372,16 @@ public class DL_99_ModelTest {
         assertTrue( anotherheat.getSuperConcepts().contains( anotherfire ) );
 
 
-        assertTrue( checkProperty( painting, pack, "involvesPersons", "Person", 1, null, true, true) );
+//        assertTrue( checkProperty( painting, pack, "involvesPersons", "Person", 1, null, true, true) );
         assertTrue( checkProperty( painting, pack, "involvesLabourers", "Labourer", 1, null, true, false ) );
-        assertTrue( checkProperty( painting, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
+//        assertTrue( checkProperty( painting, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
         assertTrue( checkProperty( painting, pack, "requiresPaints", "Paint", 1, null, true, false ) );
         assertTrue( checkProperty( painting, pack, "requiresStair", "Stair", 1, 1, true, false ) );
         assertTrue( checkProperty( painting, pack, "requires", "Equipment", 0, null, false, true ) );
         assertTrue( checkProperty( painting, pack, "involves", "Person", 0, null, false, true ) );
 
 
-        assertEquals( 19, ironInst.getProperties().size() );
+        assertEquals( 18, ironInst.getProperties().size() );
         assertTrue( checkProperty( ironInst, pack, "involvesMasons", "Mason", 1, null, true, false ) );
         assertTrue( checkProperty( ironInst, pack, "requiresWeldingTorchs", "WeldingTorch", 1, null, true, false ) );
         assertTrue( checkProperty( ironInst, pack, "requiresIronBars", "IronBar", 1, null, true, false ) );
@@ -390,10 +390,12 @@ public class DL_99_ModelTest {
         assertTrue( checkProperty( ironInst, pack, "involvesSmiths", "Smith", 1, 4, true, false) );
         assertTrue( checkProperty( ironInst, pack, "involvesPersons", "Person", 1, null, true, true ) );
         assertTrue( checkProperty( ironInst, pack, "involvesLabourers", "Labourer", 2, null, true, false ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
+//        assertTrue( checkProperty( ironInst, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
         assertTrue( checkProperty( ironInst, pack, "hasComment", "xsd:string", 0, null, false, true ) );
         assertTrue( checkProperty( ironInst, pack, "hasCommentString", "xsd:string", 1, 1, true, true ) );
 
+
+        assertTrue( checkProperty( wallRais, pack, "involves", "Person", 0, null, false, false ) );
         assertTrue( checkProperty( wallRais, pack, "involvesMasons", "Mason", 3, null, true, false ) );
         assertTrue( checkProperty( wallRais, pack, "requiresBricks", "Bricks", 1, 1, true, false ) );
         assertFalse( checkProperty( wallRais, pack, "requiresBrickses", "Bricks", 1, null, true, true ) );

@@ -1,5 +1,4 @@
 import com.clarkparsia.empire.Empire;
-import com.clarkparsia.empire.EmpireGenerated;
 import com.clarkparsia.empire.EmpireOptions;
 import com.clarkparsia.empire.config.ConfigKeys;
 import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
@@ -10,7 +9,6 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
-import org.drools.io.impl.ByteArrayResource;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.BeforeClass;
@@ -24,16 +22,17 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
+import java.io.*;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class FactTest {
+
+
+
 
 
 
@@ -51,7 +50,11 @@ public class FactTest {
 
 
     @BeforeClass
-    public static void init() throws ParseException, JAXBException {
+    public static void init() throws ParseException, JAXBException, IOException {
+
+
+
+
         JAXBContext jaxbContext = JAXBContext.newInstance(factory.getClass().getPackage().getName());
 
         marshaller = jaxbContext.createMarshaller();
@@ -65,38 +68,43 @@ public class FactTest {
 
     }
 
+
+
+
+
+
     private static void initTestData() {
 
         painting = new PaintingImpl();
 
-        painting.setStartsOnDateAsActivity( new Date() );
-        painting.setEndsOnDateAsActivity( new Date() );
-        painting.setHasCommentStringAsActivity("Some comment on this object");
+        painting.setStartsOnDate( new Date() );
+        painting.setEndsOnDate( new Date() );
+        painting.setHasCommentString("Some comment on this object");
 
-        Stair stair = factory.createStairImpl();
-        stair.setStairLengthIntegerAsStair( 10 );
-        painting.setRequiresStairAsPainting( stair );
+        Stair stair = new StairImpl();
+        stair.setStairLengthInteger( 10 );
+        painting.setRequiresStair( stair );
 
-        painting.getInvolves().add( factory.createPersonImpl() );
+        painting.addInvolves( factory.createPersonImpl());
 
-        painting.getInvolvesLabourersAsPainting().add( factory.createLabourerImpl() );
+        painting.addInvolves( factory.createLabourerImpl());
 
         Paint paint = factory.createPaintImpl();
 
-        site = factory.createSiteImpl();
-        site.setCenterXFloatAsSite( 10 );
-        site.setCenterYFloatAsSite( 20 );
-        site.setRadiusFloatAsSite( 100 );
-        paint.setStoredInSiteAsEquipment(site);
-        painting.getRequiresPaintsAsPainting().add( paint );
+        site = new SiteImpl();
+        site.setCenterXFloat( 10.0f );
+        site.setCenterYFloat( 20.0f );
+        site.setRadiusFloat( 100.0f );
+        paint.setStoredInSite(site);
+        painting.addRequires(paint);
         painting.addRequires( new EquipmentImpl() );
 
 
         pers = new LabourerImpl();
 
 
-        pers.getParticipatesIn().add( painting );
-//        painting.getInvolvesLabourersAsPainting().add( (Labourer) pers  );
+        pers.addParticipatesIn( painting );
+//        painting.getInvolvesLabourers().add( (Labourer) pers  );
     }
 
 
@@ -117,8 +125,8 @@ public class FactTest {
 
     public void checkPainting( Painting painting ) {
         assertNotNull( painting );
-        assertEquals( 3, painting.requires().size() );
-        assertEquals( 2, painting.involves().size() );
+        assertEquals( 3, painting.getRequires().size() );
+        assertEquals( 2, painting.getInvolves().size() );
 
 
     }
@@ -131,7 +139,31 @@ public class FactTest {
     }
 
 
+    @Test
+    public void testSemanticAccessors() {
+        Painting pain = new PaintingImpl();
 
+        Date d = new Date();
+        pain.setStartsOnDate( d );
+        assertEquals( d, pain.getStartsOnDate() );
+        assertEquals( 1, pain.getStartsOn().size() );
+        assertTrue(pain.getStartsOn().contains(d));
+
+        Labourer lab = new LabourerImpl();
+        lab.setOidString( "xyz" );
+        assertEquals("xyz", lab.getOidString());
+        lab.setOidString("abc");
+        assertEquals("abc", lab.getOidString());
+        assertEquals( 1, lab.getOid().size() );
+
+
+
+        WallRaising wr = new WallRaisingImpl();
+
+
+
+
+    }
 
 
 
@@ -178,24 +210,7 @@ public class FactTest {
         return ans;
     }
 
-    @Test
-    public void testJPA() {
 
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory( ObjectFactory.class.getPackage().getName() );
-        EntityManager em = emf.createEntityManager();
-
-        persist( painting, em );
-        Painting p2 = (Painting) refreshOnJPA( painting, ((PaintingImpl) painting).getHjid(), em );
-
-        assertNotNull( p2 );
-        assertEquals( painting, p2 );
-        assertNotSame( painting, p2 );
-
-        checkPainting( p2 );
-
-        em.close();
-
-    }
 
 
 
@@ -236,7 +251,7 @@ public class FactTest {
         IronInstallation ironBuild = (IronInstallation) refreshOnJPA( ironi, ironi.getRdfId(), em );
 
         assertEquals( 3, ironBuild.getInvolves().size() );
-        
+
         boolean x1 = false;
         boolean x2 = false;
         boolean x3 = false;
@@ -301,10 +316,10 @@ public class FactTest {
 
         assertTrue( p2 instanceof Painting );
         assertTrue( p2 instanceof PaintingImpl );
-        assertEquals( 10, ((Stair) ((Painting)p2).getRequiresStairAsPainting()).getStairLengthIntegerAsStair() );
+        assertEquals(  new Integer(10), p2.getRequiresStair().getStairLengthInteger() );
 
-        p2.setHasCommentStringAsActivity(" Change my mind ");
-        p2.getRequiresStairAsPainting().setStairLengthIntegerAsStair(6);
+        p2.setHasCommentString(" Change my mind ");
+        p2.getRequiresStair().setStairLengthInteger(6);
 
         assertEquals(p2, painting);
         assertNotSame( painting, p2 );
@@ -312,8 +327,6 @@ public class FactTest {
         PaintingImpl p3 = new PaintingImpl();
 
         p3.mergeFrom( p3, p2 );
-
-        assertEquals( p3, painting );
 
         checkPainting( p2 );
         checkPainting( p3 );
@@ -363,5 +376,50 @@ public class FactTest {
         System.out.println( ans );
 
     }
+
+
+
+
+    @Test
+    public void testJPA() {
+
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory( ObjectFactory.class.getPackage().getName() );
+        EntityManager em = emf.createEntityManager();
+
+
+        Painting painting = new PaintingImpl();
+        painting.setEndsOnDate(new Date());
+        painting.setOidString( "abcd");
+//
+        Person pers1 = new PersonImpl();
+        pers1.setOidString( "xy1" );
+        Person pers2 = new PersonImpl();
+        pers2.setOidString( "xy2" );
+        painting.addInvolves( pers1 );
+        painting.addInvolves( pers2 );
+
+//        Person pers3 = new GuestImpl();
+//        painting.addInvolves( pers3 );
+//
+//                painting.addInvolves( new LabourerImpl());
+
+        persist(painting, em);
+
+        Painting p2 = (Painting) refreshOnJPA( painting, ((PaintingImpl) painting).getHjid(), em );
+
+        assertEquals( "xy1", p2.getInvolvesPersons().get(0).getOidString() );
+        assertEquals( "xy2", p2.getInvolvesPersons().get(1).getOidString() );
+
+        assertNotNull(p2);
+        assertEquals( painting, p2 );
+        assertNotSame( painting, p2 );
+
+
+
+        em.close();
+
+    }
+
 
 }

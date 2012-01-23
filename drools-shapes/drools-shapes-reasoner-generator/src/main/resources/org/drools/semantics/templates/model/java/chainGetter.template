@@ -1,0 +1,63 @@
+@comment{
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+}
+
+
+@declare{'chainGetter'}
+
+
+    @Transient
+    public
+    @if{ max == null || max > 1 } java.util.List<@{ type }> @else{} @{ type } @end{}
+
+    @{ getter( name, type ) }() {
+
+        java.util.List<@{ type }> ans = new java.util.ArrayList<@{ type }>();
+
+        java.util.List temp = new java.util.ArrayList();
+        java.util.List temp2 = new java.util.ArrayList();
+
+        @foreach{ chain : chains }
+        temp.clear();
+        temp2.clear();
+        temp.add( this );
+
+            @foreach{ link : chain }
+                for ( Object o : temp ) {
+                    temp2.addAll( ((@{ map( link.type, true ) }) o).@{ getter( link.name, link.type ) }() );
+                }
+                temp.clear();
+                temp.addAll( temp2 );
+                temp2.clear();
+            @end{}
+        @end{}
+
+        ans.addAll( temp );
+
+        return @if{ max > 1 || max == null } ans; @else{} ans.get(0); @end{}
+    }
+
+
+@end{}
+
+@includeNamed{'chainGetter'}
+
+
+
+
+

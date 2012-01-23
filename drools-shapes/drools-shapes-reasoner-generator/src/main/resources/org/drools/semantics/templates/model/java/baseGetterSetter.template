@@ -1,3 +1,4 @@
+@comment{
 /*
  * Copyright 2011 JBoss Inc
  *
@@ -14,11 +15,31 @@
  * limitations under the License.
  */
 
-package org.drools.semantics.builder.model.compilers;
-
-import java.util.Map;
-
-public interface SemanticXSDModelCompiler extends XSDModelCompiler {
-
-
 }
+
+
+@declare{'baseAddRemove'}
+
+
+    @if{ primitive }
+    @com.clarkparsia.empire.annotation.RdfProperty( "tns:@{ name }" )
+    @javax.persistence.ElementCollection( targetClass = @{ map( type, true) }.class )
+    public List<@{ map( type, true ) }> @{ getter( name, type )}2() {
+        return @{ getter( name, type )}();
+    }
+
+    public void set@{ compactUpperCase( name ) }2(  List<@{ map( type, true ) }> x ) {
+        set@{ compactUpperCase( name ) }( x );
+    }
+    @end{}
+
+
+
+@end{}
+
+@includeNamed{'baseAddRemove'}
+
+
+
+
+

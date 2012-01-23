@@ -1,0 +1,24 @@
+
+@declare{'hashKyTemplate'}
+
+    public int hashCode() {
+        final org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy = org.jvnet.jaxb2_commons.lang.JAXBHashCodeStrategy.INSTANCE;
+        return super.hashCode() + this.hashCode(null, strategy);
+    }
+
+     public int hashCode(ObjectLocator locator,  org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy) {
+            int currentHashCode = 1;
+            
+            @foreach{ k : keys }
+            {
+                List<@{k.type}> the@{compactUpperCase(k.name)};
+                the@{compactUpperCase(k.name)} = (this.isSet@{compactUpperCase(k.name)}()?this.get@{compactUpperCase(k.name)}():null);
+                currentHashCode = strategy.hashCode(LocatorUtils.property(locator, "@{k.name}", the@{compactUpperCase(k.name)}), currentHashCode, the@{compactUpperCase(k.name)});
+            }
+            @end{}
+        return currentHashCode;
+     }
+@end{}
+
+
+@includeNamed{'hashKyTemplate'}

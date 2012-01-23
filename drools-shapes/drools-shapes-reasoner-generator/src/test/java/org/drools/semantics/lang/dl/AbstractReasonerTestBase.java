@@ -136,8 +136,8 @@ public class AbstractReasonerTestBase {
         }
 
 
-        System.err.println(" GO WITH TEST GOAL \n\n\n\n\n\n\n");
-        System.out.println(" GO WITH TEST GOAL \n\n\n\n\n\n\n");
+//        System.err.println(" GO WITH TEST GOAL \n\n\n\n\n\n\n");
+//        System.out.println(" GO WITH TEST GOAL \n\n\n\n\n\n\n");
 
     }
 
@@ -208,7 +208,7 @@ public class AbstractReasonerTestBase {
 
     protected static boolean logFile(String fileName, String content) {
         try {
-            System.out.println(new File(".").getAbsolutePath());
+//            System.out.println(new File(".").getAbsolutePath());
             FileOutputStream fw = new FileOutputStream(fileName);
             byte[] drl = content.getBytes();
             fw.write(drl,0,drl.length);

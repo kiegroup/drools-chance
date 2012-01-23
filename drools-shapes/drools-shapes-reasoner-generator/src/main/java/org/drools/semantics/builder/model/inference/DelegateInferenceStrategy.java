@@ -237,12 +237,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLDataAllValuesFrom forall = (OWLDataAllValuesFrom) sup;
                 propIri = forall.getProperty().asOWLDataProperty().getIRI().toQuotedString();
                 tgt = primitives.get( forall.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
-                rel = extractProperty( con, propIri, tgt, null, null );
+                rel = extractProperty( con, propIri, tgt, null, null, true );
                 if ( rel != null ) {
-//                    rel.setObject( forall.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
-//                    rel.setTarget( primitives.get( forall.getFiller().asOWLDatatype().getIRI().toQuotedString() ) );
-//                    con.addProperty( propIri, props.get( propIri ), rel );
-                    hierarchicalModel.addProperty( rel );
+//                    hierarchicalModel.addProperty( rel );
                 } else {
                     System.err.println("WARNING : Could not find property " + propIri + " restricted in class " + con.getIri() );
                 }
@@ -251,9 +248,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLDataMinCardinality min = (OWLDataMinCardinality) sup;
                 propIri = min.getProperty().asOWLDataProperty().getIRI().toQuotedString();
                 tgt = primitives.get( min.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
-                rel = extractProperty( con, propIri, tgt, min.getCardinality(), null );
+                rel = extractProperty( con, propIri, tgt, min.getCardinality(), null, false );
                 if ( rel != null ) {
-//                    rel.setMinCard( min.getCardinality() );
                     hierarchicalModel.addProperty( rel );
                 } else {
                     System.err.println("WARNING : Could not find property " + propIri + " restricted in class " + con.getIri() );
@@ -263,9 +259,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLDataMaxCardinality max = (OWLDataMaxCardinality) sup;
                 propIri = max.getProperty().asOWLDataProperty().getIRI().toQuotedString();
                 tgt = primitives.get( max.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
-                rel = extractProperty( con, propIri, tgt, null, max.getCardinality() );
+                rel = extractProperty( con, propIri, tgt, null, max.getCardinality(), false );
                 if ( rel != null ) {
-//                    rel.setMaxCard( max.getCardinality() );
                     hierarchicalModel.addProperty( rel );
                 } else {
                     System.err.println("WARNING : Could not find property " + propIri + " restricted in class " + con.getIri() );
@@ -275,10 +270,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLDataExactCardinality ex = (OWLDataExactCardinality) sup;
                 propIri = ex.getProperty().asOWLDataProperty().getIRI().toQuotedString();
                 tgt = primitives.get( ex.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
-                rel = extractProperty( con, propIri, tgt, ex.getCardinality(), ex.getCardinality() );
+                rel = extractProperty( con, propIri, tgt, ex.getCardinality(), ex.getCardinality(), false );
                 if ( rel != null ) {
-//                    rel.setMinCard( ex.getCardinality() );
-//                    rel.setMaxCard( ex.getCardinality() );
                     hierarchicalModel.addProperty( rel );
                 } else {
                     System.err.println("WARNING : Could not find property " + propIri + " restricted in class " + con.getIri() );
@@ -292,12 +285,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     break;
                 }
                 tgt = conceptCache.get( filterAliases( someO.getFiller() ).asOWLClass().getIRI().toQuotedString() );
-                rel = extractProperty( con, propIri, tgt, 1, null );
+                rel = extractProperty( con, propIri, tgt, 1, null, false );
                 if ( rel != null ) {
-//                    rel.setMinCard( Math.max( rel.getMinCard(), 1 ) );
-//                    rel.setObject( tgt.getName() );
-//                    rel.setTarget( tgt );
-//                    con.addProperty( propIri, props.get( propIri ), rel );
                     hierarchicalModel.addProperty( rel );
                 } else {
                     System.err.println("WARNING : Could not find property " + propIri + " restricted in class " + con.getIri() );
@@ -311,12 +300,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     break;
                 }
                 tgt = conceptCache.get( filterAliases( forallO.getFiller() ).asOWLClass().getIRI().toQuotedString() );
-                rel = extractProperty( con, propIri, tgt, null, null );
+                rel = extractProperty( con, propIri, tgt, null, null, true );
                 if ( rel != null ) {
-//                    rel.setObject( tgt.getName() );
-//                    rel.setTarget( tgt );
-//                    con.addProperty( propIri, props.get( propIri ), rel );
-                    hierarchicalModel.addProperty( rel );
                 } else {
                     System.err.println("WARNING : Could not find property " + propIri + " restricted in class " + con.getIri() );
                 }
@@ -325,9 +310,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLObjectMinCardinality minO = (OWLObjectMinCardinality) sup;
                 propIri = minO.getProperty().asOWLObjectProperty().getIRI().toQuotedString();
                 tgt = conceptCache.get( filterAliases( minO.getFiller() ).asOWLClass().getIRI().toQuotedString() );
-                rel = extractProperty( con, propIri, tgt, minO.getCardinality(), null );
+                rel = extractProperty( con, propIri, tgt, minO.getCardinality(), null, false );
                 if ( rel != null ) {
-//                    rel.setMinCard( minO.getCardinality() );
                     hierarchicalModel.addProperty( rel );
                 } else {
                     System.err.println("WARNING : Could not find property " + propIri + " restricted in class " + con.getIri() );
@@ -337,9 +321,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLObjectMaxCardinality maxO = (OWLObjectMaxCardinality) sup;
                 propIri = maxO.getProperty().asOWLObjectProperty().getIRI().toQuotedString();
                 tgt = conceptCache.get( filterAliases( maxO.getFiller() ).asOWLClass().getIRI().toQuotedString() );
-                rel = extractProperty( con, propIri, tgt, null, maxO.getCardinality() );
+                rel = extractProperty( con, propIri, tgt, null, maxO.getCardinality(), false );
                 if ( rel != null ) {
-//                    rel.setMaxCard( maxO.getCardinality() );
                     hierarchicalModel.addProperty( rel );
                 } else {
                     System.err.println("WARNING : Could not find property " + propIri + " restricted in class " + con.getIri() );
@@ -349,10 +332,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLObjectExactCardinality exO = (OWLObjectExactCardinality) sup;
                 propIri = exO.getProperty().asOWLObjectProperty().getIRI().toQuotedString();
                 tgt = conceptCache.get( filterAliases( exO.getFiller() ).asOWLClass().getIRI().toQuotedString() );
-                rel = extractProperty( con, propIri, tgt, exO.getCardinality(), exO.getCardinality() );
+                rel = extractProperty( con, propIri, tgt, exO.getCardinality(), exO.getCardinality(), false );
                 if ( rel != null ) {
-//                    rel.setMinCard( exO.getCardinality() );
-//                    rel.setMaxCard( exO.getCardinality() );
                     hierarchicalModel.addProperty( rel );
                 } else {
                     System.err.println("WARNING : Could not find property " + propIri + " restricted in class " + con.getIri() );
@@ -378,7 +359,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         return type + ( plural ? ( type.endsWith("s") ? "es" : "s") : "" ); // + "As" + role;
     }
 
-    private PropertyRelation extractProperty( Concept con, String propIri, Concept target, Integer min, Integer max ) {
+    private PropertyRelation extractProperty( Concept con, String propIri, Concept target, Integer min, Integer max, boolean restrictTarget ) {
         if ( target == null ) {
             System.err.println( "WARNING : Null target for property " + propIri );
         }
@@ -424,13 +405,17 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
         if ( rel != null ) {
+            if ( restrictTarget && ! rel.getTarget().equals( target ) ) {
+                rel.restrictTargetTo( target );
+            }
+
             boolean dirty = false;
             if ( target.getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" ) || target.getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>") ) {
                 target = rel.getTarget();
                 restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
                 restrictedPropIri = propIri.replace (">", restrictedSuffix + ">" );
             }
-            if ( ! rel.getTarget().equals( target ) ) {
+            if ( ! rel.getTarget().equals( target ) && ! restrictTarget ) {
                 //TODO FIXME : check that target is really restrictive!
                 rel.setTarget( target );
                 rel.setObject( target.getIri() );
@@ -438,7 +423,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             }
             if ( min != null && min > rel.getMinCard() ) {
                 rel.setMinCard( min );
+//                if ( min > 1 ) {
                 dirty = true;
+//                }
             }
             if ( max != null && ( rel.getMaxCard() == null || max < rel.getMaxCard() ) ) {
                 rel.setMaxCard( max );
@@ -453,12 +440,17 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             }
 //            if ( dirty ) {
 
-            rel.setRestricted( true );
-            rel.setSubject( con.getIri() ); 
+            if ( dirty ) {
+                rel.setRestricted( true );
+                rel.setName( rel.getBaseProperty().getName() + restrictedSuffix );
+                rel.setProperty( restrictedPropIri );
+
+            }
+
+            rel.setSubject( con.getIri() );
             rel.setDomain( con );
-            rel.setName( rel.getBaseProperty().getName() + restrictedSuffix );
-            rel.setProperty( restrictedPropIri );
-            con.addProperty( restrictedPropIri, props.get( propIri ) + restrictedSuffix, rel );
+            con.addProperty( rel.getProperty(), rel.getName(), rel );
+
             return rel;
 
 //            } else {
@@ -622,7 +614,6 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     // add to existing eqSet, put reversed
                     // A->X,  add X->C          ==> A->X, C->X
                     removed = aliases.put( secnd, first );
-                    System.out.println("TAAKING OUT 1" + eq2 );
                     if ( removed != null ) {
                         System.err.println( "WARNING : DOUBLE KEY WHILE RESOLVING EQUALITIES" + removed + " for value " + eq2 );
                     }
@@ -633,7 +624,6 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     // add to existing eqSet, put as is
                     // A->X,  add C->X          ==> A->X, C->X
                     removed = aliases.put( first, secnd );
-                    System.out.println("TAAKING OUT 2" + eq2 );
                     if ( removed != null ) {
                         System.err.println( "WARNING : DOUBLE KEY WHILE RESOLVING EQUALITIES" + removed + " for value " + eq2 );
                     }
@@ -644,7 +634,6 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     // apply transitivity, reversed
                     // A->X,  add A->C          ==> A->X, C->X
                     removed = aliases.put( secnd, aliases.get( first ) );
-                    System.out.println("TAAKING OUT 3" + eq2 );
                     if ( removed != null ) {
                         System.err.println( "WARNING : DOUBLE KEY WHILE RESOLVING EQUALITIES" + removed + " for value " + eq2 );
                     }
@@ -655,7 +644,6 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     // apply transitivity, as is
                     // A->X,  add C->A          ==> A->X, C->X
                     removed = aliases.put( first, aliases.get( secnd ) );
-                    System.out.println("TAAKING OUT 4" + eq2 );
                     if ( removed != null ) {
                         System.err.println( "WARNING : DOUBLE KEY WHILE RESOLVING EQUALITIES" + removed + " for value " + eq2 );
                     }
@@ -664,7 +652,6 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     temp.remove( eq2 );
                 } else if ( ! first.isAnonymous() && ! isAbstract( first )  ) {
                     removed = aliases.put( secnd, first );
-                    System.out.println("TAAKING OUT 5" + eq2 );
                     if ( removed != null ) {
                         System.err.println( "WARNING : DOUBLE KEY WHILE RESOLVING EQUALITIES" + removed + " for value " + eq2 );
                     }
@@ -673,7 +660,6 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     temp.remove( eq2 );
                 } else if ( ! secnd.isAnonymous() && ! isAbstract( secnd ) ) {
                     removed = aliases.put( first, secnd );
-                    System.out.println("TAAKING OUT 6" + eq2 );
                     if ( removed != null ) {
                         System.err.println( "WARNING : DOUBLE KEY WHILE RESOLVING EQUALITIES" + removed + " for value " + eq2 );
                     }
