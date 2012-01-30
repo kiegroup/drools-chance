@@ -26,18 +26,17 @@
     <version>5.4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>drools-shapes</artifactId>
+  <artifactId>drools-shapes-examples</artifactId>
   <packaging>pom</packaging>
 
 
-  <name>Drools :: Shapes</name>
-  <description> OO Semantic Rule-based Reasoner </description>
+  <name>Drools :: Shapes Examples </name>
+  <description> Examples </description>
 
 
   <modules>
-    <module>drools-shapes-reasoner-generator</module>
-    <module>drools-shapes-generator-plugin</module>
-    <module>drools-shapes-examples</module>
+    <module>conyard-example</module>
+    <module>wwtp-example</module>
   </modules>
 
 <repositories>

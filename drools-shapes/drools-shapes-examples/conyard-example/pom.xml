@@ -29,7 +29,7 @@
     <name>Drools :: Shapes Example</name>
 
     <groupId>org.drools</groupId>
-    <artifactId>drools-shapes-example</artifactId>
+    <artifactId>conyard-example</artifactId>
     <version>${drools.version}</version>
     <properties>
         <drools.version>5.4.0-SNAPSHOT</drools.version>
