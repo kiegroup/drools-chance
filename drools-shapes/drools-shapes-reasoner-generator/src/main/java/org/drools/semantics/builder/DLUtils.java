@@ -242,7 +242,7 @@ public class DLUtils {
     }
 
     public static String getter( String name, String type, Integer max ) {
-        String prefix = ( ( max == null || max > 1 )
+        String prefix = ( ( max != null && max == 1 )
                           &&
                           ( type.equals("xsd:boolean") || type.equals(boolean.class.getName() ) )
                         ) ? "is" : "get";

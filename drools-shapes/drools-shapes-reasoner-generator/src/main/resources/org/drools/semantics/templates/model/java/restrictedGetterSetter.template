@@ -38,7 +38,7 @@
         @if{ ! primitive }
             add@{ compactUpperCase( base ) }( (Object) x );
         @else{}
-            @{ getter( base, type ) }().add( x );
+            @{ getter( base, type  ) }().add( x );
         @end{}
 
     }
@@ -50,7 +50,7 @@
      public
         @if{ max > 1 || max == null } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
 
-        @{ getter( name, type ) }()  {
+        @{ getter( name, type, max ) }()  {
 
         java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList<@{ map( type, true ) }>();
 

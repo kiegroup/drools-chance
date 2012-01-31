@@ -45,11 +45,8 @@ public interface @{name} extends com.clarkparsia.empire.SupportsRdfId
         @else{}
             java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
         @end{}
-        @if{ prop.target.name.equals("xsd:boolean") && prop.maxCard == 1 }
-            is@{ compactUpperCase(prop.name) }();
-        @else{}
-            get@{ compactUpperCase(prop.name) }();
-        @end{}
+
+        @{ getter( prop.name, prop.target.name, prop.maxCard ) }();
 
 
         @if{ ! prop.restricted && ! prop.transient && prop.target.primitive } @RdfProperty("tns:@{prop.name}")
@@ -59,11 +56,8 @@ public interface @{name} extends com.clarkparsia.empire.SupportsRdfId
                 @else{}
                     java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
                 @end{}
-                @if{ prop.target.name.equals("xsd:boolean") && prop.maxCard == 1 }
-                    is@{ compactUpperCase(prop.name) }2();
-                @else{}
-                    get@{ compactUpperCase(prop.name) }2();
-                @end{}
+
+                @{ getter( prop.name, prop.target.name, prop.maxCard ) }2();
 
              public void set@{ compactUpperCase(prop.name) }2(
                     @if{ prop.maxCard == 1 }

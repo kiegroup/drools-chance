@@ -143,7 +143,7 @@ public class DL_99_ModelTest {
     @Ignore //visualization test
     public void testGraphModelGeneration() {
 //        String source = "org/drools/semantics/lang/dl/kmr2_miniExample.manchester";
-        String source = "kmr2" + File.separator + "KMR_OntologyLatest.manchester.owl";
+        String source = "kmr2" + File.separator + "KMR_OntologySample.manchester.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
@@ -233,8 +233,8 @@ public class DL_99_ModelTest {
 
     @Test
     public void testFullKMR2XSDModelGeneration() {
-//        String source = "kmr2" + File.separator + "kmr2_miniExample.manchester";
-        String source = "kmr2/KMR_OntologyLatest.ttl";
+        String source = "kmr2" + File.separator + "kmr2_miniExample.manchester";
+//        String source = "kmr2" + File.separator + "KMR_Ontology.ttl";
         Resource res = ResourceFactory.newClassPathResource( source );
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();

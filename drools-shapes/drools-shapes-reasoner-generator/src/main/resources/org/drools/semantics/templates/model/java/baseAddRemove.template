@@ -25,13 +25,13 @@
         @if{ ! primitive }
             add@{ compactUpperCase( name ) }( (Object) x );
         @else{}
-            @{ getter( name, type ) }().add( x );
+            @{ getter( name, type, max ) }().add( x );
         @end{}
     }
 
     @@javax.persistence.Transient
     public void remove@{ compactUpperCase( name ) }( Object x ) {
-        @{ getter( name, type ) }().remove( x );
+        @{ getter( name, type, max ) }().remove( x );
     }
 
 

@@ -96,9 +96,11 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
         Element type = new Element( "complexType", xmodel.getNamespace( "xsd" ) );
         type.setAttribute( "name", name );
-        if ( params.containsKey( "abstract" ) ) {
-            type.setAttribute( "abstract", "true" );
-        }
+
+    /* removed this since anonymous classes are need for "skolem" instantiations */
+//        if ( params.containsKey( "abstract" ) ) {
+//            type.setAttribute( "abstract", "true" );
+//        }
         Set<Concept> supers = (Set<Concept>) params.get( "superConcepts");
         if ( supers.size() > 1 ) {
             System.err.println( " Cannot build a hierarchy with more than 1 ancestor for " + name + ", found " + supers );
@@ -211,9 +213,11 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
         Element type = new Element("complexType", xmodel.getNamespace( "xsd" ) );
         type.setAttribute( "name", name );
-        if ( params.containsKey( "abstract" ) ) {
-            type.setAttribute( "abstract", "true" );
-        }
+
+    /* removed this since anonymous classes are need for "skolem" instantiations */
+//        if ( params.containsKey( "abstract" ) ) {
+//            type.setAttribute( "abstract", "true" );
+//        }
         Set<Concept> supers = (Set<Concept>) params.get( "superConcepts" );
         Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
 

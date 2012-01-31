@@ -25,7 +25,7 @@
     public
     @if{ max == null || max > 1 } java.util.List<@{ type }> @else{} @{ type } @end{}
 
-    @{ getter( name, type ) }() {
+    @{ getter( name, type, max ) }() {
 
         java.util.List<@{ type }> ans = new java.util.ArrayList<@{ type }>();
 

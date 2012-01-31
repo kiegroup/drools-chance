@@ -92,6 +92,7 @@ public class AccessorPlugin extends Plugin {
         Map<String,Object> vars = new HashMap<String, Object>();
         vars.put( "name", item.getAttribute( "name" ) );
         vars.put( "type", item.getAttribute( "type" ) );
+        vars.put( "max", null );
         vars.put( "primitive", Boolean.valueOf( item.getAttribute( "primitive" ) ) );
 
         String code;
@@ -113,7 +114,7 @@ public class AccessorPlugin extends Plugin {
         vars.put( "primitive", Boolean.valueOf(item.getAttribute("primitive")) );
         vars.put( "min", Integer.valueOf(item.getAttribute("min")) );
         vars.put( "max", item.getAttribute( "max" ).equals( "null") ? null : Integer.valueOf( item.getAttribute( "max" ) ) );
-        vars.put( "inherited", Boolean.valueOf( item.getAttribute( "max" ) ) );
+        vars.put( "inherited", Boolean.valueOf( item.getAttribute( "inherited" ) ) );
         vars.put( "base", item.getAttribute("base") );
         vars.put( "baseType", item.getAttribute("baseType") );
         
