@@ -11,6 +11,7 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.semantics.builder.model.RdfIdAble;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -24,6 +25,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.text.ParseException;
 import java.util.*;
 
@@ -77,11 +79,13 @@ public class FactTest {
 
         painting = new PaintingImpl();
 
+
         painting.setStartsOnDate( new Date() );
         painting.setEndsOnDate( new Date() );
         painting.setHasCommentString("Some comment on this object");
 
         Stair stair = new StairImpl();
+
         stair.setStairLengthInteger( 10 );
         painting.setRequiresStair( stair );
 
@@ -91,7 +95,9 @@ public class FactTest {
 
         Paint paint = factory.createPaintImpl();
 
+
         site = new SiteImpl();
+
         site.setCenterXFloat( 10.0f );
         site.setCenterYFloat( 20.0f );
         site.setRadiusFloat( 100.0f );
@@ -103,24 +109,13 @@ public class FactTest {
         pers = new LabourerImpl();
 
 
+
         pers.addParticipatesIn( painting );
-//        painting.getInvolvesLabourers().add( (Labourer) pers  );
-    }
-
-
-    @Test
-    public void testAbstractness() {
-
-        try {
-            EntityImpl.class.newInstance();
-            fail("EntityImpl was expected to be abstract");
-        } catch (InstantiationException e) {
-            //ok here, it's abstract!
-        } catch (IllegalAccessException e) {
-            fail( e.getMessage() );
-        }
+//        painting.addInvolves( pers );
 
     }
+
+
 
 
     public void checkPainting( Painting painting ) {
@@ -175,6 +170,13 @@ public class FactTest {
         return unmarshaller.unmarshal( new StringReader( writer.toString() ) );
     }
 
+
+    @Test
+    public void testIdRef() throws JAXBException {
+        StringWriter writer = new StringWriter();
+        marshaller.marshal( painting, writer );
+        System.err.println( writer.toString() );
+    }
 
     @Test
     public void testJaxb() throws JAXBException {
@@ -406,7 +408,7 @@ public class FactTest {
 
         persist(painting, em);
 
-        Painting p2 = (Painting) refreshOnJPA( painting, ((PaintingImpl) painting).getHjid(), em );
+        Painting p2 = (Painting) refreshOnJPA( painting, ((PaintingImpl) painting).getUniversalId(), em );
 
         assertEquals( "xy1", p2.getInvolvesPersons().get(0).getOidString() );
         assertEquals( "xy2", p2.getInvolvesPersons().get(1).getOidString() );

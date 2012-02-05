@@ -129,6 +129,12 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         propCache.put( name, props );
 
         Element seq = new Element( "sequence", xmodel.getNamespace( "xsd" ) );
+        
+            Element key = new Element( "element", xmodel.getNamespace( "xsd" ) );
+                key.setAttribute( "name", "universalId" );
+                key.setAttribute( "type", "xsd:ID"  );
+            seq.addContent( key );
+        
         root.addContent( seq );
         for ( String propKey : props.keySet() ) {
             PropertyRelation rel = props.get( propKey );
@@ -203,6 +209,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     private String map( Concept tgt ) {
 //        if ( "Thing".equals(tgt.getName() ) ) return "xsd:anyType";
         return tgt.isPrimitive() ? tgt.getName() : "tns:" + tgt.getName();
+//        return tgt.isPrimitive() ? tgt.getName() : "xsd:IDREF";
     }
 
 

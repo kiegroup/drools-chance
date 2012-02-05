@@ -276,9 +276,13 @@ xsd:string rdf:type rdfs:Datatype .
 
 :oid rdf:type owl:DatatypeProperty ;
      
-     rdfs:domain :Entity ;
+     rdfs:range xsd:string ;
      
-     rdfs:range xsd:string .
+     rdfs:domain [ rdf:type owl:Class ;
+                   owl:unionOf ( :Entity
+                                 :Meta
+                               )
+                 ] .
 
 
 
@@ -711,6 +715,18 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
+###  http://org.drools.conyard.owl#Dinamite
+
+:Dinamite rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Material ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :endangersWith ;
+                            owl:someValuesFrom :TestExplosion
+                          ] .
+
+
+
 ###  http://org.drools.conyard.owl#Entity
 
 :Entity rdf:type owl:Class ;
@@ -1115,7 +1131,13 @@ xsd:string rdf:type rdfs:Datatype .
 
 ###  http://org.drools.conyard.owl#Meta
 
-:Meta rdf:type owl:Class .
+:Meta rdf:type owl:Class ;
+      
+      rdfs:subClassOf [ rdf:type owl:Restriction ;
+                        owl:onProperty :oid ;
+                        owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onDataRange xsd:string
+                      ] .
 
 
 
@@ -1415,8 +1437,9 @@ xsd:string rdf:type rdfs:Datatype .
                                owl:allValuesFrom :Mason
                              ] ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :requires ;
-                               owl:allValuesFrom :Bricks
+                               owl:onProperty :involves ;
+                               owl:onClass :Mason ;
+                               owl:minQualifiedCardinality "3"^^xsd:nonNegativeInteger
                              ] ,
                              [ rdf:type owl:Restriction ;
                                owl:onProperty :requires ;
@@ -1424,9 +1447,8 @@ xsd:string rdf:type rdfs:Datatype .
                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
                              ] ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :involves ;
-                               owl:onClass :Mason ;
-                               owl:minQualifiedCardinality "3"^^xsd:nonNegativeInteger
+                               owl:onProperty :requires ;
+                               owl:allValuesFrom :Bricks
                              ] .
 
 

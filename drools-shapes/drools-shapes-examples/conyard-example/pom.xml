@@ -40,11 +40,19 @@
 
     <dependencies>
 
+
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-shapes-reasoner-generator</artifactId>
             <version>${drools.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-chance-core</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.jvnet.hyperjaxb3</groupId>
@@ -100,8 +108,11 @@
             <version>5.1.18</version>
         </dependency>
 
-
-
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>r09</version>
+        </dependency>
 
         <!--
         <dependency>
@@ -189,6 +200,18 @@
 
         <resources>
             <resource>
+                <directory>${pom.basedir}/src/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${pom.basedir}/test/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
                 <directory>${pom.basedir}/target/generated-sources/META-INF</directory>
                 <includes>
                     <include>**/*.*</include>
@@ -268,7 +291,7 @@
                         <arg>-Xjaxbindex</arg>
                         <arg>-Xannotate</arg>
                         <arg>-Xinheritance</arg>
-                        <arg>-XtoString</arg>
+                        <!--arg>-XtoString</arg-->
                         <arg>-Xcopyable</arg>
                         <arg>-Xmergeable</arg>
                         <arg>-Xvalue-constructor</arg>
@@ -280,7 +303,7 @@
                     <removeOldOutput>false</removeOldOutput>
                     <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
                     <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
-                    <persistenceXml>src/main/resources/persistence-template.xml</persistenceXml>
+                    <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
 
 
                     <generateEquals>false</generateEquals>

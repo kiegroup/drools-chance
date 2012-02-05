@@ -76,6 +76,12 @@
                 @end{}
             </dsk:keyId>
 
+
+        <bindings node=".//xsd:element[@name='universalId']">
+            <hj:id/>
+        </bindings>
+
+
         <dsp:accessors>
         @foreach{ propKey : properties[ concept.name ].keySet }
             @code{ prop = properties[ concept.name ][ propKey ] }

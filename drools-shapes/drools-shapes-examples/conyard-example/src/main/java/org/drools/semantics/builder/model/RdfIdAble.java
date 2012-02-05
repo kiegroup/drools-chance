@@ -3,29 +3,43 @@ package org.drools.semantics.builder.model;
 
 import com.clarkparsia.empire.SupportsRdfId;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.net.URI;
+import java.util.UUID;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RdfIdAble", propOrder = {
-        "key"
-})
-public class RdfIdAble implements SupportsRdfId {
+//@XmlType(name = "RdfIdAble", propOrder = {
+//        "key"
+//})
+public abstract class RdfIdAble implements SupportsRdfId {
 
-    @XmlElement(required = true, type = Key.class)
+    //    @XmlElement(required = true, type = Key.class)
+    @XmlTransient
     private Key key;
 
     public RdfKey getRdfId() {
+        if ( key == null && getUniversalId() != null ) {
+            key = new Key( getUniversalId() );
+        }
         return key;
     }
 
     public void setRdfId( RdfKey theId ) {
         key = new Key( theId.value() );
+        setUniversalId( theId.toString() );
     }
+
+
+    public abstract String getUniversalId();
+    public abstract void setUniversalId( String x );
+
+    public RdfIdAble() {
+        setUniversalId( "http://" + UUID.randomUUID().toString() );
+    }
+
+
+
 
 
     protected static class Key implements RdfKey {
