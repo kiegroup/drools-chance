@@ -125,6 +125,21 @@
                     <annox:annotate>
                         <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="tns:@{prop.name}" />
                     </annox:annotate>
+
+                    <annox:annotate target="field">
+                        @if{ prop.inverse }
+                            <annox:annotate target="field" annox:class="javax.xml.bind.annotation.XmlIDREF" />
+                        @else{}
+                            <!--
+                            <annox:annotate target="field"
+                                        annox:class="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter"
+                                        value="@{prop.target.name}ReferenceAdapter" />
+                            -->
+                        @end{}
+
+                    </annox:annotate>
+
+
                 @end{}
 
 

@@ -132,7 +132,8 @@ public class GenericModelImpl implements OntoModel {
     }
 
     public PropertyRelation getProperty( String iri ) {
-        return properties.get( iri ).iterator().next();
+        Collection<PropertyRelation> props = properties.get( iri );
+        return props != null ? props.iterator().next() : null;
     }
 
 

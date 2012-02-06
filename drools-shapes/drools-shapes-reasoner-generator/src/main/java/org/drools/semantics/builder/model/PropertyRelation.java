@@ -36,11 +36,15 @@ public class PropertyRelation extends Relation {
     private Concept addableTarget = null;
 
 
+
     private boolean restricted = false;
     private PropertyRelation baseProperty;
     private List<PropertyRelation> restrictedProperties = new ArrayList<PropertyRelation>();
 
     private Set<List<PropertyRelation>> chains = new HashSet<List<PropertyRelation>>();
+
+    private boolean inverse = false;
+
 
     public PropertyRelation( String subject, String property, String object, String name ) {
         this.subject = subject;
@@ -256,6 +260,15 @@ public class PropertyRelation extends Relation {
 
     public void setAddableTarget(Concept addableTarget) {
         this.addableTarget = addableTarget;
+    }
+
+
+    public boolean isInverse() {
+        return inverse;
+    }
+
+    public void setInverse(boolean inverse) {
+        this.inverse = inverse;
     }
 }
 

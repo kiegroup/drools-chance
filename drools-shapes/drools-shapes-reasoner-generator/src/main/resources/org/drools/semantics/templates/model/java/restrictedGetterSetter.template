@@ -35,10 +35,20 @@
 
         @{ getter( base, type ) }().removeAll( removals );
 
-        @if{ ! primitive }
-            add@{ compactUpperCase( base ) }( (Object) x );
+        @if{ max == null || max > 1 }
+            @if{ ! primitive }
+                for ( Object y : x ) {
+                    add@{ compactUpperCase( base ) }( y );
+                }
+            @else{}
+                @{ getter( base, type  ) }().addAll( x );
+            @end{}
         @else{}
-            @{ getter( base, type  ) }().add( x );
+            @if{ ! primitive }
+                add@{ compactUpperCase( base ) }( (Object) x );
+            @else{}
+                @{ getter( base, type  ) }().add( x );
+            @end{}
         @end{}
 
     }

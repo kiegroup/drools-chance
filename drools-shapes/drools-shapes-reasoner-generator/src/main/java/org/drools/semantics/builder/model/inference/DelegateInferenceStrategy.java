@@ -122,12 +122,32 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         // Compose property chains
         fixPropertyChains( ontoDescr, hierarchicalModel );
+        
+        // Manage inverse relations
+        fixInverseRelations( ontoDescr, hierarchicalModel );
 
         // assign Key properties
         setKeys( ontoDescr, hierarchicalModel );
 
 
         return hierarchicalModel;
+    }
+
+    private void fixInverseRelations(OWLOntology ontoDescr, OntoModel hierarchicalModel) {
+        for ( OWLInverseObjectPropertiesAxiom ax : ontoDescr.getAxioms( AxiomType.INVERSE_OBJECT_PROPERTIES ) ) {
+            String fst = ax.getFirstProperty().asOWLObjectProperty().getIRI().toQuotedString();
+            if ( ! ax.getSecondProperty().isAnonymous() ) {
+                String sec = ax.getSecondProperty().asOWLObjectProperty().getIRI().toQuotedString();
+
+                PropertyRelation first = hierarchicalModel.getProperty( fst );
+                PropertyRelation second = hierarchicalModel.getProperty( sec );
+
+                if ( first != null && second != null ) {
+                    System.out.println( "INFO :: Marking " + first + " as Inverse" );
+                    first.setInverse( true );
+                }
+            }
+        }
     }
 
     private void setKeys(OWLOntology ontoDescr, OntoModel hierarchicalModel) {

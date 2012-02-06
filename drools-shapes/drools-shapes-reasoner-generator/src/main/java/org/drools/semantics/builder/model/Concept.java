@@ -48,9 +48,9 @@ public class Concept {
     public Concept(String iri, String name, Set superConcepts, Map properties, Set equivalentConcepts ) {
         this.iri = iri;
         this.name = name;
-        this.superConcepts = superConcepts;
-        this.properties = properties;
-        this.equivalentConcepts = equivalentConcepts;
+        this.superConcepts = superConcepts != null ? superConcepts : new HashSet<Concept>();
+        this.properties = properties != null ? properties : new HashMap<String, PropertyRelation>();
+        this.equivalentConcepts = equivalentConcepts != null ? equivalentConcepts : new HashSet<Concept>();
     }
 
 
@@ -180,6 +180,7 @@ public class Concept {
         for ( Concept sup : superConcepts ) {
             keys.addAll( sup.getKeys() );
         }
+        System.out.println("Getting keys for" + name + " >> " + keys );
         return keys;
     }
 
@@ -187,8 +188,23 @@ public class Concept {
         this.keys = keys;
     }
     
-    public void addKey( String key ){
-        keys.add( properties.get( key ) );
+    public void addKey( String key ){                
+        keys.add( lookupProperty( this, key ) );
+    }
+    
+    protected PropertyRelation lookupProperty( Concept con, String key ) {
+        PropertyRelation rel = con.getProperties().get( key );
+        if ( rel != null ) {
+            return rel;
+        } else {
+            for ( Concept sup : con.getSuperConcepts() ) {
+                rel = lookupProperty( sup, key );
+                if ( rel != null ) {
+                    return rel;
+                }
+            }
+        }
+        return null;
     }
     
     
