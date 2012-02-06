@@ -33,6 +33,7 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
     
 
     private String templateName = "TraitInterface.template";
+    private String shadowTemplateName = "ShadowInterface.template";
 
     private TemplateRegistry registry = DLTemplateManager.getDataModelRegistry(ModelFactory.CompileTarget.JAVA);
 
@@ -42,7 +43,8 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
     }
 
     public void compile( String name, Object context, Map<String, Object> params ) {
-        CompiledTemplate template = registry.getNamedTemplate(templateName);
+        CompiledTemplate template = registry.getNamedTemplate( templateName );
+        CompiledTemplate shadowTemplate = registry.getNamedTemplate( shadowTemplateName );
 
         if ( getMode().equals( Mode.FLAT ) ) {
             getModel().flatten();
@@ -50,7 +52,9 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
             getModel().elevate();
         }
 
-        getModel().addTrait(name, TemplateRuntime.execute(template, context, params).toString().trim());
+        getModel().addTrait(name, TemplateRuntime.execute( template, context, params ).toString().trim());
+
+        getModel().addTrait( name+"$$Shadow", TemplateRuntime.execute( shadowTemplate, context, params ).toString().trim());
 
 
     }

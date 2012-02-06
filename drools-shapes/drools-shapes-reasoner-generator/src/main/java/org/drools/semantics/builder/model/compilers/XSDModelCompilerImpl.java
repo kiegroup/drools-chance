@@ -209,7 +209,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     private String map( Concept tgt ) {
 //        if ( "Thing".equals(tgt.getName() ) ) return "xsd:anyType";
         return tgt.isPrimitive() ? tgt.getName() : "tns:" + tgt.getName();
-//        return tgt.isPrimitive() ? tgt.getName() : "xsd:IDREF";
+//        return tgt.isPrimitive() ? tgt.getName() : "xsd:any";
     }
 
 
@@ -225,22 +225,10 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 //        if ( params.containsKey( "abstract" ) ) {
 //            type.setAttribute( "abstract", "true" );
 //        }
-        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts" );
+//        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts" );
         Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
+        props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
 
-        if ( ! supers.isEmpty() ) {
-            for ( Concept sup : supers ) {
-                Map<String, PropertyRelation> inheritedProps = propCache.get( sup.getName() );
-                if ( inheritedProps == null ) {
-                    throw new RuntimeException( "Error accessing inherited properties : Concept " + name + " built before its ancestor " + sup.getName() + "?" );
-                }
-                for ( String propKey : inheritedProps.keySet() ) {
-                    if ( ! props.containsKey( propKey ) ) {
-                        props.put( propKey, inheritedProps.get( propKey ) );
-                    }
-                }
-            }
-        }
 
         buildProperties( name, props, type );
 

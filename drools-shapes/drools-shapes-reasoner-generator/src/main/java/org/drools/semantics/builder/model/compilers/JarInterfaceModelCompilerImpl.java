@@ -36,7 +36,9 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
     public void compile( String name, Object context, Map<String, Object> params ) {
         super.compile( name, context, params );
 
-        ((JarModel) getModel()).addCompiledTrait(name, this.compile( name, params));
+        ((JarModel) getModel()).addCompiledTrait(name, this.compile( name, params ) );
+
+        ((JarModel) getModel()).addCompiledTrait(name + "$$Shadow", this.compile( name, params ) );
     }
 
 
@@ -47,9 +49,14 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         MethodVisitor mv;
         AnnotationVisitor av0;
 
+
+        boolean isShadow = trait.endsWith( "$$Shadow" );
         String pack = ((String)params.get("package")).replace(".","/") + "/";
 
-        Set<Concept> sup = ((Set<Concept>) params.get("superConcepts"));
+        Set<Concept> sup = isShadow
+                ? ((Set<Concept>) params.get("subConcepts"))
+                : ((Set<Concept>) params.get("superConcepts"));
+
         String[] superTypes = new String[ sup.size() +1 ];
         superTypes[0] = "com/clarkparsia/empire/SupportsRdfId";
         int j = 1;
@@ -58,7 +65,9 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         }
 
 
-        Map<String, PropertyRelation> props = (Map<String, PropertyRelation>) params.get( "properties" );
+        Map<String, PropertyRelation> props = isShadow
+                ? (Map<String, PropertyRelation>) params.get( "shadowProperties" )
+                : (Map<String, PropertyRelation>) params.get( "properties" );
 
         cw.visit(V1_5, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
                 pack +  params.get("name"),

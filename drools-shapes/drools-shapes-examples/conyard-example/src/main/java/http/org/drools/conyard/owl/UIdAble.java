@@ -1,4 +1,4 @@
-package org.drools.semantics.builder.model;
+package http.org.drools.conyard.owl;
 
 
 import com.clarkparsia.empire.SupportsRdfId;
@@ -8,16 +8,14 @@ import java.net.URI;
 import java.util.UUID;
 
 
-@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "RdfIdAble", propOrder = {
-//        "key"
-//})
-public abstract class RdfIdAble implements SupportsRdfId {
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public abstract class UIdAble implements SupportsRdfId {
 
-    //    @XmlElement(required = true, type = Key.class)
-    @XmlTransient
     private Key key;
 
+    private String actualType;
+
+    @XmlTransient
     public RdfKey getRdfId() {
         if ( key == null && getUniversalId() != null ) {
             key = new Key( getUniversalId() );
@@ -30,11 +28,19 @@ public abstract class RdfIdAble implements SupportsRdfId {
         setUniversalId( theId.toString() );
     }
 
-
+    @XmlTransient
     public abstract String getUniversalId();
     public abstract void setUniversalId( String x );
 
-    public RdfIdAble() {
+    public String getActualType() {
+        return actualType;
+    }
+
+    public void setActualType(String actualType) {
+        this.actualType = actualType;
+    }
+
+    public UIdAble() {
         setUniversalId( "http://" + UUID.randomUUID().toString() );
     }
 

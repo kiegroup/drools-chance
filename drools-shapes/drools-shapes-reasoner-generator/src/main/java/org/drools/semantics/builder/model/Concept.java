@@ -26,8 +26,10 @@ public class Concept {
     @Position(1)    private     String                          name;
     @Position(2)    private     Set<Concept>                    superConcepts;
     @Position(3)    private     Map<String, PropertyRelation>   properties;
-    @Position(4)    private     Set<Concept>                    equivalentConcepts;
+    @Position(4)    private     Set<Concept>                    equivalentConcepts;    
     @Position(5)    private     List<PropertyRelation>          keys;
+    @Position(6)    private     Set<Concept>                    subConcepts;
+    @Position(7)    private     Map<String, PropertyRelation>   shadowProperties;
     
 
     private     boolean                         primitive               = false;
@@ -40,17 +42,21 @@ public class Concept {
         this.iri = iri;
         this.name = name;
         this.superConcepts = new HashSet();
+        this.subConcepts = new HashSet();
         this.properties = new HashMap();
+        this.shadowProperties = new HashMap();
         this.equivalentConcepts = new HashSet();
         this.keys = new ArrayList<PropertyRelation>();
     }
 
-    public Concept(String iri, String name, Set superConcepts, Map properties, Set equivalentConcepts ) {
+    public Concept(String iri, String name, Set superConcepts, Map properties, Set equivalentConcepts, Set subConcepts, Map shadowProperties ) {
         this.iri = iri;
         this.name = name;
         this.superConcepts = superConcepts != null ? superConcepts : new HashSet<Concept>();
         this.properties = properties != null ? properties : new HashMap<String, PropertyRelation>();
+        this.shadowProperties = shadowProperties != null ? shadowProperties : new HashMap<String, PropertyRelation>();
         this.equivalentConcepts = equivalentConcepts != null ? equivalentConcepts : new HashSet<Concept>();
+        this.subConcepts = subConcepts != null ? subConcepts : new HashSet<Concept>();
     }
 
 
@@ -114,7 +120,18 @@ public class Concept {
         return superConcepts;
     }
 
+    public void addSuperConcept(Concept concept) {
+        superConcepts.add( concept );
+        concept.getSubConcepts().add( this );
+    }
 
+    public Set<Concept> getSubConcepts() {
+        return subConcepts;
+    }
+
+    public void setSubConcepts(Set<Concept> subConcepts) {
+        this.subConcepts = subConcepts;
+    }
 
     public void setSuperConcepts(Set<Concept> superConcepts) {
         this.superConcepts = superConcepts;
@@ -193,7 +210,7 @@ public class Concept {
     }
     
     protected PropertyRelation lookupProperty( Concept con, String key ) {
-        PropertyRelation rel = con.getProperties().get( key );
+        PropertyRelation rel = con.getProperties().get(key);
         if ( rel != null ) {
             return rel;
         } else {
@@ -214,8 +231,17 @@ public class Concept {
     }
 
 
+    public Map<String, PropertyRelation> getShadowProperties() {
+        return shadowProperties;
+    }
 
+    public void setShadowProperties(Map<String, PropertyRelation> shadowProperties) {
+        this.shadowProperties = shadowProperties;
+    }
 
+    public void addShadowProperty( String propIri, PropertyRelation shadow ) {
+        this.shadowProperties.put( propIri, shadow );
+    }
 
 
     public static class Range {

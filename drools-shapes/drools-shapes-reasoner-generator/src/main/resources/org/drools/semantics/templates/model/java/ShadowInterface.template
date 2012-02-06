@@ -1,0 +1,81 @@
+@comment{
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+}
+
+@declare{'shadowTypeDeclare'}
+package @{package};
+
+import com.clarkparsia.empire.annotation.RdfsClass;
+import com.clarkparsia.empire.annotation.Namespaces;
+import com.clarkparsia.empire.annotation.RdfProperty;
+
+
+// @{iri}
+
+@RdfsClass( value="tns:@{name}" )
+@Namespaces({ "tns", "http://@{package}#" })
+public interface @{name + "$$Shadow"} extends com.clarkparsia.empire.SupportsRdfId
+                                 @if{ subConcepts.size > 0 } , @foreach{ sup : subConcepts } @{ compactUpperCase( sup.name ) + "$$Shadow" } @end{','} @end{}
+{
+
+    @javax.xml.bind.annotation.XmlID
+    public String getUniversalId();
+
+    public void setUniversalId( String id );
+
+
+
+    @if{ shadowProperties.size > 0 }    @foreach{ propKey : shadowProperties.keySet }
+        @code{ prop = shadowProperties[ propKey ] }
+
+        @if{ ! prop.restricted && ! prop.transient }
+
+        // @{prop.property}   --    @{prop.maxCard}   --- @{prop.name}
+        public
+            @if{ prop.maxCard == 1 }
+                @{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}
+            @else{}
+                java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
+            @end{}
+
+            @{ getter( prop.name, prop.target.name, prop.maxCard ) }();
+
+        public void set@{ compactUpperCase(prop.name) }(
+            @if{ prop.maxCard == 1 }
+                @{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}
+            @else{}
+                java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
+            @end{}
+            value );
+
+
+
+
+         @end{}
+
+      @end{}  @end{}
+
+
+
+
+}
+
+@end{}
+
+@includeNamed{'shadowTypeDeclare'}
+

@@ -43,7 +43,7 @@
     @code{ targetElement = ''; if (flat) targetElement='complexType'; else targetElement='complexType'; }
 
     <bindings node="//xsd:@{targetElement}[@name='Thing']">
-      <inheritance:extends>org.drools.semantics.builder.model.RdfIdAble</inheritance:extends>
+      <inheritance:extends>UIdAble</inheritance:extends>
     </bindings>
 
 
@@ -52,9 +52,11 @@
         <class name="@{concept.name}Impl"/>
 
         <inheritance:implements>@{package}.@{concept.name}</inheritance:implements>
+        <inheritance:implements>@{package}.@{concept.name + "$$Shadow"}</inheritance:implements>
+        <inheritance:implements>com.sun.xml.bind.CycleRecoverable</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.Equals</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.HashCode</inheritance:implements>
-        @if{ flat && concept.name != "Thing" } <inheritance:extends>org.drools.semantics.builder.model.RdfIdAble</inheritance:extends> @end{}
+        @if{ flat && concept.name != "Thing" } <inheritance:extends>UIdAble</inheritance:extends> @end{}
 
 
         <annox:annotate>
@@ -127,15 +129,13 @@
                     </annox:annotate>
 
                     <annox:annotate target="field">
-                        @if{ prop.inverse }
-                            <annox:annotate target="field" annox:class="javax.xml.bind.annotation.XmlIDREF" />
-                        @else{}
-                            <!--
+
+
                             <annox:annotate target="field"
                                         annox:class="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter"
-                                        value="@{prop.target.name}ReferenceAdapter" />
-                            -->
-                        @end{}
+                                        value="ReferenceAdapter" />
+
+
 
                     </annox:annotate>
 

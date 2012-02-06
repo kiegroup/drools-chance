@@ -317,8 +317,8 @@ public class DL_99_ModelTest {
         compiler.setMode(ModelCompiler.Mode.FLAT);
         SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-//        xsdModel.stream( System.out );
-                xsdModel.streamBindings( System.out );
+        xsdModel.stream( System.out );
+//                xsdModel.streamBindings( System.out );
 
 
         String pack = "<http://org.drools.conyard.owl#>";

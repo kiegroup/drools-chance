@@ -25,7 +25,7 @@ public class GenericModelImpl implements OntoModel {
 
 
     private String pack;
-    
+
     private String name;
 
     private boolean flat = false;
@@ -193,6 +193,32 @@ public class GenericModelImpl implements OntoModel {
                     }
                 }
             }
+
+            List<String> cons = new ArrayList( concepts.keySet() );
+            Collections.reverse( cons );
+            for ( String conceptName : cons ) {
+                Concept con = concepts.get( conceptName );
+                for ( String propKey : con.getProperties().keySet() ) {
+                    if ( ! con.getShadowProperties().containsKey( propKey ) ) {
+                        con.addShadowProperty( propKey, con.getProperties().get( propKey ) );
+                    }
+                    for ( Concept sup : con.getSuperConcepts() ) {
+                        if ( ! sup.getShadowProperties().containsKey( propKey ) ) {
+                            System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
+                            sup.addShadowProperty( propKey, con.getProperties().get( propKey ) );
+                        }
+                    }
+                }
+                for ( String propKey : con.getShadowProperties().keySet() ) {
+                    for ( Concept sup : con.getSuperConcepts() ) {
+                        if ( ! sup.getShadowProperties().containsKey( propKey ) ) {
+                            System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
+                            sup.addShadowProperty( propKey, con.getShadowProperties().get( propKey ) );
+                        }
+                    }
+                }
+            }
+
             flat = true;
         }
     }

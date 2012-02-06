@@ -53,7 +53,7 @@ public class AccessorPlugin extends Plugin {
 
     public boolean isCustomizationTagName( String nsUri, String localName ) {
         return nsUri.equals( uri ) && ( localName.equals( "property" ) || localName.equals( "accessor" ) || localName.equals( "accessors" )
-                                        || localName.equals( "chain" ) || localName.equals( "link" ) );
+                || localName.equals( "chain" ) || localName.equals( "link" ) );
     }
 
     public String getUsage() {
@@ -75,6 +75,12 @@ public class AccessorPlugin extends Plugin {
                 compileProperty( co.implClass, (Element) props.item( j ) );
             }
 
+
+            createShadowConstructor(co.implClass, props);
+
+            createCycleManager(co.implClass);
+
+
             NodeList axx = accessors.getElementsByTagNameNS( uri, "accessor" );
             for ( int j = 0; j < axx.getLength(); j++ ) {
                 compileAccessor( co.implClass, (Element) axx.item( j ) );
@@ -86,6 +92,29 @@ public class AccessorPlugin extends Plugin {
         return true;
     }
 
+    private void createCycleManager(JDefinedClass implClass) {
+        Map<String,Object> vars = new HashMap<String, Object>();
+                vars.put( "name", implClass.name().substring( 0, implClass.name().length() - 4 ) ); //remove "Impl"
+        String method = SemanticXSDModelCompilerImpl.getTemplatedCode("onCycleDetected", vars);
+
+                implClass.direct( method );
+    }
+
+    private void createShadowConstructor(JDefinedClass implClass, NodeList props) {
+        List<String> properties = new ArrayList<String>();
+        for ( int j = 0; j < props.getLength(); j++ ) {
+            Element el = (Element) props.item( j ) ;
+            properties.add( el.getAttribute("name") );
+        }
+
+        Map<String,Object> vars = new HashMap<String, Object>();
+        vars.put( "name", implClass.name().substring( 0, implClass.name().length() - 4 ) ); //remove "Impl"
+        vars.put( "properties", properties );
+
+        String constructor = SemanticXSDModelCompilerImpl.getTemplatedCode("shadowConstructor", vars);
+
+        implClass.direct( constructor );
+    }
 
 
     private void compileProperty( JDefinedClass implClass, Element item ) {
@@ -117,23 +146,23 @@ public class AccessorPlugin extends Plugin {
         vars.put( "inherited", Boolean.valueOf( item.getAttribute( "inherited" ) ) );
         vars.put( "base", item.getAttribute("base") );
         vars.put( "baseType", item.getAttribute("baseType") );
-        
+
         Set<List<Link>> chains = new HashSet<List<Link>>();
         NodeList chainsList = item.getElementsByTagNameNS( uri, "chain");
         for ( int j = 0; j < chainsList.getLength(); j++ ) {
             List<Link> chain = new ArrayList<Link>();
-                NodeList linkList = ((Element) chainsList.item( j )).getElementsByTagNameNS( uri, "link" );
-                for ( int k = 0; k < linkList.getLength(); k++ ) {
-                    Element link = (Element) linkList.item( k );
-                    chain.add( new Link( link.getTextContent(), link.getAttribute( "type" ) ) );
-                }
+            NodeList linkList = ((Element) chainsList.item( j )).getElementsByTagNameNS( uri, "link" );
+            for ( int k = 0; k < linkList.getLength(); k++ ) {
+                Element link = (Element) linkList.item( k );
+                chain.add( new Link( link.getTextContent(), link.getAttribute( "type" ) ) );
+            }
             chains.add( chain );
         }
 
         vars.put( "chains", chains );
         vars.put( "isChained", chainsList.getLength() > 0 );
 
-        
+
         String code;
 
         if ( chainsList.getLength() == 0 ) {

@@ -42,7 +42,8 @@ public class DLTemplateManager {
             "model/drl/trait.drlt"
     };
     protected static final String[] NAMED_TEMPLATES_JAVA = new String[] {
-            "model/java/TraitInterface.template"
+            "model/java/TraitInterface.template",
+            "model/java/ShadowInterface.template"
     };
 
     protected static final String[] ACCESSOR_TEMPLATES_JAVA = new String[] {
@@ -51,7 +52,9 @@ public class DLTemplateManager {
             "model/java/genericAdd.template",
             "model/java/restrictedGetterSetter.template",
             "model/java/restrictedAddRemove.template",
-            "model/java/chainGetter.template"
+            "model/java/chainGetter.template",
+            "model/java/shadowConstructor.template",
+            "model/java/onCycleDetected.template"
     };
     protected static final String[] FALC_TABLEAU_TEMPLATES = new String[] {
             "tableau/falc/header.drlt",

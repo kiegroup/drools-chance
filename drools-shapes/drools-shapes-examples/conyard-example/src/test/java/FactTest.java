@@ -11,7 +11,8 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.semantics.builder.model.RdfIdAble;
+
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -57,16 +58,17 @@ public class FactTest {
 
 
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(factory.getClass().getPackage().getName());
+        JAXBContext jaxbContext = JAXBContext.newInstance( factory.getClass().getPackage().getName() );
 
         marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty( Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.setProperty( Marshaller.JAXB_ENCODING, "UTF-8" );
         marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+
 
         unmarshaller = jaxbContext.createUnmarshaller();
 
 
-        initTestData();
+
 
     }
 
@@ -74,8 +76,8 @@ public class FactTest {
 
 
 
-
-    private static void initTestData() {
+    @Before
+    public void initTestData() {
 
         painting = new PaintingImpl();
 
@@ -87,13 +89,17 @@ public class FactTest {
         Stair stair = new StairImpl();
 
         stair.setStairLengthInteger( 10 );
+        stair.addOid( "anOid" );
+
         painting.setRequiresStair( stair );
 
-        painting.addInvolves( factory.createPersonImpl());
+        painting.addRequiresAlso( stair );
 
-        painting.addInvolves( factory.createLabourerImpl());
+        painting.addInvolves( new PersonImpl() );
 
-        Paint paint = factory.createPaintImpl();
+        painting.addInvolves( new LabourerImpl() );
+
+        Paint paint = new PaintImpl();
 
 
         site = new SiteImpl();
@@ -111,7 +117,7 @@ public class FactTest {
 
 
         pers.addParticipatesIn( painting );
-//        painting.addInvolves( pers );
+        painting.addInvolves( pers );
 
     }
 
@@ -121,7 +127,8 @@ public class FactTest {
     public void checkPainting( Painting painting ) {
         assertNotNull( painting );
         assertEquals( 3, painting.getRequires().size() );
-        assertEquals( 2, painting.getInvolves().size() );
+        assertEquals( 1, painting.getRequiresAlso().size() );
+        assertEquals( 3, painting.getInvolves().size() );
 
 
     }
@@ -133,6 +140,26 @@ public class FactTest {
         assertEquals( 3, pers.getMakesUseOf().size() );
     }
 
+
+
+
+    @Test
+    public void testJaxb() throws JAXBException {
+
+        Painting p2 = (Painting) refreshOnJaxb( painting );
+
+        assertEquals( painting, p2 );
+        assertEquals( p2, painting );
+        checkPainting( p2 );
+
+    }
+
+    @Test
+    public void testIdRef() throws JAXBException {
+        StringWriter writer = new StringWriter();
+        marshaller.marshal( painting, writer );
+        System.err.println( writer.toString() );
+    }
 
     @Test
     public void testSemanticAccessors() {
@@ -165,29 +192,16 @@ public class FactTest {
 
     private Object refreshOnJaxb( Object o ) throws JAXBException {
         StringWriter writer = new StringWriter();
+
         marshaller.marshal( o, writer );
         System.err.println( writer.toString() );
+
+
         return unmarshaller.unmarshal( new StringReader( writer.toString() ) );
     }
 
 
-    @Test
-    public void testIdRef() throws JAXBException {
-        StringWriter writer = new StringWriter();
-        marshaller.marshal( painting, writer );
-        System.err.println( writer.toString() );
-    }
 
-    @Test
-    public void testJaxb() throws JAXBException {
-
-        Painting p2 = (Painting) refreshOnJaxb( painting );
-
-        assertEquals( painting, p2 );
-        assertEquals( p2, painting );
-        checkPainting( p2 );
-
-    }
 
 
 

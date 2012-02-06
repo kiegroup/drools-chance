@@ -1299,7 +1299,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             System.out.println( " >>>> " + s );
             SubConceptOf subConceptOf = (SubConceptOf) s;
             model.addSubConceptOf( subConceptOf );
-            conceptCache.get(subConceptOf.getSubject()).getSuperConcepts().add(conceptCache.get(subConceptOf.getObject()));
+            conceptCache.get( subConceptOf.getSubject() ).addSuperConcept( conceptCache.get( subConceptOf.getObject() ) );
+
         }
         System.out.println(" >>>>>>>>>> ");
     }

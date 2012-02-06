@@ -241,11 +241,15 @@ public class DLUtils {
         return getter( name, type, null );
     }
 
+    public static String setter( String name ) {
+        return "set" + capitalize( name );
+    }
+
     public static String getter( String name, String type, Integer max ) {
         String prefix = ( ( max != null && max == 1 )
-                          &&
-                          ( type.equals("xsd:boolean") || type.equals(boolean.class.getName() ) )
-                        ) ? "is" : "get";
+                &&
+                ( type.equals("xsd:boolean") || type.equals(boolean.class.getName() ) )
+        ) ? "is" : "get";
         return prefix + capitalize( name );
     }
 
