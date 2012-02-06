@@ -57,6 +57,7 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
                 Class k = x.getClass();
                 UIdAble alter = (UIdAble) k.newInstance();
                 alter.setUniversalId( x.getUniversalId() );
+                alter.setReference( true );
                 return alter;
             }
         }

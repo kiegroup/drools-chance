@@ -31,6 +31,7 @@ import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompilerImpl;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
@@ -44,8 +45,8 @@ public class KeyPlugin extends Plugin {
 
     public static String uri = "http://jboss.org/drools/drools-chance/drools-shapes/plugins/key";
 
-    private static CompiledTemplate equalsTempl = readResource("templates/equals.template");
-    private static CompiledTemplate hashKyTempl = readResource("templates/hashKy.template");
+    private static String equalsTempl = "equals";
+    private static String hashKyTempl = "hashKy";
 
     public String getOptionName() {
         return "Xkey-equality";
@@ -84,8 +85,9 @@ public class KeyPlugin extends Plugin {
                 map.put( "klassName", co.target.shortName );
                 map.put( "keys", keys );
 
-            String equals = (String) TemplateRuntime.execute( equalsTempl, DLUtils.getInstance(), map );
-            String hashKy = (String) TemplateRuntime.execute( hashKyTempl, DLUtils.getInstance(), map );
+
+            String equals = SemanticXSDModelCompilerImpl.getTemplatedCode( equalsTempl, map);
+            String hashKy = SemanticXSDModelCompilerImpl.getTemplatedCode( hashKyTempl, map);
 
             co.implClass.direct( equals );
             co.implClass.direct( hashKy );
@@ -98,15 +100,6 @@ public class KeyPlugin extends Plugin {
     }
 
 
-    private static CompiledTemplate readResource( String templ ) {
-        try {
-            InputStream stream = ResourceFactory.newClassPathResource( templ, KeyPlugin.class).getInputStream();
-            return TemplateCompiler.compileTemplate(stream);
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 
     public static class Key {

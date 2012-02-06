@@ -205,8 +205,11 @@ public class Concept {
         this.keys = keys;
     }
     
-    public void addKey( String key ){                
-        keys.add( lookupProperty( this, key ) );
+    public void addKey( String key ){
+        PropertyRelation k = lookupProperty( this, key ); 
+        if ( ! keys.contains( k ) ) {
+            keys.add( k );
+        }
     }
     
     protected PropertyRelation lookupProperty( Concept con, String key ) {

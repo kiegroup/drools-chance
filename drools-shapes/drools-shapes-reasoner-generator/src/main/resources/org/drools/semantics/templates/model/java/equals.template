@@ -13,7 +13,7 @@
 
 
 
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, org.jvnet.jaxb2_commons.lang.EqualsStrategy strategy) {
+    public boolean equals(org.jvnet.jaxb2_commons.locator.ObjectLocator thisLocator, org.jvnet.jaxb2_commons.locator.ObjectLocator thatLocator, Object object, org.jvnet.jaxb2_commons.lang.EqualsStrategy strategy) {
             if (!(object instanceof @{klassName})) {
                     return false;
                 }
@@ -29,7 +29,7 @@
                     lhs@{compactUpperCase(k.name)} = (this.isSet@{compactUpperCase(k.name)}()?this.get@{compactUpperCase(k.name)}():null);
                     List<@{k.type}> rhs@{compactUpperCase(k.name)};
                     rhs@{compactUpperCase(k.name)} = (that.isSet@{compactUpperCase(k.name)}()?that.get@{compactUpperCase(k.name)}():null);
-                    if (!strategy.equals(LocatorUtils.property(thisLocator, "@{k.name}", lhs@{compactUpperCase(k.name)}), LocatorUtils.property(thatLocator, "@{k.name}", rhs@{compactUpperCase(k.name)}), lhs@{compactUpperCase(k.name)}, rhs@{compactUpperCase(k.name)})) {
+                    if (!strategy.equals(org.jvnet.jaxb2_commons.locator.util.LocatorUtils.property(thisLocator, "@{k.name}", lhs@{compactUpperCase(k.name)}), org.jvnet.jaxb2_commons.locator.util.LocatorUtils.property(thatLocator, "@{k.name}", rhs@{compactUpperCase(k.name)}), lhs@{compactUpperCase(k.name)}, rhs@{compactUpperCase(k.name)})) {
                         return false;
                     }
                 }

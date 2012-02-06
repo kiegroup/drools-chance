@@ -15,6 +15,8 @@ public abstract class UIdAble implements SupportsRdfId {
 
     private String actualType;
 
+    private boolean isReference;
+
     @XmlTransient
     public RdfKey getRdfId() {
         if ( key == null && getUniversalId() != null ) {
@@ -44,9 +46,13 @@ public abstract class UIdAble implements SupportsRdfId {
         setUniversalId( "http://" + UUID.randomUUID().toString() );
     }
 
+    public boolean isReference() {
+        return isReference;
+    }
 
-
-
+    public void setReference(boolean reference) {
+        isReference = reference;
+    }
 
     protected static class Key implements RdfKey {
 

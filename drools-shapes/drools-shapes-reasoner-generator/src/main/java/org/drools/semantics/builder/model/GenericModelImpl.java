@@ -203,7 +203,7 @@ public class GenericModelImpl implements OntoModel {
                         con.addShadowProperty( propKey, con.getProperties().get( propKey ) );
                     }
                     for ( Concept sup : con.getSuperConcepts() ) {
-                        if ( ! sup.getShadowProperties().containsKey( propKey ) ) {
+                        if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
                             System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
                             sup.addShadowProperty( propKey, con.getProperties().get( propKey ) );
                         }
@@ -211,7 +211,7 @@ public class GenericModelImpl implements OntoModel {
                 }
                 for ( String propKey : con.getShadowProperties().keySet() ) {
                     for ( Concept sup : con.getSuperConcepts() ) {
-                        if ( ! sup.getShadowProperties().containsKey( propKey ) ) {
+                        if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
                             System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
                             sup.addShadowProperty( propKey, con.getShadowProperties().get( propKey ) );
                         }

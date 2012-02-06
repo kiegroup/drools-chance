@@ -52,7 +52,7 @@
         <class name="@{concept.name}Impl"/>
 
         <inheritance:implements>@{package}.@{concept.name}</inheritance:implements>
-        <inheritance:implements>@{package}.@{concept.name + "$$Shadow"}</inheritance:implements>
+        @if{ flat && concept.name != "Thing" } <inheritance:implements>@{package}.@{concept.name + "$$Shadow"}</inheritance:implements> @end{}
         <inheritance:implements>com.sun.xml.bind.CycleRecoverable</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.Equals</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.HashCode</inheritance:implements>
