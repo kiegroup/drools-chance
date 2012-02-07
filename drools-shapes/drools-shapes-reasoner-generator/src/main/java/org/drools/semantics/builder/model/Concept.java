@@ -30,6 +30,7 @@ public class Concept {
     @Position(5)    private     List<PropertyRelation>          keys;
     @Position(6)    private     Set<Concept>                    subConcepts;
     @Position(7)    private     Map<String, PropertyRelation>   shadowProperties;
+    @Position(8)    private     Concept                         chosenSuper;
     
 
     private     boolean                         primitive               = false;
@@ -197,7 +198,6 @@ public class Concept {
         for ( Concept sup : superConcepts ) {
             keys.addAll( sup.getKeys() );
         }
-        System.out.println("Getting keys for" + name + " >> " + keys );
         return keys;
     }
 
@@ -206,7 +206,7 @@ public class Concept {
     }
     
     public void addKey( String key ){
-        PropertyRelation k = lookupProperty( this, key ); 
+        PropertyRelation k = lookupProperty(this, key);
         if ( ! keys.contains( k ) ) {
             keys.add( k );
         }
@@ -226,9 +226,15 @@ public class Concept {
         }
         return null;
     }
-    
-    
-    
+
+    public Concept getChosenSuper() {
+        return chosenSuper;
+    }
+
+    public void setChosenSuper(Concept chosenSuper) {
+        this.chosenSuper = chosenSuper;
+    }
+
     public boolean isInherited( String propIri ) {
         return properties.containsKey( propIri ) && properties.get( propIri ).getDomain().getIri().equals( this.getIri() );
     }

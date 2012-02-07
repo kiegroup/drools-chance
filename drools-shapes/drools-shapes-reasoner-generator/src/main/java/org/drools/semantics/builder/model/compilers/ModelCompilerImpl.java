@@ -49,6 +49,7 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
                 Map map = new HashMap();
                 map.put( "package", getModel().getPackage() );
                 map.put( "iri", con.getIri() );
+                map.put( "concept", con );
                 map.put( "name", name );
                 map.put( "superConcepts", con.getSuperConcepts() );
                 map.put( "subConcepts", con.getSubConcepts() );

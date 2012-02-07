@@ -18,26 +18,13 @@
 }
 
 
-@declare{'baseAddRemove'}
-
-
-    @if{ primitive }
-    @com.clarkparsia.empire.annotation.RdfProperty( "tns:@{ name }" )
-    @javax.persistence.ElementCollection( targetClass = @{ map( type, true) }.class )
-    public List<@{ map( type, true ) }> @{ getter( name, type, max )}2() {
-        return @{ getter( name, type, max )}();
-    }
-
-    public void set@{ compactUpperCase( name ) }2(  List<@{ map( type, true ) }> x ) {
-        set@{ compactUpperCase( name ) }( x );
-    }
-    @end{}
+@declare{'baseGetterSetter'}
 
 
 
 @end{}
 
-@includeNamed{'baseAddRemove'}
+@includeNamed{'baseGetterSetter'}
 
 
 

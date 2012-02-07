@@ -83,7 +83,6 @@
             <hj:id/>
         </bindings>
 
-
         <dsp:accessors>
         @foreach{ propKey : properties[ concept.name ].keySet }
             @code{ prop = properties[ concept.name ][ propKey ] }
@@ -123,23 +122,18 @@
                 </jxb:property>
 
 
-                @if{ ! prop.target.primitive }
+
                     <annox:annotate>
                         <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="tns:@{prop.name}" />
                     </annox:annotate>
 
+
+                @if{ ! prop.target.primitive }
                     <annox:annotate target="field">
-
-
                             <annox:annotate target="field"
                                         annox:class="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter"
                                         value="ReferenceAdapter" />
-
-
-
                     </annox:annotate>
-
-
                 @end{}
 
 

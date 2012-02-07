@@ -21,9 +21,6 @@
 @declare{'shadowConstructor'}
 
 
-    public @{ name + "Impl" }(  ) {
-    }
-
     public @{ name + "Impl" }( @{name + "$$Shadow"} other ) {
         setUniversalId( other.getUniversalId() );
         @foreach{ prop : properties }

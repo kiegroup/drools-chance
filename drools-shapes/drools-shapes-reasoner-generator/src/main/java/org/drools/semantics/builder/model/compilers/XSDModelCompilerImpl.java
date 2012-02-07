@@ -74,67 +74,38 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     private Element buildKeys(Map<String, Object> params) {
         XSDModel xmodel = (XSDModel) getModel();
         Element keys = new Element( "key", xmodel.getNamespace( "xsd" ) );
-            keys.setAttribute( "name", params.get( "name" ) + "Key" );
+        keys.setAttribute( "name", params.get( "name" ) + "Key" );
 
-        Element selector = new Element( "selector", xmodel.getNamespace( "xsd" ) ); 
-            selector.setAttribute( "xpath", "" + params.get( "name" ) );
+        Element selector = new Element( "selector", xmodel.getNamespace( "xsd" ) );
+        selector.setAttribute( "xpath", "" + params.get( "name" ) );
         keys.addContent( selector );
-        
+
         List<String> keyProps = (List<String>) params.get( "keys" );
         for ( String k : keyProps ) {
             Element key = new Element( "field", xmodel.getNamespace( "xsd" ) );
             key.setAttribute( "xpath", "@" + k );
             keys.addContent( key );
         }
-        
+
         return keys;
 
     }
 
-    private Element buildAsHierarchy(String name, Map<String, Object> params) {
-        XSDModel xmodel = (XSDModel) getModel();
 
-        Element type = new Element( "complexType", xmodel.getNamespace( "xsd" ) );
-        type.setAttribute( "name", name );
-
-    /* removed this since anonymous classes are need for "skolem" instantiations */
-//        if ( params.containsKey( "abstract" ) ) {
-//            type.setAttribute( "abstract", "true" );
-//        }
-        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts");
-        if ( supers.size() > 1 ) {
-            System.err.println( " Cannot build a hierarchy with more than 1 ancestor for " + name + ", found " + supers );
-        }
-
-        if ( ! supers.isEmpty() ) {
-            Concept sup = supers.iterator().next();
-            Element complex = new Element( "complexContent", xmodel.getNamespace( "xsd" ) );
-
-            Element ext = new Element("extension", xmodel.getNamespace( "xsd" ) );
-            ext.setAttribute("base", "tns:"+sup.getName() );
-
-            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), ext );
-
-            complex.setContent( ext );
-            type.setContent( complex );
-        } else {
-            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), type );
-        }
-
-        return type;
-    }
 
     private Element buildProperties( String name, Map<String, PropertyRelation> props, Element root ) {
         XSDModel xmodel = (XSDModel) getModel();
         propCache.put( name, props );
 
         Element seq = new Element( "sequence", xmodel.getNamespace( "xsd" ) );
-        
+
+//        if ( name.equals( "Thing") ) {
             Element key = new Element( "element", xmodel.getNamespace( "xsd" ) );
-                key.setAttribute( "name", "universalId" );
-                key.setAttribute( "type", "xsd:ID"  );
+            key.setAttribute( "name", "universalId" );
+            key.setAttribute( "type", "xsd:ID"  );
             seq.addContent( key );
-        
+//        }
+
         root.addContent( seq );
         for ( String propKey : props.keySet() ) {
             PropertyRelation rel = props.get( propKey );
@@ -215,17 +186,123 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
 
 
+    private Element buildAsHierarchy(String name, Map<String, Object> params) {
+        XSDModel xmodel = (XSDModel) getModel();
+
+        Element type = new Element( "complexType", xmodel.getNamespace( "xsd" ) );
+        type.setAttribute( "name", name );
+
+        /* removed this since anonymous classes are need for "skolem" instantiations */
+        //        if ( params.containsKey( "abstract" ) ) {
+        //            type.setAttribute( "abstract", "true" );
+        //        }
+        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts");
+        if ( supers.size() > 1 ) {
+            System.err.println( " Cannot build a hierarchy with more than 1 ancestor for " + name + ", found " + supers );
+        }
+
+        if ( ! supers.isEmpty() ) {
+            Concept sup = supers.iterator().next();
+            Element complex = new Element( "complexContent", xmodel.getNamespace( "xsd" ) );
+
+            Element ext = new Element("extension", xmodel.getNamespace( "xsd" ) );
+            ext.setAttribute("base", "tns:"+sup.getName() );
+
+            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), ext );
+
+            complex.setContent( ext );
+            type.setContent( complex );
+        } else {
+            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), type );
+        }
+
+        return type;
+    }
+
+
+//    private Element buildTypeAsFlat( String name, Map<String, Object> params ) {
+//        XSDModel xmodel = (XSDModel) getModel();
+//
+//        Element type = new Element("complexType", xmodel.getNamespace( "xsd" ) );
+//        type.setAttribute( "name", name );
+//
+//        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts");
+//        Concept chosenSuper = null;
+//
+//        if ( supers.size() == 0 ) {
+//
+//            Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
+//            props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
+//            buildProperties( name, props, type );
+//
+//
+//            System.err.println( "Concept " + name + ", had no supers" );
+//
+//            return type;
+//        } else {
+//            if ( supers.size() == 1) {
+//                chosenSuper = supers.iterator().next();
+//            } else {
+//                int bestScore = 0;
+//                for ( Concept sup : supers ) {
+//                    System.err.println( "Scoring " + sup.getName() + " <" + sup.getProperties().size() + " | " + sup.getShadowProperties().size() +">" );
+//                    int score = sup.getProperties().keySet().size() + sup.getShadowProperties().keySet().size();
+//
+//                    if ( score > bestScore ) {
+//                        bestScore = score;
+//                        chosenSuper = sup;
+//                    }
+//                }
+//            }
+//
+//            System.err.println( "FOR concept " + name + ", the best super was " + chosenSuper.getName() + " among " + supers );
+//            Concept con = (Concept) params.get( "concept" );
+//            con.setChosenSuper( chosenSuper );
+//
+//
+//            Element complex = new Element( "complexContent", xmodel.getNamespace( "xsd" ) );
+//
+//            Element ext = new Element("extension", xmodel.getNamespace( "xsd" ) );
+//            ext.setAttribute("base", "tns:"+chosenSuper.getName() );
+//
+//            Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
+//
+//            props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
+//
+//            for ( String propKey : chosenSuper.getProperties().keySet() ) {
+//                props.remove( propKey );
+//            }
+//            for ( String propKey : chosenSuper.getShadowProperties().keySet() ) {
+//                props.remove( propKey );
+//            }
+//
+//            buildProperties( name, props, ext );
+//
+//            complex.setContent( ext );
+//            type.setContent( complex );
+//
+//            return type;
+//        }
+//
+//
+//    }
+
+
+
+
+
     private Element buildTypeAsFlat( String name, Map<String, Object> params ) {
         XSDModel xmodel = (XSDModel) getModel();
 
         Element type = new Element("complexType", xmodel.getNamespace( "xsd" ) );
         type.setAttribute( "name", name );
 
-    /* removed this since anonymous classes are need for "skolem" instantiations */
-//        if ( params.containsKey( "abstract" ) ) {
-//            type.setAttribute( "abstract", "true" );
-//        }
-//        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts" );
+        /* removed this since anonymous classes are need for "skolem" instantiations */
+        //        if ( params.containsKey( "abstract" ) ) {
+        //            type.setAttribute( "abstract", "true" );
+        //        }
+        //        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts" );
+
         Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
         props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
 
@@ -234,7 +311,6 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
         return type;
     }
-
 
 
 

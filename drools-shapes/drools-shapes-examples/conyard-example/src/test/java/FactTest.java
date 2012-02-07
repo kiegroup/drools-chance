@@ -126,10 +126,14 @@ public class FactTest {
 
     public void checkPainting( Painting painting ) {
         assertNotNull( painting );
-        assertEquals( 3, painting.getRequires().size() );
-        assertEquals( 1, painting.getRequiresAlso().size() );
-        assertEquals( 3, painting.getInvolves().size() );
 
+        assertEquals( 3, painting.getRequires().size() );
+
+        assertEquals( 1, painting.getRequiresAlso().size() );
+        assertTrue( painting.getRequiresAlso().get( 0 ) instanceof StairImpl );
+        assertEquals( 10, (int) ((Stair) painting.getRequiresAlso().get( 0 )).getStairLengthInteger() );
+
+        assertEquals( 3, painting.getInvolves().size() );
 
     }
 
