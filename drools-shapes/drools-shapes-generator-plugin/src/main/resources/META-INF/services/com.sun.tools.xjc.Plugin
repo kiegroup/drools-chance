@@ -1,2 +1,3 @@
 org.drools.shapes.KeyPlugin
 org.drools.shapes.AccessorPlugin
+org.drools.shapes.DefaultConstructorPlugin

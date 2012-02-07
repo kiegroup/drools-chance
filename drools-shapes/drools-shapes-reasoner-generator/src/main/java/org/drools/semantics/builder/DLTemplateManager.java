@@ -56,7 +56,8 @@ public class DLTemplateManager {
             "model/java/shadowConstructor.template",
             "model/java/onCycleDetected.template",
             "model/java/equals.template",
-            "model/java/hashKy.template"
+            "model/java/hashKy.template",
+            "model/java/defaultConstructor.template"
     };
     protected static final String[] FALC_TABLEAU_TEMPLATES = new String[] {
             "tableau/falc/header.drlt",

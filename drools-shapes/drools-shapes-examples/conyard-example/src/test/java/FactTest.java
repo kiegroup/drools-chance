@@ -407,35 +407,12 @@ public class FactTest {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory( ObjectFactory.class.getPackage().getName() );
         EntityManager em = emf.createEntityManager();
 
-
-        Painting painting = new PaintingImpl();
-        painting.setEndsOnDate(new Date());
-        painting.setOidString( "abcd");
-//
-        Person pers1 = new PersonImpl();
-        pers1.setOidString( "xy1" );
-        Person pers2 = new PersonImpl();
-        pers2.setOidString( "xy2" );
-        painting.addInvolves( pers1 );
-        painting.addInvolves( pers2 );
-
-//        Person pers3 = new GuestImpl();
-//        painting.addInvolves( pers3 );
-//
-//                painting.addInvolves( new LabourerImpl());
-
         persist(painting, em);
 
-        Painting p2 = (Painting) refreshOnJPA( painting, ((PaintingImpl) painting).getUniversalId(), em );
-
-        assertEquals( "xy1", p2.getInvolvesPersons().get(0).getOidString() );
-        assertEquals( "xy2", p2.getInvolvesPersons().get(1).getOidString() );
-
-        assertNotNull(p2);
-        assertEquals( painting, p2 );
-        assertNotSame( painting, p2 );
+        Painting p2 = (Painting) refreshOnJPA( painting, (painting).getUniversalId(), em );
 
 
+        checkPainting( p2 );
 
         em.close();
 

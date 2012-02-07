@@ -24,6 +24,9 @@ import com.clarkparsia.empire.annotation.RdfsClass;
 import com.clarkparsia.empire.annotation.Namespaces;
 import com.clarkparsia.empire.annotation.RdfProperty;
 
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
+
 
 // @{iri}
 
@@ -46,7 +49,7 @@ public interface @{name} extends com.clarkparsia.empire.SupportsRdfId
 
 
     // @{prop.property}   --    @{prop.maxCard}   --- @{prop.name}
-    @if{ ! prop.restricted && ! prop.transient && ! prop.target.primitive } @RdfProperty("tns:@{prop.name}") @end{}
+    @if{ ! prop.restricted && ! prop.transient } @RdfProperty("tns:@{prop.name}") @OneToMany( cascade = CascadeType.PERSIST ) @end{}
     public
         @if{ prop.maxCard == 1 }
             @{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}

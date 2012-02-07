@@ -30,7 +30,7 @@ public class Concept {
     @Position(5)    private     List<PropertyRelation>          keys;
     @Position(6)    private     Set<Concept>                    subConcepts;
     @Position(7)    private     Map<String, PropertyRelation>   shadowProperties;
-    @Position(8)    private     Concept                         chosenSuper;
+    @Position(8)    private     String                          chosenSuper;
     
 
     private     boolean                         primitive               = false;
@@ -227,11 +227,11 @@ public class Concept {
         return null;
     }
 
-    public Concept getChosenSuper() {
+    public String getChosenSuper() {
         return chosenSuper;
     }
 
-    public void setChosenSuper(Concept chosenSuper) {
+    public void setChosenSuper(String chosenSuper) {
         this.chosenSuper = chosenSuper;
     }
 

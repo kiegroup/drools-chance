@@ -18,29 +18,18 @@
 }
 
 
-@declare{'restrictedAddRemove'}
+@declare{'defaultConstructor'}
 
 
-    @@javax.persistence.Transient
-    public void add@{ compactUpperCase( name ) }( @{ map( type, true ) } x ) {
-
-        @if{ ! primitive }
-            add@{ compactUpperCase( base ) }( (Object) x );
-        @else{}
-            @{ getter( base, type ) }().add( x );
-        @end{}
+    public @{ name + "Impl" }(  ) {
 
     }
 
-    @@javax.persistence.Transient
-    public void remove@{ compactUpperCase( name ) }( Object x ) {
-        @{ getter( base, type ) }().remove( x );
-    }
 
 
 @end{}
 
-@includeNamed{'restrictedAddRemove'}
+@includeNamed{'defaultConstructor'}
 
 
 

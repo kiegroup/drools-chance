@@ -23,6 +23,7 @@
           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
           xmlns:dsk="http://jboss.org/drools/drools-chance/drools-shapes/plugins/key"
           xmlns:dsp="http://jboss.org/drools/drools-chance/drools-shapes/plugins/accessor"
+          xmlns:con="http://jboss.org/drools/drools-chance/drools-shapes/plugins/constructor"
           xmlns:annox="http://annox.dev.java.net"
           xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
           xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
@@ -42,9 +43,6 @@
 
     @code{ targetElement = ''; if (flat) targetElement='complexType'; else targetElement='complexType'; }
 
-    <bindings node="//xsd:@{targetElement}[@name='Thing']">
-      <inheritance:extends>UIdAble</inheritance:extends>
-    </bindings>
 
 
     @foreach{ concept : concepts }
@@ -56,8 +54,13 @@
         <inheritance:implements>com.sun.xml.bind.CycleRecoverable</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.Equals</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.HashCode</inheritance:implements>
-        @if{ flat && concept.name != "Thing" } <inheritance:extends>UIdAble</inheritance:extends> @end{}
+        @if{ concept.name == "Thing" }
+            <inheritance:extends>UIdAble</inheritance:extends>
+        @else{}
+            <inheritance:extends>@{concept.chosenSuper + "Impl"}</inheritance:extends>
+        @end{}
 
+        <con:default/>
 
         <annox:annotate>
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfsClass" value="tns:@{concept.name}" />
@@ -79,9 +82,11 @@
             </dsk:keyId>
 
 
+        @if{ concept.name == "Thing" }
         <bindings node=".//xsd:element[@name='universalId']">
             <hj:id/>
         </bindings>
+        @end{}
 
         <dsp:accessors>
         @foreach{ propKey : properties[ concept.name ].keySet }

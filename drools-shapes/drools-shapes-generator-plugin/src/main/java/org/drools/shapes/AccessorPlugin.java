@@ -64,7 +64,7 @@ public class AccessorPlugin extends Plugin {
     public boolean run(Outline outline, Options opt, ErrorHandler errorHandler) throws SAXException {
         for (ClassOutline co : outline.getClasses() ) {
 
-            co.implClass.direct(  "@javax.xml.bind.annotation.XmlTransient protected Object[] jdoDetachedState;"  );
+//            co.implClass.direct(  "@javax.xml.bind.annotation.XmlTransient protected Object[] jdoDetachedState;"  );
 
 
             CPluginCustomization c = co.target.getCustomizations().find( uri, "accessors" );
@@ -180,19 +180,6 @@ public class AccessorPlugin extends Plugin {
 
 
     }
-
-
-
-    private static CompiledTemplate readTemplate( String templ ) {
-        try {
-            InputStream stream = ResourceFactory.newClassPathResource( templ, AccessorPlugin.class).getInputStream();
-            return TemplateCompiler.compileTemplate(stream);
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 
 
     public static class Link {

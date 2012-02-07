@@ -434,6 +434,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 target = rel.getTarget();
                 restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
                 restrictedPropIri = propIri.replace (">", restrictedSuffix + ">" );
+                dirty = true;
             }
             if ( ! rel.getTarget().equals( target ) && ! restrictTarget ) {
                 //TODO FIXME : check that target is really restrictive!
@@ -515,6 +516,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         clonedRel.setTarget( rel.getTarget() );
         clonedRel.setDomain( rel.getDomain() );
         clonedRel.setBaseProperty( rel );
+        clonedRel.setRestricted( rel.isRestricted() );
         return clonedRel;
 
     }
@@ -670,7 +672,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
                     stable = false;
                     temp.remove( eq2 );
-                } else if ( ! first.isAnonymous() && ! isAbstract( first )  ) {
+                } else if ( ! first.isAnonymous() ) {
                     removed = aliases.put( secnd, first );
                     if ( removed != null ) {
                         System.err.println( "WARNING : DOUBLE KEY WHILE RESOLVING EQUALITIES" + removed + " for value " + eq2 );
@@ -678,7 +680,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
                     stable = false;
                     temp.remove( eq2 );
-                } else if ( ! secnd.isAnonymous() && ! isAbstract( secnd ) ) {
+                } else if ( ! secnd.isAnonymous() ) {
                     removed = aliases.put( first, secnd );
                     if ( removed != null ) {
                         System.err.println( "WARNING : DOUBLE KEY WHILE RESOLVING EQUALITIES" + removed + " for value " + eq2 );

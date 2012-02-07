@@ -107,7 +107,7 @@ when
 //	$def     : OWLClassExpression(  ) from $klass.getSuperClasses( $context )
 then
 
-    System.out.println(" WARNING FOUND SUBCLASS ON " + $klass + "; CAN ONLY HANDLE EQUIV "  );
+//    System.out.println(" WARNING FOUND SUBCLASS ON " + $klass + "; CAN ONLY HANDLE EQUIV "  );
 //    OWLDataFactory factory = $context.getOWLOntologyManager().getOWLDataFactory();
 //        OWLClass temp = factory.getOWLClass( IRI.create( java.util.UUID.randomUUID().toString() ) );
 //        OWLClassExpression mockDef = factory.getOWLObjectIntersectionOf( $def, temp );

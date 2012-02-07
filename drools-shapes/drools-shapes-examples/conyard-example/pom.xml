@@ -300,6 +300,7 @@
                         <arg>-Xinject-code</arg>
                         <arg>-Xkey-equality</arg>
                         <arg>-Xsem-accessors</arg>
+                        <arg>-Xdefault-constructor</arg>
                     </args>
                     <removeOldOutput>false</removeOldOutput>
                     <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
