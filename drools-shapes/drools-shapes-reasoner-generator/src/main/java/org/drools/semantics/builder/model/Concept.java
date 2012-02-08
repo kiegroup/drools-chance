@@ -20,7 +20,7 @@ import org.drools.definition.type.Position;
 
 import java.util.*;
 
-public class Concept {
+public class Concept implements Cloneable {
 
     @Position(0)    private     String                          iri;
     @Position(1)    private     String                          name;
@@ -59,7 +59,6 @@ public class Concept {
         this.equivalentConcepts = equivalentConcepts != null ? equivalentConcepts : new HashSet<Concept>();
         this.subConcepts = subConcepts != null ? subConcepts : new HashSet<Concept>();
     }
-
 
 
     @Override
@@ -156,10 +155,6 @@ public class Concept {
     }
 
 
-    public void setProperties(Map properties) {
-        this.properties = properties;
-    }
-
     public Set<Concept> getEquivalentConcepts() {
         return equivalentConcepts;
     }
@@ -251,6 +246,11 @@ public class Concept {
     public void addShadowProperty( String propIri, PropertyRelation shadow ) {
         this.shadowProperties.put( propIri, shadow );
     }
+
+    public void setProperties(Map<String, PropertyRelation> properties) {
+        this.properties = properties;
+    }
+
 
 
     public static class Range {

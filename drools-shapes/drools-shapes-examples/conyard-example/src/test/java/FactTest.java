@@ -89,7 +89,6 @@ public class FactTest {
         Stair stair = new StairImpl();
 
         stair.setStairLengthInteger( 10 );
-        stair.addOid( "anOid" );
 
         painting.setRequiresStair( stair );
 
@@ -115,9 +114,9 @@ public class FactTest {
         pers = new LabourerImpl();
 
 
-
         pers.addParticipatesIn( painting );
         painting.addInvolves( pers );
+
 
     }
 
@@ -181,13 +180,6 @@ public class FactTest {
         lab.setOidString("abc");
         assertEquals("abc", lab.getOidString());
         assertEquals( 1, lab.getOid().size() );
-
-
-
-        WallRaising wr = new WallRaisingImpl();
-
-
-
 
     }
 

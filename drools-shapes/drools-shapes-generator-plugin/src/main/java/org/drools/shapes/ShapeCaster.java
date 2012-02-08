@@ -22,12 +22,10 @@ import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
-import org.drools.semantics.builder.model.JarModel;
-import org.drools.semantics.builder.model.ModelFactory;
-import org.drools.semantics.builder.model.OntoModel;
-import org.drools.semantics.builder.model.SemanticXSDModel;
+import org.drools.semantics.builder.model.*;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
+import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -176,6 +174,22 @@ public class ShapeCaster
 
 
 
+    /**
+     * @parameter default-value="false"
+     */
+    private boolean buildSpecXSDs = false;
+
+    public boolean isBuildSpecXSDs() {
+        return buildSpecXSDs;
+    }
+
+    public void setBuildSpecXSDs(boolean buildSpecXSDs) {
+        this.buildSpecXSDs = buildSpecXSDs;
+    }
+
+
+
+
 
     public void execute() throws MojoExecutionException {
 
@@ -186,7 +200,7 @@ public class ShapeCaster
         if ( ! ontoFile.exists() ) {
             throw new MojoExecutionException( " File not found : " + ontology );
         }
-        
+
         if ( new File( target ).exists() ) {
             getLog().info( "Target folder " + target + " exists, skipping generation process" );
             return;
@@ -198,14 +212,67 @@ public class ShapeCaster
         OntoModel results = factory.buildModel( getModelName(), res );
 
 
-        ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.FLAT;
-        if ( isPreserveInheritanceInImpl() ) {
-            results.flatten();
-        } else {
-            results.elevate();
+
+        if ( isGenerateDefaultImplClasses() && isBuildSpecXSDs() ) {
+
+            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.FLAT;
+            if ( isPreserveInheritanceInImpl() ) {
+                results.elevate();
+            } else {
+                results.flatten();
+            }
+
+
+            File dir = new File( target + "/META-INF" );
+            if ( ! dir.exists() ) {
+                dir.mkdirs();
+            }
+
+            ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+            compiler.setMode( mode );
+            SemanticXSDModel xsdModel;
+
+            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+            xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+            try {
+                FileOutputStream fos = new FileOutputStream( target + "/META-INF/" + getModelName() +"_$spec.xsd" );
+                xsdModel.stream( fos );
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                throw new MojoExecutionException( e.getMessage() );
+            }
+
+
+            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
+            xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+            try {
+                FileOutputStream fos = new FileOutputStream( target + "/META-INF/" + getModelName() +"_$full.xsd" );
+                xsdModel.stream( fos );
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                throw new MojoExecutionException( e.getMessage() );
+            }
         }
 
+
+
+
+
+
+
+
         if ( isGenerateInterfaceJar() || isGenerateInterfaces() ) {
+
+            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.LEVELLED;
+            if ( isPreserveInheritanceInImpl() ) {
+                results.elevate();
+            } else {
+                results.raze();
+            }
 
             ModelCompiler jcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
             jcompiler.setMode( mode );
@@ -231,15 +298,33 @@ public class ShapeCaster
 
         /**************************************************************************************************************/
 
+
+
+
         if ( isGenerateDefaultImplClasses() ) {
+
+            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.LEVELLED;
+            if ( isPreserveInheritanceInImpl() ) {
+                results.elevate();
+            } else {
+                results.raze();
+            }
+
+            if ( ! isBuildSpecXSDs() ) {
+                File dir = new File( target + "/META-INF" );
+                if ( ! dir.exists() ) {
+                    dir.mkdirs();
+                }
+            }
+
             ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
             compiler.setMode( mode );
-            SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
+            SemanticXSDModel xsdModel;
 
-            File dir = new File( target + "/META-INF" );
-            if ( ! dir.exists() ) {
-                dir.mkdirs();
-            }
+
+
+            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+            xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
                 FileOutputStream fos = new FileOutputStream( target + "/META-INF/" + getModelName() +".xsd" );
@@ -277,4 +362,8 @@ public class ShapeCaster
 
 
     }
+
+
+
+
 }

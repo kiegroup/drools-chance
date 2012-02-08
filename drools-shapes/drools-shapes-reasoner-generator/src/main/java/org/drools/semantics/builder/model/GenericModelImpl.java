@@ -21,7 +21,7 @@ import org.drools.semantics.builder.DLUtils;
 
 import java.util.*;
 
-public class GenericModelImpl implements OntoModel {
+public class GenericModelImpl implements OntoModel, Cloneable {
 
 
     private String pack;
@@ -35,6 +35,22 @@ public class GenericModelImpl implements OntoModel {
     private Set<SubConceptOf> subConcepts = new HashSet<SubConceptOf>();
 
     private Map<String, Set<PropertyRelation>> properties = new HashMap<String, Set<PropertyRelation>>();
+
+
+    protected GenericModelImpl newInstance() {
+        return new GenericModelImpl();
+    }
+
+    public Object clone() {
+        GenericModelImpl twin = newInstance();
+        twin.setPackage( pack );
+        twin.setName( name );
+        twin.setFlat( flat );
+        twin.setConcepts( new LinkedHashMap<String, Concept>( concepts ) );
+        twin.setSubConcepts( new HashSet<SubConceptOf>( subConcepts ) );
+        twin.setProperties( new HashMap<String, Set<PropertyRelation>>( properties ) );
+        return twin;
+    }
 
 
     public String getPackage() {
@@ -77,6 +93,9 @@ public class GenericModelImpl implements OntoModel {
         return concepts.remove( con.getIri() );
     }
 
+    protected void setConcepts(LinkedHashMap<String, Concept> concepts) {
+        this.concepts = concepts;
+    }
 
 
 
@@ -103,6 +122,9 @@ public class GenericModelImpl implements OntoModel {
         return null;
     }
 
+    protected void setSubConcepts(Set<SubConceptOf> subConcepts) {
+        this.subConcepts = subConcepts;
+    }
 
 
     public Set<PropertyRelation> getProperties() {
@@ -135,6 +157,13 @@ public class GenericModelImpl implements OntoModel {
         Collection<PropertyRelation> props = properties.get( iri );
         return props != null ? props.iterator().next() : null;
     }
+
+    protected void setProperties(Map<String, Set<PropertyRelation>> properties) {
+        this.properties = properties;
+    }
+
+
+
 
 
     @Override
@@ -193,35 +222,43 @@ public class GenericModelImpl implements OntoModel {
                     }
                 }
             }
-
-            List<String> cons = new ArrayList( concepts.keySet() );
-            Collections.reverse( cons );
-            for ( String conceptName : cons ) {
-                Concept con = concepts.get( conceptName );
-                for ( String propKey : con.getProperties().keySet() ) {
-                    if ( ! con.getShadowProperties().containsKey( propKey ) ) {
-                        con.addShadowProperty( propKey, con.getProperties().get( propKey ) );
-                    }
-                    for ( Concept sup : con.getSuperConcepts() ) {
-                        if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
-                            System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
-                            sup.addShadowProperty( propKey, con.getProperties().get( propKey ) );
-                        }
-                    }
-                }
-                for ( String propKey : con.getShadowProperties().keySet() ) {
-                    for ( Concept sup : con.getSuperConcepts() ) {
-                        if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
-                            System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
-                            sup.addShadowProperty( propKey, con.getShadowProperties().get( propKey ) );
-                        }
-                    }
-                }
-            }
-
             flat = true;
         }
     }
+
+    public void raze() {
+        if ( ! isFlat() ) {
+            flatten();
+        }
+
+        List<String> cons = new ArrayList( concepts.keySet() );
+        Collections.reverse( cons );
+        for ( String conceptName : cons ) {
+            Concept con = concepts.get( conceptName );
+            for ( String propKey : con.getProperties().keySet() ) {
+                if ( ! con.getShadowProperties().containsKey( propKey ) ) {
+                    con.addShadowProperty( propKey, con.getProperties().get( propKey ) );
+                }
+                for ( Concept sup : con.getSuperConcepts() ) {
+                    if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
+                            System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
+                        sup.addShadowProperty( propKey, con.getProperties().get( propKey ) );
+                    }
+                }
+            }
+            for ( String propKey : con.getShadowProperties().keySet() ) {
+                for ( Concept sup : con.getSuperConcepts() ) {
+                    if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
+                            System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
+                        sup.addShadowProperty( propKey, con.getShadowProperties().get( propKey ) );
+                    }
+                }
+            }
+        }
+
+    }
+
+
 
     public void elevate() {
         if ( isFlat() ) {
@@ -239,7 +276,10 @@ public class GenericModelImpl implements OntoModel {
                         }
                     }
                 }
+
+                con.getShadowProperties().clear();
             }
+
             flat = true;
         }
     }
@@ -247,6 +287,12 @@ public class GenericModelImpl implements OntoModel {
     public boolean isFlat() {
         return flat;
     }
+
+    protected void setFlat( boolean flat ) {
+        this.flat = flat;
+    }
+
+
 
 
     public void sort() {

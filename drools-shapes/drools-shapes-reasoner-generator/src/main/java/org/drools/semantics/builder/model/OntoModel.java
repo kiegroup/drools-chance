@@ -19,7 +19,7 @@ package org.drools.semantics.builder.model;
 import java.util.List;
 import java.util.Set;
 
-public interface OntoModel {
+public interface OntoModel extends Cloneable {
 
     public String getPackage();
         
@@ -64,6 +64,8 @@ public interface OntoModel {
     public void sort();
     
     public void flatten();
+
+    public void raze();
 
     public void elevate();
 

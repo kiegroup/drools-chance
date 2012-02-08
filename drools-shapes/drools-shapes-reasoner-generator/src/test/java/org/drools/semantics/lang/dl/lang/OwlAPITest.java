@@ -70,11 +70,6 @@ private static Logger log;
 	}
 
     @Test
-	public void conyard_ontology() {
-		test_ontology("conyard.manchester.owl");
-	}
-
-    @Test
 	public void test_test() {
 		test_ontology("DLex01.manchester");
         test_ontology("DLex02.manchester");

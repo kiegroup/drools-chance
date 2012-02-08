@@ -46,16 +46,21 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
         CompiledTemplate template = registry.getNamedTemplate( templateName );
         CompiledTemplate shadowTemplate = registry.getNamedTemplate( shadowTemplateName );
 
-        if ( getMode().equals( Mode.FLAT ) ) {
-            getModel().flatten();
-        } else {
-            getModel().elevate();
+        switch ( getMode() ) {
+            case FLAT:
+                getModel().flatten();
+                break;
+            case HIERARCHY:
+                getModel().elevate();
+                break;
+            case LEVELLED:
+                getModel().raze();
+                break;
         }
 
         getModel().addTrait(name, TemplateRuntime.execute( template, context, params ).toString().trim());
 
         getModel().addTrait( name+"$$Shadow", TemplateRuntime.execute( shadowTemplate, context, params ).toString().trim());
-
 
     }
 

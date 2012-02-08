@@ -25,11 +25,11 @@ public abstract class ModelImpl implements OntoModel {
 
     private OntoModel innerModel;
 
-    
+
     public String getName() {
         return innerModel.getName();
     }
-    
+
     public void setName( String name ) {
         innerModel.setName( name );
     }
@@ -119,6 +119,9 @@ public abstract class ModelImpl implements OntoModel {
         innerModel.sort();
     }
 
+    public void raze() {
+        innerModel.raze();
+    }
 
     public void flatten() {
         innerModel.flatten();

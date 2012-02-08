@@ -67,19 +67,19 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
 
     private void resolve(OntoModel model) {
         for ( Concept con : model.getConcepts() ) {
-            String fullName = model.getPackage().replace( "http.", "" ) + "." + con.getName();
-            System.out.println( "Looking for " + con.getName() + " as " + fullName );
+            String fullName = model.getPackage() + "." + con.getName();
+//            System.out.println( "Looking for " + con.getName() + " as " + fullName );
             try {
                 Class existingKlass = Class.forName( fullName );
                 if ( existingKlass != null ) {
                     System.out.println( "FOUND!!!! "+ existingKlass.getName() );
                 }
                 else {
-                    System.out.println( con.getName() + " Is Novel ");
+//                    System.out.println( con.getName() + " Is Novel ");
                 }
                     
             } catch ( ClassNotFoundException e ) {
-                System.out.println( con.getName() + "Is Novel ");
+//                System.out.println( con.getName() + "Is Novel ");
             }
         }
         

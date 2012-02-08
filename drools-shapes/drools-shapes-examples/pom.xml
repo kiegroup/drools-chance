@@ -36,7 +36,7 @@
 
     <modules>
         <module>conyard-example</module>
-        <!--module>smart-example</module-->
+        <!--module>wwtp-example</module-->
     </modules>
 
     <repositories>

@@ -104,7 +104,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             Map<String,Object> vars = new HashMap<String,Object>();
             vars.put( "package", getModel().getPackage() );
             vars.put( "concepts", getModel().getConcepts() );
-            vars.put( "flat", this.getCurrentMode().equals( Mode.FLAT ) );
+            vars.put( "flat", this.getCurrentMode().equals( Mode.FLAT ) || this.getCurrentMode().equals( Mode.LEVELLED ) );
             vars.put( "properties", propCache );
             vars.put( "modelName", getModel().getName() );
             vars.put( "extra_code", prepareCodeExtensions( sxsdModel ) );

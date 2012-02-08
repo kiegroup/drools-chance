@@ -26,6 +26,7 @@ import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.*;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
+import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.drools.semantics.util.SemanticWorkingSetConfigData;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
@@ -140,7 +141,7 @@ public class DL_99_ModelTest {
 
 
     @Test
-    @Ignore //visualization test
+//    @Ignore //visualization test
     public void testGraphModelGeneration() {
 //        String source = "org/drools/semantics/lang/dl/kmr2_miniExample.manchester";
         String source = "kmr2" + File.separator + "KMR_OntologySample.manchester.owl";
@@ -160,9 +161,9 @@ public class DL_99_ModelTest {
 
 
         try {
-            while (true) {
-                Thread.sleep(10000);
-            }
+//            while (true) {
+                Thread.sleep( 5000 );
+//            }
         } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -310,11 +311,27 @@ public class DL_99_ModelTest {
         factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
         OntoModel results = factory.buildModel( "conyard", res );
 
-        results.flatten();
-
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+        SemanticXSDModel xsdModel;
+
+
+        compiler.setMode(ModelCompiler.Mode.HIERARCHY);
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        xsdModel.stream( System.out );
+
+
+        compiler.setMode(ModelCompiler.Mode.HIERARCHY);
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        xsdModel.stream( System.out );
+
+
         compiler.setMode(ModelCompiler.Mode.FLAT);
-        SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
 
         xsdModel.stream( System.out );
 //                xsdModel.streamBindings( System.out );

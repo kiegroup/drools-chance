@@ -76,6 +76,7 @@ public class DL_2_ModelGenerationTest {
 
 
     @Test
+    @Ignore
     public void testDiamondModelInternal() {
 
         String source = "diamond.manchester";

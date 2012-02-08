@@ -21,7 +21,7 @@ import org.drools.semantics.builder.model.OntoModel;
 
 public interface ModelCompiler {
 
-    public static enum Mode  { FLAT, HIERARCHY }
+    public static enum Mode  { HIERARCHY, FLAT, LEVELLED }
 
     public void setMode( Mode mode );
 

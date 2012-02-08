@@ -41,12 +41,25 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         return mode;
     }
 
+    private boolean transientPropertiesEnabled;
+
+    public boolean isTransientPropertiesEnabled() {
+        return transientPropertiesEnabled;
+    }
+
+    public void setTransientPropertiesEnabled(boolean transientPropertiesEnabled) {
+        this.transientPropertiesEnabled = transientPropertiesEnabled;
+    }
+
+
+
 
     public void setModel(OntoModel model) {
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.XSD, model );
 
         ((XSDModel) getModel()).setNamespace( "tns", DLUtils.reverse( model.getPackage() ) );
     }
+
 
     public void compile( String name, Object context, Map<String, Object> params ) {
 
@@ -60,13 +73,22 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
         getModel().addTrait(name, element);
 
-        if ( getCurrentMode().equals( Mode.FLAT ) ) {
-            getModel().flatten();
-            getModel().addTrait(name, buildTypeAsFlat( name, params ) );
-        } else {
-            getModel().elevate();
-            getModel().addTrait(name, buildAsHierarchy( name, params ) );
+        switch( getCurrentMode() ) {
+            case FLAT:
+                getModel().flatten();
+                getModel().addTrait( name, buildTypeAsFlat( name, params, isTransientPropertiesEnabled() ) );
+                break;
+            case HIERARCHY:
+                getModel().elevate();
+                getModel().addTrait( name, buildTypeAsHierarchy( name, params, isTransientPropertiesEnabled() ) );
+                break;
+            case LEVELLED: getModel().raze();
+                getModel().raze();
+                getModel().addTrait(name, buildTypeAsLevelled( name, params, isTransientPropertiesEnabled() ) );
+                break;
         }
+
+
 
 //
     }
@@ -93,7 +115,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
 
 
-    private Element buildProperties( String name, Map<String, PropertyRelation> props, Element root ) {
+    private Element buildProperties( String name, Map<String, PropertyRelation> props, Element root, boolean includeTransient ) {
         XSDModel xmodel = (XSDModel) getModel();
         propCache.put( name, props );
 
@@ -111,46 +133,46 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             PropertyRelation rel = props.get( propKey );
             Concept tgt = rel.getTarget();
 
-            if ( rel.isTransient() ) {
+            if ( rel.isTransient() && ! includeTransient  ) {
                 continue;
             }
 
 
-            if ( tgt.isPrimitive() ) {
-                Element prop = new Element( "attribute", xmodel.getNamespace( "xsd" ) );
-                prop.setAttribute( "name", rel.getName() );
-                prop.setAttribute( "type", map( tgt ) );
-
-                Integer minCard = rel.getMinCard();
-                if (minCard == null) {
-                    minCard = 0;
-                    rel.setMinCard( 0 );
-                }
-                Integer maxCard = rel.getMaxCard();
-                if (maxCard != null && maxCard == 0) {
-                    maxCard = null;
-                    rel.setMaxCard( null );
-                }
-                if ( minCard != null && maxCard != null && minCard == 1 && maxCard == 1 ) {
-                    prop.setAttribute( "use", "required" );
-                    root.addContent( prop );
-                } else if ( minCard != null && minCard <= 1 && maxCard != null && maxCard == 1 ) {
-                    prop.setAttribute( "use", "optional" );
-                    root.addContent( prop );
-                } else {
-//                        prop.setAttribute( "minOccurs", rel.getMinCard().toString() );
-//                        prop.setAttribute( "maxOccurs", rel.getMaxCard() == null ? "unbounded" : rel.getMaxCard().toString() );
-                    prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
-                    prop.setAttribute( "name", rel.getName() );
-                    prop.setAttribute( "type", map( tgt ) );
-                    prop.setAttribute( "minOccurs", rel.getMinCard() == 0 ? "1" : rel.getMinCard().toString() );
-                    prop.setAttribute( "maxOccurs", "unbounded" );
-                    prop.setAttribute( "nillable", "false" );
-                    seq.addContent( prop );
-                }
-
-
-            } else {
+//            if ( tgt.isPrimitive() ) {
+//                Element prop = new Element( "attribute", xmodel.getNamespace( "xsd" ) );
+//                prop.setAttribute( "name", rel.getName() );
+//                prop.setAttribute( "type", map( tgt ) );
+//
+//                Integer minCard = rel.getMinCard();
+//                if (minCard == null) {
+//                    minCard = 0;
+//                    rel.setMinCard( 0 );
+//                }
+//                Integer maxCard = rel.getMaxCard();
+//                if (maxCard != null && maxCard == 0) {
+//                    maxCard = null;
+//                    rel.setMaxCard( null );
+//                }
+//                if ( minCard != null && maxCard != null && minCard == 1 && maxCard == 1 ) {
+//                    prop.setAttribute( "use", "required" );
+//                    root.addContent( prop );
+//                } else if ( minCard != null && minCard <= 1 && maxCard != null && maxCard == 1 ) {
+//                    prop.setAttribute( "use", "optional" );
+//                    root.addContent( prop );
+//                } else {
+////                        prop.setAttribute( "minOccurs", rel.getMinCard().toString() );
+////                        prop.setAttribute( "maxOccurs", rel.getMaxCard() == null ? "unbounded" : rel.getMaxCard().toString() );
+//                    prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
+//                    prop.setAttribute( "name", rel.getName() );
+//                    prop.setAttribute( "type", map( tgt ) );
+//                    prop.setAttribute( "minOccurs", rel.getMinCard() == 0 ? "1" : rel.getMinCard().toString() );
+//                    prop.setAttribute( "maxOccurs", "unbounded" );
+//                    prop.setAttribute( "nillable", "false" );
+//                    seq.addContent( prop );
+//                }
+//
+//
+//            } else {
                 Element prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
                 prop.setAttribute( "name", rel.getName() );
                 prop.setAttribute( "type", map( tgt ) );
@@ -170,7 +192,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                 prop.setAttribute( "maxOccurs", rel.getMaxCard() == null ? "unbounded" : rel.getMaxCard().toString() );
 
                 seq.addContent( prop );
-            }
+//            }
 
         }
 
@@ -186,7 +208,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
 
 
-    private Element buildAsHierarchy(String name, Map<String, Object> params) {
+    private Element buildTypeAsHierarchy(String name, Map<String, Object> params, boolean includeTransient ) {
         XSDModel xmodel = (XSDModel) getModel();
 
         Element type = new Element( "complexType", xmodel.getNamespace( "xsd" ) );
@@ -208,19 +230,19 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             Element ext = new Element("extension", xmodel.getNamespace( "xsd" ) );
             ext.setAttribute("base", "tns:"+sup.getName() );
 
-            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), ext );
+            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), ext, includeTransient );
 
             complex.setContent( ext );
             type.setContent( complex );
         } else {
-            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), type );
+            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), type, includeTransient );
         }
 
         return type;
     }
 
 
-    private Element buildTypeAsFlat( String name, Map<String, Object> params ) {
+    private Element buildTypeAsLevelled( String name, Map<String, Object> params, boolean includeTransient ) {
         XSDModel xmodel = (XSDModel) getModel();
 
         Element type = new Element("complexType", xmodel.getNamespace( "xsd" ) );
@@ -233,7 +255,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
             Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
             props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
-            buildProperties( name, props, type );
+            buildProperties( name, props, type, includeTransient );
 
 
             System.err.println( "Concept " + name + ", had no supers" );
@@ -245,7 +267,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             } else {
                 int bestScore = 0;
                 for ( Concept sup : supers ) {
-                    System.err.println( "Scoring " + sup.getName() + " <" + sup.getProperties().size() + " | " + sup.getShadowProperties().size() +">" );
+//                    System.err.println( "Scoring " + sup.getName() + " <" + sup.getProperties().size() + " | " + sup.getShadowProperties().size() +">" );
                     int score = sup.getProperties().keySet().size() + sup.getShadowProperties().keySet().size();
 
                     if ( score > bestScore ) {
@@ -255,7 +277,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                 }
             }
 
-            System.err.println( "FOR concept " + name + ", the best super was " + chosenSuper + " among " + supers );
+//            System.err.println( "FOR concept " + name + ", the best super was " + chosenSuper + " among " + supers );
             Concept con = (Concept) params.get( "concept" );
 
             con.setChosenSuper( chosenSuper != null ? chosenSuper.getName() : null );
@@ -277,7 +299,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                 props.remove( propKey );
             }
 
-            buildProperties( name, props, ext );
+            buildProperties( name, props, ext, includeTransient );
 
             complex.setContent( ext );
             type.setContent( complex );
@@ -292,29 +314,26 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
 
 
-//    private Element buildTypeAsFlat( String name, Map<String, Object> params ) {
-//        XSDModel xmodel = (XSDModel) getModel();
-//
-//        Element type = new Element("complexType", xmodel.getNamespace( "xsd" ) );
-//        type.setAttribute( "name", name );
-//
-//        /* removed this since anonymous classes are need for "skolem" instantiations */
-//        //        if ( params.containsKey( "abstract" ) ) {
-//        //            type.setAttribute( "abstract", "true" );
-//        //        }
-//        //        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts" );
-//
-//        Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
-//        props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
-//
-//
-//        buildProperties( name, props, type );
-//
-//        return type;
-//    }
+    private Element buildTypeAsFlat( String name, Map<String, Object> params, boolean includeTransient ) {
+        XSDModel xmodel = (XSDModel) getModel();
+
+        Element type = new Element("complexType", xmodel.getNamespace( "xsd" ) );
+        type.setAttribute( "name", name );
+
+        /* removed this since anonymous classes are need for "skolem" instantiations */
+        //        if ( params.containsKey( "abstract" ) ) {
+        //            type.setAttribute( "abstract", "true" );
+        //        }
+        //        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts" );
+
+        Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
+        props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
 
 
+        buildProperties( name, props, type, includeTransient );
 
+        return type;
+    }
 
 
 

@@ -22,7 +22,7 @@
 
     <parent>
         <groupId>org.drools</groupId>
-        <artifactId>drools-shapes</artifactId>
+        <artifactId>drools-shapes-examples</artifactId>
         <version>5.4.0-SNAPSHOT</version>
     </parent>
 
@@ -274,6 +274,7 @@
                     <generateTraitDRL>true</generateTraitDRL>
                     <generateDefaultImplClasses>true</generateDefaultImplClasses>
                     <preserveInheritanceInImpl>false</preserveInheritanceInImpl>
+                    <buildSpecXSDs>true</buildSpecXSDs>
                 </configuration>
             </plugin>
 
@@ -303,15 +304,19 @@
                         <arg>-Xdefault-constructor</arg>
                     </args>
                     <removeOldOutput>false</removeOldOutput>
-                    <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
-                    <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
-                    <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
 
+                    <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
+
+                    <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
+                    <schemaExcludes>
+                        <exclude>**/*_$full.xsd</exclude>
+                        <exclude>**/*_$spec.xsd</exclude>
+                    </schemaExcludes>
+
+                    <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
 
                     <generateEquals>false</generateEquals>
                     <generateHashCode>false</generateHashCode>
-
-
 
                 </configuration>
                 <executions>
