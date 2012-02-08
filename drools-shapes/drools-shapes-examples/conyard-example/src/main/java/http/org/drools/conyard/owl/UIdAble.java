@@ -54,6 +54,29 @@ public abstract class UIdAble implements SupportsRdfId {
         isReference = reference;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UIdAble uIdAble = (UIdAble) o;
+
+        if (isReference != uIdAble.isReference) return false;
+        
+        if ( this.getUniversalId() != null ) {
+            return getUniversalId().equals( uIdAble.getUniversalId() );
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getUniversalId() != null ? getUniversalId().hashCode() : 0;
+        result = 31 * result + (isReference ? 1 : 0);
+        return result;
+    }
+
     protected static class Key implements RdfKey {
 
         private URI innerKey;

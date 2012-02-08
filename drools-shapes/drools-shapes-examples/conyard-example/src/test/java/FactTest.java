@@ -92,6 +92,8 @@ public class FactTest {
 
         painting.setRequiresStair( stair );
 
+        painting.setOidString( "oidX" );
+
         painting.addRequiresAlso( stair );
 
         painting.addInvolves( new PersonImpl() );
@@ -182,6 +184,42 @@ public class FactTest {
         assertEquals( 1, lab.getOid().size() );
 
     }
+
+
+    @Test
+    public void testEqualityAndHashCode() {
+
+        Painting px = new PaintingImpl();
+            px.setOidString( "oidX" );
+            px.setHasCommentString( "Some comment on this object" );
+
+        assertEquals( px, painting );
+        assertFalse( px.hashCode() == painting.hashCode() );
+
+
+
+        px.setHasCommentString( "Change value" );
+
+        assertFalse( px.equals( painting ) );
+        assertFalse( px.hashCode() == painting.hashCode() );
+
+
+        painting.setUniversalId( "aid" );
+            ((PaintingImpl) painting).setReference( false );
+        px.setUniversalId( "aid" );
+            ((PaintingImpl) px).setReference( false );
+
+        assertEquals( painting, px );
+        assertTrue( px.hashCode() == painting.hashCode() );
+
+
+        px.setUniversalId( "aid2" );
+
+        assertFalse( px.equals( painting ) );
+        assertFalse( px.hashCode() == painting.hashCode() );
+
+    }
+
 
 
 

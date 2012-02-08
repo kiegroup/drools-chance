@@ -2,8 +2,12 @@
 @declare{'hashKyTemplate'}
 
     public int hashCode() {
-        final org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy = org.jvnet.jaxb2_commons.lang.JAXBHashCodeStrategy.INSTANCE;
-        return super.hashCode() + this.hashCode(null, strategy);
+        if ( getUniversalId() != null ) {
+            return super.hashCode();
+        } else {
+            final org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy = org.jvnet.jaxb2_commons.lang.JAXBHashCodeStrategy.INSTANCE;
+            return this.hashCode(null, strategy);
+        }
     }
 
      public int hashCode(org.jvnet.jaxb2_commons.locator.ObjectLocator locator,  org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy) {

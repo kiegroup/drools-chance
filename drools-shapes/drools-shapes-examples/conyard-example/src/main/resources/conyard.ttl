@@ -1168,7 +1168,12 @@ xsd:string rdf:type rdfs:Datatype .
                                                    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
                                                  ]
                                                )
-                          ] .
+                          ] ;
+          
+          owl:hasKey ( :hasComment
+                     ) ,
+                     ( :oid
+                     ) .
 
 
 
@@ -1433,21 +1438,21 @@ xsd:string rdf:type rdfs:Datatype .
              rdfs:subClassOf :Activity ,
                              [ rdf:type owl:Restriction ;
                                owl:onProperty :involves ;
-                               owl:onClass :Mason ;
-                               owl:minQualifiedCardinality "3"^^xsd:nonNegativeInteger
+                               owl:allValuesFrom :Mason
                              ] ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :requires ;
-                               owl:onClass :Bricks ;
-                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                               owl:onProperty :involves ;
+                               owl:onClass :Mason ;
+                               owl:minQualifiedCardinality "3"^^xsd:nonNegativeInteger
                              ] ,
                              [ rdf:type owl:Restriction ;
                                owl:onProperty :requires ;
                                owl:allValuesFrom :Bricks
                              ] ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :involves ;
-                               owl:allValuesFrom :Mason
+                               owl:onProperty :requires ;
+                               owl:onClass :Bricks ;
+                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
                              ] .
 
 
