@@ -22,11 +22,15 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.definition.type.FactType;
 import org.drools.informer.Answer;
-import org.drools.informer.generator.Surveyable;
+import org.drools.informer.MultipleChoiceQuestion;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.Variable;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.PrintStream;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -57,36 +61,304 @@ public class HumanTaskTest {
         kBase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
         kSession = kBase.newStatefulKnowledgeSession();
         kSession.fireAllRules();
+
     }
 
     @Test
-    public void testQuestionnaire() {
+    public void testTaskStateTransitionByQuestionnaire() {
 
-        kSession.insert( "Activate" );
+        kSession.insert( "complexTask" );
         kSession.fireAllRules();
-
 
         FactType taskClass = kSession.getKnowledgeBase().getFactType("org.drools.informer.interaction", "InteractiveTask");
+        FactType txHolderClass = kSession.getKnowledgeBase().getFactType("org.drools.informer.interaction", "TaskTransitionHolder");
+
         Object iTask = kSession.getObjects( new ClassObjectFilter( taskClass.getFactClass() ) ).iterator().next();
+        Object iTxHolder = kSession.getObjects( new ClassObjectFilter( txHolderClass.getFactClass() ) ).iterator().next();
+
+        String taskId = (String) taskClass.get( iTask, "taskId" );
         String tsId = (String) taskClass.get( iTask, "surveyableTxFId" );
+        assertNotNull( taskId );
+        assertNotNull( tsId );
+        assertEquals( tsId, txHolderClass.get( iTxHolder, "questionnaireId" ) );
+        assertEquals( taskId, txHolderClass.get( iTxHolder, "taskId" ) );
 
-//        System.out.println( iTask );
-//        System.out.println( tsId );
+        MultipleChoiceQuestion transitions = (MultipleChoiceQuestion) kSession.getQueryResults( "getItem", "transition", tsId, Variable.v ).iterator().next().get( "$item" );
+        MultipleChoiceQuestion owners = (MultipleChoiceQuestion) kSession.getQueryResults( "getItem", "owner", tsId, Variable.v ).iterator().next().get( "$item" );
 
-        kSession.insert( new Answer( "transition", tsId, "Start" ) );
+        assertEquals( "CREATED", taskClass.get( iTask, "state" ).toString()  );
+        assertEquals( null, taskClass.get( iTask, "owner" ) );
+        assertEquals( 2, ((List) taskClass.get( iTask, "potentialOwners" )).size()  );
+        assertEquals( true, taskClass.get( iTask, "surveyableTx" ) );
+        assertEquals( false, taskClass.get( iTask, "surveyableState" ) );
+        assertEquals( 2, owners.getNumOfPossibleAnswers() );
+        assertEquals( 4, transitions.getNumOfPossibleAnswers() );
+        assertArrayEquals( new String[] { "ACTIVATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues() );
+
+//        report( kSession, System.err );
+        System.out.println("-----");
+        kSession.insert( new Answer( "transition", tsId, "ACTIVATE" ) );
         kSession.fireAllRules();
 
 
-        kSession.insert( new Answer( "transition", tsId, "Complete" ) );
+        assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( null, taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+
+        kSession.insert( new Answer( "transition", tsId, "SUSPEND" ) );
         kSession.fireAllRules();
+
+        assertEquals( "SUSPENDED_READY", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( null, taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "RESUME" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "RESUME" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( null, taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "owner", tsId, "zxyads" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( null, taskClass.get( iTask, "owner" ) );
+        assertEquals( null, txHolderClass.get( iTxHolder, "owner" ) );
+        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "FORWARD" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( null, taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+
+
+        kSession.insert( new Answer( "owner", tsId, "dsotty" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( null, taskClass.get( iTask, "owner" ) );
+        assertEquals( "dsotty", txHolderClass.get( iTxHolder, "owner" ) );
+        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "FORWARD" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "dsotty", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "CLAIM" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "RESERVED", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "dsotty", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "SUSPEND", "START", "REVOKE", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "SUSPEND" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "SUSPENDED_RESERVED", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "dsotty", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "RESUME" }, transitions.getPossibleAnswersValues());
+
+
+
+        kSession.insert( new Answer( "transition", tsId, "RESUME" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "RESERVED", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "dsotty", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "SUSPEND", "START", "REVOKE", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "REVOKE" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "dsotty", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+
+        kSession.insert( new Answer( "owner", tsId, "davide" ) );
+        kSession.fireAllRules();
+
+        kSession.insert( new Answer( "transition", tsId, "CLAIM" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "RESERVED", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "SUSPEND", "START", "REVOKE", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "owner", tsId, "dsotty" ) );
+        kSession.fireAllRules();
+
+        kSession.insert( new Answer( "transition", tsId, "DELEGATE" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "RESERVED", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "dsotty", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "SUSPEND", "START", "REVOKE", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "START" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "dsotty", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "SUSPEND", "STOP", "COMPLETE", "FAIL", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "owner", tsId, "davide" ) );
+        kSession.fireAllRules();
+
+        kSession.insert( new Answer( "transition", tsId, "FORWARD" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+
+        kSession.insert( new Answer( "transition", tsId, "START" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "SUSPEND", "STOP", "COMPLETE", "FAIL", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "SUSPEND" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "SUSPENDED_IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "RESUME" }, transitions.getPossibleAnswersValues());
+
+        kSession.insert( new Answer( "transition", tsId, "RESUME" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "SUSPEND", "STOP", "COMPLETE", "FAIL", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+
+        kSession.insert( new Answer( "transition", tsId, "STOP" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "RESERVED", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "SUSPEND", "START", "REVOKE", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "START" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "SUSPEND", "STOP", "COMPLETE", "FAIL", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "COMPLETE" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "COMPLETED", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { }, transitions.getPossibleAnswersValues());
 
         kSession.retract( kSession.getFactHandle( iTask ) );
         kSession.fireAllRules();
 
-        for ( Object o : kSession.getObjects() ) {
-            System.err.println( "**" +  o );
-        }
+        report( kSession, System.err );
 
+        assertEquals( 0, kSession.getObjects().size() );
+
+    }
+
+
+
+
+    @Test
+    public void testTaskStateSimpleTransitionByQuestionnaire() {
+
+        kSession.insert( "simpleTask" );
+        kSession.fireAllRules();
+
+        FactType taskClass = kSession.getKnowledgeBase().getFactType("org.drools.informer.interaction", "InteractiveTask");
+        FactType txHolderClass = kSession.getKnowledgeBase().getFactType("org.drools.informer.interaction", "TaskTransitionHolder");
+
+        Object iTask = kSession.getObjects( new ClassObjectFilter( taskClass.getFactClass() ) ).iterator().next();
+        Object iTxHolder = kSession.getObjects( new ClassObjectFilter( txHolderClass.getFactClass() ) ).iterator().next();
+
+        String taskId = (String) taskClass.get( iTask, "taskId" );
+        String tsId = (String) taskClass.get( iTask, "surveyableTxFId" );
+        assertNotNull( taskId );
+        assertNotNull( tsId );
+        assertEquals( tsId, txHolderClass.get( iTxHolder, "questionnaireId" ) );
+        assertEquals( taskId, txHolderClass.get( iTxHolder, "taskId" ) );
+
+        MultipleChoiceQuestion transitions = (MultipleChoiceQuestion) kSession.getQueryResults( "getItem", "transition", tsId, Variable.v ).iterator().next().get( "$item" );
+        MultipleChoiceQuestion owners = (MultipleChoiceQuestion) kSession.getQueryResults( "getItem", "owner", tsId, Variable.v ).iterator().next().get( "$item" );
+
+        assertEquals( "RESERVED", taskClass.get( iTask, "state" ).toString()  );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertEquals( null, taskClass.get( iTask, "potentialOwners" ) );
+        assertEquals( true, taskClass.get( iTask, "surveyableTx" ) );
+        assertEquals( false, taskClass.get( iTask, "surveyableState" ) );
+        assertEquals( 0, owners.getNumOfPossibleAnswers() );
+        assertEquals( 1, transitions.getNumOfPossibleAnswers() );
+        assertArrayEquals( new String[] { "START" }, transitions.getPossibleAnswersValues() );
+
+
+        kSession.insert( new Answer( "transition", tsId, "START" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "STOP", "COMPLETE", "FAIL" }, transitions.getPossibleAnswersValues());
+
+
+        kSession.insert( new Answer( "transition", tsId, "COMPLETE" ) );
+        kSession.fireAllRules();
+
+        assertEquals( "COMPLETED", taskClass.get( iTask, "state" ).toString() );
+        assertEquals( "davide", taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { }, transitions.getPossibleAnswersValues());
+
+        kSession.retract( kSession.getFactHandle( iTask ) );
+        kSession.fireAllRules();
+
+        report( kSession, System.err );
+
+        assertEquals( 0, kSession.getObjects().size() );
+
+    }
+
+
+
+
+    private void report( StatefulKnowledgeSession kSession, PrintStream out ) {
+        out.println(" -------------------------------- " + kSession.getObjects().size() + " ----------------------------" );
+        for ( Object o : kSession.getObjects() ) {
+            out.println( "**" +  o );
+        }
+        out.println(" -------------------------------- " + kSession.getObjects().size() + " ----------------------------" );
     }
 
 }

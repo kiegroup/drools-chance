@@ -20,36 +20,28 @@ import org.drools.informer.MultipleChoiceQuestion;
 import org.drools.informer.MultipleChoiceQuestion.PossibleAnswer;
 
 
-    query possibleStateAnswers( String $xid, List $answers )
-        getItemId( "state", $xid, $qid ; )
-        MultipleChoiceQuestion( $qid := id,  $ans := possibleAnswers )
-        $answers := List(  ) from accumulate( PossibleAnswer( $x : value ) from $ans, collectList( $x ) )
-    end
 
-    query possibleTransitionsAnswers( String $xid, List $answers )
-        getItemId( "transition", $xid, $qid ; )
-        MultipleChoiceQuestion( $qid := id,  $ans := possibleAnswers )
-        $answers := List(  ) from accumulate( PossibleAnswer( $x : value ) from $ans, collectList( $x ) )
-    end
-
-
-
-
-rule "Init Test"
+rule "Init Complex Test"
 when
+    $s : String( this == "complexTask" )
 then
+    retract( $s );
     Task t = new InteractiveTask();
-        t.setActor( "dsotty" );
+        t.setPotentialOwners( java.util.Arrays.asList( new String[] { "dsotty", "davide" } ) );
     insert( t );
 end
 
-rule "Transit"
+
+rule "Init Simple Test"
 when
-    $t : Task( $tid : taskId )
-    $s : String()
+    $s : String( this == "simpleTask" )
 then
     retract( $s );
-    insert( new TaskStateTransition( $tid, $s, "dsotty", new Date() ) );
+    Task t = new InteractiveTask();
+        t.setOwner( "davide" );
+        t.setSimple( true );
+        t.setPersistent( true );
+    insert( t );
 end
 
 
@@ -59,24 +51,24 @@ end
 
 
 
-rule "Log Available States"
-salience -1000
-when
-    Task( $tid : taskId, $state : state )
-    TaskStateHolder( taskId == $tid, $xid : questionnaireId )
-    possibleStateAnswers( $xid, $ans ; )
-then
-    System.out.println( "Task S [" + $state + "] >>>>>>>>>>>>>>>>> " + ", " + $ans );
-end
+
+    query possibleTransitionsAnswers( String $xid, String[] $answers )
+        getItemId( "transition", $xid, $qid ; )
+        MultipleChoiceQuestion( $qid := id,  $answers := possibleAnswersValues )
+    end
+
+
+
 
 rule "Log Available Transitions"
 salience -1000
 when
-    Task( $tid : taskId, $state : state )
-    TaskTransitionHolder( taskId == $tid, $xid : questionnaireId )
+    Task( $tid : taskId, $state : state, $owner : owner )
+    TaskTransitionHolder( taskId == $tid, $xid : questionnaireId, $designatedOwner : owner )
     possibleTransitionsAnswers( $xid, $ans ; )
 then
-    System.out.println( "Task X [" + $state + "] >>>>>>>>>>>>>>>>> " + ", " + $ans );
+//    System.out.println( "Task X [ " + $state + " @ " + $owner + " ] >>>>>>>>>>>>>>>>> " + ", " + java.util.Arrays.asList( $ans ) );
+//    System.out.println( "(Next designated owner is " + $designatedOwner + ")" );
 end
 
 

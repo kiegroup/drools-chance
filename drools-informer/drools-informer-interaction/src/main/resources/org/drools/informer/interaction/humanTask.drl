@@ -25,25 +25,37 @@ import org.drools.informer.generator.annotations.AllowedAnswers;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.List;
 
 
 
     declare Surveyable end
 
+    declare enum TaskStates
+        CREATED, READY, RESERVED, SUSPENDED_READY, IN_PROGRESS, SUSPENDED_RESERVED, SUSPENDED_IN_PROGRESS, COMPLETED, FAILED, ERROR, OBSOLETE, EXITED;
+    end
+
+    declare enum TaskTransitions
+        ACTIVATE, FORWARD, SUSPEND, CLAIM, DELEGATE, START, RESUME, REVOKE, COMPLETE, STOP, FAIL, EXIT, ERROR, SKIP;
+    end
+
     declare Task
 
-        taskId              : String    = java.util.UUID.randomUUID().toString()   @key
+        taskId              : String        = java.util.UUID.randomUUID().toString()   @key
 
         description         : String
 
-        actor               : String
+        owner               : String
 
-        state               : String    = "Created"
+        potentialOwners     : List
 
-        lastChange          : Date      = new java.util.Date()
+        state               : TaskStates
 
-        persistent          : boolean   = false
+        lastChange          : Date          = new java.util.Date()
+
+        persistent          : boolean       = false
+
+        simple              : boolean       = false
 
     end
 
@@ -60,24 +72,14 @@ import java.util.Set;
     end
 
 
-    declare TaskStateTransitionMap
-
-        reachableStates     : Map = new java.util.HashMap()
-
-        allowedTransitions  : Map = new java.util.HashMap()
-
-    end
-
     declare AllowedTransition
+        taskId              : String
 
-        oldState            : String
+        oldState            : TaskStates
 
-        event               : String
+        event               : TaskTransitions
 
-        newState            : String
-
-        multiOwner          : boolean
-
+        newState            : TaskStates
     end
 
     declare TaskStateTransition
@@ -86,7 +88,7 @@ import java.util.Set;
 
         taskId              : String
 
-        type                : String
+        type                : TaskTransitions
 
         owner               : String
 
@@ -95,45 +97,51 @@ import java.util.Set;
     end
 
 
-    query transition( String $oldState, String $tx, String $newState, boolean $multi )
-        AllowedTransition( $oldState, $tx, $newState, $multi ; )
+    query allowedTransition( String $taskId, TaskStates $oldState, TaskTransitions $tx, TaskStates $newState )
+        AllowedTransition( $taskId, $oldState, $tx, $newState ; )
     end
 
-    query taskInfo( String $taskId, String $descr, String $actor, String $state, Date $lastChange, boolean $persistent )
-        Task( $taskId, $descr, $actor, $state, $lastChange, $persistent ; )
+    query transitionHolder( String $thid, String $taskId )
+        TaskTransitionHolder( $thid := questionnaireId, $taskId := taskId )
     end
 
+    query taskInfo( String $taskId, String $descr, String $owner, List $potentialOwners, TaskStates $state, Date $lastChange, boolean $persistent )
+        Task( $taskId, $descr, $owner, $potentialOwners, $state, $lastChange, $persistent ; )
+    end
 
-
-
-
-
-
-
-
-
+    /*
     declare TaskStateHolder extends Surveyable
-        @Questionable( label = "Task", language = "EN" )
+        @Questionable( label = "Manage Task State", language = "EN" )
 
         questionnaireId     : String    = java.util.UUID.randomUUID().toString()   @key
 
         taskId              : String
+
+        owner               : String
+                @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Actor ", required = false )
+                @AllowedAnswers( values = { } )
 
         state               : String
                 @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Status ", required = false )
-                @AllowedAnswers( values = { "Created"  } )
+                @AllowedAnswers( values = { TaskStates.CREATED } )
     end
+    */
+
 
     declare TaskTransitionHolder extends Surveyable
-        @Questionable( label = "Transition", language = "EN" )
+        @Questionable( label = "Manage Task Transition", language = "EN" )
 
         questionnaireId     : String    = java.util.UUID.randomUUID().toString()   @key
 
         taskId              : String
 
+        owner               : String
+                @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Actor ", required = false )
+                @AllowedAnswers( values = { } )
+
         transition          : String
                 @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Transition ", required = false )
-                @AllowedAnswers( values = { "Activate" } )
+                @AllowedAnswers( values = { TaskTransitions.ACTIVATE } )
 
     end
 
@@ -142,72 +150,187 @@ import java.util.Set;
 
 
 
+rule "Created -> Reserved"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.CREATED, potentialOwners == null || potentialOwners.size == 0 )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.CREATED, TaskTransitions.ACTIVATE, TaskStates.RESERVED ) );
+end
+
+
+rule "Created -> Ready"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.CREATED, potentialOwners != null, potentialOwners.size > 0 )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.CREATED, TaskTransitions.ACTIVATE, TaskStates.READY ) );
+end
+
+
+rule "Ready -> X"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.READY, potentialOwners != null, potentialOwners.size > 0 )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.READY, TaskTransitions.FORWARD, TaskStates.READY ) );
+    insertLogical( new AllowedTransition( $tid, TaskStates.READY, TaskTransitions.DELEGATE, TaskStates.RESERVED ) );
+end
+
+rule "Ready -> Xfull"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.READY, simple == false )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.READY, TaskTransitions.SUSPEND, TaskStates.SUSPENDED_READY ) );
+    insertLogical( new AllowedTransition( $tid, TaskStates.READY, TaskTransitions.CLAIM, TaskStates.RESERVED ) );
+end
+
+rule "Ready -> Simple"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.READY )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.READY, TaskTransitions.START, TaskStates.IN_PROGRESS ) );
+end
+
+
+
+
+rule "SupendedReady -> Ready"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.SUSPENDED_READY, simple == false )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.SUSPENDED_READY, TaskTransitions.RESUME, TaskStates.READY ) );
+end
+
+
+rule "Reserved -> X"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.RESERVED, potentialOwners != null, potentialOwners.size > 0 )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.RESERVED, TaskTransitions.REVOKE, TaskStates.READY ) );
+    insertLogical( new AllowedTransition( $tid, TaskStates.RESERVED, TaskTransitions.FORWARD, TaskStates.READY ) );
+    insertLogical( new AllowedTransition( $tid, TaskStates.RESERVED, TaskTransitions.DELEGATE, TaskStates.RESERVED ) );
+end
+
+rule "Reserved -> Xsimple"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.RESERVED )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.RESERVED, TaskTransitions.START, TaskStates.IN_PROGRESS ) );
+end
+
+rule "Reserved -> Xfull"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.RESERVED, simple == false )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.RESERVED, TaskTransitions.SUSPEND, TaskStates.SUSPENDED_RESERVED ) );
+end
+
+
+rule "SupendedReserved -> Reserved"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.SUSPENDED_RESERVED, simple == false )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.SUSPENDED_RESERVED, TaskTransitions.RESUME, TaskStates.RESERVED ) );
+end
+
+rule "In Progress -> X"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.IN_PROGRESS, potentialOwners != null, potentialOwners.size > 0 )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.IN_PROGRESS, TaskTransitions.DELEGATE, TaskStates.RESERVED ) );
+    insertLogical( new AllowedTransition( $tid, TaskStates.IN_PROGRESS, TaskTransitions.REVOKE, TaskStates.READY ) );
+    insertLogical( new AllowedTransition( $tid, TaskStates.IN_PROGRESS, TaskTransitions.FORWARD, TaskStates.READY ) );
+end
+
+rule "In Progress -> Xsimple"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.IN_PROGRESS )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.IN_PROGRESS, TaskTransitions.STOP, TaskStates.RESERVED ) );
+    insertLogical( new AllowedTransition( $tid, TaskStates.IN_PROGRESS, TaskTransitions.COMPLETE, TaskStates.COMPLETED ) );
+    insertLogical( new AllowedTransition( $tid, TaskStates.IN_PROGRESS, TaskTransitions.FAIL, TaskStates.FAILED ) );
+end
+
+rule "In Progress -> Xfull"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.IN_PROGRESS, simple == false )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.IN_PROGRESS, TaskTransitions.SUSPEND, TaskStates.SUSPENDED_IN_PROGRESS ) );
+end
 
 
 
 
 
-    rule "Init Transitions"
-    when
-
-    then
-        insert( new AllowedTransition( "Created", "Activate", "Ready", true ) );
-
-        insert( new AllowedTransition( "Ready", "Forward", "Ready", true ) );
-        insert( new AllowedTransition( "Ready", "Claim", "Reserved", true ) );
-        insert( new AllowedTransition( "Ready", "Delegate", "Reserved", true ) );
-
-        insert( new AllowedTransition( "Ready", "Start", "InProgress", false ) );
-        insert( new AllowedTransition( "Reserved", "Start", "InProgress", true ) );
-
-        insert( new AllowedTransition( "InProgress", "Suspend", "Suspended", false ) );
-        insert( new AllowedTransition( "Suspended", "Resume", "InProgress", false ) );
-
-        insert( new AllowedTransition( "InProgress", "Stop", "Reserved", false ) );
-        insert( new AllowedTransition( "InProgress", "Delegate", "Reserved", true ) );
-
-        insert( new AllowedTransition( "InProgress", "Revoke", "Ready", true ) );
-        insert( new AllowedTransition( "InProgress", "Forward", "Ready", true ) );
-
-        insert( new AllowedTransition( "InProgress", "Complete", "Completed", false ) );
-        insert( new AllowedTransition( "InProgress", "Fail", "Failed", false ) );
-
-        insert( new AllowedTransition( "Created", "Cancel", "Aborted", false ) );
-        insert( new AllowedTransition( "Ready", "Cancel", "Aborted", false) );
-        insert( new AllowedTransition( "InProgress", "Cancel", "Aborted", false ) );
-        insert( new AllowedTransition( "Reserved", "Cancel", "Aborted", false ) );
-
-        insert( new AllowedTransition( "Completed", null, "Completed", false ) );
-
-        insert( new TaskStateTransitionMap() );
-    end
+rule "Supended In Progress -> In Progress"
+salience 1000
+when
+    $task   : Task( $tid : taskId, state == TaskStates.SUSPENDED_IN_PROGRESS )
+then
+    insertLogical( new AllowedTransition( $tid, TaskStates.SUSPENDED_IN_PROGRESS, TaskTransitions.RESUME, TaskStates.IN_PROGRESS ) );
+end
 
 
-    rule "Assemble state transition matrix I"
-    salience 100
-    when
-        $tst            : TaskStateTransitionMap( $rx : reachableStates )
-        $initialStates  : Set() from accumulate( AllowedTransition( $s ; ), collectSet( $s ) )
-        $initialState   : String() from $initialStates
-        $reachables     : Set() from accumulate( AllowedTransition( $initialState, $x, $finalState ; ), collectSet( $finalState ) )
-    then
-        $rx.put( $initialState, $reachables );
-    end
+rule "Any -> Cancelled"
+salience 999
+when
+    $task   : Task( $tid : taskId, simple == false,
+                                   $s: state == TaskStates.CREATED
+                                          || == TaskStates.READY
+                                          || == TaskStates.RESERVED
+                                          || == TaskStates.IN_PROGRESS )
 
-    rule "Assemble state transition matrix II"
-    salience 100
-    when
-        $tst            : TaskStateTransitionMap( $ax : allowedTransitions )
-        $initialStates  : Set() from accumulate( AllowedTransition( $s ; ), collectSet( $s ) )
-        $initialState   : String() from $initialStates
-        $transitions    : Set() from accumulate( AllowedTransition( $initialState, $transition, $x ; ), collectSet( $transition ) )
-    then
-        $ax.put( $initialState, $transitions );
-    end
+then
+    insertLogical( new AllowedTransition( $tid, $s, TaskTransitions.EXIT, TaskStates.EXITED ) );
+    insertLogical( new AllowedTransition( $tid, $s, TaskTransitions.SKIP, TaskStates.OBSOLETE ) );
+    insertLogical( new AllowedTransition( $tid, $s, TaskTransitions.ERROR, TaskStates.ERROR ) );
+end
 
 
 
 
+
+
+
+
+
+rule "Init"
+when
+    $task   : Task( $tid : taskId, state == null )
+then
+    modify ( $task ) {
+        setState( TaskStates.CREATED );
+    }
+end
+
+rule "Nomination"
+when
+    $task   : Task( $tid : taskId, state == TaskStates.CREATED, $owner : owner != null, potentialOwners == null || potentialOwners.size == 1 )
+then
+//    System.out.println( "Nomination" ) ;
+    insert( new TaskStateTransition( $tid, TaskTransitions.ACTIVATE, $owner, new Date() ) );
+end
+
+rule "Guess who's gonna take it"
+when
+    $task   : Task( $tid : taskId, state == TaskStates.READY, owner == null, potentialOwners.size == 1, $owner : potentialOwners[0] )
+then
+//    System.out.println( "Guess...." ) ;
+    modify ( $task ) {
+        setOwner( (String) $owner );
+    }
+end
 
 
 
@@ -215,78 +338,71 @@ rule "Transitions"
 when
     $t      : Task( $tid := taskId, $oldState := state )
     $tx     : TaskStateTransition( $tid, $tran, $owner, $time ; )
-              ?transition( $oldState, $tran, $newState, $multi ; )
+              ?allowedTransition( $tid, $oldState, $tran, $newState ; )
 then
-    System.out.println( " Trasition detected " + $tran +" into state " + $newState );
+//    System.out.println( " Trasition detected " + $tran +" into state " + $newState );
     retract( $tx );
     modify ( $t ) {
         setState( $newState ),
-        setActor( $owner ),
+        setOwner( $owner ),
         setLastChange( $time ),
         setState( $newState );
     }
 end
 
-rule "Allowed States"
-no-loop
-when
-    $task   : Task( $tid : taskId, $s : state != null )
-              TaskStateHolder( $xid, $tid ; )
-    $tst    : TaskStateTransitionMap( reachableStates[ $s ] != null )
-              getItem( "state", $xid, $states ; )
-then
-    ( (MultipleChoiceQuestion) $states ).setPossibleAnswersByValue( (Set) $tst.getReachableStates().get( $s ) );
-    update( $states );
-end
+
 
 rule "Allowed Transitions"
 no-loop
 when
-    $task   : Task( $tid : taskId, $s : state != null )
+    $task   : Task( $tid : taskId, $curr : state != null )
               TaskTransitionHolder( $xid, $tid ; )
-    $tst    : TaskStateTransitionMap( allowedTransitions[ $s ] != null )
+    $tst    : List() from accumulate ( AllowedTransition( $tid, $s, $tx, $new ; ) collectList( $tx.name() ) )
               getItem( "transition", $xid, $tranx ; )
 then
-    ( (MultipleChoiceQuestion) $tranx ).setPossibleAnswersByValue( (Set) $tst.getAllowedTransitions().get( $s ) );
+//    System.out.println( "SETTING TRANS " + $tst ) ;
+    ( (MultipleChoiceQuestion) $tranx ).setPossibleAnswersByValue( $tst );
     update( $tranx );
 end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-rule "Create State Qs"
+rule "Allowed Owners"
+no-loop
 when
-    $t :  InteractiveTask( $tid : taskId, surveyableState == true )
-    not   TaskStateHolder( taskId == $tid )
+    $task   : Task( $tid : taskId )
+              transitionHolder( $xid, $tid ; )
+    $owners : MultipleChoiceQuestion( type == "owner", context == $xid, possibleAnswers != null )
 then
-    TaskStateHolder holder = new TaskStateHolder( );
-        holder.setTaskId( $tid );
-        $t.setSurveyableStateFId( holder.getQuestionnaireId() );
-    System.out.println( ">>>>>>>>>>>" +  holder );
-    insert( holder );
+//    System.out.println( "SETTING OWNERS ") ;
+    modify ( $owners ) { setPossibleAnswersByValue( $task.getPotentialOwners() ); }
 end
+
+
+
+
+
+rule "Persist"
+when
+    $task   : Task( $tid : taskId, $state : state != null )
+then
+    System.out.println( "TODO : State changed for " + $tid + " >> " + $state );
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 rule "Create Tx Qs"
 when
@@ -296,17 +412,8 @@ then
     TaskTransitionHolder holder = new TaskTransitionHolder( );
         holder.setTaskId( $tid );
         $t.setSurveyableTxFId( holder.getQuestionnaireId() );
-    System.out.println( ">>>>>>>>>>>" +  holder );
+//    System.out.println( "Create interactive task tranx Q >>>>>>>>>>>" +  holder );
     insert( holder );
-end
-
-
-rule "Clear State Qs"
-when
-    $t : TaskStateHolder( $tid : taskId )
-    not  InteractiveTask( $tid == taskId )
-then
-    retract( $t );
 end
 
 rule "Clear Tx Qs"
@@ -321,13 +428,47 @@ end
 
 rule "Answer tx"
 when
-    $holder : TaskTransitionHolder( $tid : taskId, $newState : transition != null )
-    ?taskInfo( $tid, $descr, $owner, $state, $lastChange, $persistent ; )
+    $holder : TaskTransitionHolder( $tid : taskId, $tranx : transition != null,
+                                    $designatedOwner : owner,
+                                    owner != null
+                                    || transition == TaskTransitions.ACTIVATE.name
+                                    || transition == TaskTransitions.SUSPEND.name
+                                    || transition == TaskTransitions.RESUME.name )
+    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
 then
-    insert( new TaskStateTransition( $tid, $newState, $owner, new Date() ) );
+//    System.out.println(" Create Transition" );
+    modify ( $holder ) {
+        setTransition( null );
+    }
+    insert( new TaskStateTransition( $tid, TaskTransitions.valueOf( $tranx ), $designatedOwner, new Date() ) );
 end
 
+rule "Undo Answer tx"
+when
+    $holder : TaskTransitionHolder( $tid : taskId, owner == null,
+                                    transition != null
+                                    && != TaskTransitions.ACTIVATE.name
+                                    && != TaskTransitions.SUSPEND.name
+                                    && != TaskTransitions.RESUME.name )
+    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
+then
+//    System.out.println("Trax nont allowed since user is null");
+    modify ( $holder ) {
+        setTransition( null );
+    }
+end
 
-
+rule "Infer owner"
+when
+    $holder : TaskTransitionHolder( $tid : taskId, owner == null,
+                                    $tranx : transition != null )
+    ?taskInfo( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
+then
+//    System.out.println("Trax allowed since only 1 user ");
+    modify ( $holder ) {
+        setTransition( null );
+    }
+    insert( new TaskStateTransition( $tid, TaskTransitions.valueOf( $tranx ), $owner, new Date() ) );
+end
 
 
