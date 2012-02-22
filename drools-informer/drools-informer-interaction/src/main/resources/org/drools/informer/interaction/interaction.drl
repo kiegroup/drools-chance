@@ -17,7 +17,6 @@ package org.drools.informer.interaction;
 
 
 import org.drools.base.DroolsQuery;
-import org.drools.expectations.*;
 import org.drools.informer.generator.*;
 import org.drools.informer.*;
 
@@ -25,12 +24,9 @@ import org.drools.informer.*;
 import java.util.List;
 
 
-import org.drools.informer.Progress;
-
-
-
-
-
+declare enum InteractionTypes
+    NOTIFICATION, QUESTIONNAIRE, ACTION, UNSPECIFIED;
+end
 
 
 
@@ -48,24 +44,24 @@ end
 
 
 declare Interaction
-    type            : String
+    type            : InteractionTypes
     bodyTemplateId  : String
-    receivers       : List      // <String>
+    receivers       : List       // <String>
     channels        : List
 end
 
-
-declare FormMarker
-    ticketId        : String
-    type            : String
-    formId          : String
+declare TaskInteraction extends Interaction
+    lockdown        : boolean   = true
+    tasks           : List      = new java.util.ArrayList()
+    triggers        : List      = new java.util.ArrayList()
 end
+
 
 declare Alert
 @role( event )
-    ticketId        : String
-    destination     : String
-    formId          : String
+    ticketId        : String    @key
+    destination     : String    @key
+    formId          : String    @key
     bodyTemplateId  : String
     channel         : String
 end
@@ -74,20 +70,13 @@ end
 
 
 
-query formMarker( String $ticketId, String $type, String $formId )
-    FormMarker( $ticketId, $type, $formId ; )
-end
-
-query owner( String $formId, String $user )
-    Alert( $ticket, $user, $formId ; )
-end
 
 query ticket( String $className, String $formId, InteractionTicket $ticket )
     $ticket := InteractionTicket( id == $formId )
 end
 
 
-query conversationForms( String $ticketId, String $actorId, List $formIds, List $bodies, List $channels )
+query conversationAlerts( String $ticketId, String $actorId, List $formIds, List $bodies, List $channels )
     accumulate (
                  Alert( $ticketId, $actorId, $formId, $body, $channel; ),
                  $formIds  : collectList( $formId ),
@@ -117,9 +106,9 @@ salience 999
 when
     $ticket : InteractionTicket( $id : id,
                                  $inters : interactions )
-    $inter : Interaction( /*receivers.size > 0*/ ) from $inters
+    $inter  : Interaction( /*receivers.size > 0*/ ) from $inters
 then
-//    System.out.println( "Inserting interaction " + $inter + " for ticket " + $ticket );
+    System.out.println( "Inserting interaction " + $inter + " for ticket " + $ticket );
     insertLogical( $inter );
 end
 
@@ -127,22 +116,61 @@ rule "Interactions"
 when
     $ticket : InteractionTicket( $ticketId : id,
                                  $inters : interactions )
-    Interaction( $type : type, this memberOf $inters, receivers.size > 0, $receiver : receivers[0], $body : bodyTemplateId, $channel : channels[0] )
-    formMarker( $ticketId, $type, $formId ; )
+    $inter  : Interaction( $type : type, this memberOf $inters,
+                           $receivers : receivers, receivers.size > 0, $receiver : receivers[0],
+                           $body : bodyTemplateId,
+                           $channel : channels[0] )
+    not       InteractiveTask( args contains $inter )
 then
-//    System.out.println(" Form is ready " + $formId );
-    insert( new Alert( $ticketId, (String) $receiver, $formId, $body, (String) $channel ) );
+    String taskId = java.util.UUID.randomUUID().toString();
+    InteractiveTask t = new InteractiveTask( taskId );
+//        t.setOwner( (String) $receiver );
+        t.setPotentialOwners( new java.util.ArrayList( $receivers ) );
+        t.setSimple( $receivers.size() > 0 );
+        t.setPersistent( true );
+        t.getArgs().add( $inter );
+    System.out.println( "Inserting (interactive)task " + t );
+    insert( t );
+    insert( new TaskStateTransition( taskId, TaskTransitions.ACTIVATE, (String) $receiver, new Date() ) );
 end
 
-rule "System Interactions"
+
+rule "Start notification tasks"
+when
+    $inter : Interaction( type == InteractionTypes.NOTIFICATION )
+    $task  : InteractiveTask( $taskId : taskId, args contains $inter, state == TaskStates.READY )
+then
+    System.out.println( "Starting notification interaction, implicitly " );
+    insert( new TaskStateTransition( $taskId, TaskTransitions.START, null, new Date() ) );
+end
+
+
+
+rule "Alerts notification"
+salience -1
 when
     $ticket : InteractionTicket( $ticketId : id,
                                  $inters : interactions )
-    Interaction( $type : type, this memberOf $inters, receivers.size == 0 )
-    formMarker( $ticketId, $type, $formId ; )
+    $inter  : Interaction( $type : type, this memberOf $inters,
+                           receivers.size > 0, $receiver : receivers[0],
+                           $body : bodyTemplateId,
+                           channels != null, $channel : channels[0] )
+    $task   : InteractiveTask( $tid : taskId, $formId : controlQuestId != null, args contains $inter )
 then
-//    System.out.println(" Form is ready " + $formId + " of type " + $type );
+    Alert alert = new Alert( $ticketId, (String) $receiver, $formId, $body, (String) $channel );
+    System.out.println( "Inserting alert " + alert + " @@using ctrolQ " + $formId );
+    insert( alert );
 end
+
+
+
+
+
+
+
+
+
+
 
 
 rule "Alerts"
@@ -152,9 +180,10 @@ when
     $al     : Alert( $ticketId, $dest, $formId ; )
               not TicketActor( $convoId, $ticketId, $dest ; )
 then
+    String convoId = java.util.UUID.randomUUID().toString();
     System.out.println( " ******************************* " + $al );
-    System.out.println( " ************************leads to TicketActor( Convoid, " + $ticketId +" , " + $dest + ") " );
-    insert( new TicketActor( java.util.UUID.randomUUID().toString(), $ticketId, $dest ) );
+    System.out.println( " ************************leads to TicketActor( " + convoId + " , " + $ticketId +" , " + $dest + ") " );
+    insert( new TicketActor( convoId, $ticketId, $dest ) );
 end
 
 
@@ -163,7 +192,7 @@ when
     $tk : TicketActor( $convoId, $ticketId, $dest ; )
     not   Alert( ticketId == $ticketId )
 then
-    System.out.println( "REMOVAL OF ACTOR!");
+    System.out.println( "REMOVAL OF ACTOR ticket !");
     retract( $tk );
 end
 
@@ -178,131 +207,191 @@ end
 
 
 
-//
-//rule "Escalation"
-//when
-//    $ticket : InteractionTicket( $id : id,
-//                                 $inters : interactions )
-//    $inter : Interaction( $type, $receivers ;)
-//    FormMarker( $id, $type, $formId ; )
-//    $al : Alert( $id, $dest, $formId ; destination memberOf $receivers )
-//check
-//        expect org.drools.informer.Progress( $formId, 100 ; this after[0,1s] $al )
-//            onFulfill {
-//
-//            }
-//            onViolation {
-//                System.err.println( $dest + " did not answer " + $formId );
-//                retract( $al );
-//                $receivers.remove( $dest );
-//                update( $inter );
-//            }
-//
-//        or
-//
-//        expect org.drools.informer.Cancel( $formId ; this after[0,1] $al )
-//            onFulfill {
-//                retract( $al );
-//            }
-//
-//        or
-//
-//        expect org.drools.informer.Failure( $formId ; this after[0,1] $al )
-//            onFulfill {
-//                retract( $al );
-//            }
-//end
-//
 
 
 
 
-
-
-
-//
-
-
-
-
-//rule "Start"
-//when
-//    Progress( $formId, 0 ; )
-//    ?owner( $formId, $user ; )
-//    $taskService : TaskService() from HumanTaskServiceLookup.getInstance().lookup();
-//then
-//    System.out.println( "********************** START HUMAN TASK " + $formId + " FOR USER " +$user + " using " + $taskService );
-//end
-//
-//rule "Complete"
-//when
-//    Progress( $formId, 100 ; )
-//    ?owner( $formId, $user ; )
-//    $taskService : TaskService() from HumanTaskServiceLookup.getInstance().lookup();
-//then
-//    System.out.println( "********************** COMPLETE HUMAN TASK " + $formId + " FOR USER " +$user + " using " + $taskService );
-//end
-
-//rule "Cancel"
-//    org.drools.informer.Cancel( $formId ; )
-//    ?owner( $formId, $user ; )
-//when
-//    // cancel HT
-//then
-//
-//end
-//
-//rule "Fail"
-//    org.drools.informer.Failure( $formId ; )
-//    ?owner( $formId, $user ; )
-//when
-//    // cancel HT
-//then
-
-
-
-
-
-rule "Initialize/query forms"
+rule "Escalation"
 when
-    DroolsQuery( name == "formMarker", $args : elements )
-    not FormMarker( $args[0], $args[1] ; )
+    $ticket : InteractionTicket( $id : id,
+                                 $inters : interactions )
+    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $body, $receivers, $channels ; this memberOf $inters, $receivers.size > 1 )
+    $task   : InteractiveTask( $tid : taskId, args contains $inter )
+    $alert  : Alert( $id, $dest, $formId, $channel ; destination memberOf $receivers )
+    not       TaskStateTransition( $tid ; this after[0s, 1s] $alert )
 then
-//    System.out.println(" Query " + java.util.Arrays.asList($args) );
+    System.out.println( $dest + " did not answer " + $alert );
+    retract( $alert );
+    $receivers.remove( 0 );
+    $channels.remove( 0 );
+    System.out.println( " Interaction is NOW " + $inter );
+    update( $inter );
+    insert( new TaskStateTransition( $tid, TaskTransitions.DELEGATE, (String) $receivers.get( 0 ), new Date() ) );
+    insert( new TaskStateTransition( $tid, TaskTransitions.START, (String) $receivers.get( 0 ), new Date() ) );
+end
 
-//    System.out.println(" Will create a form for " + $args[0] + " / " + $args[1] );
-    String formId = java.util.UUID.randomUUID().toString();
 
-    ISurveyable form = FormRegistry.create( $args[1].toString(), formId );
+rule "Escalation Failure"
+when
+    $ticket : InteractionTicket( $id : id,
+                                 $inters : interactions )
+    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $body, $receivers, $channels ; this memberOf $inters, $receivers.size <= 1 )
+    $task   : InteractiveTask( $tid : taskId, args contains $inter )
+    $alert  : Alert( $id, $dest, $formId, $channel ; destination memberOf $receivers )
+    not       TaskStateTransition( $tid ; this after[0s, 1s] $alert )
+then
+    System.out.println( $dest + " did not answer " + $alert );
+    retract( $alert );
+    $receivers.remove( 0 );
+    $channels.remove( 0 );
+    System.out.println( " Interaction is FAILED " + $inter );
+    update( $inter );
+    insert( new TaskStateTransition( $tid, TaskTransitions.ERROR, null, new Date() ) );
+end
+
+
+
+rule "Completion"
+when
+    $ticket : InteractionTicket( $id : id,
+                                 $inters : interactions )
+    $inter  : Interaction( $type, $body, $receivers, $channels ; this memberOf $inters )
+    $task   : InteractiveTask( $tid : taskId, args contains $inter,
+                               state == TaskStates.COMPLETED
+                                  || == TaskStates.FAILED
+                                  || == TaskStates.ERROR
+                                  || == TaskStates.OBSOLETE
+                                  || == TaskStates.EXITED )
+then
+    System.out.println( "Task completed, one way or another " );
+    retract( $task );
+    retract( $inter );
+end
+
+
+
+rule "Clean interaction tickets"
+salience -9999
+when
+    $ticket : InteractionTicket( $inters : interactions )
+    not       Interaction( this memberOf $inters )
+then
+    retract( $ticket );
+end
+
+
+
+
+
+
+
+
+
+rule "Insert Questionnaire triggers on a start"
+no-loop
+when
+    $inter : TaskInteraction( type == InteractionTypes.QUESTIONNAIRE, $trix : triggers )
+    $task  : InteractiveTask( $taskId : taskId, args contains $inter, state == TaskStates.IN_PROGRESS )
+    $trig  : String() from $trix
+then
+    System.out.println( "Creating questionnaire of type " + $trig );
+    ISurveyable form = FormRegistry.create( $trig, java.util.UUID.randomUUID().toString() );
+        form.setStateful( true );
     insert( form );
 
-    insert( new FormMarker( $args[0].toString(),
-                            $args[1].toString(),
-                            formId ) );
+    modify ($inter) {
+        getTasks().add( form.getQuestionnaireId() );
+    }
 end
 
 
-rule "Clear query forms"
+rule "Inherit master owners"
+no-loop
 when
-    $f : FormMarker( $ticketId, $type$, $formId ; )
-    not  Surveyable( questionnaireId == $formId )
+    $inter      : TaskInteraction( $tasks : tasks, lockdown == true )
+    $master     : InteractiveTask( $taskId : taskId, args contains $inter, $owner : owner != null, $owners : potentialOwners != null )
+    $slave      : Task( taskId memberOf $tasks, owner == null, potentialOwners == null )
 then
-//    System.out.println(" Kill orphan formmarker " + $f );
-    retract( $f );
+    modify ($slave) {
+        setOwner( $owner ),
+        setPotentialOwners( $owners );
+    }
 end
 
 
-rule "Clear orphan tickets"
+
+
+
+rule "Lockdown"
+no-loop
 when
-    $tkt : InteractionTicket( $id : id )
-    not    FormMarker( ticketId == $id )
+    $inter      : TaskInteraction( $tasks : tasks, lockdown == true )
+    $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId, state == TaskStates.IN_PROGRESS )
+    $ctrl       : Questionnaire( id == $qid )
+    exists        Task( taskId memberOf $tasks, state != TaskStates.COMPLETED )
 then
-//    System.out.println(" Kill orphan ticekt " + $tkt );
-    retract( $tkt );
+    System.out.println("********************* Locking controlQuest for " + $master );
+    //TODO --> set to readonly
+end
+
+rule "Release"
+no-loop
+salience -10
+when
+    $inter      : TaskInteraction( $tasks : tasks, tasks.size > 0, lockdown == true )
+    $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId )
+    not           Task( taskId memberOf $tasks, state != TaskStates.COMPLETED )
+then
+    System.out.println("********************* Autocompleting " + $master );
+    insert( new TaskStateTransition( $taskId, TaskTransitions.COMPLETE, null, new Date() ) );
+end
+
+
+
+rule "Propagate suspsension and resume from outer to inner"
+no-loop
+salience 10000
+when
+    $inter      : TaskInteraction( $tasks : tasks, tasks.size > 0 )
+    $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId )
+                  TaskStateTransition( taskId == $taskId, $trans : type, type == TaskTransitions.SUSPEND || == TaskTransitions.RESUME )
+    $subtask    : Task( $sub : taskId, taskId memberOf $tasks )
+then
+    insert( new TaskStateTransition( $sub, $trans, null, new Date() ) );
 end
 
 
 
 
 
+rule "Cascade finalization from outer to inner"
+no-loop
+salience -10
+when
+    $inter      : TaskInteraction( $tasks : tasks, tasks.size > 0 )
+    $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId,
+                                   $state : state == TaskStates.COMPLETED || == TaskStates.FAILED
+                                               || == TaskStates.ERROR || == TaskStates.OBSOLETE
+                                               || == TaskStates.EXITED )
+    $subtask    : Task( $sub : taskId, taskId memberOf $tasks )
+then
+    System.out.println("********************* Subtask is obsolete " + $subtask );
+    // should not affect already completed tasks
+    insert( new TaskStateTransition( $sub, TaskTransitions.SKIP, null, new Date() ) );
+end
 
+
+
+
+rule "Inner Contagion"
+no-loop
+salience -10
+when
+    $inter      : TaskInteraction( $tasks : tasks, tasks.size > 0 )
+    $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId,
+                                   $state : state != TaskStates.FAILED )
+    exists        Task( taskId memberOf $tasks, state == TaskStates.FAILED )
+then
+    System.out.println("********************* Propagate inner task failure " + $master );
+    insert( new TaskStateTransition( $taskId, TaskTransitions.FAIL, null, new Date() ) );
+end

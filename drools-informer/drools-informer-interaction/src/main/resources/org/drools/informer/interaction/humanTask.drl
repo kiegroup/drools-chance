@@ -18,9 +18,10 @@ package org.drools.informer.interaction;
 
 import org.drools.informer.generator.Surveyable;
 
-import org.drools.informer.generator.annotations.Questionable;
-import org.drools.informer.generator.annotations.QuestionMark;
-import org.drools.informer.generator.annotations.AllowedAnswers;
+import org.drools.informer.generator.annotations.*;
+import org.drools.informer.generator.*;
+import org.drools.informer.*;
+
 
 import java.util.Date;
 import java.util.Map;
@@ -57,6 +58,8 @@ import java.util.List;
 
         simple              : boolean       = false
 
+        args                : List          = new java.util.ArrayList()
+
     end
 
     declare InteractiveTask extends Task
@@ -67,7 +70,7 @@ import java.util.List;
 
         surveyableTx        : boolean   = true
 
-        surveyableTxFId     : String
+        controlQuestId      : String
 
     end
 
@@ -97,12 +100,15 @@ import java.util.List;
     end
 
 
+
+
+
     query allowedTransition( String $taskId, TaskStates $oldState, TaskTransitions $tx, TaskStates $newState )
         AllowedTransition( $taskId, $oldState, $tx, $newState ; )
     end
 
-    query transitionHolder( String $thid, String $taskId )
-        TaskTransitionHolder( $thid := questionnaireId, $taskId := taskId )
+    query transitionHolder( String $thid, String $taskId, String $owner )
+        TaskTransitionHolder( $thid := questionnaireId, $taskId := taskId, $owner := owner )
     end
 
     query taskInfo( String $taskId, String $descr, String $owner, List $potentialOwners, TaskStates $state, Date $lastChange, boolean $persistent )
@@ -131,7 +137,7 @@ import java.util.List;
     declare TaskTransitionHolder extends Surveyable
         @Questionable( label = "Manage Task Transition", language = "EN" )
 
-        questionnaireId     : String    = java.util.UUID.randomUUID().toString()   @key
+        questionnaireId     : String  @key
 
         taskId              : String
 
@@ -145,7 +151,19 @@ import java.util.List;
 
     end
 
+     query taskForArg( Object $arg, Task $task )
+        $task := Task( args contains $arg )
+     end
 
+
+
+
+rule "Install Survey"
+salience 9999
+when
+then
+    FormRegistry.register( TaskTransitionHolder.class );
+end
 
 
 
@@ -285,7 +303,7 @@ end
 rule "Any -> Cancelled"
 salience 999
 when
-    $task   : Task( $tid : taskId, simple == false,
+    $task   : Task( $tid : taskId,
                                    $s: state == TaskStates.CREATED
                                           || == TaskStates.READY
                                           || == TaskStates.RESERVED
@@ -309,9 +327,11 @@ rule "Init"
 when
     $task   : Task( $tid : taskId, state == null )
 then
+//    System.out.println( "Task transitions to CREATED " + $task.hashCode() ) ;
     modify ( $task ) {
         setState( TaskStates.CREATED );
     }
+//    System.out.println( "Task transitioned to CREATED " + $task.hashCode() ) ;
 end
 
 rule "Nomination"
@@ -338,15 +358,17 @@ rule "Transitions"
 when
     $t      : Task( $tid := taskId, $oldState := state )
     $tx     : TaskStateTransition( $tid, $tran, $owner, $time ; )
-              ?allowedTransition( $tid, $oldState, $tran, $newState ; )
+              allowedTransition( $tid, $oldState, $tran, $newState ; )
 then
-//    System.out.println( " Trasition detected " + $tran +" into state " + $newState );
+    System.out.println( "Task " + $tid  + " : Trasition detected " + $tran +" into state " + $newState );
+
     retract( $tx );
+
+    if ( $tx.getOwner() != null ) { $t.setOwner( $tx.getOwner() ); }
+
     modify ( $t ) {
         setState( $newState ),
-        setOwner( $owner ),
-        setLastChange( $time ),
-        setState( $newState );
+        setLastChange( $time )
     }
 end
 
@@ -356,11 +378,10 @@ rule "Allowed Transitions"
 no-loop
 when
     $task   : Task( $tid : taskId, $curr : state != null )
-              TaskTransitionHolder( $xid, $tid ; )
+              TaskTransitionHolder( $xid : questionnaireId, taskId == $tid )
     $tst    : List() from accumulate ( AllowedTransition( $tid, $s, $tx, $new ; ) collectList( $tx.name() ) )
               getItem( "transition", $xid, $tranx ; )
 then
-//    System.out.println( "SETTING TRANS " + $tst ) ;
     ( (MultipleChoiceQuestion) $tranx ).setPossibleAnswersByValue( $tst );
     update( $tranx );
 end
@@ -369,31 +390,36 @@ end
 rule "Allowed Owners"
 no-loop
 when
-    $task   : Task( $tid : taskId )
-              transitionHolder( $xid, $tid ; )
+    $task   : Task( $tid : taskId, $owner : owner )
+              transitionHolder( $xid, $tid, $owner ; )
     $owners : MultipleChoiceQuestion( type == "owner", context == $xid, possibleAnswers != null )
 then
-//    System.out.println( "SETTING OWNERS ") ;
+    System.out.println( "SETTING OWNERS ") ;
     modify ( $owners ) { setPossibleAnswersByValue( $task.getPotentialOwners() ); }
 end
 
+////
+//rule "Synch Owner"
+//salience -999
+//when
+//    $t : Task( $tid : taskId, $owner : owner != null )
+//    $h : TaskTransitionHolder( taskId == $tid, owner != $owner )
+//then
+//    modify ($h) {
+//        setOwner( $owner );
+//    }
+//end
 
 
 
 
 rule "Persist"
+salience 1
 when
     $task   : Task( $tid : taskId, $state : state != null )
 then
-    System.out.println( "TODO : State changed for " + $tid + " >> " + $state );
+    System.out.println( "TODO Persist in HTS that : State changed for " + $tid + " >> " + $state );
 end
-
-
-
-
-
-
-
 
 
 
@@ -405,24 +431,33 @@ end
 
 
 rule "Create Tx Qs"
+salience 1
 when
-    $t :  InteractiveTask( $tid : taskId, surveyableTx == true )
+    $t :  InteractiveTask( $tid : taskId, surveyableTx == true, $own : owner, controlQuestId == null )
     not   TaskTransitionHolder( taskId == $tid )
 then
     TaskTransitionHolder holder = new TaskTransitionHolder( );
+        holder.setQuestionnaireId( java.util.UUID.randomUUID().toString() );
         holder.setTaskId( $tid );
-        $t.setSurveyableTxFId( holder.getQuestionnaireId() );
-//    System.out.println( "Create interactive task tranx Q >>>>>>>>>>>" +  holder );
+        holder.setOwner( $t.getOwner() );
+    System.out.println( "Create interactive task transition Quest' >>>>>>>>>>>" +  holder + " for " + $t );
+    modify ( $t ) {
+      setControlQuestId( holder.getQuestionnaireId() );
+    }
     insert( holder );
 end
 
 rule "Clear Tx Qs"
 when
     $t : TaskTransitionHolder( $tid : taskId )
-    not InteractiveTask( $tid == taskId )
+    not  InteractiveTask( $tid == taskId )
 then
+    System.out.println(" @@@@ Retracting TTH " + $tid );
     retract( $t );
 end
+
+
+
 
 
 
@@ -435,8 +470,8 @@ when
                                     || transition == TaskTransitions.SUSPEND.name
                                     || transition == TaskTransitions.RESUME.name )
     ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
+    $task : Task( $tid; )
 then
-//    System.out.println(" Create Transition" );
     modify ( $holder ) {
         setTransition( null );
     }
@@ -463,12 +498,28 @@ when
     $holder : TaskTransitionHolder( $tid : taskId, owner == null,
                                     $tranx : transition != null )
     ?taskInfo( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
+    $task : Task( $tid; )           //TODO remove due to a bug not being able to use $owner direcly
 then
-//    System.out.println("Trax allowed since only 1 user ");
+    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><Trax with INFERRED OWNER");
     modify ( $holder ) {
         setTransition( null );
     }
-    insert( new TaskStateTransition( $tid, TaskTransitions.valueOf( $tranx ), $owner, new Date() ) );
+
+    TaskStateTransition tst = new TaskStateTransition( $tid, TaskTransitions.valueOf( $tranx ), $task.getOwner(), new Date() );
+    insert( tst );
 end
 
 
+
+
+
+
+//rule "Clear"
+//salience -9999
+//when
+//    $task : Task( state == TaskStates.EXITED
+//                     || == TaskStates.OBSOLETE
+//                     || == TaskStates.ERROR )
+//then
+//    retract( $task );
+//end

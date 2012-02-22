@@ -1,0 +1,106 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.drools.informer.interaction;
+
+
+import org.drools.base.DroolsQuery;
+import org.drools.informer.generator.*;
+import org.drools.informer.*;
+
+
+import java.util.List;
+
+
+rule "Create Task"
+when
+    $quest  : Surveyable( $qid : questionnaireId, stateful == true )
+    not       Task( taskId == $qid )
+then
+    System.out.println( " Surveyable demands creation of task " + $qid );
+    Task t = new Task( $qid );
+        t.setDescription( "Completion of questionnaire " + $qid );
+        t.setSimple( true );
+        t.setPersistent( true );
+        t.getArgs().add( $quest );
+    insert( t );
+end
+
+
+
+
+rule "Auto start survey tasks"
+when
+    $quest  : Surveyable( $qid : questionnaireId )
+              Task( taskId == $qid, state == TaskStates.CREATED )
+then
+    insert( new TaskStateTransition( $qid, TaskTransitions.ACTIVATE, null, new Date() ) );
+    insert( new TaskStateTransition( $qid, TaskTransitions.START, null, new Date() ) );
+end
+
+rule "Complete survey tasks"
+when
+    $quest  : Surveyable( $qid : questionnaireId )
+              Task( taskId == $qid, state == TaskStates.IN_PROGRESS )
+              ProgressStatus( formId == $qid, percentage == 100 )
+then
+    insert( new TaskStateTransition( $qid, TaskTransitions.COMPLETE, null, new Date() ) );
+end
+
+
+rule "Clear completed tasks"
+salience -9999
+when
+    $quest  : Surveyable( $qid : questionnaireId )
+    $task   : Task( taskId == $qid, state == TaskStates.COMPLETED )
+then
+    retract( $quest );
+    retract( $task );
+end
+
+
+
+rule "Clear inconsistent tasks"
+salience -9999
+when
+    $task   : Task( $qid : taskId, state != TaskStates.COMPLETED && != TaskStates.EXITED, $args : args )
+              Surveyable( questionnaireId == $qid ) from $args
+    not       Surveyable( questionnaireId == $qid )
+then
+    insert( new TaskStateTransition( $qid, TaskTransitions.EXIT, null, new Date() ) );
+end
+
+
+rule "Clear tasks"
+salience -10000
+when
+    $task   : Task( $qid : taskId, state == TaskStates.EXITED, $args : args )
+              Surveyable( questionnaireId == $qid ) from $args
+    not       Surveyable( questionnaireId == $qid )
+then
+    retract( $task );
+end
+
+
+rule "Allow only owners to answer"
+salience 9999999
+when
+    $ans    : Answer( $qid : questionId, $from : source != null )
+    $task   : Task( $taskId : taskId, $owner : owner, owner != null && != $from )
+    $surv   : Questionnaire( id == $taskId, items contains $qid )
+then
+    System.out.println( "Illegal attempt to answer a question from " + $from + " while Q is being answered by " + $owner );
+    retract( $ans );
+end
