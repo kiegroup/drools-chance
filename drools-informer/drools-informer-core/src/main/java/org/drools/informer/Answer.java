@@ -39,15 +39,25 @@ public class Answer implements Serializable {
     private String questionContext;
 
 	private String value;
+    
+    private String source;
 
 	public Answer() {
 	}
 
+    
+    public Answer(String type, String context, String value, String source) {
+        this.questionId = null;
+        this.questionType = type;
+        this.questionContext = context;
+        this.value = value;
+        this.source = source;
+    }
 
     public Answer(String type, String context, String value) {
-        questionId = null;
-        questionType = type;
-        questionContext = context;
+        this.questionId = null;
+        this.questionType = type;
+        this.questionContext = context;
         this.value = value;
     }
 
@@ -77,7 +87,16 @@ public class Answer implements Serializable {
 		this.value = value;
 	}
 
-	/**
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    /**
 	 * @see Object#hashCode()
 	 */
 	@Override

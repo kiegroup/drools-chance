@@ -324,6 +324,18 @@ public class MultipleChoiceQuestion extends Question {
         return sb.toString();
 	}
 
+    public String[] getPossibleAnswersValues() {
+        if (possibleAnswers == null || possibleAnswers.size() == 0) {
+            return new String[0];
+        }
+
+        String[] ans = new String[ possibleAnswers.size() ];
+        for ( int j = 0; j < possibleAnswers.size(); j++ ) {
+            ans[j] = possibleAnswers.get( j ).getValue();
+        }
+        return ans;
+    }
+
 	/**
 	 * Gets list of item ids as a comma delimited string. Implemented for testing purpose only - package visibility
 	 *

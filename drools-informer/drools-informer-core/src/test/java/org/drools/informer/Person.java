@@ -57,6 +57,10 @@ public class Person implements ISurveyable {
 
     private String questionnaireId;
 
+    private boolean stateful = false;
+
+
+
     public String getQuestionnaireId() {
         return questionnaireId;
     }
@@ -73,6 +77,14 @@ public class Person implements ISurveyable {
 
     public boolean isSurveyEnabled() {
         return surv;
+    }
+
+    public boolean isStateful() {
+        return stateful;
+    }
+
+    public void setStateful(boolean stateful) {
+        this.stateful = stateful;
     }
 
 

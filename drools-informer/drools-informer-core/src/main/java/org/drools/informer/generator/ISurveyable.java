@@ -30,7 +30,8 @@ public interface ISurveyable extends Serializable {
 
     public boolean isSurveyEnabled();
 
+    public boolean isStateful();
 
-
+    public void setStateful(boolean stateful);
 
 }

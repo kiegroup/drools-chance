@@ -65,4 +65,20 @@ public class DebugAgendaEventListener implements AgendaEventListener {
     	String debugStr = "<==[agendaGroupPushed(" + agendaGroup.getName() + "]";
 //    	logger.debug(debugStr);
     }
+
+    public void beforeRuleFlowGroupActivated(RuleFlowGroupActivatedEvent ruleFlowGroupActivatedEvent) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void afterRuleFlowGroupActivated(RuleFlowGroupActivatedEvent ruleFlowGroupActivatedEvent) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void beforeRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent ruleFlowGroupDeactivatedEvent) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void afterRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent ruleFlowGroupDeactivatedEvent) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
