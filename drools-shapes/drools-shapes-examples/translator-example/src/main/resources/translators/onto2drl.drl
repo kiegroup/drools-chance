@@ -1,0 +1,191 @@
+package org.drools.trnaslators;
+
+import http.www.semanticweb.org.ontologies._2012._1.rule.merged.owl.*;
+import org.drools.lang.api.*;
+import org.drools.lang.descr.*;
+
+
+global PackageDescr pack;
+
+
+
+/**
+ Notice : ESSENTIAL!!
+    Allows to access properties defined in the implementing classes only
+*/
+declare Thing @typesafe(false) end
+
+
+
+rule "Init"
+when
+then
+    pack.setName( "http.www.semanticweb.org.ontologies._2012._1.rule.merged.owl" );
+end
+
+
+rule "Process Rule"
+when
+    $r : Rule( $uid : dyEntryId )
+then
+    RuleDescr rd = new RuleDescr();
+        rd.setName( $uid );
+    pack.addRule( rd );
+    insert( rd );
+end
+
+
+rule "Process Simple Premise"
+no-loop
+dialect "mvel"
+when
+    $r : Rule( $uid : dyEntryId, $lhs : hasPremiseFormula )
+    not $r := MetaRule ( )  //MVEL bug with instanceof... TODO
+    $f : Pattern( $pid : dyEntryId, this == $lhs, $fct : get("hasFunctorType") )
+    $t : Thing( $type : this.semanticTypeName ) from $fct.get(0)
+    $x : RuleDescr( name == $uid )
+then
+    AndDescr lhs = new AndDescr();
+    PatternDescr pat = new PatternDescr();
+        pat.setObjectType( (String) $type );
+        pat.setIdentifier( $pid );
+
+    lhs.addDescr( pat );
+    modify ( $x ) {
+        setLhs( lhs );
+    }
+
+
+    insert( pat );
+end
+
+
+
+
+
+rule "Add value constraint to pattern"
+when
+    $r : Pattern( $uid : dyEntryId, $cons : hasConstraint )
+    not $r := ActivationPattern( )
+    $x : PatternDescr( identifier == $uid )
+    ValueConstraint( $cid : dyEntryId, // this memberOf $cons,       bug in equals?
+                     $field : onPropertyString, $op : hasOperatorString, $val : hasValueString )  from $cons
+then
+    FieldConstraintDescr fcd = new FieldConstraintDescr( $field );
+    LiteralRestrictionDescr lrd = new LiteralRestrictionDescr( $op, $val );
+        fcd.addRestriction( lrd );
+
+    $x.addConstraint( fcd );
+end
+
+
+
+
+rule "Process MetaRule"
+when
+    $r : MetaRule( $uid : dyEntryId, $meta : hasPremiseMetaPatterns )
+    $d : RuleDescr( name == $uid, lhs == null )
+    $f : AndFormula( ) from $meta
+then
+    AndDescr lhs = new AndDescr();
+    modify ( $d ) {
+        setLhs( lhs );
+    }
+end
+
+
+
+rule "Process MetaRule Patterns"
+when
+    $r : MetaRule( $uid : dyEntryId, $meta : hasPremiseMetaPatterns, $about : aboutRuleRule.dyEntryId )
+    $d : RuleDescr( name == $uid, $and : lhs != null )
+    $f : AndFormula( $ops : hasOperand ) from $meta
+    $p : ActivationPattern( $aid : dyEntryId ) from $ops
+then
+    PatternDescr act = new PatternDescr();
+        act.setObjectType( "Activation" );
+        act.setIdentifier( $aid );
+        ExprConstraintDescr rn = new ExprConstraintDescr();
+            rn.setExpression( "rule.name == " + $about );
+        act.addConstraint( rn );
+
+    $and.addDescr( act );
+    insert ( act );
+end
+
+rule "Process MetaRule Patterns : Add constraints "
+when
+    $p : ActivationPattern( $aid : dyEntryId, $ctx : hasConstraint )
+    $d : PatternDescr( identifier == $aid )
+    $c : ValueConstraint( $prop : onPropertyString, $op : hasOperatorString, $val : hasValueString ) from $ctx
+then
+    ExprConstraintDescr rn = new ExprConstraintDescr();
+        rn.setExpression( "rule." + $prop + " " + $op + " " + $val );
+    $d.addConstraint( rn );
+end
+
+
+rule "Process Outcome Patterns"
+when
+    $r : MetaRule( $uid : dyEntryId, $meta : hasPremiseMetaPatterns, $about : aboutRuleRule.dyEntryId )
+    $d : RuleDescr( name == $uid, $and : lhs != null )
+    $f : AndFormula( $ops : hasOperand ) from $meta
+    $p : FailurePattern( $aid : dyEntryId ) from $ops
+then
+    PatternDescr act = new PatternDescr();
+        act.setObjectType( "Failure" );
+        act.setIdentifier( $aid );
+        ExprConstraintDescr rn = new ExprConstraintDescr();
+            rn.setExpression( "rule.name == " + $about );
+        act.addConstraint( rn );
+
+    $and.addDescr( act );
+    insert ( act );
+end
+
+
+
+
+
+
+rule "Add rule attributes"
+no-loop
+when
+    $r : Rule( $uid : dyEntryId, $att : hasRuleAttribute )
+    $o : Thing( $aid : dyEntryId, $t : this.actualType, $keys : this.properties, $values : this.propertyValues ) from $att
+    $x : RuleDescr( name == $uid )
+then
+    AnnotationDescr ad = new AnnotationDescr( "TODO_" + $o.getClass().getSimpleName() );
+
+    $x.addAnnotation( ad );
+end
+
+
+
+
+
+rule "Preconditions"
+no-loop
+when
+    $r   : Rule( $uid : dyEntryId, $prex : hasPrecondition )
+    $pre : UIdAble( $x : dyEntryId ) from $prex
+then
+     RuleDescr rd = new RuleDescr();
+        rd.setName( $uid + " defeater " + $x  );
+     pack.addRule( rd );
+     insert( rd );
+end
+
+rule "Goals"
+no-loop
+when
+    $r   : Rule( $uid : dyEntryId, $exx : hasExpectation, $t : this.semanticTypeName )
+    $exp : UIdAble( $x : dyEntryId ) from $exx
+then
+    RuleDescr rd = new RuleDescr();
+        rd.setName( $uid + " expectation " + $x  );
+    pack.addRule( rd );
+    insert( rd );
+end
+
+
