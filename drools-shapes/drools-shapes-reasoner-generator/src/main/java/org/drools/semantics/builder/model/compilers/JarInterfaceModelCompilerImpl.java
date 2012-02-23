@@ -33,12 +33,16 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.JAR, model );
     }
 
-    public void compile( String name, Object context, Map<String, Object> params ) {
-        super.compile( name, context, params );
+    public void compile( Concept con, Object context, Map<String, Object> params ) {
 
-        ((JarModel) getModel()).addCompiledTrait(name, this.compile( name, params ) );
+//        if ( ! con.isResolved() ) {
+            super.compile( con, context, params );
+            String name = con.getName().substring( con.getName().lastIndexOf( "." ) + 1 );
 
-        ((JarModel) getModel()).addCompiledTrait(name + "$$Shadow", this.compile( name, params ) );
+            ((JarModel) getModel()).addCompiledTrait(name, this.compile( name, params ) );
+
+            ((JarModel) getModel()).addCompiledTrait(name + "$$Shadow", this.compile( name, params ) );
+//     }
     }
 
 

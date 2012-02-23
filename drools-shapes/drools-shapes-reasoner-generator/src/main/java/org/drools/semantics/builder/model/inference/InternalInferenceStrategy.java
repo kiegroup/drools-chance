@@ -33,6 +33,12 @@ public class InternalInferenceStrategy extends AbstractModelInferenceStrategy {
         return (OntoModel) kSession.getGlobal("propertyModel");
     }
 
+    @Override
+    protected OntoModel buildIndividuals(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel) {
+        //TODO NOT SUPPORTED YET
+        return hierachicalModel;
+    }
+
     protected OntoModel buildClassLattice(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel baseModel) {
         addResource( kSession, theory.get( InferenceTask.TABLEAU ) );
         initReasoner( kSession, ontoDescr );

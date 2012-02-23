@@ -28,7 +28,7 @@ public class DL_3_KMR_Test extends AbstractReasonerTestBase {
 
 
 
-    private String kmrPath = "kmr2/kmr2_miniExample.manchester";
+    private String kmrPath = "kmr2/kmr2_mini.owl";
 
 
 
@@ -36,7 +36,7 @@ public class DL_3_KMR_Test extends AbstractReasonerTestBase {
     @Test
     public void testSub1() throws Exception {
         OWLOntology onto = init(kmrPath);
-        testSubsumption("<http://www.kmr.org/ontology/AllergyFactType>", "<http://www.kmr.org/ontology/FactType>", 1, 1);
+        testSubsumption("<http://www.kmr.org/ontology/AllergyFactType>", "<http://www.kmr.org/ontology/ClinicalFactType>", 1, 1);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class DL_3_KMR_Test extends AbstractReasonerTestBase {
     @Test
     public void testSub3() throws Exception {
         init(kmrPath);
-        testSubsumption("<http://www.kmr.org/ontology/PatientFactType>", "<http://www.kmr.org/ontology/FactType>", 1, 1);
+        testSubsumption("<http://www.kmr.org/ontology/PatientFactType>", "<http://www.kmr.org/ontology/ClinicalFactType>", 1, 1);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class DL_3_KMR_Test extends AbstractReasonerTestBase {
     @Test
     public void testSub6() throws Exception {
         init(kmrPath);
-        testSubsumption("<http://www.kmr.org/ontology/PhysicianFactType>", "<http://www.kmr.org/ontology/FactType>", 1, 1);
+        testSubsumption("<http://www.kmr.org/ontology/PhysicianFactType>", "<http://www.kmr.org/ontology/ClinicalFactType>", 1, 1);
     }
 
 

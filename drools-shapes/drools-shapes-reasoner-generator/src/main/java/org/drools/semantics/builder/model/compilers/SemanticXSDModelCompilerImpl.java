@@ -69,24 +69,41 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
         sxsdModel.setBindings( createBindings( sxsdModel ) );
 
         sxsdModel.setIndex( createIndex( sxsdModel ) );
-        
+
+        sxsdModel.setIndividualFactory( compileIntoFactory( sxsdModel ) );
+
         return sxsdModel;
     }
 
-    
+
+
+    private String compileIntoFactory(SemanticXSDModel sxsdModel) {
+        try {
+            Map<String,Object> vars = new HashMap<String, Object>();
+            vars.put( "package", sxsdModel.getPackage() );
+            vars.put( "individuals", sxsdModel.getIndividuals() );
+            String index = getTemplatedCode( "IndividualFactory", vars, ModelFactory.CompileTarget.JAVA );
+            return index;
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+
     private String createIndex( SemanticXSDModel sxsdModel ) {
         try {
             String template = readFile( "empire.annotation.index.template" );
             Map<String,Object> vars = new HashMap<String, Object>();
-                vars.put( "package", sxsdModel.getPackage() );
-                vars.put( "klasses", sxsdModel.getConcepts() );
+            vars.put( "package", sxsdModel.getPackage() );
+            vars.put( "klasses", sxsdModel.getConcepts() );
             String index = TemplateRuntime.eval( template, vars ).toString();
             return index;
         } catch ( Exception e ) {
             e.printStackTrace();
             return "";
         }
-        
+
     }
 
 
@@ -99,6 +116,8 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     private String createBindings( SemanticXSDModel sxsdModel ) {
 
         try {
+
+
 
             String template = readFile( "bindings.xjb.template" );
             Map<String,Object> vars = new HashMap<String,Object>();
@@ -122,8 +141,9 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     private Map<String,String> prepareCodeExtensions(SemanticXSDModel sxsdModel) {
         Map<String,String> code = new HashMap<String, String>( sxsdModel.getConcepts().size() );
 
+        List<Concept> filteredConcepts = sxsdModel.getConcepts();
 
-        for ( Concept con : sxsdModel.getConcepts() ) {
+        for ( Concept con : filteredConcepts ) {
             StringBuilder sb = new StringBuilder("");
 
             Map<String, Set<PropertyRelation>> restrictions = buildRestrictionMatrix( con.getProperties().values() );
@@ -132,7 +152,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
                 PropertyRelation prop = con.getProperties().get( propKey );
                 if ( ! prop.isRestricted() && ! prop.isTransient() ) {
 
-                    
+
                     String setter = prop.getSetter();
                     String adder = prop.getSetter().replace( "set", "add" );
                     String toggler = prop.getSetter().replace( "set", "remove" );
@@ -212,11 +232,11 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     }
 
     protected CompiledTemplate getGetterTemplate() {
-            if ( gettt == null ) {
-                gettt = DLTemplateManager.getDataModelRegistry( ModelFactory.CompileTarget.XSDX ).getNamedTemplate( semGetterTemplateName );
-            }
-            return gettt;
+        if ( gettt == null ) {
+            gettt = DLTemplateManager.getDataModelRegistry( ModelFactory.CompileTarget.XSDX ).getNamedTemplate( semGetterTemplateName );
         }
+        return gettt;
+    }
 
     protected CompiledTemplate getSetterTemplate() {
         if ( settt == null ) {
@@ -241,9 +261,13 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
         }
     }
 
-    public static String getTemplatedCode(String template, Map<String, Object> vars) {
+    public static String getTemplatedCode( String template, Map<String, Object> vars ) {
+        return getTemplatedCode( template, vars, ModelFactory.CompileTarget.XSDX );
+    }
+
+    public static String getTemplatedCode( String template, Map<String, Object> vars, ModelFactory.CompileTarget target ) {
         return TemplateRuntime.execute (
-                DLTemplateManager.getDataModelRegistry( ModelFactory.CompileTarget.XSDX ).getNamedTemplate( template + ".template" ),
+                DLTemplateManager.getDataModelRegistry( target  ).getNamedTemplate( template + ".template" ),
                 DLUtils.getInstance(),
                 vars ).toString();
 

@@ -58,7 +58,7 @@ public class GraphModelCompilerImpl extends ModelCompilerImpl implements GraphMo
     }
 
     @Override
-    public void compile(String name, Object target, Map<String, Object> params) {
+    public void compile( Concept con, Object target, Map<String, Object> params) {
 //        System.out.println( "Compile into graph ");
     }
 

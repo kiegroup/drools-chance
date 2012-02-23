@@ -34,9 +34,9 @@ public interface @{name + "$$Shadow"} extends com.clarkparsia.empire.SupportsRdf
 {
 
     @javax.xml.bind.annotation.XmlID
-    public String getUniversalId();
+    public String getDyEntryId();
 
-    public void setUniversalId( String id );
+    public void setDyEntryId( String id );
 
 
 

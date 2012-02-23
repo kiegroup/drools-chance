@@ -43,7 +43,9 @@ public class DLTemplateManager {
     };
     protected static final String[] NAMED_TEMPLATES_JAVA = new String[] {
             "model/java/TraitInterface.template",
-            "model/java/ShadowInterface.template"
+            "model/java/ShadowInterface.template",
+            "model/java/IndividualFactory.template"
+
     };
 
     protected static final String[] ACCESSOR_TEMPLATES_JAVA = new String[] {
@@ -57,7 +59,9 @@ public class DLTemplateManager {
             "model/java/onCycleDetected.template",
             "model/java/equals.template",
             "model/java/hashKy.template",
-            "model/java/defaultConstructor.template"
+            "model/java/defaultConstructor.template",
+            "model/java/metaDescr.template",
+            "model/java/inferredGetter.template"
     };
     protected static final String[] FALC_TABLEAU_TEMPLATES = new String[] {
             "tableau/falc/header.drlt",

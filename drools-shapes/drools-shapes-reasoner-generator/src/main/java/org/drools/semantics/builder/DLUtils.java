@@ -49,7 +49,16 @@ public class DLUtils {
         StringTokenizer tok = new StringTokenizer( iri, delims );
         String pack = "";
         while ( tok.hasMoreTokens() ) {
-            pack += "." + tok.nextToken();
+            String x = tok.nextToken();
+
+            try {
+                Integer.parseInt( x );
+                x = "_" + x;
+            } catch ( NumberFormatException nef ) {
+                //expected!
+            }
+
+            pack += "." + x;
         }
         return pack.substring(1);
     }
@@ -57,7 +66,7 @@ public class DLUtils {
 
     public static String compactUpperCase(String s) {
 //        System.out.println("Try to normalize " + s);
-        java.util.StringTokenizer tok = new java.util.StringTokenizer(s);
+        java.util.StringTokenizer tok = new java.util.StringTokenizer(s, delims);
         StringBuilder sb = new StringBuilder();
 
         while (tok.hasMoreTokens())
@@ -104,6 +113,20 @@ public class DLUtils {
             name = tok.nextToken();
         }
         return compactUpperCase( name );
+    }
+
+    public static String buildFQNameFromIri( String iri ) {
+        iri = iri.substring( 1, iri.length() - 1 );
+        StringTokenizer tok = new StringTokenizer( iri, delims );
+
+        String name = "";
+
+        tok.nextToken();                // "protocol"
+        name = tok.nextToken();         // fragment ?
+        while ( tok.hasMoreTokens() ) {
+            name += "." + tok.nextToken();
+        }
+        return name;
     }
 
 

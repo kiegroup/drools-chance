@@ -54,42 +54,42 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
 
 
-    public void setModel(OntoModel model) {
+    public void setModel( OntoModel model ) {
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.XSD, model );
 
         ((XSDModel) getModel()).setNamespace( "tns", DLUtils.reverse( model.getPackage() ) );
     }
 
 
-    public void compile( String name, Object context, Map<String, Object> params ) {
+    public void compile( Concept con, Object context, Map<String, Object> params ) {
+        String name = con.getName().substring(con.getName().lastIndexOf(".") + 1);
 
-        Element element = new Element( "element", ((XSDModel) getModel()).getNamespace("xsd") );
-        element.setAttribute( "name", name );
-        element.setAttribute( "type", "tns:"+name );
+            Element element = new Element( "element", ((XSDModel) getModel()).getNamespace("xsd") );
+            element.setAttribute( "name", name );
+            element.setAttribute( "type", "tns:"+name );
+
+
 
 //        if ( ((List) params.get( "keys" )).size() > 0 ) {
 //            element.addContent( buildKeys( params ) );
 //        }
 
-        getModel().addTrait(name, element);
+            getModel().addTrait( name, element );
 
-        switch( getCurrentMode() ) {
-            case FLAT:
-                getModel().flatten();
-                getModel().addTrait( name, buildTypeAsFlat( name, params, isTransientPropertiesEnabled() ) );
-                break;
-            case HIERARCHY:
-                getModel().elevate();
-                getModel().addTrait( name, buildTypeAsHierarchy( name, params, isTransientPropertiesEnabled() ) );
-                break;
-            case LEVELLED: getModel().raze();
-                getModel().raze();
-                getModel().addTrait(name, buildTypeAsLevelled( name, params, isTransientPropertiesEnabled() ) );
-                break;
-        }
-
-
-
+            switch( getCurrentMode() ) {
+                case FLAT:
+                    getModel().flatten();
+                    getModel().addTrait( name, buildTypeAsFlat( con, params, isTransientPropertiesEnabled() ) );
+                    break;
+                case HIERARCHY:
+                    getModel().elevate();
+                    getModel().addTrait( name, buildTypeAsHierarchy( con, params, isTransientPropertiesEnabled() ) );
+                    break;
+                case LEVELLED: getModel().raze();
+                    getModel().raze();
+                    getModel().addTrait( name, buildTypeAsLevelled( con, params, isTransientPropertiesEnabled() ) );
+                    break;
+            }
 //
     }
 
@@ -115,15 +115,17 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
 
 
-    private Element buildProperties( String name, Map<String, PropertyRelation> props, Element root, boolean includeTransient ) {
+    private Element buildProperties( Concept con, Map<String, PropertyRelation> props, Element root, boolean includeTransient ) {
         XSDModel xmodel = (XSDModel) getModel();
+        String name = con.getName().substring(con.getName().lastIndexOf(".") + 1);
+
         propCache.put( name, props );
 
         Element seq = new Element( "sequence", xmodel.getNamespace( "xsd" ) );
 
         if ( name.equals( "Thing") ) {
             Element key = new Element( "element", xmodel.getNamespace( "xsd" ) );
-            key.setAttribute( "name", "universalId" );
+            key.setAttribute( "name", "dyEntryId" );
             key.setAttribute( "type", "xsd:ID"  );
             seq.addContent( key );
         }
@@ -173,25 +175,25 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 //
 //
 //            } else {
-                Element prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
-                prop.setAttribute( "name", rel.getName() );
-                prop.setAttribute( "type", map( tgt ) );
+            Element prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
+            prop.setAttribute( "name", rel.getName() );
+            prop.setAttribute( "type", map( tgt ) );
 
-                Integer minCard = rel.getMinCard();
-                if (minCard == null) {
-                    minCard = 0;
-                    rel.setMinCard( 0 );
-                }
-                Integer maxCard = rel.getMaxCard();
-                if (maxCard != null && maxCard == 0) {
-                    maxCard = null;
-                    rel.setMaxCard( null );
-                }
+            Integer minCard = rel.getMinCard();
+            if (minCard == null) {
+                minCard = 0;
+                rel.setMinCard( 0 );
+            }
+            Integer maxCard = rel.getMaxCard();
+            if (maxCard != null && maxCard == 0) {
+                maxCard = null;
+                rel.setMaxCard( null );
+            }
 
-                prop.setAttribute( "minOccurs", rel.getMinCard().toString() );
-                prop.setAttribute( "maxOccurs", rel.getMaxCard() == null ? "unbounded" : rel.getMaxCard().toString() );
+            prop.setAttribute( "minOccurs", rel.getMinCard().toString() );
+            prop.setAttribute( "maxOccurs", rel.getMaxCard() == null ? "unbounded" : rel.getMaxCard().toString() );
 
-                seq.addContent( prop );
+            seq.addContent( prop );
 //            }
 
         }
@@ -200,16 +202,46 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     }
 
     private String map( Concept tgt ) {
-//        if ( "Thing".equals(tgt.getName() ) ) return "xsd:anyType";
-        return tgt.isPrimitive() ? tgt.getName() : "tns:" + tgt.getName();
-//        return tgt.isPrimitive() ? tgt.getName() : "xsd:any";
+
+        if ( tgt == null ) {
+            return "xsd:anyType";
+        }
+
+        String name = tgt.getName().substring( tgt.getName().lastIndexOf(".") + 1 );
+        String namespace = tgt.getName().lastIndexOf( "." ) > 0 ? tgt.getName().substring( 0, tgt.getName().lastIndexOf( name ) - 1 ) : "";
+        String prefix = "tns";
+
+        if ( tgt.isPrimitive() ) {
+            return tgt.getName();
+        }
+
+
+//        if ( tgt.isResolved() ) {
+//            // now we know it's resolved
+//            name = tgt.getName().substring( tgt.getName().lastIndexOf( "." ) + 1 );
+//            String namespace = tgt.getName().substring( 0, tgt.getName().lastIndexOf( name ) - 1 );
+//            String iri = "<java://" + namespace + "#" + name + ">";
+//
+//            XSDModel xmodel = ((XSDModel) getModel());
+//            if ( xmodel.getNamespace( namespace ) == null ) {
+//                prefix = "ns" + xmodel.getNamespaces().size();
+//                xmodel.setNamespace( prefix, namespace );
+//            } else {
+//
+//            }
+//        }
+
+        return prefix + ":" + name;
+
+
     }
 
 
 
 
-    private Element buildTypeAsHierarchy(String name, Map<String, Object> params, boolean includeTransient ) {
+    private Element buildTypeAsHierarchy( Concept con, Map<String, Object> params, boolean includeTransient ) {
         XSDModel xmodel = (XSDModel) getModel();
+        String name = con.getName().substring(con.getName().lastIndexOf(".") + 1);
 
         Element type = new Element( "complexType", xmodel.getNamespace( "xsd" ) );
         type.setAttribute( "name", name );
@@ -230,19 +262,20 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             Element ext = new Element("extension", xmodel.getNamespace( "xsd" ) );
             ext.setAttribute("base", "tns:"+sup.getName() );
 
-            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), ext, includeTransient );
+            buildProperties( con, (Map<String, PropertyRelation>) params.get( "properties" ), ext, includeTransient );
 
             complex.setContent( ext );
             type.setContent( complex );
         } else {
-            buildProperties( name, (Map<String, PropertyRelation>) params.get( "properties" ), type, includeTransient );
+            buildProperties( con, (Map<String, PropertyRelation>) params.get( "properties" ), type, includeTransient );
         }
 
         return type;
     }
 
 
-    private Element buildTypeAsLevelled( String name, Map<String, Object> params, boolean includeTransient ) {
+    private Element buildTypeAsLevelled( Concept con, Map<String, Object> params, boolean includeTransient ) {
+        String name = con.getName();
         XSDModel xmodel = (XSDModel) getModel();
 
         Element type = new Element("complexType", xmodel.getNamespace( "xsd" ) );
@@ -255,13 +288,16 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
             Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
             props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
-            buildProperties( name, props, type, includeTransient );
+            buildProperties( con, props, type, includeTransient );
 
 
             System.err.println( "Concept " + name + ", had no supers" );
 
             return type;
         } else {
+//            if ( con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.CLASS ) ) {
+//                chosenSuper = null;
+//            } else
             if ( supers.size() == 1) {
                 chosenSuper = supers.iterator().next();
             } else {
@@ -278,7 +314,6 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             }
 
 //            System.err.println( "FOR concept " + name + ", the best super was " + chosenSuper + " among " + supers );
-            Concept con = (Concept) params.get( "concept" );
 
             con.setChosenSuper( chosenSuper != null ? chosenSuper.getName() : null );
 
@@ -299,7 +334,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                 props.remove( propKey );
             }
 
-            buildProperties( name, props, ext, includeTransient );
+            buildProperties( con, props, ext, includeTransient );
 
             complex.setContent( ext );
             type.setContent( complex );
@@ -314,8 +349,9 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
 
 
-    private Element buildTypeAsFlat( String name, Map<String, Object> params, boolean includeTransient ) {
+    private Element buildTypeAsFlat( Concept con, Map<String, Object> params, boolean includeTransient ) {
         XSDModel xmodel = (XSDModel) getModel();
+        String name = con.getName().substring(con.getName().lastIndexOf(".") + 1);
 
         Element type = new Element("complexType", xmodel.getNamespace( "xsd" ) );
         type.setAttribute( "name", name );
@@ -330,7 +366,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
 
 
-        buildProperties( name, props, type, includeTransient );
+        buildProperties( con, props, type, includeTransient );
 
         return type;
     }

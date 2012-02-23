@@ -20,6 +20,25 @@
 
 @declare{'baseGetterSetter'}
 
+
+        @javax.persistence.Transient
+        public java.util.List<@{ map( type, true ) }> @{ getter( name, type ) }Inferred()  {
+
+            java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( @{ getter( name, type ) }() );
+
+            // @{subs}
+            @foreach{ sub : subs }
+                @if{ sub.single }
+                    ans.add( @{ getter( sub.name, type ) }() );
+                @else{}
+                    ans.addAll( @{ getter( sub.name, type ) }() );
+                @end{}
+            @end{}
+
+            return ans;
+
+        }
+
 @end{}
 
 @includeNamed{'baseGetterSetter'}

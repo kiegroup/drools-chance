@@ -24,12 +24,13 @@
           xmlns:dsk="http://jboss.org/drools/drools-chance/drools-shapes/plugins/key"
           xmlns:dsp="http://jboss.org/drools/drools-chance/drools-shapes/plugins/accessor"
           xmlns:con="http://jboss.org/drools/drools-chance/drools-shapes/plugins/constructor"
+          xmlns:meta="http://jboss.org/drools/drools-chance/drools-shapes/plugins/metadata"
           xmlns:annox="http://annox.dev.java.net"
           xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
           xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
           xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
           version="2.1"
-          extensionBindingPrefixes="xjc annox inheritance ci dsk dsp hj" >
+          extensionBindingPrefixes="xjc annox inheritance ci dsk dsp hj con meta" >
   <bindings schemaLocation="@{modelName}.xsd" node="/xsd:schema">
 
     <globalBindings localScoping="toplevel" >
@@ -75,15 +76,27 @@
         ]]></ci:code>
 
 
-            <dsk:keyId>
-                @foreach{ key : concept.keys }
-                <dsk:key type="@{key.target.name}">@{key.name}</dsk:key>
+        <meta:type name="@{concept.name}">
+        @foreach{ prop : concept.effectiveBaseProperties }
+            <meta:property name="@{prop.name}" type="@{prop.target.name}">
+                @foreach{ subProp : concept.properties.values }
+                @if{ subProp.restricted && subProp.baseProperty == prop }
+                    <meta:restriction name="@{subProp.name}" single="@{subProp.maxCard == 1}"/>
                 @end{}
-            </dsk:keyId>
+                @end{}
+            </meta:property>
+        @end{}
+        </meta:type>
+
+        <dsk:keyId>
+            @foreach{ key : concept.keys }
+            <dsk:key type="@{key.target.name}">@{key.name}</dsk:key>
+            @end{}
+        </dsk:keyId>
 
 
         @if{ concept.name == "Thing" }
-        <bindings node=".//xsd:element[@name='universalId']">
+        <bindings node=".//xsd:element[@name='dyEntryId']">
             <hj:id/>
         </bindings>
         @end{}

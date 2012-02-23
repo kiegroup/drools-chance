@@ -18,6 +18,7 @@ package org.drools.semantics.builder.model.compilers;
 
 import org.drools.semantics.builder.DLTemplateManager;
 import org.drools.semantics.builder.model.CompiledOntoModel;
+import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.mvel2.templates.CompiledTemplate;
@@ -35,9 +36,9 @@ public class DRLModelCompilerImpl extends ModelCompilerImpl implements DRLModelC
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.DRL, model );
     }
 
-    public void compile( String name, Object context, Map<String, Object> params ) {
+    public void compile( Concept con, Object context, Map<String, Object> params ) {
         CompiledTemplate template = registry.getNamedTemplate(templateName);
-        getModel().addTrait(name, TemplateRuntime.execute(template, context, params).toString().trim());
+        getModel().addTrait( con.getName(), TemplateRuntime.execute(template, context, params).toString().trim());
     }
 
 

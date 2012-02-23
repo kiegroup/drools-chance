@@ -47,7 +47,7 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testLoad() {
-        String source = "kmr2/kmr2_miniExample.manchester";
+        String source = "kmr2/kmr2_mini.owl";
 
         org.drools.io.Resource res = ResourceFactory.newClassPathResource(source);
 
@@ -171,49 +171,50 @@ public class DL_2_ModelGenerationTest {
         System.out.println( drlModel.getDRL() );
         System.out.println(" -------------------------------");
 
+        String ns = "http://jboss.org/drools/semantics/";
 
         assertNotNull( results.getConcept( "<_A>") );
         assertNotNull( results.getConcept( "<_B>") );
         assertNotNull( results.getConcept( "<_C>") );
         assertNotNull( results.getConcept( "<_D>") );
-        assertNotNull( results.getConcept( "<MyPropRange>") );
-        assertNotNull( results.getConcept( "<YourPropDomain>") );
-        assertNotNull( results.getConcept( "<ZimpleDomain>") );
+        assertNotNull( results.getConcept( "<" + ns +"MyPropRange>") );
+        assertNotNull( results.getConcept( "<" + ns +"YourPropDomain>") );
+        assertNotNull( results.getConcept( "<" + ns +"ZimpleDomain>") );
 
-        assertNotNull( results.getSubConceptOf( "<YourPropDomain>", "<_B>" ) );
-        assertNotNull( results.getSubConceptOf( "<_C>", "<MyPropRange>" ) );
-        assertNotNull( results.getSubConceptOf( "<YourPropDomain>", "<_C>" ) );
-        assertNotNull( results.getSubConceptOf( "<_D>", "<MyPropRange>" ) );
-        assertNotNull( results.getSubConceptOf( "<_D>", "<ZimpleDomain>" ) );
-        assertNotNull( results.getSubConceptOf( "<_B>", "<ZimpleDomain>" ) );
+        assertNotNull( results.getSubConceptOf( "<" + ns +"YourPropDomain>", "<_B>" ) );
+        assertNotNull( results.getSubConceptOf( "<_C>", "<" + ns +"MyPropRange>" ) );
+        assertNotNull( results.getSubConceptOf( "<" + ns +"YourPropDomain>", "<_C>" ) );
+        assertNotNull( results.getSubConceptOf( "<_D>", "<" + ns +"MyPropRange>" ) );
+        assertNotNull( results.getSubConceptOf( "<_D>", "<" + ns +"ZimpleDomain>" ) );
+        assertNotNull( results.getSubConceptOf( "<_B>", "<" + ns +"ZimpleDomain>" ) );
 
         assertEquals( 3, results.getProperties().size() );
         assertNotNull( results.getProperty( "<_myProp>" ) );
         assertNotNull(results.getProperty("<_yourProp>"));
         assertNotNull( results.getProperty( "<_zimple>" ) );
         assertTrue(results.getProperty("<_myProp>").getSubject().equals("<_A>"));
-        assertTrue(results.getProperty("<_myProp>").getObject().equals("<MyPropRange>"));
-        assertTrue( results.getProperty( "<_yourProp>" ).getSubject().equals( "<YourPropDomain>" ) );
+        assertTrue(results.getProperty("<_myProp>").getObject().equals("<" + ns +"MyPropRange>"));
+        assertTrue( results.getProperty( "<_yourProp>" ).getSubject().equals( "<" + ns +"YourPropDomain>" ) );
         assertTrue( results.getProperty( "<_yourProp>" ).getObject().equals( "<_D>" ) );
-        assertTrue( results.getProperty( "<_zimple>" ).getSubject().equals( "<ZimpleDomain>" ) );
+        assertTrue( results.getProperty( "<_zimple>" ).getSubject().equals( "<" + ns +"ZimpleDomain>" ) );
         assertTrue( results.getProperty( "<_zimple>" ).getObject().equals( "<http://www.w3.org/2001/XMLSchema#int>" ) );
 
 
         assertTrue(
-                results.getConcept("<_C>").getSuperConcepts().contains(results.getConcept("<MyPropRange>"))
+                results.getConcept("<_C>").getSuperConcepts().contains(results.getConcept("<" + ns +"MyPropRange>"))
         );
         assertTrue(
-                results.getConcept( "<_D>" ).getSuperConcepts().contains( results.getConcept( "<MyPropRange>" ) )
+                results.getConcept( "<_D>" ).getSuperConcepts().contains( results.getConcept( "<" + ns +"MyPropRange>" ) )
         );
         assertTrue(
-                results.getConcept( "<YourPropDomain>" ).getSuperConcepts().contains( results.getConcept( "<_C>" ) )
+                results.getConcept( "<" + ns +"YourPropDomain>" ).getSuperConcepts().contains( results.getConcept( "<_C>" ) )
         );
         assertTrue(
-                results.getConcept( "<YourPropDomain>" ).getSuperConcepts().contains( results.getConcept( "<_B>" ) )
+                results.getConcept( "<" + ns +"YourPropDomain>" ).getSuperConcepts().contains( results.getConcept( "<_B>" ) )
         );
 
         assertTrue(
-                results.getConcept( "<YourPropDomain>").getProperties().containsValue(
+                results.getConcept( "<" + ns +"YourPropDomain>").getProperties().containsValue(
                         results.getProperty("<_yourProp>")
                 )
         );
@@ -224,18 +225,18 @@ public class DL_2_ModelGenerationTest {
         );
 
         assertTrue(
-                results.getConcept("<YourPropDomain>").getProperties().get(
+                results.getConcept("<" + ns +"YourPropDomain>").getProperties().get(
                         "<_yourProp>"
                 ).getTarget().equals(results.getConcept("<_D>"))
                 );
         assertTrue(
                 results.getConcept( "<_A>").getProperties().get(
                         "<_myProp>"
-                ).getTarget().equals( results.getConcept( "<MyPropRange>" ) )
+                ).getTarget().equals( results.getConcept( "<" + ns +"MyPropRange>" ) )
         );
 
         assertTrue(
-                results.getConcept( "<ZimpleDomain>").getProperties().get(
+                results.getConcept( "<" + ns +"ZimpleDomain>").getProperties().get(
                         "<_zimple>"
                 ).getTarget().equals( new Concept( "<http://www.w3.org/2001/XMLSchema#int>", "java.lang.Integer" ) )
         );

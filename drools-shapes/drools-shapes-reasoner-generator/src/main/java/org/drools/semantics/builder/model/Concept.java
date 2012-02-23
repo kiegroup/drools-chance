@@ -20,7 +20,7 @@ import org.drools.definition.type.Position;
 
 import java.util.*;
 
-public class Concept implements Cloneable {
+public class Concept {
 
     @Position(0)    private     String                          iri;
     @Position(1)    private     String                          name;
@@ -31,11 +31,16 @@ public class Concept implements Cloneable {
     @Position(6)    private     Set<Concept>                    subConcepts;
     @Position(7)    private     Map<String, PropertyRelation>   shadowProperties;
     @Position(8)    private     String                          chosenSuper;
+    @Position(9)    private     String                          fullyQualifiedName;
     
+
+    public enum Resolution { NONE, CLASS, IFACE, ENUM ; }
 
     private     boolean                         primitive               = false;
     private     boolean                         abstrakt                = false;
     private     boolean                         anonymous               = false;
+    private     boolean                         resolved                = false;
+    private     Resolution                      resolvedAs              = Resolution.NONE;
 
 
 
@@ -114,6 +119,14 @@ public class Concept implements Cloneable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFullyQualifiedName() {
+        return fullyQualifiedName == null ? name : fullyQualifiedName;
+    }
+
+    public void setFullyQualifiedName(String fullyQualifiedName) {
+        this.fullyQualifiedName = fullyQualifiedName;
     }
 
     public Set<Concept> getSuperConcepts() {
@@ -222,6 +235,34 @@ public class Concept implements Cloneable {
         return null;
     }
 
+    
+    public Set<PropertyRelation> getEffectiveProperties() {
+        Set<PropertyRelation> ans = new HashSet<PropertyRelation>();
+        for ( PropertyRelation prop : getProperties().values() ) {
+            ans.add( prop );
+
+            PropertyRelation current = prop;
+            do {
+                if ( current.isRestricted() ) {
+                    ans.add( current.getBaseProperty() );
+                }
+                current = current.getBaseProperty();
+            } while ( current != current.getBaseProperty() );
+        }
+        return ans;
+    }
+
+    public Set<PropertyRelation> getEffectiveBaseProperties() {
+        Set<PropertyRelation> ans = new HashSet<PropertyRelation>();
+        Set<PropertyRelation> eff = getEffectiveProperties();
+
+        for ( PropertyRelation prop : eff ) {
+            ans.add( prop.getBaseProperty() );
+        }
+        return ans;
+    }
+
+
     public String getChosenSuper() {
         return chosenSuper;
     }
@@ -251,7 +292,21 @@ public class Concept implements Cloneable {
         this.properties = properties;
     }
 
+    public boolean isResolved() {
+        return resolved;
+    }
 
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
+    }
+
+    public Resolution getResolvedAs() {
+        return resolvedAs;
+    }
+
+    public void setResolvedAs(Resolution resolvedAs) {
+        this.resolvedAs = resolvedAs;
+    }
 
     public static class Range {
         private Concept     concept;

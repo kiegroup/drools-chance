@@ -31,6 +31,7 @@ import org.drools.semantics.builder.model.inference.DelegateInferenceStrategy;
 import org.drools.semantics.builder.model.inference.InternalInferenceStrategy;
 import org.drools.semantics.builder.model.inference.ModelInferenceStrategy;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -81,7 +82,9 @@ public class DLFactoryImpl implements DLFactory {
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 
-            return manager.loadOntologyFromOntologyDocument( resource.getInputStream() );
+            OWLOntology onto = manager.loadOntologyFromOntologyDocument( resource.getInputStream() );
+
+            return onto;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (OWLOntologyCreationException e) {

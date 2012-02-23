@@ -22,7 +22,7 @@
 
 
     public @{ name + "Impl" }( @{name + "$$Shadow"} other ) {
-        setUniversalId( other.getUniversalId() );
+        setDyEntryId( other.getDyEntryId() );
         @foreach{ prop : properties }
             @{ setter( prop ) }( other.@{ getter( prop, "", null ) }() );
         @end{}

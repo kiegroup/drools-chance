@@ -38,8 +38,9 @@ public class WorkingSetModelCompilerImpl extends ModelCompilerImpl implements Wo
     }
 
 
-    public void compile(String name, Object target, Map<String, Object> params) {
-        if ( "Thing".equals(name) ) {
+    public void compile( Concept con, Object target, Map<String, Object> params) {
+        String name = con.getName();
+        if ( "Thing".equals(name) || name.endsWith( "$$Shadow" ) ) {
             return;
         }
 
@@ -58,7 +59,7 @@ public class WorkingSetModelCompilerImpl extends ModelCompilerImpl implements Wo
             SemanticWorkingSetConfigData father = map.get( sup.getName() );
             addToWorkingSets(father, children);
 
-            if ( ! "Thing".equals( father.name ) ) {
+            if ( ! "Thing".equals( father.name ) && ! father.name.endsWith( "$$Shadow" ) ) {
                 addToValidFacts(father, name);
             }
 

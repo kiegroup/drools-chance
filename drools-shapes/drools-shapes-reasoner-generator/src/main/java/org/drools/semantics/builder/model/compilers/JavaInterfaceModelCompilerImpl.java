@@ -18,6 +18,7 @@ package org.drools.semantics.builder.model.compilers;
 
 import org.drools.semantics.builder.DLTemplateManager;
 import org.drools.semantics.builder.model.CompiledOntoModel;
+import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.mvel2.templates.CompiledTemplate;
@@ -30,7 +31,7 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
 
     private Mode currentMode = Mode.FLAT;
 
-    
+
 
     private String templateName = "TraitInterface.template";
     private String shadowTemplateName = "ShadowInterface.template";
@@ -42,26 +43,31 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.JAVA, model );
     }
 
-    public void compile( String name, Object context, Map<String, Object> params ) {
-        CompiledTemplate template = registry.getNamedTemplate( templateName );
-        CompiledTemplate shadowTemplate = registry.getNamedTemplate( shadowTemplateName );
+    public void compile( Concept con, Object context, Map<String, Object> params ) {
+//        if ( ! con.isResolved() ) {
+            CompiledTemplate template = registry.getNamedTemplate( templateName );
+            CompiledTemplate shadowTemplate = registry.getNamedTemplate( shadowTemplateName );
 
-        switch ( getMode() ) {
-            case FLAT:
-                getModel().flatten();
-                break;
-            case HIERARCHY:
-                getModel().elevate();
-                break;
-            case LEVELLED:
-                getModel().raze();
-                break;
-        }
 
-        getModel().addTrait(name, TemplateRuntime.execute( template, context, params ).toString().trim());
+            switch ( getMode() ) {
+                case FLAT:
+                    getModel().flatten();
+                    break;
+                case HIERARCHY:
+                    getModel().elevate();
+                    break;
+                case LEVELLED:
+                    getModel().raze();
+                    break;
+            }
 
-        getModel().addTrait( name+"$$Shadow", TemplateRuntime.execute( shadowTemplate, context, params ).toString().trim());
+            String name = con.getName().substring( con.getName().lastIndexOf( "." ) + 1 );
 
+            getModel().addTrait( name, TemplateRuntime.execute( template, context, params ).toString().trim() );
+
+            getModel().addTrait( name+"$$Shadow", TemplateRuntime.execute( shadowTemplate, context, params ).toString().trim());
+
+//        }
     }
 
 

@@ -66,7 +66,7 @@ private static Logger log;
 
     @Test
 	public void kmr2_ontology() {
-		test_ontology("kmr2/kmr2_miniExample.manchester");
+		test_ontology("kmr2/kmr2_mini.owl");
 	}
 
     @Test

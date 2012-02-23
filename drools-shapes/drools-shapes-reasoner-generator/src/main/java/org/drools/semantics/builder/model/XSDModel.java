@@ -21,6 +21,7 @@ import org.jdom.Document;
 import org.jdom.Namespace;
 
 import java.io.OutputStream;
+import java.util.Collection;
 
 
 public interface XSDModel extends CompiledOntoModel {
@@ -31,6 +32,8 @@ public interface XSDModel extends CompiledOntoModel {
     public boolean stream( OutputStream os );
 
     public Namespace getNamespace( String ns );
+
+    public Collection<Namespace> getNamespaces( );
 
     public void setNamespace( String ns, String nameSpace );
 

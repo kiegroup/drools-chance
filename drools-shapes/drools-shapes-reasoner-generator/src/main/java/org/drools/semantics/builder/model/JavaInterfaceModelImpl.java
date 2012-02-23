@@ -99,4 +99,5 @@ public class JavaInterfaceModelImpl extends ModelImpl implements JavaInterfaceMo
     }
 
 
+
 }

@@ -135,11 +135,15 @@ public class PropertyRelation extends Relation {
 
 
     public PropertyRelation getBaseProperty() {
-        if ( ! isRestricted() ) {
+        if ( baseProperty == this ) {
             return this;
         } else {
             return baseProperty.getBaseProperty();
         }
+    }
+
+    public PropertyRelation getImmediateBaseProperty() {
+        return baseProperty;
     }
 
     public void setBaseProperty(PropertyRelation baseProperty) {
@@ -252,6 +256,10 @@ public class PropertyRelation extends Relation {
             }
         }
         
+    }
+
+    public List<PropertyRelation> getRestrictedProperties() {
+        return restrictedProperties;
     }
 
     public Concept getAddableTarget() {

@@ -32,14 +32,14 @@ import javax.persistence.OneToMany;
 
 @RdfsClass( value="tns:@{name}" )
 @Namespaces({ "tns", "http://@{package}#" })
-public interface @{name} extends com.clarkparsia.empire.SupportsRdfId
+public interface @{name} extends com.clarkparsia.empire.SupportsRdfId  @if{ implInterface != null} , @{ implInterface } @end{}
                                  @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{ compactUpperCase( sup.name ) } @end{','} @end{}
 {
 
     @javax.xml.bind.annotation.XmlID
-    public String getUniversalId();
+    public String getDyEntryId();
 
-    public void setUniversalId( String id );
+    public void setDyEntryId( String id );
 
 
 @if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }

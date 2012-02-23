@@ -35,54 +35,35 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
 
     protected abstract void setModel( OntoModel model );
 
-    public abstract void compile(String name, Object target, Map<String,Object> params);
+    public abstract void compile( Concept con, Object target, Map<String,Object> params);
 
     public CompiledOntoModel compile( OntoModel model ) {
-                
+
         setModel( model );
-        
-        resolve( model );
-        
+
         if ( getModel() != null ) {
             for ( Concept con : getModel().getConcepts() ) {
                 String name = DLUtils.compactUpperCase( con.getName() );
                 Map map = new HashMap();
                 map.put( "package", getModel().getPackage() );
                 map.put( "iri", con.getIri() );
-                map.put( "concept", con );
-                map.put( "name", name );
+                map.put( "name", con.getName().substring(con.getName().lastIndexOf(".") + 1) );
                 map.put( "superConcepts", con.getSuperConcepts() );
                 map.put( "subConcepts", con.getSubConcepts() );
                 map.put( "properties", con.getProperties() );
+                map.put( "implInterface", con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.IFACE ) ? con.getFullyQualifiedName() : null );
+                map.put( "implClass", con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.CLASS )? con.getFullyQualifiedName() : null );
+
                 map.put( "shadowProperties", con.getShadowProperties() );
                 if ( con.isAbstrakt() ) {
                     map.put( "abstract", con.isAbstrakt() );
                 }
                 map.put( "keys", con.getKeys() );
-                compile( name, DLUtils.getInstance(), map );
+                compile( con, DLUtils.getInstance(), map );
             }
         }
         return getModel();
     }
 
-    private void resolve(OntoModel model) {
-        for ( Concept con : model.getConcepts() ) {
-            String fullName = model.getPackage() + "." + con.getName();
-//            System.out.println( "Looking for " + con.getName() + " as " + fullName );
-            try {
-                Class existingKlass = Class.forName( fullName );
-                if ( existingKlass != null ) {
-                    System.out.println( "FOUND!!!! "+ existingKlass.getName() );
-                }
-                else {
-//                    System.out.println( con.getName() + " Is Novel ");
-                }
-                    
-            } catch ( ClassNotFoundException e ) {
-//                System.out.println( con.getName() + "Is Novel ");
-            }
-        }
-        
-    }
 
 }

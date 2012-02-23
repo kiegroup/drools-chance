@@ -32,4 +32,8 @@ public interface SemanticXSDModel extends XSDModel {
     public void setIndex( String index );
 
     public boolean streamIndex( OutputStream fos);
+
+    public void setIndividualFactory( String factory );
+    
+    public boolean streamIndividualFactory( OutputStream os );
 }

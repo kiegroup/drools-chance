@@ -26,10 +26,7 @@ import org.jdom.output.XMLOutputter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class XSDModelImpl extends ModelImpl implements XSDModel {
 
@@ -81,6 +78,11 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         return namespaces.get( ns );
     }
 
+    public Collection<Namespace> getNamespaces() {
+        return namespaces.values();
+    }
+
+
     public void setNamespace( String prefix, String namespace ) {
         Namespace ns = Namespace.getNamespace(prefix, namespace);
         namespaces.put( prefix, ns );
@@ -98,17 +100,13 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
 
 
     public Object getTrait(String name) {
-        //TODO
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
 
 
     public Set<String> getTraitNames() {
-            //TODO
         Set<String> names = new HashSet<String>();
-
-
         return names;
     }
 

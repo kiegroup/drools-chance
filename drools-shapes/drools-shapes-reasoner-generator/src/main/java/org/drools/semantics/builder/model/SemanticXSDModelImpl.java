@@ -27,10 +27,23 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
     private String index;
 
     private String bindings;
+    
+    private String individualFactory;
 
     public String getBindings() {
         return this.bindings;
     }
+
+    public boolean streamIndividualFactory( OutputStream os ) {
+        try {
+            os.write( individualFactory.getBytes() );
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+
 
     public void setBindings(String bindings) {
         this.bindings = bindings;
@@ -62,5 +75,11 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
         return true;
     }
 
+    public String getIndividualFactory() {
+        return individualFactory;
+    }
 
+    public void setIndividualFactory(String individualFactory) {
+        this.individualFactory = individualFactory;
+    }
 }

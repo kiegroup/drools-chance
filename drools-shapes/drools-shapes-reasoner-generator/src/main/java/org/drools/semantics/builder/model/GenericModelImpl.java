@@ -1,18 +1,3 @@
-/*
- * Copyright 2011 JBoss Inc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.drools.semantics.builder.model;
 
@@ -29,6 +14,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     private String name;
 
     private boolean flat = false;
+    
+    private Set<Individual> individuals = new HashSet<Individual>();
 
     private LinkedHashMap<String, Concept> concepts = new LinkedHashMap<String, Concept>();
 
@@ -91,6 +78,18 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     public Concept removeConcept( Concept con ) {
         return concepts.remove( con.getIri() );
+    }
+
+    public Set<Individual> getIndividuals() {
+        return individuals;
+    }
+
+    public void addIndividual( Individual i ) {
+        individuals.add( i );
+    }
+
+    public Individual removeIndividual( Individual i ) {
+        return individuals.remove( i ) ? i : null;
     }
 
     protected void setConcepts(LinkedHashMap<String, Concept> concepts) {
@@ -241,7 +240,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                 }
                 for ( Concept sup : con.getSuperConcepts() ) {
                     if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
-                            System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
+                        System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
                         sup.addShadowProperty( propKey, con.getProperties().get( propKey ) );
                     }
                 }
@@ -249,7 +248,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
             for ( String propKey : con.getShadowProperties().keySet() ) {
                 for ( Concept sup : con.getSuperConcepts() ) {
                     if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
-                            System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
+                        System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
                         sup.addShadowProperty( propKey, con.getShadowProperties().get( propKey ) );
                     }
                 }
@@ -292,6 +291,41 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         this.flat = flat;
     }
 
+
+
+
+    public void resolve( ) {
+        for ( Concept con : getConcepts() ) {
+            if ( con.getIri().startsWith("<java://") ) {
+                String fullName = DLUtils.buildFQNameFromIri(con.getIri());
+                System.out.println( "Looking for " + con.getName() + " as " + fullName );
+                try {
+                    Class existingKlass = Class.forName( fullName );
+                    if ( existingKlass != null ) {
+                        System.out.println( "FOUND!!!! "+ existingKlass.getName() );
+                        con.setFullyQualifiedName( fullName );
+                        con.setResolved( true );
+                        if ( existingKlass.isInterface() ) {
+                            con.setResolvedAs( Concept.Resolution.IFACE );
+                        } else if ( existingKlass.isEnum() ) {
+                            con.setResolvedAs( Concept.Resolution.ENUM );
+                        } else {
+                            con.setResolvedAs( Concept.Resolution.CLASS );
+                        }
+                    }
+                    else {
+                        con.setFullyQualifiedName( name );
+//                        System.out.println( con.getName() + " Is Novel ");
+                    }
+
+                } catch ( ClassNotFoundException e ) {
+                    con.setFullyQualifiedName( name );
+//                    System.out.println( con.getName() + "Is Novel ");
+                }
+            }
+        }
+
+    }
 
 
 

@@ -40,6 +40,11 @@ public interface OntoModel extends Cloneable {
     public Concept removeConcept( Concept con );
 
 
+    public Set<Individual> getIndividuals();
+    
+    public void addIndividual( Individual i );
+    
+    public Individual removeIndividual( Individual i );
 
 
     public Set<SubConceptOf> getSubConcepts();
@@ -62,6 +67,9 @@ public interface OntoModel extends Cloneable {
 
 
     public void sort();
+
+    public void resolve();
+
     
     public void flatten();
 

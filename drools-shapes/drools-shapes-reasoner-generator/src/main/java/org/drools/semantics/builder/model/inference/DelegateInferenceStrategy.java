@@ -23,10 +23,7 @@ import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLUtils;
-import org.drools.semantics.builder.model.Concept;
-import org.drools.semantics.builder.model.OntoModel;
-import org.drools.semantics.builder.model.PropertyRelation;
-import org.drools.semantics.builder.model.SubConceptOf;
+import org.drools.semantics.builder.model.*;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.*;
@@ -45,6 +42,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     private Map<OWLClassExpression,OWLClassExpression> aliases;
 
     private Map<String, Concept> conceptCache = new HashMap<String, Concept>();
+    private Map<String, String> individualTypesCache = new HashMap<String, String>();
     private Map<OWLClassExpression, OWLClass> fillerCache = new HashMap<OWLClassExpression, OWLClass>();
     private Map<String, String> props = new HashMap<String, String>();
 
@@ -122,7 +120,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         // Compose property chains
         fixPropertyChains( ontoDescr, hierarchicalModel );
-        
+
         // Manage inverse relations
         fixInverseRelations( ontoDescr, hierarchicalModel );
 
@@ -131,6 +129,63 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
         return hierarchicalModel;
+    }
+
+    @Override
+    protected OntoModel buildIndividuals(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel) {
+
+
+        for ( OWLNamedIndividual individual : ontoDescr.getIndividualsInSignature() ) {
+            System.out.println( "Found Individual " + individual.getIRI() );
+
+            IRI iri = individual.getIRI();
+            
+            String typeIri = individualTypesCache.get( iri.toQuotedString() );
+            Concept klass = hierachicalModel.getConcept( typeIri );
+            if ( klass == null ) {
+                System.exit( -1 );
+            }
+            
+            Individual ind = new Individual( iri.getFragment(), iri.toQuotedString(), klass.getName() );
+
+
+            for ( OWLDataPropertyExpression prop : individual.getDataPropertyValues( ontoDescr ).keySet() ) {
+                if ( ! prop.isTopEntity() ) {
+                    PropertyRelation rel = hierachicalModel.getProperty( prop.asOWLDataProperty().getIRI().toQuotedString() );
+                    String propName = rel.getName();
+                    Set<OWLLiteral> propValues = individual.getDataPropertyValues( ontoDescr ).get(prop);
+                    Set<String> values = new HashSet<String>();
+                    for ( OWLLiteral tgt : propValues ) {
+                        if ( rel.getTarget().getName().equals( "xsd:string" ) ) {
+                            values.add( "\"" + tgt.getLiteral() + "\"" );
+                        } else {
+                            values.add( tgt.getLiteral() );
+                        }
+                    }
+                    ind.setPropertyValues( propName, values );
+                }
+            }
+            for ( OWLObjectPropertyExpression prop : individual.getObjectPropertyValues( ontoDescr ).keySet() ) {
+                if ( ! prop.isTopEntity() ) {
+                    String propName = hierachicalModel.getProperty( prop.asOWLObjectProperty().getIRI().toQuotedString()).getName();
+                    Set<OWLIndividual> propValues = individual.getObjectPropertyValues(ontoDescr).get( prop );
+                    Set<String> values = new HashSet<String>();
+                    for ( OWLIndividual tgt : propValues ) {
+                        if ( tgt instanceof OWLNamedIndividual ) {
+                            values.add( ((OWLNamedIndividual) tgt).getIRI().getFragment() );
+                        }
+                    }
+                    ind.setPropertyValues( propName, values );
+                }
+            }
+            
+            hierachicalModel.addIndividual( ind );
+
+        }
+
+
+
+        return hierachicalModel;
     }
 
     private void fixInverseRelations(OWLOntology ontoDescr, OntoModel hierarchicalModel) {
@@ -522,7 +577,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
 
-    private void createAndAddBasicProperties(OWLOntology ontoDescr, OWLDataFactory factory, OntoModel hierarchicalModel ) {
+    private void createAndAddBasicProperties( OWLOntology ontoDescr, OWLDataFactory factory, OntoModel hierarchicalModel ) {
         int missDomain = 0;
         int missDataRange = 0;
         int missObjectRange = 0;
@@ -772,7 +827,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             for ( OWLClassExpression dom : op.getDomains( ontoDescr ) ) {
                 if ( dom.isAnonymous() ) {
-                    OWLClass domain = factory.getOWLClass( IRI.create( DLUtils.capitalize( typeName ) + "Domain") );
+                    OWLClass domain = factory.getOWLClass( IRI.create(
+                            ontoDescr.getOntologyID().getOntologyIRI().getStart() +
+                            DLUtils.capitalize( typeName ) +
+                            "Domain" ) );
                     OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
                             domain.getIRI(),
                             factory.getOWLStringLiteral("abstract") );
@@ -817,7 +875,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             for ( OWLClassExpression dom : dp.getDomains( ontoDescr ) ) {
                 if ( dom.isAnonymous() ) {
-                    OWLClass domain = factory.getOWLClass( IRI.create( DLUtils.capitalize( typeName ) + "Domain" ) );
+                    OWLClass domain = factory.getOWLClass( IRI.create(
+                            ontoDescr.getOntologyID().getOntologyIRI().getStart() +
+                            DLUtils.capitalize( typeName ) +
+                            "Domain" ) );
                     OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
                             domain.getIRI(),
                             factory.getOWLStringLiteral("abstract") );
@@ -863,7 +924,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             for ( OWLClassExpression ran : op.getRanges(ontoDescr) ) {
                 if ( ran.isAnonymous() ) {
-                    OWLClass range = factory.getOWLClass( IRI.create( DLUtils.capitalize( typeName ) + "Range" ) );
+                    OWLClass range = factory.getOWLClass( IRI.create(
+                            ontoDescr.getOntologyID().getOntologyIRI().getStart() +
+                            DLUtils.capitalize( typeName ) +
+                            "Range" ) );
                     OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
                             range.getIRI(),
                             factory.getOWLStringLiteral("abstract") );
@@ -879,6 +943,85 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         }
         return dirty;
+    }
+
+
+
+    private boolean preProcessIndividuals( OWLOntology ontoDescr, OWLDataFactory factory ) {
+        boolean dirty = false;
+        for ( OWLNamedIndividual ind : ontoDescr.getIndividualsInSignature() ) {
+            
+            declareAnonymousIndividualSupertypes( ontoDescr, factory, ind );
+            
+            Set<OWLClassExpression> types = ind.getTypes( ontoDescr );
+            
+            types = simplify( types, ontoDescr );
+            if ( types.size() > 1 ) {
+                OWLObjectIntersectionOf and = factory.getOWLObjectIntersectionOf( types );
+
+                dirty = true;
+                System.err.println(" WARNING : Individual " + ind + " got a new combined type " + and );
+                OWLClass type = factory.getOWLClass( IRI.create( ind.getIRI().getStart() + DLUtils.compactUpperCase( ind.getIRI().getFragment() ) + "Type" ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLDeclarationAxiom( type ) ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLSubClassOfAxiom( type, and ) ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLClassAssertionAxiom( type, ind ) ) );
+
+                individualTypesCache.put( ind.getIRI().toQuotedString(), type.getIRI().toQuotedString() );
+            } else {
+                individualTypesCache.put( ind.getIRI().toQuotedString(), types.iterator().next().asOWLClass().getIRI().toQuotedString() );
+            }
+
+        }
+
+        return dirty;
+    }
+
+    private void declareAnonymousIndividualSupertypes(OWLOntology ontoDescr, OWLDataFactory factory, OWLNamedIndividual ind ) {
+        Set<OWLClassExpression> types = ind.getTypes( ontoDescr );
+        int j = 0;
+        for ( OWLClassExpression type : types ) {
+            j++;
+            if ( type.isAnonymous() ) {
+                OWLClass temp = factory.getOWLClass( IRI.create( ind.getIRI().getStart() + DLUtils.compactUpperCase( ind.getIRI().getFragment() ) + "RestrictedType" + j ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new RemoveAxiom( ontoDescr, factory.getOWLClassAssertionAxiom( type, ind ) ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLDeclarationAxiom( temp ) ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLSubClassOfAxiom( temp, type ) ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLClassAssertionAxiom( temp, ind ) ) );
+            }
+        }
+        
+    }
+
+
+    private Set<OWLClassExpression> simplify(Set<OWLClassExpression> types, OWLOntology ontoDescr) {
+        if ( types.size() == 1 ) {
+            return types;
+        }
+        Set<OWLClassExpression> ans = new HashSet<OWLClassExpression>( types );
+
+        for ( OWLClassExpression klass1 : types ) {
+            for ( OWLClassExpression klass2 : types ) {
+                if ( isSuperClass( ontoDescr, klass1, klass2 ) ) {
+                    ans.remove( klass1 );
+                }
+            }
+        }
+
+        return ans;
+    }
+
+    private boolean isSuperClass( OWLOntology ontoDescr, OWLClassExpression klass1, OWLClassExpression klass2 ) {
+        Set<OWLSubClassOfAxiom> subKlassOfs = ontoDescr.getSubClassAxiomsForSuperClass( klass1.asOWLClass() );
+        for ( OWLSubClassOfAxiom sub : subKlassOfs ) {
+            if ( sub.getSubClass().equals( klass2 ) ) {
+                return true;
+            } else {
+                if ( isSuperClass( ontoDescr, sub.getSubClass(), klass2 ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -931,7 +1074,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         OWLClass filler = fillerCache.get( fil );
 
                         if ( filler == null ) {
-                            String fillerName = DLUtils.capitalize( inKlass.getIRI().getFragment() ) +
+                            String fillerName = ontoDescr.getOntologyID().getOntologyIRI().getStart() +
+                                    DLUtils.capitalize( inKlass.getIRI().getFragment() ) +
                                     DLUtils.capitalize( prop.getIRI().getFragment() ) +
                                     "Filler" +
                                     (counter++);
@@ -1211,6 +1355,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         // reify complex domains and ranges
         dirty |= processComplexDomainAndRanges( ontoDescr, factory );
 
+        /************************************************************************************************************************************/
+
+        // check individuals for multiple inheritance
+        dirty |= preProcessIndividuals( ontoDescr, ontoDescr.getOWLOntologyManager().getOWLDataFactory() );
 
         /************************************************************************************************************************************/
 
@@ -1225,7 +1373,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         /************************************************************************************************************************************/
 
         // resolve aliases, choosing delegators
-        aliases = buildAliasesForEquivalentClasses(ontoDescr);
+        aliases = buildAliasesForEquivalentClasses( ontoDescr );
 
         /************************************************************************************************************************************/
 
@@ -1328,6 +1476,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
     private void addConceptsToModel(StatefulKnowledgeSession kSession, OWLOntology ontoDescr, OntoModel baseModel) {
+        Set<OWLClass> kis = ontoDescr.getClassesInSignature();
+        Set dek = ontoDescr.getAxioms( AxiomType.DECLARATION );
+
         for ( OWLClass con : ontoDescr.getClassesInSignature() ) {
             if ( baseModel.getConcept( con.getIRI().toQuotedString()) == null ) {
                 Concept concept =  new Concept(

@@ -24,8 +24,8 @@
     public Object onCycleDetected( com.sun.xml.bind.CycleRecoverable.Context context ) {
 
            @{ name + "Impl"} x = new @{ name + "Impl"}();
-               x.setUniversalId( this.getUniversalId() );
-               x.setActualType( "@{ name }" );
+               x.setDyEntryId( this.getDyEntryId() );
+               x.setDyEntryType( "@{ name }" );
            return x;
     }
 

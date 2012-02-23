@@ -47,9 +47,6 @@ ObjectProperty: kmr:reaction
     Domain: 
         kmr:ReactionFactType
     
-    Range: 
-        skos:Concept
-    
     
 ObjectProperty: kmr:assertedBy
 
@@ -83,9 +80,6 @@ ObjectProperty: kmr:product
     Domain: 
         kmr:AllergyFactType
     
-    Range: 
-        skos:Concept
-    
     
 ObjectProperty: kmr:allergyFactType
 
@@ -105,7 +99,7 @@ ObjectProperty: kmr:patientFactType
         rdfs:label "patient (from patient id)"
     
     Domain: 
-        kmr:FactType
+        kmr:ClinicalFactType
     
     Range: 
         kmr:PatientFactType
@@ -118,9 +112,6 @@ ObjectProperty: kmr:adverseEventType
     
     Domain: 
         kmr:AllergyFactType
-    
-    Range: 
-        skos:Concept
     
     
 DataProperty: kmr:enteredWhen
@@ -135,18 +126,6 @@ DataProperty: kmr:enteredWhen
         xsd:dateTime
     
     
-DataProperty: kmr:code
-
-    Annotations: 
-        rdfs:label "code (from code)"
-    
-    Domain: 
-        skos:Concept
-    
-    Range: 
-        xsd:string
-    
-    
 DataProperty: kmr:assertedWhen
 
     Annotations: 
@@ -159,13 +138,10 @@ DataProperty: kmr:assertedWhen
         xsd:dateTime
     
     
-DataProperty: kmr:sourceSystem
+DataProperty: kmr:code
 
     Annotations: 
-        rdfs:label "what system a fact was taken from (need fact type)"
-    
-    Domain: 
-        kmr:AboutFactType
+        rdfs:label "code (from code)"
     
     Range: 
         xsd:string
@@ -179,6 +155,18 @@ DataProperty: kmr:patientName
     
     Domain: 
         kmr:PatientFactType
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: kmr:sourceSystem
+
+    Annotations: 
+        rdfs:label "what system a fact was taken from (need fact type)"
+    
+    Domain: 
+        kmr:AboutFactType
     
     Range: 
         xsd:string
@@ -201,9 +189,6 @@ DataProperty: kmr:codeSystem
     Annotations: 
         rdfs:label "code system (from code system)"
     
-    Domain: 
-        skos:Concept
-    
     Range: 
         xsd:string
     
@@ -215,13 +200,16 @@ DataProperty: kmr:dateEntered
         rdfs:label "date entered"
     
     Domain: 
-        kmr:FactType
+        kmr:ClinicalFactType
     
     Range: 
         xsd:dateTime
     
     
-Class: kmr:FactType
+Class: kmr:OrgFactType
+
+    
+Class: kmr:ClinicalFactType
 
     
 Class: kmr:PhysicianFactType
@@ -230,7 +218,7 @@ Class: kmr:PhysicianFactType
         rdfs:label "Physician Fact Type"
     
     SubClassOf: 
-        kmr:FactType
+        kmr:ClinicalFactType
     
     
 Class: kmr:AboutFactType
@@ -239,7 +227,7 @@ Class: kmr:AboutFactType
         rdfs:label "Fact about Facts"
     
     SubClassOf: 
-        kmr:FactType
+        kmr:ClinicalFactType
     
     
 Class: kmr:AllergyFactType
@@ -251,22 +239,16 @@ Class: kmr:AllergyFactType
         kmr:PhysicianFactType
     
     
-Class: kmr:Location
-
-    
 Class: kmr:PersonFactType
 
-    
-Class: skos:Concept
-
-    
-Class: kmr:ReactionFactType
-
-    Annotations: 
-        rdfs:label "Reaction Fact"
-    
     SubClassOf: 
-        kmr:PhysicianFactType
+        kmr:OrgFactType
+    
+    
+Class: kmr:Location
+
+    SubClassOf: 
+        kmr:OrgFactType
     
     
 Class: kmr:PatientFactType
@@ -275,6 +257,15 @@ Class: kmr:PatientFactType
         rdfs:label "Patient Fact"
     
     SubClassOf: 
-        kmr:FactType
+        kmr:ClinicalFactType
+    
+    
+Class: kmr:ReactionFactType
+
+    Annotations: 
+        rdfs:label "Reaction Fact"
+    
+    SubClassOf: 
+        kmr:PhysicianFactType
     
     

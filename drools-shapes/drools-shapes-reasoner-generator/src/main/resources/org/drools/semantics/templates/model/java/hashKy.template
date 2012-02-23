@@ -2,7 +2,7 @@
 @declare{'hashKyTemplate'}
 
     public int hashCode() {
-        if ( getUniversalId() != null ) {
+        if ( getDyEntryId() != null ) {
             return super.hashCode();
         } else {
             final org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy = org.jvnet.jaxb2_commons.lang.JAXBHashCodeStrategy.INSTANCE;

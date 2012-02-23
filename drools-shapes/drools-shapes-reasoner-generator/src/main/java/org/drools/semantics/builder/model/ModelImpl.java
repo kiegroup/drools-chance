@@ -50,6 +50,21 @@ public abstract class ModelImpl implements OntoModel {
     }
 
 
+
+    public Set<Individual> getIndividuals() {
+        return innerModel.getIndividuals();
+    }
+
+    public void addIndividual( Individual i ) {
+        innerModel.addIndividual( i );
+    }
+
+    public Individual removeIndividual( Individual i ) {
+        return innerModel.removeIndividual( i );
+    }
+
+
+
     public List<Concept> getConcepts() {
         return innerModel.getConcepts();
     }
@@ -117,6 +132,10 @@ public abstract class ModelImpl implements OntoModel {
 
     public void sort() {
         innerModel.sort();
+    }
+
+    public void resolve() {
+        innerModel.resolve();
     }
 
     public void raze() {

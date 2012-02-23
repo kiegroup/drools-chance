@@ -54,6 +54,8 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
         propertyModel.sort();
 
+        OntoModel populatedModel = buildIndividuals( ontoDescr, kSession, theory, propertyModel );
+
         reportSessionStatus( kSession );
 
         return propertyModel;
@@ -63,14 +65,13 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
     protected abstract OntoModel buildProperties(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel);
 
 
+    protected abstract OntoModel buildIndividuals(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel);
+
+
     protected abstract OntoModel buildClassLattice(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel baseModel);
 
 
     protected abstract void initReasoner( StatefulKnowledgeSession kSession, OWLOntology ontoDescr );
-
-
-
-
 
 
     protected void addResource( StatefulKnowledgeSession kSession, Resource res ) {
