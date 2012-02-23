@@ -36,7 +36,7 @@
 
     <modules>
         <module>conyard-example</module>
-        <!--module>wwtp-example</module-->
+        <module>translator-example</module>
     </modules>
 
     <repositories>
