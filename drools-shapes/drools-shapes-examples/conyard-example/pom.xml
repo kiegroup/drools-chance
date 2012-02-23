@@ -26,7 +26,7 @@
         <version>5.4.0-SNAPSHOT</version>
     </parent>
 
-    <name>Drools :: Shapes Example</name>
+    <name>Drools :: Shapes Construction Yard Example</name>
 
     <groupId>org.drools</groupId>
     <artifactId>conyard-example</artifactId>
@@ -302,6 +302,7 @@
                         <arg>-Xkey-equality</arg>
                         <arg>-Xsem-accessors</arg>
                         <arg>-Xdefault-constructor</arg>
+                        <arg>-Xmetadata</arg>
                     </args>
                     <removeOldOutput>false</removeOldOutput>
 

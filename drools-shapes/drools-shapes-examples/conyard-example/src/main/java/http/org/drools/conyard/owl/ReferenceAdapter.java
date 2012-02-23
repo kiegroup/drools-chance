@@ -3,6 +3,7 @@ package http.org.drools.conyard.owl;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,13 +17,17 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
 
     }
 
+    public Collection getObjects() {
+            return cache.values();
+        }
+
     @Override
     public Thing unmarshal(UIdAble v) throws Exception {
-        if ( cache.containsKey( v.getUniversalId() ) ) {
-            return (Thing) ( cache.get( v.getUniversalId() ) );
+        if ( cache.containsKey( v.getDyEntryId() ) ) {
+            return (Thing) ( cache.get( v.getDyEntryId() ) );
         } else {
             UIdAble reborn = v;
-            String baseType = this.getClass().getPackage().getName() + "." + v.getActualType();
+            String baseType = this.getClass().getPackage().getName() + "." + v.getDyEntryType();
             String actualClass = baseType + "Impl";
             if ( ! v.getClass().getName().equals( actualClass ) ) {
 
@@ -37,7 +42,7 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
                 }
             }
 
-            cache.put( reborn.getUniversalId(), reborn );
+            cache.put( reborn.getDyEntryId(), reborn );
             return (Thing) reborn;
         }
     }
@@ -48,16 +53,16 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
         if ( v instanceof UIdAble) {
             UIdAble x = (UIdAble) v;
             
-            x.setActualType(x.getClass().getSimpleName().substring(0, x.getClass().getSimpleName().lastIndexOf("Impl")));
+            x.setDyEntryType( x.getClass().getSimpleName().substring(0, x.getClass().getSimpleName().lastIndexOf("Impl")));
             
-            if ( ! cache.containsKey(x.getUniversalId()) ) {
-                cache.put( x.getUniversalId(), x );
+            if ( ! cache.containsKey(x.getDyEntryId()) ) {
+                cache.put( x.getDyEntryId(), x );
                 return  x;
             } else {
                 Class k = x.getClass();
                 UIdAble alter = (UIdAble) k.newInstance();
-                alter.setUniversalId( x.getUniversalId() );
-                alter.setReference( true );
+                alter.setDyEntryId( x.getDyEntryId() );
+                alter.setDyReference( true );
                 return alter;
             }
         }

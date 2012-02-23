@@ -204,16 +204,16 @@ public class FactTest {
         assertFalse( px.hashCode() == painting.hashCode() );
 
 
-        painting.setUniversalId( "aid" );
-            ((PaintingImpl) painting).setReference( false );
-        px.setUniversalId( "aid" );
-            ((PaintingImpl) px).setReference( false );
+        painting.setDyEntryId( "aid" );
+            ((PaintingImpl) painting).setDyReference( false );
+        px.setDyEntryId( "aid" );
+            ((PaintingImpl) px).setDyReference( false );
 
         assertEquals( painting, px );
         assertTrue( px.hashCode() == painting.hashCode() );
 
 
-        px.setUniversalId( "aid2" );
+        px.setDyEntryId( "aid2" );
 
         assertFalse( px.equals( painting ) );
         assertFalse( px.hashCode() == painting.hashCode() );
@@ -439,7 +439,7 @@ public class FactTest {
 
         persist(painting, em);
 
-        Painting p2 = (Painting) refreshOnJPA( painting, (painting).getUniversalId(), em );
+        Painting p2 = (Painting) refreshOnJPA( painting, (painting).getDyEntryId(), em );
 
 
         checkPainting( p2 );
