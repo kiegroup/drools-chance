@@ -16,6 +16,8 @@ package org.drools.shapes;
  * limitations under the License.
  */
 
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.xml.bind.v2.runtime.XMLSerializer;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.drools.io.Resource;
@@ -26,10 +28,22 @@ import org.drools.semantics.builder.model.*;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import java.io.*;
 
 /**
  * Goal which creates various possible fact model representations from an ontology
@@ -188,6 +202,33 @@ public class ShapeCaster
     }
 
 
+    /**
+     * @parameter default-value="false"
+     */
+    private boolean useExistingImplementations = false;
+
+    public boolean isUseExistingImplementations() {
+        return useExistingImplementations;
+    }
+
+    public void setUseExistingImplementations(boolean useExistingImplementations) {
+        this.useExistingImplementations = useExistingImplementations;
+    }
+
+    /**
+     * @parameter default-value="false"
+     */
+    private boolean generateIndividuals = true;
+
+    public boolean isGenerateIndividuals() {
+        return generateIndividuals;
+    }
+
+    public void setGenerateIndividuals(boolean generateIndividuals) {
+        this.generateIndividuals = generateIndividuals;
+    }
+
+
 
 
 
@@ -195,6 +236,7 @@ public class ShapeCaster
 
         String slash = System.getProperty("file.separator");
         String target = outputDirectory.getAbsolutePath() + slash + "generated-sources" + slash;
+        String metainf = "META-INF" + slash;
 
         File ontoFile = new File( ontology );
         if ( ! ontoFile.exists() ) {
@@ -211,6 +253,9 @@ public class ShapeCaster
         factory.setInferenceStrategy( isDelegateInference() ? DLFactory.INFERENCE_STRATEGY.EXTERNAL : DLFactory.INFERENCE_STRATEGY.INTERNAL );
         OntoModel results = factory.buildModel( getModelName(), res );
 
+        if ( isUseExistingImplementations() ) {
+            results.resolve();
+        }
 
 
         if ( isGenerateDefaultImplClasses() && isBuildSpecXSDs() ) {
@@ -223,7 +268,7 @@ public class ShapeCaster
             }
 
 
-            File dir = new File( target + "/META-INF" );
+            File dir = new File( target + metainf );
             if ( ! dir.exists() ) {
                 dir.mkdirs();
             }
@@ -236,7 +281,7 @@ public class ShapeCaster
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + "/META-INF/" + getModelName() +"_$spec.xsd" );
+                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +"_$spec.xsd" );
                 xsdModel.stream( fos );
                 fos.flush();
                 fos.close();
@@ -249,7 +294,7 @@ public class ShapeCaster
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + "/META-INF/" + getModelName() +"_$full.xsd" );
+                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +"_$full.xsd" );
                 xsdModel.stream( fos );
                 fos.flush();
                 fos.close();
@@ -311,7 +356,7 @@ public class ShapeCaster
             }
 
             if ( ! isBuildSpecXSDs() ) {
-                File dir = new File( target + "/META-INF" );
+                File dir = new File( target + metainf  );
                 if ( ! dir.exists() ) {
                     dir.mkdirs();
                 }
@@ -327,7 +372,7 @@ public class ShapeCaster
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + "/META-INF/" + getModelName() +".xsd" );
+                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +".xsd" );
                 xsdModel.stream( fos );
                 fos.flush();
                 fos.close();
@@ -337,8 +382,39 @@ public class ShapeCaster
 
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + "/META-INF/bindings.xjb" );
-                xsdModel.streamBindings( fos );
+                FileOutputStream fos = new FileOutputStream( target + metainf + slash + "bindings.xjb" );
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                xsdModel.streamBindings( baos );
+
+                DocumentBuilderFactory doxFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = doxFactory.newDocumentBuilder();
+                InputSource is = new InputSource( new StringReader( new String( baos.toByteArray() ) ) );
+                Document dox = builder.parse( is );
+                dox.normalize();
+
+                XPathFactory xpathFactory = XPathFactory.newInstance();
+                XPathExpression xpathExp = xpathFactory.newXPath().compile(
+                        "//text()[normalize-space(.) = '']");
+                NodeList emptyTextNodes = (NodeList)
+                        xpathExp.evaluate(dox, XPathConstants.NODESET);
+
+                // Remove each empty text node from document.
+                for (int i = 0; i < emptyTextNodes.getLength(); i++) {
+                    Node emptyTextNode = emptyTextNodes.item(i);
+                    emptyTextNode.getParentNode().removeChild(emptyTextNode);
+                }
+
+
+
+                TransformerFactory tFactory = TransformerFactory.newInstance();
+                    tFactory.setAttribute( "indent-number", new Integer(2) );
+                Transformer transformer = tFactory.newTransformer();
+                    transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
+                DOMSource source = new DOMSource( dox );
+                StreamResult result = new StreamResult( new OutputStreamWriter( fos ) );
+                transformer.transform( source, result );
+
                 fos.flush();
                 fos.close();
             } catch (Exception e) {
@@ -347,7 +423,7 @@ public class ShapeCaster
 
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + "/META-INF/empire.annotation.index" );
+                FileOutputStream fos = new FileOutputStream( target + metainf + slash + "empire.annotation.index" );
                 xsdModel.streamIndex( fos );
                 fos.flush();
                 fos.close();
@@ -355,7 +431,27 @@ public class ShapeCaster
                 throw new MojoExecutionException( e.getMessage() );
             }
 
+
+            if ( isGenerateIndividuals() ) {
+                try {
+                    String classPath = target + "xjc" + slash + xsdModel.getPackage().replace(".", slash);
+                    File f = new File( classPath );
+                    if ( ! f.exists() ) {
+                        f.mkdirs();
+                    }
+                    
+                    FileOutputStream fos = new FileOutputStream(  classPath + slash + "IndividualFactory.java" );
+                    xsdModel.streamIndividualFactory( fos );
+                    fos.flush();
+                    fos.close();
+                } catch (Exception e) {
+                    throw new MojoExecutionException( e.getMessage() );
+                }
+
+            }
         }
+
+
 
 //        private boolean generateTraitDRL = true;
 
