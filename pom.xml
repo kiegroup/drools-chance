@@ -112,7 +112,11 @@
         <version>${chance.version}</version>
       </dependency>
 
-
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-shapes-reasoner-generator</artifactId>
+        <version>${chance.version}</version>
+      </dependency>
 
 
 
