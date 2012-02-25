@@ -22,7 +22,7 @@ import org.drools.chance.degree.Degree;
 
 public class And extends AbstractConnective {
 
-     private And() { }
+    public And() { }
 
     private static And instance = new And();
 

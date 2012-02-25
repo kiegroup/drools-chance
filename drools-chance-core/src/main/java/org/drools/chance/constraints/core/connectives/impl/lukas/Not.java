@@ -20,17 +20,11 @@ import org.drools.chance.constraints.core.connectives.impl.AbstractConnective;
 import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
 import org.drools.chance.degree.Degree;
 
-/**
- * Created by IntelliJ IDEA.
- * User: davide
- * Date: 1/29/11
- * Time: 1:21 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public class Not extends AbstractConnective {
 
 
-    private Not() { }
+    public Not() { }
 
     private static Not instance = new Not();
 

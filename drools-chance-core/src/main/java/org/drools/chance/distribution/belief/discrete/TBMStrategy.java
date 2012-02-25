@@ -54,7 +54,7 @@ public class TBMStrategy<T>  implements DistributionStrategies<T> {
 
     private Constructor getDegreeStringConstructor() {
         if (degreeStringConstr == null)
-            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString(degreeType);
+            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType );
         return degreeStringConstr;
     }
 
@@ -117,6 +117,29 @@ public class TBMStrategy<T>  implements DistributionStrategies<T> {
         return mergeAsNew(current, newBit);
     }
 
+    public Distribution<T> remove(Distribution<T> current, Distribution<T> newBit) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> remove(Distribution<T> current, Distribution<T> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> remove(Distribution<T> current, Distribution<T> newBit, Object... params) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
 
     public Distribution<T> newDistribution() {
@@ -206,6 +229,8 @@ public class TBMStrategy<T>  implements DistributionStrategies<T> {
 
     public Distribution<T> parse( String distrAsString ) {
         TBM tbm = new TBM();
+        Degree mass = DegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 0.0 );
+        Degree universe = DegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 1.0 );
 
         int start = distrAsString.indexOf( "{" );
         int end = distrAsString.indexOf( "}" );
@@ -224,7 +249,6 @@ public class TBMStrategy<T>  implements DistributionStrategies<T> {
                 } catch ( Exception e ) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-                System.out.println( "Add " + elemStr );
             }
 
             int sep = distrAsString.indexOf( "/", start );
@@ -236,13 +260,18 @@ public class TBMStrategy<T>  implements DistributionStrategies<T> {
                 Degree deg = (Degree) getDegreeStringConstructor().newInstance( degStr.trim() );
 
                 tbm.setDegree( focalSet, deg );
+                mass = mass.sum( deg );
             } catch ( Exception e ) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
 
             start = distrAsString.indexOf( "{", end );
             end = distrAsString.indexOf( "}", start );
+
         }
+
+        // Assign missing mass to universe
+        tbm.setDegree( tbm.universeMask(), universe.sub( mass ) );
 
         return tbm;
     }

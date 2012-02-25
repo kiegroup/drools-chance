@@ -16,6 +16,7 @@
 
 package org.drools.chance.common;
 
+import org.drools.chance.degree.Degree;
 import org.drools.chance.distribution.Distribution;
 import org.drools.chance.distribution.DistributionStrategies;
 
@@ -31,7 +32,7 @@ public interface ImperfectField<T> {
      * Setter. Overrides the previous distribution, if any)
      * @param dist A distribution over a bean's field domain
      */
-       public void setValue(Distribution<T> dist);
+    public void setValue(Distribution<T> dist);
 
     /**
      * Setter
@@ -39,13 +40,13 @@ public interface ImperfectField<T> {
      * @param update if true, the new distribution dist will be merged with the current distribution, according to
      * this instance's strategies. If false, the new distribution will override the previous one.
      */
-       public void setValue(Distribution<T> dist, boolean update);
+    public void setValue(Distribution<T> dist, boolean update);
 
     /**
      * Predicate.
      * @return true if the current field has already been set, or is still to be initialized
      */
-     public boolean isSet();
+    public boolean isSet();
 
 
     /**
@@ -54,7 +55,7 @@ public interface ImperfectField<T> {
      * The value returned belongs to the same domain the distribution is defined on (e.g. an Distribution<String> will
      * return a String when crispified)
      */
-       public T getCrisp();
+    public T getCrisp();
 
 
     /**
@@ -66,20 +67,20 @@ public interface ImperfectField<T> {
      * 0 corresponds to the current value.
      * @throws IndexOutOfBoundsException
      */
-       public Distribution<T> getPast(int time) throws IndexOutOfBoundsException;
+    public Distribution<T> getPast(int time) throws IndexOutOfBoundsException;
 
 
     /**
      * @return the current distribution for this field
      */
-       public Distribution<T> getCurrent();
+    public Distribution<T> getCurrent();
 
 
     /**
      * Getter
      * @return the current Strategies used to manipulate this field's distribution
      */
-       public DistributionStrategies<T> getStrategies();
+    public DistributionStrategies<T> getStrategies();
 
 
     /**
@@ -87,7 +88,7 @@ public interface ImperfectField<T> {
      * Convenience method that calls "setValue" with update set to true
      * @param fieldBit the new distribution to merge with the current one
      */
-       public void update(Distribution<T> fieldBit);
+    public void update(Distribution<T> fieldBit);
 
     /**
      * updates the current distribution, by converting the provided value into a (degenerate) distribution
@@ -95,5 +96,21 @@ public interface ImperfectField<T> {
      * (In many cases, this operation could still return a degenerate distribution centered on value)
      * @param value the value to merge with the current distribution
      */
-       public void update(T value);
+    public void update(T value);
+
+
+    /**
+     * Updates the current distribution, converting the provided value into a (semi-degenerate) distribution
+     * and merging it with the current one.
+     * @param deg
+     */
+    public void update( T value, Degree deg, String... params );
+
+    /**
+     * Updates the current distribution, converting the provided value into a (semi-degenerate) distribution
+     * and subtracting it from the current one.
+     * @param deg
+     */
+    public void remove( T value, Degree deg, String... params );
+
 }

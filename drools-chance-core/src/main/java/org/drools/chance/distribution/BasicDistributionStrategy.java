@@ -20,6 +20,7 @@ import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.DegreeType;
 import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.simple.SimpleDegree;
+import org.drools.core.util.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -86,7 +87,7 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
     }
 
     public Distribution<T> toDistribution(T value, Object... params) {
-        return new BasicDistribution<T>( value, tru );
+        return new BasicDistribution<T>( value, (Degree) params[0] );
     }
 
 
@@ -177,17 +178,38 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
 
 
     public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit) {
+        return merge( current, newBit, "or" );
+    }
+
+    public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, String strategy) {
+        return merge( current, newBit, new Object[] {strategy} );
+    }
+
+    public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, Object... params) {
         BasicDistribution<T> src = (BasicDistribution<T>) current;
         BasicDistribution<T> bit = (BasicDistribution<T>) newBit;
+        String strategy = null;
+        if ( params.length > 0 ) {
+            strategy = (String) params[0];
+        }
 
         T val = src.getValue();
         if ( val == null ) {
             val = ((BasicDistribution<T>) newBit).getValue();
             src.set( val, newBit.getDegree( val ) );
         } else if ( val.equals( bit.getValue() ) ) {
-            Degree a = src.getDegree(val);
-            Degree b = bit.getDegree( val );
-            src.setDegree( a.sum( b.mul( a.True().sub( a ) ) ) );
+            if (StringUtils.isEmpty( strategy ) || "or".equals( strategy ) ) {
+                Degree a = src.getDegree(val);
+                Degree b = bit.getDegree( val );
+                Degree c = a.sum( b.mul( a.True().sub( a ) ) );
+
+                src.setDegree( c.getValue() > 0.99 ? c.True() : c );
+            } else {
+                Degree a = src.getDegree(val);
+                Degree b = bit.getDegree( val );
+                Degree c = a.mul( a.True().sub( b ) );
+                src.setDegree( c.getValue() > 0.99 ? c.True() : c );
+            }
         } else {
             Degree a = src.getDegree(val);
             Degree b = bit.getDegree( val );
@@ -199,14 +221,6 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
             }
         }
         return src;
-    }
-
-    public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, String strategy) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, Object... params) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 
@@ -235,6 +249,55 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
     }
 
     public Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> remove(Distribution<T> current, Distribution<T> newBit) {
+        return  remove( current, newBit, new Object[0] );
+
+    }
+
+//    w -> w/a
+//
+//    1-a -> (1-a)/(1-b) ---> (1-a) -> 1 - (1-a)/(1-b) ----->  (1-b -1 +a)/(1-b) --> (a-b)/(1-b)
+
+    public Distribution<T> remove(Distribution<T> current, Distribution<T> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> remove(Distribution<T> current, Distribution<T> newBit, Object... params) {
+        BasicDistribution<T> src = (BasicDistribution<T>) current;
+        BasicDistribution<T> bit = (BasicDistribution<T>) newBit;
+
+        T val = src.getValue();
+        if ( val == null ) {
+
+        } else if ( val.equals( bit.getValue() ) ) {
+
+            Degree a = src.getDegree(val);
+            Degree b = bit.getDegree( val );
+            Degree c;
+            if ( a.equals( a.True() ) && b.getValue() > 0 ) {
+                a = a.fromConst( 0.99 );
+            }
+            c = ( a.sub( b ) ).div( a.True().sub( b ) );
+
+            src.setDegree( c );
+        } else {
+            //do nothing
+        }
+        return src;
+    }
+
+    public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -16,6 +16,7 @@
 
 package org.drools.chance.common;
 
+import org.drools.chance.degree.Degree;
 import org.drools.chance.distribution.Distribution;
 import org.drools.chance.distribution.DistributionStrategies;
 
@@ -60,7 +61,7 @@ public class ImperfectFieldImpl<T> extends AbstractImperfectField<T> {
      * @param strategies the strategies to manipulate the distribution
      * @param distr0 the initial distribution
      */
-    public ImperfectFieldImpl(DistributionStrategies<T> strategies, Distribution<T> distr0){
+    public ImperfectFieldImpl( DistributionStrategies<T> strategies, Distribution<T> distr0 ){
         super(strategies);
         setValue(distr0);
     }
@@ -81,9 +82,32 @@ public class ImperfectFieldImpl<T> extends AbstractImperfectField<T> {
     }
 
 
-    public Distribution<T> getCurrent(){
-        return distr;
+    public void update(T value, Degree deg, String... params) {
+        getStrategies().merge( distr, getStrategies().toDistribution( value, deg ), params );
+
     }
+
+    public void remove(T value, Degree deg, String... params) {
+        getStrategies().remove(distr, getStrategies().toDistribution(value, deg), params);
+    }
+
+
+
+    public void update(T value, Degree deg) {
+        getStrategies().merge( distr, getStrategies().toDistribution( value, deg ) );
+    }
+
+    public void remove(T value, Degree deg) {
+        getStrategies().remove(distr, getStrategies().toDistribution(value, deg));
+    }
+
+
+
+
+
+    public Distribution<T> getCurrent(){
+            return distr;
+        }
 
 
     public boolean isSet() {

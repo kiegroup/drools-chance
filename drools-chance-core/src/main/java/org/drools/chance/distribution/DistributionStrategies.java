@@ -42,9 +42,9 @@ public interface DistributionStrategies<T> {
      * @param value     the value used to generate a distribution
      * @return
      */
-	Distribution<T> toDistribution(T value);
-	Distribution<T> toDistribution(T value, String strategy);
-	Distribution<T> toDistribution(T value, Object... params);
+    Distribution<T> toDistribution(T value);
+    Distribution<T> toDistribution(T value, String strategy);
+    Distribution<T> toDistribution(T value, Object... params);
 
 
     /**
@@ -57,14 +57,14 @@ public interface DistributionStrategies<T> {
 
 
 
-     /**
+    /**
      * Factory method
      * Creates a non-informative distribution on the domain
      * E.g. uniform probability, fuzzy set with uniform membership set to 1,
      * basic mass assignment with mass 1 assigned to the universe set, ...
      * @return
      */
-	Distribution<T> newDistribution();
+    Distribution<T> newDistribution();
 
     /**
      * Factory method
@@ -74,7 +74,7 @@ public interface DistributionStrategies<T> {
      * @param   focalElements
      * @return
      */
-	Distribution<T> newDistribution(Set<T> focalElements);
+    Distribution<T> newDistribution(Set<T> focalElements);
 
     /**
      * Factory method
@@ -83,9 +83,9 @@ public interface DistributionStrategies<T> {
      * @param elements
      * @return
      */
-	Distribution<T> newDistribution(Map<? extends T, ? extends Degree> elements);
+    Distribution<T> newDistribution(Map<? extends T, ? extends Degree> elements);
 
-    
+
 
 
     /**
@@ -95,9 +95,9 @@ public interface DistributionStrategies<T> {
      * @param dist the distribution to convert
      * @return a representative value in the domain T
      */
-	T toCrispValue(Distribution<T> dist);
-	T toCrispValue(Distribution<T> dist, String strategy);
-	T toCrispValue(Distribution<T> dist, Object... params);
+    T toCrispValue(Distribution<T> dist);
+    T toCrispValue(Distribution<T> dist, String strategy);
+    T toCrispValue(Distribution<T> dist, Object... params);
 
     /**
      * Samples a distribution and returns an element of the domain
@@ -107,7 +107,7 @@ public interface DistributionStrategies<T> {
      * @return
      */
     T sample(Distribution<T> dist);
-	T sample(Distribution<T> dist, String strategy);
+    T sample(Distribution<T> dist, String strategy);
     T sample(Distribution<T> dist, Object... params);
 
 
@@ -121,7 +121,7 @@ public interface DistributionStrategies<T> {
      */
     Distribution<T> merge(Distribution<T> current, Distribution<T> newBit);
     Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, String strategy);
-	Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, Object... params);
+    Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, Object... params);
 
 
 
@@ -135,7 +135,36 @@ public interface DistributionStrategies<T> {
      */
     Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit);
     Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit, String strategy);
-	Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params);
+    Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params);
+
+
+
+    /**
+     * Updates a distribution, merging it with another one (possibly partial)
+     * e.g. fuzzy set operations (not due to logical connectives, even if equivalent in practice!),
+     * bayesian conditioning, belief update, ...
+     * @param current
+     * @param newBit
+     * @return the original distribution, updated
+     */
+    Distribution<T> remove(Distribution<T> current, Distribution<T> newBit);
+    Distribution<T> remove(Distribution<T> current, Distribution<T> newBit, String strategy);
+    Distribution<T> remove(Distribution<T> current, Distribution<T> newBit, Object... params);
+
+
+
+    /**
+     * Updates a distribution, merging it with another one (possibly partial)
+     * e.g. fuzzy set operations (not due to logical connectives, even if equivalent in practice!),
+     * bayesian conditioning, belief update, ...
+     * @param current
+     * @param newBit
+     * @return a copy of the original distribution, updated
+     */
+    Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit);
+    Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, String strategy);
+    Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params);
+
 
 
 }

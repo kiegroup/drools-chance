@@ -127,4 +127,28 @@ public class LinguisticPossibilityDistributionStrategy<T extends Number> impleme
     public Distribution<Number> mergeAsNew(Distribution<Number> current, Distribution<Number> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public Distribution<Number> remove(Distribution<Number> current, Distribution<Number> newBit) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Number> remove(Distribution<Number> current, Distribution<Number> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Number> remove(Distribution<Number> current, Distribution<Number> newBit, Object... params) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Number> removeAsNew(Distribution<Number> current, Distribution<Number> newBit) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Number> removeAsNew(Distribution<Number> current, Distribution<Number> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Number> removeAsNew(Distribution<Number> current, Distribution<Number> newBit, Object... params) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

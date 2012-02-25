@@ -82,6 +82,16 @@ public class LinguisticImperfectField<T extends Linguistic, K extends Number> im
         innerField.update(value);
     }
 
+    public void update(T value, Degree deg, String... p) {
+        //TODO
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    public void remove(T value, Degree deg, String... p) {
+        //TODO
+        throw new UnsupportedOperationException("TODO");
+    }
+
 
     public String toString() {
         return "(L)" + innerField.toString();

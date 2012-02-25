@@ -218,4 +218,28 @@ public class ShapedFuzzyPartitionStrategy<T extends Linguistic> implements Distr
     public Distribution<Linguistic> mergeAsNew(Distribution<Linguistic> current, Distribution<Linguistic> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public Distribution<Linguistic> remove(Distribution<Linguistic> current, Distribution<Linguistic> newBit) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Linguistic> remove(Distribution<Linguistic> current, Distribution<Linguistic> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Linguistic> remove(Distribution<Linguistic> current, Distribution<Linguistic> newBit, Object... params) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Linguistic> removeAsNew(Distribution<Linguistic> current, Distribution<Linguistic> newBit) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Linguistic> removeAsNew(Distribution<Linguistic> current, Distribution<Linguistic> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<Linguistic> removeAsNew(Distribution<Linguistic> current, Distribution<Linguistic> newBit, Object... params) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

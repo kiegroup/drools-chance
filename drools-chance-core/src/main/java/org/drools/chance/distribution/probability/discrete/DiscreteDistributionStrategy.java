@@ -189,6 +189,30 @@ public class DiscreteDistributionStrategy<T>  implements DistributionStrategies<
 
 	}
 
+    public Distribution<T> remove(Distribution<T> current, Distribution<T> newBit) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> remove(Distribution<T> current, Distribution<T> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> remove(Distribution<T> current, Distribution<T> newBit, Object... params) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, String strategy) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
     public Distribution<T> newDistribution() {
         if ( Boolean.class.equals( domainType ) ) {
