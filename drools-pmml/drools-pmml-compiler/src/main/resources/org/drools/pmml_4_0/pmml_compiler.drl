@@ -221,7 +221,7 @@ end
 rule "processDataField_interValidation"
 dialect "mvel"
 when
-    $fld : DataField( $vals : values , $isize : intervals.size > 0,
+    $fld : DataField( $vals : values , $isize : intervals.size() > 0,
                       optype == OPTYPE.CONTINUOUS || optype == OPTYPE.ORDINAL )
 then
     HashMap map = new HashMap(7);
@@ -236,7 +236,7 @@ end
 rule "processDataField_valueValidation_valid"
 dialect "mvel"
 when
-    $fld : DataField( $vals : values, $vsize : values.size > 0 )
+    $fld : DataField( $vals : values, $vsize : values.size() > 0 )
     $validz : List( size > 0 ) from accumulate (
                         $val : Value( property == null || (property != "missing" && property != "invalid") ) from $vals,
                         init ( List validz = new java.util.LinkedList(); ),
@@ -256,7 +256,7 @@ end
 rule "processDataField_valueValidation_missing"
 dialect "mvel"
 when
-    $fld : DataField( $vals : values, $vsize : values.size > 0,
+    $fld : DataField( $vals : values, $vsize : values.size() > 0,
                       ( optype == OPTYPE.CONTINUOUS || optype == OPTYPE.CATEGORICAL ) )
     $missingz : List( size > 0 ) from accumulate(
                         $val : Value( property == "missing" ) from $vals,
@@ -277,7 +277,7 @@ end
 rule "processDataField_valueValidation_invalid"
 dialect "mvel"
 when
-    $fld : DataField( $vals : values, $vsize : values.size > 0,
+    $fld : DataField( $vals : values, $vsize : values.size() > 0,
                       ( optype == OPTYPE.CONTINUOUS || optype == OPTYPE.CATEGORICAL ) )
     $invalidz : List( size > 0 ) from accumulate(
                         $val : Value( property == "invalid" ) from $vals,
@@ -851,7 +851,7 @@ dialect "mvel"
 salience -5
 when
     $fld : DerivedField( $app : apply )
-    $a : Apply( this == $app, $fun : this.function, $arity : constantsAndFieldRevesAndNormContinuouses.size )
+    $a : Apply( this == $app, $fun : this.function, $arity : constantsAndFieldRevesAndNormContinuouses.size() )
     $args : List( size == $arity ) from accumulate (
         $res : FunctionResult( father == $a, $x : expr ),
         init( List list = new LinkedList(); ),
@@ -911,7 +911,7 @@ dialect "mvel"
 salience -5
 when
     $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
-    $a2 : Apply( this memberOf $expr, $f2 : this.function, $arity : constantsAndFieldRevesAndNormContinuouses.size )
+    $a2 : Apply( this memberOf $expr, $f2 : this.function, $arity : constantsAndFieldRevesAndNormContinuouses.size() )
     $args : List( size == $arity ) from accumulate (
         $res : FunctionResult( father == $a2, $x : expr ),
         init( List list = new LinkedList(); ),
@@ -1398,7 +1398,7 @@ end
 
  rule "Generic_Target"
  when
-    $t: Target( $field : field, targetValues.size == 0,
+    $t: Target( $field : field, targetValues.size() == 0,
                  $cast : castInteger, $max : max, $min : min, $offset : rescaleConstant, $scale : rescaleFactor  )
     MiningField( name == $field, usageType == FIELDUSAGETYPE.PREDICTED )
  then
@@ -1984,7 +1984,7 @@ end
 
 rule "checkDataDictionary"
 when
-    DataDictionary( $exp : numberOfFields != null, $act : dataFields.size != $exp )
+    DataDictionary( $exp : numberOfFields != null, $act : dataFields.size() != $exp )
 then
    System.err.println("TODO WARNING : Expected number of fields in datadictionary different from actual : " + $exp + " vs " + $act);
 end
