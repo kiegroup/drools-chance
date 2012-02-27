@@ -25,7 +25,8 @@ declare trait @{name} @if{ superConcepts.size > 0 } extends @foreach{ sup : supe
 
 
   @if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }
-    @{ properties[ propKey ].name } : @{ properties[ propKey ].target.name }
+    @code{ prop = properties[ propKey ] }
+    @{ prop.name } : @if{ prop.maxCard == null || prop.maxCard > 1 } java.util.List @else{} @{ map( prop.target.name, true ) } @end{}
   @end{}                        @end{}
 end
 

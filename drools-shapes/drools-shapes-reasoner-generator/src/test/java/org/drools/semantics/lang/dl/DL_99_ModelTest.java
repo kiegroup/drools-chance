@@ -18,8 +18,13 @@ package org.drools.semantics.lang.dl;
 
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
+import org.drools.builder.KnowledgeBuilder;
+import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.builder.ResourceType;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
+import org.drools.io.impl.ByteArrayResource;
+import org.drools.io.impl.InputStreamResource;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
@@ -97,8 +102,7 @@ public class DL_99_ModelTest {
 
     @Test
     public void testDRLModelGenerationExternal() {
-//        String source = "kmr2" + File.separator + "kmr2_mini.owl";
-        String source = "conyard.ttl";
+        String source = "kmr2" + File.separator + "kmr2_mini.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
@@ -109,24 +113,33 @@ public class DL_99_ModelTest {
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.DRL );
         DRLModel drlModel = (DRLModel) compiler.compile( results );
 
-        System.err.println( drlModel.getDRL() );
+        String drl = drlModel.getDRL();
+
+        System.err.println( drl );
+
+        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
+
+        if ( kBuilder.hasErrors() ) {
+            fail( kBuilder.getErrors().toString() );
+        }
 
 
-//        ModelCompiler jcompiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
-//        JarModel jarModel = (JarModel) jcompiler.compile( results );
-//
-//        assertTrue( jarModel.save( folder.getRoot().getAbsolutePath() ) );
-//
-//        try {
-//            FileOutputStream fos = new FileOutputStream( folder.newFile( "test.jar" ) );
-//            byte[] content = jarModel.buildJar().toByteArray();
-//
-//            fos.write( content, 0, content.length );
-//            fos.flush();
-//            fos.close();
-//        } catch ( IOException e ) {
-//            fail( e.getMessage() );
-//        }
+        ModelCompiler jcompiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
+        JarModel jarModel = (JarModel) jcompiler.compile( results );
+
+        assertTrue( jarModel.save( folder.getRoot().getAbsolutePath() ) );
+
+        try {
+            FileOutputStream fos = new FileOutputStream( folder.newFile( "test.jar" ) );
+            byte[] content = jarModel.buildJar().toByteArray();
+
+            fos.write( content, 0, content.length );
+            fos.flush();
+            fos.close();
+        } catch ( IOException e ) {
+            fail( e.getMessage() );
+        }
 
 
 
