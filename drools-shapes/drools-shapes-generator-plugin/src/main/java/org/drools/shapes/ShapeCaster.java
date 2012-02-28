@@ -228,6 +228,19 @@ public class ShapeCaster
         this.generateIndividuals = generateIndividuals;
     }
 
+    
+    /**
+     * @parameter default-value="false"
+     */
+    private boolean generateDRL = true;
+
+    public boolean isGenerateDRL() {
+        return generateDRL;
+    }
+
+    public void setGenerateDRL(boolean generateDRL) {
+        this.generateDRL = generateDRL;
+    }
 
 
 
@@ -237,6 +250,7 @@ public class ShapeCaster
         String slash = System.getProperty("file.separator");
         String target = outputDirectory.getAbsolutePath() + slash + "generated-sources" + slash;
         String metainf = "META-INF" + slash;
+        String drlDir = "DRL" + slash;
 
         File ontoFile = new File( ontology );
         if ( ! ontoFile.exists() ) {
@@ -258,8 +272,27 @@ public class ShapeCaster
         }
 
 
+        if ( isGenerateDRL() ) {
+            ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.DRL );
 
+            DRLModel drlModel;
+            drlModel = (DRLModel) compiler.compile( results );
 
+            File dir = new File( target + drlDir );
+            if ( ! dir.exists() ) {
+                dir.mkdirs();
+            }
+
+            try {
+                FileOutputStream fos = new FileOutputStream( dir + slash + getModelName() +"_trait.drl" );
+                drlModel.stream( fos );
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                throw new MojoExecutionException( e.getMessage() );
+            }
+
+        }
 
 
         if ( isGenerateDefaultImplClasses() && isBuildSpecXSDs() ) {

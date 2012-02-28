@@ -16,6 +16,8 @@
 
 package org.drools.semantics.builder.model;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -73,5 +75,15 @@ public class DRLModelImpl extends ModelImpl implements DRLModel {
         return sb.toString();
     }
 
+
+    public boolean stream( OutputStream os ) {
+        try {
+            os.write( getDRL().getBytes() );
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return false;
+        }
+        return true;
+    }
 
 }

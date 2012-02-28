@@ -16,8 +16,12 @@
 
 package org.drools.semantics.builder.model;
 
+import java.io.OutputStream;
+
 public interface DRLModel extends CompiledOntoModel {
 
     public String getDRL();
+
+    public boolean stream( OutputStream os );
 
 }
