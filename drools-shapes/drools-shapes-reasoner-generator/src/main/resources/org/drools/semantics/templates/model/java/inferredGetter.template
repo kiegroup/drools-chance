@@ -29,9 +29,9 @@
             // @{subs}
             @foreach{ sub : subs }
                 @if{ sub.single }
-                    ans.add( @{ getter( sub.name, type ) }() );
+                    ans.add( @{ getter( sub.name, sub.type, 1 ) }() );
                 @else{}
-                    ans.addAll( @{ getter( sub.name, type ) }() );
+                    ans.addAll( @{ getter( sub.name, sub.type ) }() );
                 @end{}
             @end{}
 

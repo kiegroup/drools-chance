@@ -107,7 +107,7 @@ public class AccessorPlugin extends Plugin {
                     if ( m instanceof Element ) {
                         Element em = (Element) m;
 //                        if ( ! em.getTagName().equals( "restriction" ) ) { continue; }
-                        prop.addSub( new Sub( em.getAttribute( "name" ), Boolean.valueOf( em.getAttribute( "single" ) ) ) );
+                        prop.addSub( new Sub( em.getAttribute( "name" ), em.getAttribute( "type" ), Boolean.valueOf( em.getAttribute( "single" ) ) ) );
                     }
                 }
 
@@ -256,11 +256,13 @@ public class AccessorPlugin extends Plugin {
     
     public static class Sub {
         private String name;
+        private String type;
         private boolean single;
 
-        private Sub(String name, boolean single) {
+        private Sub(String name, String type, boolean single) {
             this.name = name;
             this.single = single;
+            this.type = type;
         }
 
         public String getName() {
@@ -279,6 +281,14 @@ public class AccessorPlugin extends Plugin {
             this.single = single;
         }
 
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -288,6 +298,7 @@ public class AccessorPlugin extends Plugin {
 
             if (single != sub.single) return false;
             if (name != null ? !name.equals(sub.name) : sub.name != null) return false;
+            if (type != null ? !type.equals(sub.type) : sub.type != null) return false;
 
             return true;
         }
@@ -296,6 +307,7 @@ public class AccessorPlugin extends Plugin {
         public int hashCode() {
             int result = name != null ? name.hashCode() : 0;
             result = 31 * result + (single ? 1 : 0);
+            result = 31 * result + type != null ? type.hashCode() : 0;
             return result;
         }
 

@@ -81,7 +81,7 @@
             <meta:property name="@{prop.name}" type="@{prop.target.name}">
                 @foreach{ subProp : concept.properties.values }
                 @if{ subProp.restricted && subProp.baseProperty == prop }
-                    <meta:restriction name="@{subProp.name}" single="@{subProp.maxCard == 1}"/>
+                    <meta:restriction name="@{subProp.name}" type="@{subProp.target.name}" single="@{subProp.maxCard == 1}"/>
                 @end{}
                 @end{}
             </meta:property>

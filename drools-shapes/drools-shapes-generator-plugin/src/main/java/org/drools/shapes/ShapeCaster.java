@@ -258,6 +258,10 @@ public class ShapeCaster
         }
 
 
+
+
+
+
         if ( isGenerateDefaultImplClasses() && isBuildSpecXSDs() ) {
 
             ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.FLAT;
