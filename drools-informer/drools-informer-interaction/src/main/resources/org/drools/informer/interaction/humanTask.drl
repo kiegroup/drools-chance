@@ -469,9 +469,9 @@ when
                                     || transition == TaskTransitions.ACTIVATE.name
                                     || transition == TaskTransitions.SUSPEND.name
                                     || transition == TaskTransitions.RESUME.name )
-    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
-    $task : Task( $tid; )
+//    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
 then
+    System.out.println(" Preparing a tx " + $tranx );
     modify ( $holder ) {
         setTransition( null );
     }
@@ -485,7 +485,7 @@ when
                                     && != TaskTransitions.ACTIVATE.name
                                     && != TaskTransitions.SUSPEND.name
                                     && != TaskTransitions.RESUME.name )
-    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
+//    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
 then
 //    System.out.println("Trax nont allowed since user is null");
     modify ( $holder ) {
@@ -498,14 +498,13 @@ when
     $holder : TaskTransitionHolder( $tid : taskId, owner == null,
                                     $tranx : transition != null )
     ?taskInfo( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
-    $task : Task( $tid; )           //TODO remove due to a bug not being able to use $owner direcly
 then
-    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><Trax with INFERRED OWNER");
+//    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><Trax with INFERRED OWNER");
     modify ( $holder ) {
         setTransition( null );
     }
 
-    TaskStateTransition tst = new TaskStateTransition( $tid, TaskTransitions.valueOf( $tranx ), $task.getOwner(), new Date() );
+    TaskStateTransition tst = new TaskStateTransition( $tid, TaskTransitions.valueOf( $tranx ), $owner, new Date() );
     insert( tst );
 end
 

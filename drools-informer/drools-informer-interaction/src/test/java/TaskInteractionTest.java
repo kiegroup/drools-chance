@@ -21,6 +21,7 @@ import org.drools.builder.ResourceType;
 import org.drools.conf.AssertBehaviorOption;
 import org.drools.conf.EventProcessingOption;
 import org.drools.definition.type.FactType;
+import org.drools.event.rule.DebugAgendaEventListener;
 import org.drools.informer.Answer;
 import org.drools.informer.MultipleChoiceQuestion;
 import org.drools.io.impl.ClassPathResource;
