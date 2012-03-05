@@ -45,9 +45,10 @@ end
 
 declare Interaction
     type            : InteractionTypes
-    bodyTemplateId  : String
+    bodyTemplateIds : List
     receivers       : List       // <String>
     channels        : List
+    timeouts        : List
 end
 
 declare TaskInteraction extends Interaction
@@ -64,6 +65,7 @@ declare Alert
     formId          : String    @key
     bodyTemplateId  : String
     channel         : String
+    timeout         : String
 end
 
 
@@ -118,7 +120,7 @@ when
                                  $inters : interactions )
     $inter  : Interaction( $type : type, this memberOf $inters,
                            $receivers : receivers, receivers.size > 0, $receiver : receivers[0],
-                           $body : bodyTemplateId,
+                           $body : bodyTemplateIds[0],
                            $channel : channels[0] )
     not       InteractiveTask( args contains $inter )
 then
@@ -153,11 +155,12 @@ when
                                  $inters : interactions )
     $inter  : Interaction( $type : type, this memberOf $inters,
                            receivers.size > 0, $receiver : receivers[0],
-                           $body : bodyTemplateId,
-                           channels != null, $channel : channels[0] )
+                           bodyTemplateIds != null, $body : bodyTemplateIds[0],
+                           channels != null, $channel : channels[0],
+                           timeouts != null, $timeout : timeouts[0])
     $task   : InteractiveTask( $tid : taskId, $formId : controlQuestId != null, args contains $inter )
 then
-    Alert alert = new Alert( $ticketId, (String) $receiver, $formId, $body, (String) $channel );
+    Alert alert = new Alert( $ticketId, (String) $receiver, $formId, (String) $body, (String) $channel, (String) $timeout );
     System.out.println( "Inserting alert " + alert + " @@using ctrolQ " + $formId );
     insert( alert );
 end
@@ -212,18 +215,20 @@ end
 
 
 rule "Escalation"
+timer( expr: $timeout ;  )
 when
     $ticket : InteractionTicket( $id : id,
                                  $inters : interactions )
-    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $body, $receivers, $channels ; this memberOf $inters, $receivers.size > 1 )
+    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $bodies, $receivers, $channels, $timeouts ; this memberOf $inters, $receivers.size > 1 )
     $task   : InteractiveTask( $tid : taskId, args contains $inter )
-    $alert  : Alert( $id, $dest, $formId, $channel ; destination memberOf $receivers )
-    not       TaskStateTransition( $tid ; this after[0s, 1s] $alert )
+    $alert  : Alert( $id, $dest, $formId, $templ, $channel, $timeout ; destination memberOf $receivers )
+    not       TaskStateTransition( $tid ; )
 then
-    System.out.println( $dest + " did not answer " + $alert );
     retract( $alert );
     $receivers.remove( 0 );
     $channels.remove( 0 );
+    $timeouts.remove( 0 );
+    $bodies.remove( 0 );
     System.out.println( " Interaction is NOW " + $inter );
     update( $inter );
     insert( new TaskStateTransition( $tid, TaskTransitions.DELEGATE, (String) $receivers.get( 0 ), new Date() ) );

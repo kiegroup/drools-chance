@@ -63,15 +63,17 @@ then
 
     Interaction ti1 = new Interaction();
         ti1.setType( InteractionTypes.NOTIFICATION );
-        ti1.setBodyTemplateId( "empty.template" );
+        ti1.setBodyTemplateIds( new java.util.LinkedList( java.util.Arrays.asList( "empty.template", "empty.template", "empty.template" ) ) );
         ti1.setReceivers( new java.util.LinkedList( java.util.Arrays.asList( "actor1", "actor2", "actor3" ) ) );
         ti1.setChannels( new java.util.LinkedList( java.util.Arrays.asList( "ALERT", "ALERT", "ALERT" ) ) );
+        ti1.setTimeouts( new java.util.LinkedList( java.util.Arrays.asList( "1s", "1s", "1s" ) ) );
         System.err.println( ti1 );
 
     Interaction ti2 = new Interaction();
         ti2.setType( InteractionTypes.NOTIFICATION );
-        ti2.setBodyTemplateId( "empty.template" );
+        ti2.setBodyTemplateIds( new java.util.LinkedList( java.util.Arrays.asList(  "empty.template", "empty.template" ) ) );
         ti2.setReceivers( new java.util.LinkedList( java.util.Arrays.asList( "main1", "alien2" ) ) );
+        ti2.setTimeouts( new java.util.LinkedList( java.util.Arrays.asList( "1s", "1s", "1s" ) ) );
         ti2.setChannels( new java.util.LinkedList( java.util.Arrays.asList( "ALERT", "SMS" ) ) );
 
     ticket.getInteractions().add( ti1 );
@@ -161,9 +163,10 @@ then
 
     Interaction ti1 = new Interaction();
         ti1.setType( InteractionTypes.NOTIFICATION );
-        ti1.setBodyTemplateId( "empty.template" );
+        ti1.setBodyTemplateIds( new java.util.LinkedList( java.util.Arrays.asList(  "empty.template", "empty.template" ) ) );
         ti1.setReceivers( new java.util.LinkedList( java.util.Arrays.asList( "actor1", "actor2" ) ) );
         ti1.setChannels( new java.util.LinkedList( java.util.Arrays.asList( "ALERT", "ALERT" ) ) );
+        ti1.setTimeouts( new java.util.LinkedList( java.util.Arrays.asList( "500ms", "1s" ) ) );
         System.err.println( ti1 );
 
     ticket.getInteractions().add( ti1 );
@@ -224,7 +227,7 @@ then
 
     TaskInteraction ti1 = new TaskInteraction();
         ti1.setType( InteractionTypes.QUESTIONNAIRE );
-        ti1.setBodyTemplateId( "empty.template" );
+        ti1.setBodyTemplateIds( new java.util.LinkedList( java.util.Arrays.asList( "empty.template" ) ) );
         ti1.setReceivers( new java.util.LinkedList( java.util.Arrays.asList( "actor1" ) ) );
         ti1.getTriggers().add( "org.drools.informer.interaction.SurveyBean" );
         System.err.println( ti1 );

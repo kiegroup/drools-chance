@@ -168,7 +168,7 @@ public class TaskInteractionTest {
 
 
         try {
-            Thread.sleep( 3000 );
+            Thread.sleep( 2000 );
         } catch (InterruptedException e) {
             fail();
         }
