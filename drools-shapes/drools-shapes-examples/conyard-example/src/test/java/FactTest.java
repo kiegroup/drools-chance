@@ -15,6 +15,7 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -24,6 +25,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -190,8 +196,8 @@ public class FactTest {
     public void testEqualityAndHashCode() {
 
         Painting px = new PaintingImpl();
-            px.setOidString( "oidX" );
-            px.setHasCommentString( "Some comment on this object" );
+        px.setOidString( "oidX" );
+        px.setHasCommentString( "Some comment on this object" );
 
         assertEquals( px, painting );
         assertFalse( px.hashCode() == painting.hashCode() );
@@ -205,9 +211,9 @@ public class FactTest {
 
 
         painting.setDyEntryId( "aid" );
-            ((PaintingImpl) painting).setDyReference( false );
+        ((PaintingImpl) painting).setDyReference( false );
         px.setDyEntryId( "aid" );
-            ((PaintingImpl) px).setDyReference( false );
+        ((PaintingImpl) px).setDyReference( false );
 
         assertEquals( painting, px );
         assertTrue( px.hashCode() == painting.hashCode() );
@@ -448,5 +454,48 @@ public class FactTest {
 
     }
 
+
+
+
+    @Test
+    public void validateXMLWithSchema() throws SAXException {
+        StringWriter writer = new StringWriter();
+
+        try {
+            marshaller.marshal( painting, writer );
+        } catch (JAXBException e) {
+            fail( e.getMessage() );
+        }
+
+        String inXSD = "conyard_$impl.xsd";
+        String xml = writer.toString();
+        System.out.println( xml );
+
+        SchemaFactory factory =
+                SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+
+
+        Source schemaFile = null;
+        try {
+            schemaFile = new StreamSource( new ClassPathResource( inXSD ).getInputStream() );
+        } catch ( IOException e ) {
+            fail( e.getMessage() );
+        }
+        Schema schema = factory.newSchema( schemaFile );
+
+        Validator validator = schema.newValidator();
+
+        Source source = new StreamSource( new ByteArrayInputStream( xml.getBytes() ) );
+
+        try {
+            validator.validate(source);
+        }
+        catch ( SAXException ex ) {
+            fail( ex.getMessage() );
+        } catch ( IOException ex ) {
+            fail( ex.getMessage() );
+        }
+
+    }
 
 }

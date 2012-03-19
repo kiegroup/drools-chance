@@ -22,4 +22,8 @@ public interface XSDModelCompiler extends ModelCompiler {
 
     public boolean isTransientPropertiesEnabled();
 
+    public boolean isUseImplementation();
+
+    public void setUseImplementation( boolean flag );
+
 }

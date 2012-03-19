@@ -325,8 +325,7 @@ public class DLUtils {
 
 
 
-
-    private static DateFormat formatter = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss.SSS Z");
+    private static DateFormat formatter = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ss'Z'");
 
     public static void setDateFormatter( DateFormat format ) {
         formatter = format;

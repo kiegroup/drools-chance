@@ -406,7 +406,21 @@ public class ShapeCaster
 
 
             ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+            ((XSDModelCompiler) compiler).setUseImplementation( true );
             xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+            try {
+                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +"_$impl.xsd" );
+                xsdModel.stream( fos );
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                throw new MojoExecutionException( e.getMessage() );
+            }
+
+            ((XSDModelCompiler) compiler).setUseImplementation( false );
+            xsdModel = (SemanticXSDModel) compiler.compile( results );
+
 
             try {
                 FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +".xsd" );

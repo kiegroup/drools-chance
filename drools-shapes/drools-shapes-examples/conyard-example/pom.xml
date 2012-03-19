@@ -307,6 +307,7 @@
                     <schemaExcludes>
                         <exclude>**/*_$full.xsd</exclude>
                         <exclude>**/*_$spec.xsd</exclude>
+			            <exclude>**/*_$impl.xsd</exclude>
                     </schemaExcludes>
 
                     <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
