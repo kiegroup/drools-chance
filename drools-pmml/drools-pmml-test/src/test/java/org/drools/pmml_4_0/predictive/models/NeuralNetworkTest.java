@@ -19,9 +19,19 @@ package org.drools.pmml_4_0.predictive.models;
 
 import junit.framework.Assert;
 import org.drools.ClassObjectFilter;
+import org.drools.KnowledgeBase;
+import org.drools.KnowledgeBaseFactory;
+import org.drools.builder.KnowledgeBuilder;
+import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.builder.ResourceType;
 import org.drools.definition.type.FactType;
+import org.drools.event.rule.DebugAgendaEventListener;
+import org.drools.event.rule.DebugWorkingMemoryEventListener;
 import org.drools.informer.Answer;
+import org.drools.io.ResourceFactory;
+import org.drools.io.impl.ClassPathResource;
 import org.drools.pmml_4_0.DroolsAbstractPMMLTest;
+import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.Variable;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,7 +42,7 @@ import static org.junit.Assert.fail;
 public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
     private static final String source1 = "org/drools/pmml_4_0/test_ann_regression.xml";
 
     //
@@ -49,6 +59,46 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
     private static final String packageName = "org.drools.pmml_4_0.test";
 
     private static final String smartVent = "org/drools/pmml_4_0/smartvent.xml";
+
+
+    
+    
+    @Test
+    public void testANNFromSource() throws Exception {
+
+        KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/informer-changeset.xml"), ResourceType.CHANGE_SET);
+
+        knowledgeBuilder.add( new ClassPathResource( "org/drools/pmml_4_0/ann_rules.drl"), ResourceType.DRL );
+        if ( knowledgeBuilder.hasErrors() ) {
+            fail(knowledgeBuilder.getErrors().toString());
+        }
+        
+        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
+        kBase.addKnowledgePackages( knowledgeBuilder.getKnowledgePackages() );
+        
+        StatefulKnowledgeSession kSession = kBase.newStatefulKnowledgeSession();
+
+//        kSession.addEventListener( new DebugAgendaEventListener() );
+//        kSession.addEventListener( new DebugWorkingMemoryEventListener() );
+
+        kSession.fireAllRules();  //init model
+
+
+        kSession.getWorkingMemoryEntryPoint("in_Gender").insert("male");
+        kSession.getWorkingMemoryEntryPoint("in_NoOfClaims").insert("3");
+        kSession.getWorkingMemoryEntryPoint("in_Scrambled").insert(7);
+        kSession.getWorkingMemoryEntryPoint("in_Domicile").insert("urban");
+        kSession.getWorkingMemoryEntryPoint("in_AgeOfCar").insert(8.0);
+
+        kSession.fireAllRules();
+
+        Thread.sleep(200);
+        System.err.println(reportWMObjects(kSession));
+
+
+    }
+
 
 
 
