@@ -14,6 +14,7 @@ import org.drools.runtime.StatefulKnowledgeSession;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -31,8 +32,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.*;
-import java.lang.reflect.Method;
-import java.net.URI;
 import java.text.ParseException;
 import java.util.*;
 
@@ -458,6 +457,7 @@ public class FactTest {
 
 
     @Test
+    @Ignore
     public void validateXMLWithSchema() throws SAXException {
         StringWriter writer = new StringWriter();
 

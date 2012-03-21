@@ -40,7 +40,7 @@ no-loop
 dialect "mvel"
 when
     $r : Rule( $uid : dyEntryId, $lhs : hasPremiseFormula )
-    not $r := MetaRule ( )  //MVEL bug with instanceof... TODO
+    not  MetaRule ( this == $r )  //MVEL bug with instanceof... TODO
     $f : Pattern( $pid : dyEntryId, this == $lhs, $fct : get("hasFunctorType") )
     $t : Thing( $type : this.semanticTypeName ) from $fct.get(0)
     $x : RuleDescr( name == $uid )
@@ -66,7 +66,7 @@ end
 rule "Add value constraint to pattern"
 when
     $r : Pattern( $uid : dyEntryId, $cons : hasConstraint )
-    not $r := ActivationPattern( )
+    not  ActivationPattern( this == $r )
     $x : PatternDescr( identifier == $uid )
     ValueConstraint( $cid : dyEntryId, // this memberOf $cons,       bug in equals?
                      $field : onPropertyString, $op : hasOperatorString, $val : hasValueString )  from $cons

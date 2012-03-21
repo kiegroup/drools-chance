@@ -1,5 +1,4 @@
 import http.www.semanticweb.org.ontologies._2012._1.rule.merged.owl.IndividualFactory;
-import http.www.semanticweb.org.ontologies._2012._1.rule.merged.owl.Pattern;
 import http.www.semanticweb.org.ontologies._2012._1.rule.merged.owl.Pattern1Type;
 import http.www.semanticweb.org.ontologies._2012._1.rule.merged.owl.Pattern1TypeImpl;
 import org.drools.KnowledgeBase;
@@ -9,9 +8,6 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.lang.DrlDumper;
-import org.drools.lang.api.PackageDescrBuilder;
-import org.drools.lang.api.RuleDescrBuilder;
-import org.drools.lang.api.impl.PackageDescrBuilderImpl;
 import org.drools.lang.descr.PackageDescr;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Test;
@@ -21,7 +17,7 @@ import java.util.Collection;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
-public class TestIndividuals {
+public class IndividualsTest {
     
     
     @Test
@@ -67,10 +63,4 @@ public class TestIndividuals {
         return kBase.newStatefulKnowledgeSession();
     }
 
-
-    public void deleetme() {
-        PackageDescrBuilder rootDescr = PackageDescrBuilderImpl.newPackage();
-        RuleDescrBuilder r = rootDescr.newRule();
-
-    }
 }
