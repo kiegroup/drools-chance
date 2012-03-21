@@ -154,13 +154,18 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     PropertyRelation rel = hierachicalModel.getProperty( prop.asOWLDataProperty().getIRI().toQuotedString() );
                     String propName = rel.getName();
                     Set<OWLLiteral> propValues = individual.getDataPropertyValues( ontoDescr ).get(prop);
-                    Set<String> values = new HashSet<String>();
+                    Set<Individual.ValueTypePair> values = new HashSet<Individual.ValueTypePair>();
                     for ( OWLLiteral tgt : propValues ) {
-                        if ( rel.getTarget().getName().equals( "xsd:string" ) ) {
-                            values.add( "\"" + tgt.getLiteral() + "\"" );
+                        String value = null;
+                        String typeName = rel.getTarget().getName();
+                        //TODO improve datatype checking
+                        if ( typeName.equals( "xsd:string" )
+                             || typeName.equals( "xsd:dateTime" ) ) {
+                            value = "\"" + tgt.getLiteral() + "\"";
                         } else {
-                            values.add( tgt.getLiteral() );
+                            value = tgt.getLiteral();
                         }
+                        values.add( new Individual.ValueTypePair( value, typeName ) );
                     }
                     ind.setPropertyValues( propName, values );
                 }
@@ -169,10 +174,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 if ( ! prop.isTopEntity() ) {
                     String propName = hierachicalModel.getProperty( prop.asOWLObjectProperty().getIRI().toQuotedString()).getName();
                     Set<OWLIndividual> propValues = individual.getObjectPropertyValues(ontoDescr).get( prop );
-                    Set<String> values = new HashSet<String>();
+                    Set<Individual.ValueTypePair> values = new HashSet<Individual.ValueTypePair>();
                     for ( OWLIndividual tgt : propValues ) {
                         if ( tgt instanceof OWLNamedIndividual ) {
-                            values.add( ((OWLNamedIndividual) tgt).getIRI().getFragment() );
+                            values.add( new Individual.ValueTypePair( ((OWLNamedIndividual) tgt).getIRI().getFragment(), "object" ) );
                         }
                     }
                     ind.setPropertyValues( propName, values );

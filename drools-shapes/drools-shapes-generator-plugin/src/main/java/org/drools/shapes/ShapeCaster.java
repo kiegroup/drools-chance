@@ -315,6 +315,7 @@ public class ShapeCaster
             SemanticXSDModel xsdModel;
 
             ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+            ((XSDModelCompiler) compiler).setUseImplementation( false );
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
@@ -327,7 +328,23 @@ public class ShapeCaster
             }
 
 
+
+            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+            ((XSDModelCompiler) compiler).setUseImplementation( true );
+            xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+            try {
+                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +"_$impl.xsd" );
+                xsdModel.stream( fos );
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                throw new MojoExecutionException( e.getMessage() );
+            }
+
+
             ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
+            ((XSDModelCompiler) compiler).setUseImplementation( false );
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
@@ -405,18 +422,7 @@ public class ShapeCaster
 
 
 
-            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
-            ((XSDModelCompiler) compiler).setUseImplementation( true );
-            xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-            try {
-                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +"_$impl.xsd" );
-                xsdModel.stream( fos );
-                fos.flush();
-                fos.close();
-            } catch (Exception e) {
-                throw new MojoExecutionException( e.getMessage() );
-            }
 
             ((XSDModelCompiler) compiler).setUseImplementation( false );
             xsdModel = (SemanticXSDModel) compiler.compile( results );
@@ -483,23 +489,36 @@ public class ShapeCaster
             }
 
 
-            if ( isGenerateIndividuals() ) {
-                try {
-                    String classPath = target + "xjc" + slash + xsdModel.getPackage().replace(".", slash);
-                    File f = new File( classPath );
-                    if ( ! f.exists() ) {
-                        f.mkdirs();
-                    }
-                    
-                    FileOutputStream fos = new FileOutputStream(  classPath + slash + "IndividualFactory.java" );
-                    xsdModel.streamIndividualFactory( fos );
-                    fos.flush();
-                    fos.close();
-                } catch (Exception e) {
-                    throw new MojoExecutionException( e.getMessage() );
+
+        }
+
+        if ( isGenerateIndividuals() ) {
+            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.LEVELLED;
+            ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+            compiler.setMode( mode );
+            SemanticXSDModel xsdModel;
+
+
+
+            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+            ((XSDModelCompiler) compiler).setUseImplementation( true );
+            xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+            try {
+                String classPath = target + "xjc" + slash + xsdModel.getPackage().replace(".", slash);
+                File f = new File( classPath );
+                if ( ! f.exists() ) {
+                    f.mkdirs();
                 }
 
+                FileOutputStream fos = new FileOutputStream(  classPath + slash + "IndividualFactory.java" );
+                xsdModel.streamIndividualFactory( fos );
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                throw new MojoExecutionException( e.getMessage() );
             }
+
         }
 
 

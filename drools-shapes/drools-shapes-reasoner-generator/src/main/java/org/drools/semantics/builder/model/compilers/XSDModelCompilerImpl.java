@@ -129,42 +129,39 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         propCache.put( name, props );
 
         Element seq = isUseImplementation() ?
-                new Element( "all", xmodel.getNamespace( "xsd" ) )
+                new Element( "sequence", xmodel.getNamespace( "xsd" ) )
                 : new Element( "sequence", xmodel.getNamespace( "xsd" ) );
 
-        if ( name.equals( "Thing") ) {
 
-            if ( isUseImplementation() ) {
-                Element prop;
+        if ( isUseImplementation() ) {
+            Element prop;
 
-                prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
-                prop.setAttribute( "name", "dyEntryType" );
-                prop.setAttribute( "type", "xsd:string" );
-                prop.setAttribute( "minOccurs", "0" );
-                prop.setAttribute( "maxOccurs", "1" );
-                seq.addContent( prop );
-            }
+            prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
+            prop.setAttribute( "name", "dyEntryType" );
+            prop.setAttribute( "type", "xsd:string" );
+            prop.setAttribute( "minOccurs", "0" );
+            prop.setAttribute( "maxOccurs", "1" );
+            seq.addContent( prop );
+        }
 
+        if ( isUseImplementation() ) {
+            Element prop;
+
+            prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
+            prop.setAttribute( "name", "dyReference" );
+            prop.setAttribute( "type", "xsd:boolean" );
+            prop.setAttribute( "minOccurs", "1" );
+            prop.setAttribute( "maxOccurs", "1" );
+            seq.addContent( prop );
+        }
+
+        if ( name.equals( "Thing" ) || isUseImplementation() ) {
             Element key = new Element( "element", xmodel.getNamespace( "xsd" ) );
             key.setAttribute( "name", "dyEntryId" );
             key.setAttribute( "type", "xsd:string"  );
             key.setAttribute( "minOccurs", "1" );
             key.setAttribute( "maxOccurs", "1" );
             seq.addContent( key );
-
-
-            if ( isUseImplementation() ) {
-                Element prop;
-
-                prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
-                prop.setAttribute( "name", "dyReference" );
-                prop.setAttribute( "type", "xsd:boolean" );
-                prop.setAttribute( "minOccurs", "1" );
-                prop.setAttribute( "maxOccurs", "1" );
-                seq.addContent( prop );
-            }
-
-
         }
 
 

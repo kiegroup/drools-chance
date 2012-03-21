@@ -20,21 +20,47 @@
 @declare{'individualFactory'}
 package @{package};
 
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
+
 
 public class IndividualFactory {
 
-    private static Collection individuals;
 
-    public static Collection getIndividuals() {
+    private static DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd'T'HH:MM:SS'Z'");
+
+    private static Map<String,Object> individuals;
+
+    public static Map<String,Object> getNamedIndividuals() {
         if ( individuals == null ) {
-            individuals = new ArrayList();
+            individuals = new HashMap<String,Object>();
             build();
         }
         return individuals;
     }
 
+    public static Collection<String> getIndividualNames() {
+        return getNamedIndividuals().keySet();
+    }
+
+    public static Collection<Object> getIndividuals() {
+        return getNamedIndividuals().values();
+    }
+
+
+    private static Date parse( String date ) {
+        try {
+            return formatter.parse( date );
+        } catch (ParseException e) {
+            return null;
+        }
+    }
 
     public static void clear() {
         individuals = null;
@@ -45,14 +71,19 @@ public class IndividualFactory {
         @foreach{ ind : individuals }
             @{ind.type} @{ind.name} = new @{ind.type}Impl();
             @{ind.name}.setDyEntryId( "@{ind.name}" );
-            individuals.add( @{ind.name} );
+            individuals.put( "@{ind.name}", @{ind.name} );
         @end{}
 
 
         @foreach{ ind : individuals }
             @foreach{ propName : ind.propertyVals.keySet() }
                 @foreach{ val : ind.propertyVals[ propName ] }
-                    @{ind.name}.add@{ capitalize( propName ) }( @{ val } );
+                    @if{ val.type != "xsd:dateTime" }
+                        @{ind.name}.add@{ capitalize( propName ) }( @{ val.value } );
+                    @else{}
+                        @{ind.name}.add@{ capitalize( propName ) }( parse( @{ val.value } ) );
+                    @end{}
+
                 @end{}
             @end{}
         @end{}
