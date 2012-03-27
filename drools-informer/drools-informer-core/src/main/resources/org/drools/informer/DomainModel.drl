@@ -59,14 +59,17 @@ when
 	$question    : Question( questionId : id, answerType != null, $answer : answer != null )
 	$association : DomainModelAssociation( questionId == questionId, $object : object, $property : property, lastAnswer != $answer )
 then
+    // Must retract here, in case we're changin a @key property and using equality mode
+    retract( $object );
 	Object propertyValue = DomainModelSupport.answerToObject( $question.getBasicAnswerType(), $answer, PropertyUtils.getPropertyType( $object, $property ) );
 	PropertyUtils.setProperty( $object, $property, propertyValue );
 
-    update( $object );
+
 
     modify ( $association ) {
         setLastAnswer( $answer );
     }
+    insert( $object );
 end
 
 
