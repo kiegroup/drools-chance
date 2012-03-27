@@ -33,7 +33,20 @@ import java.util.List;
     declare Surveyable end
 
     declare enum TaskStates
-        CREATED, READY, RESERVED, SUSPENDED_READY, IN_PROGRESS, SUSPENDED_RESERVED, SUSPENDED_IN_PROGRESS, COMPLETED, FAILED, ERROR, OBSOLETE, EXITED;
+        CREATED( "Created" ),
+        READY( "Not Started" ),
+        RESERVED( "Reserved"),
+        SUSPENDED_READY( "Suspended(Ready)"),
+        IN_PROGRESS( "Started" ),
+        SUSPENDED_RESERVED( "Suspended(Reserved)" ),
+        SUSPENDED_IN_PROGRESS( "Suspended(Started)" ),
+        COMPLETED( "Completed" ),
+        FAILED( "Failed" ),
+        ERROR( "Error" ),
+        OBSOLETE( "Expired" ),
+        EXITED( "Canceled" );
+
+        label  : String
     end
 
     declare enum TaskTransitions
@@ -171,7 +184,7 @@ end
 rule "Created -> Reserved"
 salience 1000
 when
-    $task   : Task( $tid : taskId, state == TaskStates.CREATED, potentialOwners == null || potentialOwners.size == 0 )
+    $task   : Task( $tid : taskId, state == TaskStates.CREATED, potentialOwners == null || potentialOwners.size() == 0 )
 then
     insertLogical( new AllowedTransition( $tid, TaskStates.CREATED, TaskTransitions.ACTIVATE, TaskStates.RESERVED ) );
 end
@@ -180,16 +193,16 @@ end
 rule "Created -> Ready"
 salience 1000
 when
-    $task   : Task( $tid : taskId, state == TaskStates.CREATED, potentialOwners != null, potentialOwners.size > 0 )
+    $task   : Task( $tid : taskId, state == TaskStates.CREATED, potentialOwners != null, potentialOwners.size() > 0 )
 then
     insertLogical( new AllowedTransition( $tid, TaskStates.CREATED, TaskTransitions.ACTIVATE, TaskStates.READY ) );
 end
 
 
 rule "Ready -> X"
-salience 1000
+salience 999
 when
-    $task   : Task( $tid : taskId, state == TaskStates.READY, potentialOwners != null, potentialOwners.size > 0 )
+    $task   : Task( $tid : taskId, state == TaskStates.READY, potentialOwners != null, potentialOwners.size() > 0 )
 then
     insertLogical( new AllowedTransition( $tid, TaskStates.READY, TaskTransitions.FORWARD, TaskStates.READY ) );
     insertLogical( new AllowedTransition( $tid, TaskStates.READY, TaskTransitions.DELEGATE, TaskStates.RESERVED ) );
@@ -227,7 +240,7 @@ end
 rule "Reserved -> X"
 salience 1000
 when
-    $task   : Task( $tid : taskId, state == TaskStates.RESERVED, potentialOwners != null, potentialOwners.size > 0 )
+    $task   : Task( $tid : taskId, state == TaskStates.RESERVED, potentialOwners != null, potentialOwners.size() > 0 )
 then
     insertLogical( new AllowedTransition( $tid, TaskStates.RESERVED, TaskTransitions.REVOKE, TaskStates.READY ) );
     insertLogical( new AllowedTransition( $tid, TaskStates.RESERVED, TaskTransitions.FORWARD, TaskStates.READY ) );
@@ -262,7 +275,7 @@ end
 rule "In Progress -> X"
 salience 1000
 when
-    $task   : Task( $tid : taskId, state == TaskStates.IN_PROGRESS, potentialOwners != null, potentialOwners.size > 0 )
+    $task   : Task( $tid : taskId, state == TaskStates.IN_PROGRESS, potentialOwners != null, potentialOwners.size() > 0 )
 then
     insertLogical( new AllowedTransition( $tid, TaskStates.IN_PROGRESS, TaskTransitions.DELEGATE, TaskStates.RESERVED ) );
     insertLogical( new AllowedTransition( $tid, TaskStates.IN_PROGRESS, TaskTransitions.REVOKE, TaskStates.READY ) );
@@ -301,7 +314,7 @@ end
 
 
 rule "Any -> Cancelled"
-salience 999
+salience 998
 when
     $task   : Task( $tid : taskId,
                                    $s: state == TaskStates.CREATED
@@ -336,7 +349,7 @@ end
 
 rule "Nomination"
 when
-    $task   : Task( $tid : taskId, state == TaskStates.CREATED, $owner : owner != null, potentialOwners == null || potentialOwners.size == 1 )
+    $task   : Task( $tid : taskId, state == TaskStates.CREATED, $owner : owner != null, potentialOwners == null || potentialOwners.size() == 1 )
 then
 //    System.out.println( "Nomination" ) ;
     insert( new TaskStateTransition( $tid, TaskTransitions.ACTIVATE, $owner, new Date() ) );
@@ -344,7 +357,7 @@ end
 
 rule "Guess who's gonna take it"
 when
-    $task   : Task( $tid : taskId, state == TaskStates.READY, owner == null, potentialOwners.size == 1, $owner : potentialOwners[0] )
+    $task   : Task( $tid : taskId, state == TaskStates.READY, owner == null, potentialOwners.size() == 1, $owner : potentialOwners[0] )
 then
 //    System.out.println( "Guess...." ) ;
     modify ( $task ) {

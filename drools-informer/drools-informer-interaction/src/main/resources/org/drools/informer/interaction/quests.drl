@@ -26,7 +26,7 @@ import java.util.List;
 
 rule "Create Task"
 when
-    $quest  : Surveyable( $qid : questionnaireId, stateful == true )
+    $quest  : Surveyable( $qid : questionnaireId, stateful == true, surveyLocked == false )
     not       Task( taskId == $qid )
 then
     System.out.println( " Surveyable demands creation of task " + $qid );
@@ -55,7 +55,9 @@ when
     $quest  : Surveyable( $qid : questionnaireId )
               Task( taskId == $qid, state == TaskStates.IN_PROGRESS )
               ProgressStatus( formId == $qid, percentage == 100 )
+          not TaskTransitionHolder( this == $quest )
 then
+    System.out.println( "FORCING COMPLETION OF A QUEST TASK " + $qid );
     insert( new TaskStateTransition( $qid, TaskTransitions.COMPLETE, null, new Date() ) );
 end
 
@@ -66,8 +68,36 @@ when
     $quest  : Surveyable( $qid : questionnaireId )
     $task   : Task( taskId == $qid, state == TaskStates.COMPLETED )
 then
-    retract( $quest );
+    System.out.println( "I HAVE COMPLETED A QUEST TASK, SO I REMOVE QID AKA TID " + $qid );
+//    retract( $quest );
+//    $quest.disableSurvey();
+//    update( $quest );
+
+    //
     retract( $task );
+end
+
+
+rule "Disable Quest when Task not in Progress"
+salience -9999
+when
+    $quest  : Surveyable( $qid : questionnaireId, surveyLocked == false )
+    $task   : Task( taskId == $qid, state != TaskStates.IN_PROGRESS )
+then
+    System.out.println( "DISABLING A QUEST FOR A NOT STARTED TASK " + $qid );
+    $quest.setSurveyLocked( true );
+    update( $quest );
+end
+
+rule "Enable Quest when Task in Progress"
+salience -9998
+when
+    $quest  : Surveyable( $qid : questionnaireId, surveyLocked == true )
+    $task   : Task( taskId == $qid, state == TaskStates.IN_PROGRESS )
+then
+    System.out.println( "ENABLING A QUEST FOR A STARTED TASK " + $qid );
+    $quest.setSurveyLocked( false );
+    update( $quest );
 end
 
 

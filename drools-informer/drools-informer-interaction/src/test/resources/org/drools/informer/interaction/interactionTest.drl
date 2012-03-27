@@ -190,6 +190,7 @@ when
 then
     list.add( $actorId );
     System.out.println( "@@@@@@@ DISPATCHING to " + $actorId );
+    System.out.println( "\t@@@@@@@ " + $convoId );
     System.out.println( "\t@@@@@@@ " + $formIds );
     System.out.println( "\t@@@@@@@ " + $bodies );
     System.out.println( "\t@@@@@@@ " + $channels );
@@ -202,6 +203,7 @@ end
 
 
 rule "Test Survey Tasks II"
+
 when
     $s : String( this == "surveytaskinter" )
 then
