@@ -57,13 +57,12 @@ end
 
 declare SurveyGUIAdapter extends GUIAdapter
 //    surveyId : String                   @key
-    successStatus : String = "true"
-    statusMessage : String = "(ok)"
     body : String
     name : String
     expiresDate : java.util.Date
     interactive : String
     language : String
+    progress : int
     contextDesc : String
     surveyClass : String
     surveyQuestions : java.util.List
@@ -73,9 +72,7 @@ end
 
 declare ChangeGUIAdapter extends GUIAdapter
 //    surveyId : String                   @key
-    successStatus : String = "true"
-    statusMessage : String = "(ok)"
-    tasksProgress : int
+    progress : int
     newQuestions : java.util.List
     deletedQuestions : java.util.List
     updatedQuestions : java.util.List

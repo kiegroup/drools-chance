@@ -26,6 +26,8 @@ public abstract class Surveyable implements ISurveyable {
 
     protected boolean surveyEnabled = true;
 
+    protected boolean surveyLocked = false;
+
     protected boolean stateful = false;
 
 
@@ -47,5 +49,13 @@ public abstract class Surveyable implements ISurveyable {
 
     public void setStateful(boolean stateful) {
         this.stateful = stateful;
+    }
+
+    public boolean isSurveyLocked() {
+        return surveyLocked;
+    }
+
+    public void setSurveyLocked(boolean surveyLocked) {
+        this.surveyLocked = surveyLocked;
     }
 }

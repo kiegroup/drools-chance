@@ -270,26 +270,26 @@ then
 end
 
 
-//rule "Action_Request_setSurvey_init1"
-//salience 10
-//when
-//    ChangeCollector()
-//    $cga : ChangeGUIAdapter()
-//then
-//    $cga.getUpdatedQuestions().clear();
-//    $cga.getDeletedQuestions().clear();
-//    $cga.getNewQuestions().clear();
-//end
-
-
-
 rule "Progress"
 when
-    $cga : ChangeGUIAdapter( $sid : itemId )
     ProgressStatus( $sid, $perc ; )
+    $cga : ChangeGUIAdapter( $sid == itemId, progress != $perc )
 then
-    $cga.setTasksProgress( $perc );
-    $cga.setDirty( true );
+    modify ($cga) {
+        setProgress( $perc ),
+        setDirty( true );
+    }
+end
+
+rule "Link progress"
+when
+    $p : ProgressStatus( $formId, $percentage ; )
+    $s : SurveyGUIAdapter( itemId == $formId, progress != $percentage )
+then
+    System.out.println("SETTING GUI PROGRESS TO " + $percentage );
+    modify ($s) {
+        setProgress( $percentage );
+    }
 end
 
 
