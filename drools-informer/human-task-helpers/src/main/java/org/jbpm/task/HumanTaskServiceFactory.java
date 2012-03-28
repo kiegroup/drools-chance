@@ -88,20 +88,22 @@ public class HumanTaskServiceFactory implements ObjectFactory {
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("org.jbpm.task");
         org.jbpm.task.service.TaskService taskService = new org.jbpm.task.service.TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
-        TaskServiceSession taskSession = taskService.createSession();
-        // Add users
-        Map vars = new HashMap();
-        Reader reader = new InputStreamReader(HumanTaskServiceFactory.class.getResourceAsStream("LoadUsers.mvel"));
-        Map<String, User> users = (Map<String, User>) eval(reader, vars);
-        for (User user : users.values()) {
-            taskSession.addUser(user);
-        }
-        reader = new InputStreamReader(HumanTaskServiceFactory.class.getResourceAsStream("LoadGroups.mvel"));
-        Map<String, Group> groups = (Map<String, Group>) eval(reader, vars);
-        for (Group group : groups.values()) {
-            taskSession.addGroup(group);
-        }
-        taskServiceObject = new LocalTaskService(taskSession);
+        //TaskServiceSession taskSession = taskService.createSession();
+       
+        taskServiceObject = new LocalTaskService(taskService);
+        
+//         // Add users
+//        Map vars = new HashMap();
+//        Reader reader = new InputStreamReader(HumanTaskServiceFactory.class.getResourceAsStream("LoadUsers.mvel"));
+//        Map<String, User> users = (Map<String, User>) eval(reader, vars);
+//        for (User user : users.values()) {
+//            taskSession.addUser(user);
+//        }
+//        reader = new InputStreamReader(HumanTaskServiceFactory.class.getResourceAsStream("LoadGroups.mvel"));
+//        Map<String, Group> groups = (Map<String, Group>) eval(reader, vars);
+//        for (Group group : groups.values()) {
+//            taskSession.addGroup(group);
+//        }
 
         return taskServiceObject;
     }
