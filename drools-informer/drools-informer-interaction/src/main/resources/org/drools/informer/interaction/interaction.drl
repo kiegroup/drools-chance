@@ -55,6 +55,7 @@ declare TaskInteraction extends Interaction
     lockdown        : boolean   = true
     tasks           : List      = new java.util.ArrayList()
     triggers        : List      = new java.util.ArrayList()
+    autocomplete    : boolean   = true
 end
 
 
@@ -119,7 +120,7 @@ when
     $ticket : InteractionTicket( $ticketId : id,
                                  $inters : interactions )
     $inter  : Interaction( $type : type, this memberOf $inters,
-                           $receivers : receivers, receivers.size > 0, $receiver : receivers[0],
+                           $receivers : receivers, receivers.size() > 0, $receiver : receivers[0],
                            $body : bodyTemplateIds[0],
                            $channel : channels[0] )
     not       InteractiveTask( args contains $inter )
@@ -154,7 +155,7 @@ when
     $ticket : InteractionTicket( $ticketId : id,
                                  $inters : interactions )
     $inter  : Interaction( $type : type, this memberOf $inters,
-                           receivers.size > 0, $receiver : receivers[0],
+                           receivers.size() > 0, $receiver : receivers[0],
                            bodyTemplateIds != null, $body : bodyTemplateIds[0],
                            channels != null, $channel : channels[0],
                            timeouts != null, $timeout : timeouts[0])
@@ -162,7 +163,7 @@ when
 then
     Alert alert = new Alert( $ticketId, (String) $receiver, $formId, (String) $body, (String) $channel, (String) $timeout );
     System.out.println( "Inserting alert " + alert + " @@using ctrolQ " + $formId );
-    insert( alert );
+    insertLogical( alert );
 end
 
 
@@ -219,7 +220,7 @@ timer( expr: $timeout ;  )
 when
     $ticket : InteractionTicket( $id : id,
                                  $inters : interactions )
-    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $bodies, $receivers, $channels, $timeouts ; this memberOf $inters, $receivers.size > 1 )
+    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $bodies, $receivers, $channels, $timeouts ; this memberOf $inters, $receivers.size() > 1 )
     $task   : InteractiveTask( $tid : taskId, args contains $inter )
     $alert  : Alert( $id, $dest, $formId, $templ, $channel, $timeout ; destination memberOf $receivers )
     not       TaskStateTransition( $tid ; )
@@ -237,13 +238,14 @@ end
 
 
 rule "Escalation Failure"
+timer( expr: $timeout ;  )
 when
     $ticket : InteractionTicket( $id : id,
                                  $inters : interactions )
-    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $body, $receivers, $channels ; this memberOf $inters, $receivers.size <= 1 )
+    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $body, $receivers, $channels ; this memberOf $inters, $receivers.size() <= 1 )
     $task   : InteractiveTask( $tid : taskId, args contains $inter )
-    $alert  : Alert( $id, $dest, $formId, $channel ; destination memberOf $receivers )
-    not       TaskStateTransition( $tid ; this after[0s, 1s] $alert )
+    $alert  : Alert( $id, $dest, $formId, $templ, $channel; $timeout : timeout != null, destination memberOf $receivers )
+    not       TaskStateTransition( $tid ; )
 then
     System.out.println( $dest + " did not answer " + $alert );
     retract( $alert );
@@ -296,7 +298,7 @@ rule "Insert Questionnaire triggers on a start"
 no-loop
 when
     $inter : TaskInteraction( type == InteractionTypes.QUESTIONNAIRE, $trix : triggers )
-    $task  : InteractiveTask( $taskId : taskId, args contains $inter, state == TaskStates.IN_PROGRESS )
+    $task  : InteractiveTask( $taskId : taskId, args contains $inter, state == TaskStates.READY )
     $trig  : String() from $trix
 then
     System.out.println( "Creating questionnaire of type " + $trig );
@@ -343,7 +345,7 @@ rule "Release"
 no-loop
 salience -10
 when
-    $inter      : TaskInteraction( $tasks : tasks, tasks.size > 0, lockdown == true )
+    $inter      : TaskInteraction( $tasks : tasks, tasks.size() > 0, lockdown == true, autocomplete == true )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId )
     not           Task( taskId memberOf $tasks, state != TaskStates.COMPLETED )
 then
@@ -357,7 +359,7 @@ rule "Propagate suspsension and resume from outer to inner"
 no-loop
 salience 10000
 when
-    $inter      : TaskInteraction( $tasks : tasks, tasks.size > 0 )
+    $inter      : TaskInteraction( $tasks : tasks, tasks.size() > 0 )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId )
                   TaskStateTransition( taskId == $taskId, $trans : type, type == TaskTransitions.SUSPEND || == TaskTransitions.RESUME )
     $subtask    : Task( $sub : taskId, taskId memberOf $tasks )
@@ -373,7 +375,7 @@ rule "Cascade finalization from outer to inner"
 no-loop
 salience -10
 when
-    $inter      : TaskInteraction( $tasks : tasks, tasks.size > 0 )
+    $inter      : TaskInteraction( $tasks : tasks, tasks.size() > 0 )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId,
                                    $state : state == TaskStates.COMPLETED || == TaskStates.FAILED
                                                || == TaskStates.ERROR || == TaskStates.OBSOLETE
@@ -392,7 +394,7 @@ rule "Inner Contagion"
 no-loop
 salience -10
 when
-    $inter      : TaskInteraction( $tasks : tasks, tasks.size > 0 )
+    $inter      : TaskInteraction( $tasks : tasks, tasks.size() > 0 )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId,
                                    $state : state != TaskStates.FAILED )
     exists        Task( taskId memberOf $tasks, state == TaskStates.FAILED )

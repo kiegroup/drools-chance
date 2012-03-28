@@ -21,10 +21,7 @@ package org.drools.informer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -62,7 +59,7 @@ public class Questionnaire extends Group {
 
 	private boolean enableActionValidation;
 
-	private List<String> availableItems;
+	private Set<String> availableItems;
 
 	private String clientDateFormat = DEFAULT_CLIENT_DATE_FORMAT;
 	
@@ -73,20 +70,20 @@ public class Questionnaire extends Group {
 
 	public Questionnaire() {
 		super.setActive(true);
-        this.availableItems = new ArrayList<String>();
+        this.availableItems = new HashSet<String>();
 	}
 
 
 	public Questionnaire(String type) {
 		super(type);
 		super.setActive(true);
-        this.availableItems = new ArrayList<String>();
+        this.availableItems = new HashSet<String>();
 	}
 
 	public Questionnaire(String type, String label) {
 		super(type, label);
 		super.setActive(true);
-        this.availableItems = new ArrayList<String>();
+        this.availableItems = new HashSet<String>();
 	}
 
 	public String getActiveItem() {
@@ -245,9 +242,14 @@ public class Questionnaire extends Group {
         return availableItems.size();
     }
 
-    public List<String> getAvailableItemList() {
+//    public List<String> getAvailableItemList() {
+//        return new ArrayList( availableItems );
+//	}
+//
+    public Set<String> getAvailableItemSet() {
         return availableItems;
-	}
+    }
+
 
 	/**
 	 * This is invoked by the Tohu built-in rules. Do not call it directly.

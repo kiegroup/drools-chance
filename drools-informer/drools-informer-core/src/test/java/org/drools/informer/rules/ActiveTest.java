@@ -389,7 +389,7 @@ public class ActiveTest {
 			knowledgeSession.insert(group6);
 			knowledgeSession.fireAllRules();
             for (String s : new String[] { group2.getId(), group5.getId(), group6.getId() }) {
-                assertTrue(questionnaire.getAvailableItemList().contains(s));
+                assertTrue(questionnaire.getAvailableItemSet().contains(s));
             }
 
 		} finally {
