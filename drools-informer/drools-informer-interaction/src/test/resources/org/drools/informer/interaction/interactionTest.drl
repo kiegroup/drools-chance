@@ -29,7 +29,7 @@ when
     $s : String( this == "complexTask" )
 then
     retract( $s );
-    Task t = new InteractiveTask();
+    HumanTask t = new InteractiveTask();
         t.setPotentialOwners( java.util.Arrays.asList( new String[] { "dsotty", "davide" } ) );
     insert( t );
 end
@@ -40,7 +40,7 @@ when
     $s : String( this == "simpleTask" )
 then
     retract( $s );
-    Task t = new InteractiveTask();
+    HumanTask t = new InteractiveTask();
         t.setOwner( "davide" );
         t.setSimple( true );
         t.setPersistent( true );
@@ -246,7 +246,7 @@ end
 rule "Persist Test"
 salience 1
 when
-    $task   : Task( $tid : taskId, $state : state != null )
+    $task   : HumanTask( $tid : taskId, $state : state != null )
 then
     taskLog.add( $tid + ":" + $state + ":" + $task.getOwner() );
 end
@@ -267,11 +267,11 @@ end
 //rule "Log Available Transitions"
 //salience -1000
 //when
-//    Task( $tid : taskId, $state : state, $owner : owner )
+//    HumanTask( $tid : taskId, $state : state, $owner : owner )
 //    TaskTransitionHolder( taskId == $tid, $xid : questionnaireId, $designatedOwner : owner )
 //    possibleTransitionsAnswers( $xid, $ans ; )
 //then
-//    System.out.println( "Task X [ " + $state + " @ " + $owner + " ] >>>>>>>>>>>>>>>>> " + ", " + java.util.Arrays.asList( $ans ) );
+//    System.out.println( "HumanTask X [ " + $state + " @ " + $owner + " ] >>>>>>>>>>>>>>>>> " + ", " + java.util.Arrays.asList( $ans ) );
 //    System.out.println( "(Next designated owner is " + $designatedOwner + ")" );
 //end
 //

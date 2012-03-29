@@ -22,6 +22,7 @@ import org.drools.conf.AssertBehaviorOption;
 import org.drools.conf.EventProcessingOption;
 import org.drools.definition.type.FactType;
 import org.drools.event.rule.DebugAgendaEventListener;
+import org.drools.event.rule.DebugWorkingMemoryEventListener;
 import org.drools.informer.Answer;
 import org.drools.informer.MultipleChoiceQuestion;
 import org.drools.io.impl.ClassPathResource;
@@ -344,7 +345,6 @@ public class TaskInteractionTest {
 
 
     @Test
-    @Ignore
     public void testTaskStateTransitionByQuestionnaire() {
 
         kSession.insert( "complexTask" );
@@ -387,7 +387,7 @@ public class TaskInteractionTest {
         for ( Object o: transitions.getPossibleAnswersValues() ) {
             System.out.println( o );
         }
-        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "START", "CLAIM", "SUSPEND", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
 
@@ -404,7 +404,7 @@ public class TaskInteractionTest {
 
         assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
         assertEquals( null, taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "START", "CLAIM", "SUSPEND", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
         kSession.insert( new Answer( "owner", tsId, "zxyads" ) );
@@ -413,7 +413,7 @@ public class TaskInteractionTest {
         assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
         assertEquals( null, taskClass.get( iTask, "owner" ) );
         assertEquals( null, txHolderClass.get( iTxHolder, "owner" ) );
-        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "START", "CLAIM", "SUSPEND", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
         kSession.insert( new Answer( "transition", tsId, "FORWARD" ) );
@@ -421,10 +421,10 @@ public class TaskInteractionTest {
 
         assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
         assertEquals( null, taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "START", "CLAIM", "SUSPEND", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
-
+        report( kSession, System.err );
 
         kSession.insert( new Answer( "owner", tsId, "dsotty" ) );
         kSession.fireAllRules();
@@ -432,15 +432,16 @@ public class TaskInteractionTest {
         assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
         assertEquals( null, taskClass.get( iTask, "owner" ) );
         assertEquals( "dsotty", txHolderClass.get( iTxHolder, "owner" ) );
-        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "START", "CLAIM", "SUSPEND", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+
 
 
         kSession.insert( new Answer( "transition", tsId, "FORWARD" ) );
         kSession.fireAllRules();
 
         assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
-        assertEquals( "dsotty", taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertEquals( null, taskClass.get( iTask, "owner" ) );
+        assertArrayEquals( new String[] { "START", "CLAIM", "SUSPEND", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
         kSession.insert( new Answer( "transition", tsId, "CLAIM" ) );
@@ -473,7 +474,7 @@ public class TaskInteractionTest {
 
         assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
         assertEquals( "dsotty", taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "START", "SUSPEND", "CLAIM", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "START", "CLAIM", "SUSPEND", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
 
@@ -505,7 +506,7 @@ public class TaskInteractionTest {
         assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
         assertEquals( "dsotty", taskClass.get(iTask, "owner") );
         System.out.println( Arrays.asList(transitions.getPossibleAnswersValues()) );
-        assertArrayEquals(new String[]{ "STOP", "COMPLETE", "FAIL", "DELEGATE", "REVOKE", "FORWARD", "SUSPEND", "EXIT", "SKIP", "ERROR"}, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "COMPLETE", "STOP", "FAIL", "SUSPEND", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
         kSession.insert( new Answer( "owner", tsId, "davide" ) );
@@ -516,7 +517,7 @@ public class TaskInteractionTest {
 
         assertEquals( "READY", taskClass.get( iTask, "state" ).toString() );
         assertEquals( "davide", taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "START", "CLAIM", "FORWARD", "DELEGATE", "SUSPEND", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "START", "CLAIM", "SUSPEND", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
 
@@ -525,7 +526,7 @@ public class TaskInteractionTest {
 
         assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
         assertEquals( "davide", taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "SUSPEND", "STOP", "COMPLETE", "FAIL", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "COMPLETE", "STOP", "FAIL", "SUSPEND", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
         kSession.insert( new Answer( "transition", tsId, "SUSPEND" ) );
@@ -540,7 +541,7 @@ public class TaskInteractionTest {
 
         assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
         assertEquals( "davide", taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "SUSPEND", "STOP", "COMPLETE", "FAIL", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "COMPLETE", "STOP", "FAIL", "SUSPEND", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
 
@@ -549,7 +550,7 @@ public class TaskInteractionTest {
 
         assertEquals( "RESERVED", taskClass.get( iTask, "state" ).toString() );
         assertEquals( "davide", taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "SUSPEND", "START", "REVOKE", "FORWARD", "DELEGATE", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "START", "REVOKE", "FORWARD", "DELEGATE", "SUSPEND","EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
         kSession.insert( new Answer( "transition", tsId, "START" ) );
@@ -557,7 +558,7 @@ public class TaskInteractionTest {
 
         assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
         assertEquals( "davide", taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "SUSPEND", "STOP", "COMPLETE", "FAIL", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "COMPLETE", "STOP", "FAIL", "SUSPEND", "DELEGATE", "REVOKE", "FORWARD", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
         kSession.insert( new Answer( "transition", tsId, "COMPLETE" ) );
@@ -616,7 +617,7 @@ public class TaskInteractionTest {
 
         assertEquals( "IN_PROGRESS", taskClass.get( iTask, "state" ).toString() );
         assertEquals( "davide", taskClass.get( iTask, "owner" ) );
-        assertArrayEquals( new String[] { "STOP", "COMPLETE", "FAIL", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
+        assertArrayEquals( new String[] { "COMPLETE", "STOP", "FAIL", "EXIT", "SKIP", "ERROR" }, transitions.getPossibleAnswersValues());
 
 
         kSession.insert( new Answer( "transition", tsId, "COMPLETE" ) );

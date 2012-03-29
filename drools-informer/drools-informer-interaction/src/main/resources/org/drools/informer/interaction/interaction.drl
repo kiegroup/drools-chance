@@ -317,7 +317,7 @@ no-loop
 when
     $inter      : TaskInteraction( $tasks : tasks, lockdown == true )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $owner : owner != null, $owners : potentialOwners != null )
-    $slave      : Task( taskId memberOf $tasks, owner == null, potentialOwners == null )
+    $slave      : HumanTask( taskId memberOf $tasks, owner == null, potentialOwners == null )
 then
     modify ($slave) {
         setOwner( $owner ),
@@ -335,7 +335,7 @@ when
     $inter      : TaskInteraction( $tasks : tasks, lockdown == true )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId, state == TaskStates.IN_PROGRESS )
     $ctrl       : Questionnaire( id == $qid )
-    exists        Task( taskId memberOf $tasks, state != TaskStates.COMPLETED )
+    exists        HumanTask( taskId memberOf $tasks, state != TaskStates.COMPLETED )
 then
     System.out.println("********************* Locking controlQuest for " + $master );
     //TODO --> set to readonly
@@ -347,7 +347,7 @@ salience -10
 when
     $inter      : TaskInteraction( $tasks : tasks, tasks.size() > 0, lockdown == true, autocomplete == true )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId )
-    not           Task( taskId memberOf $tasks, state != TaskStates.COMPLETED )
+    not           HumanTask( taskId memberOf $tasks, state != TaskStates.COMPLETED )
 then
     System.out.println("********************* Autocompleting " + $master );
     insert( new TaskStateTransition( $taskId, TaskTransitions.COMPLETE, null, new Date() ) );
@@ -362,7 +362,7 @@ when
     $inter      : TaskInteraction( $tasks : tasks, tasks.size() > 0 )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId )
                   TaskStateTransition( taskId == $taskId, $trans : type, type == TaskTransitions.SUSPEND || == TaskTransitions.RESUME )
-    $subtask    : Task( $sub : taskId, taskId memberOf $tasks )
+    $subtask    : HumanTask( $sub : taskId, taskId memberOf $tasks )
 then
     insert( new TaskStateTransition( $sub, $trans, null, new Date() ) );
 end
@@ -380,7 +380,7 @@ when
                                    $state : state == TaskStates.COMPLETED || == TaskStates.FAILED
                                                || == TaskStates.ERROR || == TaskStates.OBSOLETE
                                                || == TaskStates.EXITED )
-    $subtask    : Task( $sub : taskId, taskId memberOf $tasks )
+    $subtask    : HumanTask( $sub : taskId, taskId memberOf $tasks )
 then
     System.out.println("********************* Subtask is obsolete " + $subtask );
     // should not affect already completed tasks
@@ -397,7 +397,7 @@ when
     $inter      : TaskInteraction( $tasks : tasks, tasks.size() > 0 )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $qid : controlQuestId,
                                    $state : state != TaskStates.FAILED )
-    exists        Task( taskId memberOf $tasks, state == TaskStates.FAILED )
+    exists        HumanTask( taskId memberOf $tasks, state == TaskStates.FAILED )
 then
     System.out.println("********************* Propagate inner task failure " + $master );
     insert( new TaskStateTransition( $taskId, TaskTransitions.FAIL, null, new Date() ) );

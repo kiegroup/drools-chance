@@ -24,13 +24,13 @@ import org.drools.informer.*;
 import java.util.List;
 
 
-rule "Create Task"
+rule "Create HumanTask"
 when
     $quest  : Surveyable( $qid : questionnaireId, stateful == true, surveyLocked == false )
-    not       Task( taskId == $qid )
+    not       HumanTask( taskId == $qid )
 then
     System.out.println( " Surveyable demands creation of task " + $qid );
-    Task t = new Task( $qid );
+    HumanTask t = new HumanTask( $qid );
         t.setDescription( "Completion of questionnaire " + $qid );
         t.setSimple( true );
         t.setPersistent( true );
@@ -44,7 +44,7 @@ end
 rule "Auto start survey tasks"
 when
     $quest  : Surveyable( $qid : questionnaireId )
-              Task( taskId == $qid, state == TaskStates.CREATED )
+              HumanTask( taskId == $qid, state == TaskStates.CREATED )
 then
     insert( new TaskStateTransition( $qid, TaskTransitions.ACTIVATE, null, new Date() ) );
     insert( new TaskStateTransition( $qid, TaskTransitions.START, null, new Date() ) );
@@ -53,7 +53,7 @@ end
 rule "Complete survey tasks"
 when
     $quest  : Surveyable( $qid : questionnaireId )
-              Task( taskId == $qid, state == TaskStates.IN_PROGRESS )
+              HumanTask( taskId == $qid, state == TaskStates.IN_PROGRESS )
               ProgressStatus( formId == $qid, percentage == 100 )
           not TaskTransitionHolder( this == $quest )
 then
@@ -66,7 +66,7 @@ rule "Clear completed tasks"
 salience -9999
 when
     $quest  : Surveyable( $qid : questionnaireId )
-    $task   : Task( taskId == $qid, state == TaskStates.COMPLETED )
+    $task   : HumanTask( taskId == $qid, state == TaskStates.COMPLETED )
 then
     System.out.println( "I HAVE COMPLETED A QUEST TASK, SO I REMOVE QID AKA TID " + $qid );
 //    retract( $quest );
@@ -78,22 +78,22 @@ then
 end
 
 
-rule "Disable Quest when Task not in Progress"
+rule "Disable Quest when HumanTask not in Progress"
 salience -9999
 when
     $quest  : Surveyable( $qid : questionnaireId, surveyLocked == false )
-    $task   : Task( taskId == $qid, state != TaskStates.IN_PROGRESS )
+    $task   : HumanTask( taskId == $qid, state != TaskStates.IN_PROGRESS )
 then
     System.out.println( "DISABLING A QUEST FOR A NOT STARTED TASK " + $qid );
     $quest.setSurveyLocked( true );
     update( $quest );
 end
 
-rule "Enable Quest when Task in Progress"
+rule "Enable Quest when HumanTask in Progress"
 salience -9998
 when
     $quest  : Surveyable( $qid : questionnaireId, surveyLocked == true )
-    $task   : Task( taskId == $qid, state == TaskStates.IN_PROGRESS )
+    $task   : HumanTask( taskId == $qid, state == TaskStates.IN_PROGRESS )
 then
     System.out.println( "ENABLING A QUEST FOR A STARTED TASK " + $qid );
     $quest.setSurveyLocked( false );
@@ -105,7 +105,7 @@ end
 rule "Clear inconsistent tasks"
 salience -9999
 when
-    $task   : Task( $qid : taskId, state != TaskStates.COMPLETED && != TaskStates.EXITED, $args : args )
+    $task   : HumanTask( $qid : taskId, state != TaskStates.COMPLETED && != TaskStates.EXITED, $args : args )
               Surveyable( questionnaireId == $qid ) from $args
     not       Surveyable( questionnaireId == $qid )
 then
@@ -116,7 +116,7 @@ end
 rule "Clear tasks"
 salience -10000
 when
-    $task   : Task( $qid : taskId, state == TaskStates.EXITED, $args : args )
+    $task   : HumanTask( $qid : taskId, state == TaskStates.EXITED, $args : args )
               Surveyable( questionnaireId == $qid ) from $args
     not       Surveyable( questionnaireId == $qid )
 then
@@ -128,7 +128,7 @@ rule "Allow only owners to answer"
 salience 9999999
 when
     $ans    : Answer( $qid : questionId, $from : source != null )
-    $task   : Task( $taskId : taskId, $owner : owner, owner != null && != $from )
+    $task   : HumanTask( $taskId : taskId, $owner : owner, owner != null && != $from )
     $surv   : Questionnaire( id == $taskId, items contains $qid )
 then
     System.out.println( "Illegal attempt to answer a question from " + $from + " while Q is being answered by " + $owner );
