@@ -45,20 +45,20 @@ import org.mvel2.compiler.ExpressionCompiler;
  * @author salaboy
  */
 public class HumanTaskServiceFactory implements ObjectFactory {
-     private TaskService taskService;
+
+
+
     public HumanTaskServiceFactory() {
          
     }
 
-    
-    
-    @Override
+
     public Object getObjectInstance(Object obj,
             Name name, Context nameCtx, Hashtable environment)
             throws NamingException {
 
         // Acquire an instance of our specified bean class
-       
+
 
         // Customize the bean properties from our attributes
 //        Reference ref = (Reference) obj;
@@ -77,9 +77,9 @@ public class HumanTaskServiceFactory implements ObjectFactory {
 //                }
 //            }
 //        }
-        this.taskService = createTaskLocalService();
+
         // Return the customized instance
-        return this.taskService;
+        return createTaskLocalService();
 
     }
 
@@ -88,8 +88,8 @@ public class HumanTaskServiceFactory implements ObjectFactory {
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("org.jbpm.task");
         org.jbpm.task.service.TaskService taskService = new org.jbpm.task.service.TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
-        //TaskServiceSession taskSession = taskService.createSession();
-       
+        TaskServiceSession taskSession = taskService.createSession();
+
         taskServiceObject = new LocalTaskService(taskService);
         
 //         // Add users
