@@ -20,16 +20,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
+    <!--parent>
         <groupId>org.drools</groupId>
         <artifactId>drools-shapes-examples</artifactId>
         <version>5.4.0-SNAPSHOT</version>
-    </parent>
+    </parent-->
 
     <name>Drools :: Shapes Construction Yard Example</name>
 
     <groupId>org.drools</groupId>
     <artifactId>conyard-example</artifactId>
+    <version>5.4.0-SNAPSHOT</version>
     <properties>
         <drools.version>5.4.0-SNAPSHOT</drools.version>
         <jpa.provider>hibernate</jpa.provider>
@@ -38,6 +39,7 @@
 
 
     <dependencies>
+
 
 
         <dependency>
@@ -49,6 +51,7 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-chance-core</artifactId>
+            <version>${drools.version}</version>
         </dependency>
 
 
@@ -83,6 +86,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -90,23 +94,56 @@
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
+            <version>2.2.6</version>
             <scope>test</scope>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <version>1.0.1.Final</version>
+        </dependency>
+
+        <!--
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate</artifactId>
-            <version>3.5.4.GA</version>
-            <scope>test</scope>
+            <artifactId>hibernate-core</artifactId>
+            <version>3.5.6-Final</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.5.6-Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-commons-annotations</artifactId>
+            <version>3.2.0.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>3.5.6-Final</version>
+        </dependency>
+        -->
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.18</version>
         </dependency>
 
+
+
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>10.0</version>
         </dependency>
 
         <!--
@@ -168,6 +205,11 @@
             <url>http://repo.aduna-software.org/maven2/releases/</url>
         </repository>
 
+        <repository>
+            <id>jboss</id>
+            <name>JBoss repository</name>
+            <url>http://repository.jboss.org/maven2</url>
+        </repository>
 
         <repository>
             <id>DataNucleus_Repos2</id>
@@ -307,7 +349,7 @@
                     <schemaExcludes>
                         <exclude>**/*_$full.xsd</exclude>
                         <exclude>**/*_$spec.xsd</exclude>
-			            <exclude>**/*_$impl.xsd</exclude>
+                        <exclude>**/*_$impl.xsd</exclude>
                     </schemaExcludes>
 
                     <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>

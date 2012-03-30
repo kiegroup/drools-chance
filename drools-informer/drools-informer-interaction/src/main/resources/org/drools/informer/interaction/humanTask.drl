@@ -371,9 +371,9 @@ rule "Init"
 when
     $task   : HumanTask( $tid : taskId, state == null )
 then
-    org.jbpm.task.Task jTask = new org.jbpm.task.Task();
-    TaskHelper.getTaskService().addTask( jTask, new ContentData() );
-    System.out.println( jTask.getId() + " " + jTask );
+//    org.jbpm.task.Task jTask = new org.jbpm.task.Task();
+//    TaskHelper.getTaskService().addTask( jTask, new ContentData() );
+//    System.out.println( jTask.getId() + " " + jTask );
 
     modify ( $task ) {
         //setForeignTaskId( jTask.getId() );
