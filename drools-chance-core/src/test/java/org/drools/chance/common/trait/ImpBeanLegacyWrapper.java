@@ -322,6 +322,10 @@ public class ImpBeanLegacyWrapper extends TripleBasedStruct {
         return object;
     }
 
+    @Override
+    protected void setObject(Object o) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 
 
 }
