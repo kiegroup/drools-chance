@@ -55,6 +55,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
     private static final String source6 = "org/drools/pmml_4_0/mock_ptsd.pmml";
     private static final String source7 = "org/drools/pmml_4_0/mock_cold.pmml";
+    private static final String source8 = "org/drools/pmml_4_0/mock_breastcancer.pmml";
 
     private static final String packageName = "org.drools.pmml_4_0.test";
 
@@ -126,10 +127,6 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
         Assert.assertEquals(2930.0, Math.floor(queryDoubleField("OutAmOfClaims", "NeuralInsurance")));
 
-
-
-
-
     }
 
 
@@ -189,6 +186,48 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         Assert.assertEquals( 0.2802, queryDoubleField("PTSD", "MockPTSD" ) );
 
     }
+
+
+    @Test
+    public void testBreastCancer() throws Exception {
+        setKSession( getModelSession( source8, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        getKSession().fireAllRules();  //init model
+
+        getKSession().getWorkingMemoryEntryPoint("in_Menses").insert("Unknown");
+        getKSession().getWorkingMemoryEntryPoint("in_Relatives").insert("Unknown");
+        getKSession().getWorkingMemoryEntryPoint("in_Biopsy").insert("Unknown");
+
+        getKSession().fireAllRules();
+
+        Assert.assertEquals( 0.15, queryDoubleField( "BreastCancer", "MockBC" ), 1e-6 );
+
+
+        Answer ans = new Answer( getQId( "MockBC", "Menses" ),"7-11" );
+        getKSession().insert( ans );
+        getKSession().fireAllRules();
+
+        Assert.assertEquals( 0.18, queryDoubleField( "BreastCancer", "MockBC" ), 1e-6 );
+
+
+        Answer ans2 = new Answer( getQId( "MockBC", "Relatives" ),"2+" );
+        getKSession().insert( ans2 );
+        getKSession().fireAllRules();
+
+        Assert.assertEquals( 0.34, queryDoubleField( "BreastCancer", "MockBC" ), 1e-6 );
+
+
+        Answer ans3 = new Answer( getQId( "MockBC", "Biopsy" ),"Yes" );
+        getKSession().insert( ans3 );
+        getKSession().fireAllRules();
+
+        Assert.assertEquals( 0.52, queryDoubleField( "BreastCancer", "MockBC" ), 1e-6 );
+
+//        System.err.println( reportWMObjects( getKSession() ) );
+
+    }
+
 
     private String getQId(String model, String field) {
         return (String) getKSession().getQueryResults( "getItemId", model+"_"+field, model, Variable.v ).iterator().next().get("$id");
