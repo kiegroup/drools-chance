@@ -17,18 +17,18 @@
 package org.drools.chance.common;
 
 import com.google.common.collect.HashBasedTable;
-import org.drools.builder.KnowledgeBuilderConfiguration;
-import org.drools.chance.constraints.core.connectives.IConnectiveFactory;
-import org.drools.chance.constraints.core.evaluators.linguistic.IsEvaluatorDefinition;
+import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
+import org.drools.chance.constraints.core.connectives.factories.fuzzy.linguistic.FuzzyConnectiveFactory;
+import org.drools.chance.constraints.core.connectives.factories.fuzzy.mvl.ManyValuedConnectiveFactory;
+import org.drools.chance.constraints.core.connectives.factories.probability.discrete.DiscreteProbabilityConnectiveFactory;
 import org.drools.chance.degree.DegreeType;
-import org.drools.chance.degree.DegreeTypeRegistry;
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.DistributionStrategies;
 import org.drools.chance.distribution.DistributionStrategyFactory;
 import org.drools.chance.distribution.ImpKind;
 import org.drools.chance.distribution.ImpType;
-import org.drools.compiler.PackageBuilderConfiguration;
 
 
 /**
@@ -54,11 +54,43 @@ import org.drools.compiler.PackageBuilderConfiguration;
  */
 public class ChanceStrategyFactory<T> {
 
+
+    private static HashBasedTable<ImpKind,ImpType,ConnectiveFactory> cacheConnective = HashBasedTable.create();
+    private static ConnectiveFactory defaultFactory = new ManyValuedConnectiveFactory();
+
+    static {
+        cacheConnective.put( ImpKind.PROBABILITY, ImpType.DISCRETE, new DiscreteProbabilityConnectiveFactory() );
+        cacheConnective.put( ImpKind.PROBABILITY, ImpType.DIRICHLET, new DiscreteProbabilityConnectiveFactory() );
+        cacheConnective.put( ImpKind.FUZZINESS, ImpType.LINGUISTIC, new FuzzyConnectiveFactory() );
+        cacheConnective.put( ImpKind.FUZZINESS, ImpType.MVL, new ManyValuedConnectiveFactory() );
+        cacheConnective.put( ImpKind.FUZZINESS, ImpType.BASIC, new ManyValuedConnectiveFactory() );
+        cacheConnective.put( ImpKind.PROBABILITY, ImpType.BASIC, new ManyValuedConnectiveFactory() );
+    }
+
+    public static void registerConnectiveFactory( ImpKind kind, ImpType model, ConnectiveFactory connFac ) {
+        cacheConnective.put( kind, model, connFac );
+
+    }
+
+    public static ConnectiveFactory getConnectiveFactory( ImpKind kind, ImpType model ){
+        if ( kind == null || model == null ) {
+            return defaultFactory;
+        }
+        return cacheConnective.get( kind, model );
+    }
+
+    public static void setDefaultFactory(ConnectiveFactory defaultFactory) {
+        ChanceStrategyFactory.defaultFactory = defaultFactory;
+    }
+
+
+
+    /*********************************************************************************************************************************/
+
+
+
     private static HashBasedTable<ImpKind,ImpType,DistributionStrategyFactory> cache
             = HashBasedTable.create();
-
-    private static HashBasedTable<ImpKind,ImpType,IConnectiveFactory> cacheConnective = HashBasedTable.create();
-
 
     public static <T> DistributionStrategies buildStrategies(
             ImpKind kind, ImpType model, DegreeType degreeType, Class<T> domainType) {
@@ -68,22 +100,10 @@ public class ChanceStrategyFactory<T> {
 
     }
 
-    public static <T> void register(ImpKind kind, ImpType model, DistributionStrategyFactory<T> factory) {
+    public static <T> void register( ImpKind kind, ImpType model, DistributionStrategyFactory<T> factory ) {
         cache.put( kind, model, factory );
     }
 
-
-
-
-    public static void registerConnective( ImpKind kind,ImpType model, IConnectiveFactory connFac ){
-        cacheConnective.put( kind, model, connFac );
-
-    }
-
-
-    public static IConnectiveFactory getConnective( ImpKind kind,ImpType model ){
-        return cacheConnective.get( kind, true );
-    }
 
 
 
@@ -144,22 +164,23 @@ public class ChanceStrategyFactory<T> {
             e.printStackTrace();
         }
 
-        DegreeTypeRegistry.getSingleInstance().registerDegreeType( DegreeType.SIMPLE, SimpleDegree.class);
+        ChanceDegreeTypeRegistry.getSingleInstance().registerDegreeType( DegreeType.SIMPLE, SimpleDegree.class);
 
-        DegreeTypeRegistry.getSingleInstance().registerDegreeType( DegreeType.INTERVAL, IntervalDegree.class);
+        ChanceDegreeTypeRegistry.getSingleInstance().registerDegreeType( DegreeType.INTERVAL, IntervalDegree.class);
     }
 
 
 
-    public static KnowledgeBuilderConfiguration getChanceKBuilderConfiguration() {
-        return getChanceKBuilderConfiguration( new PackageBuilderConfiguration() );
-    }
 
-    public static KnowledgeBuilderConfiguration getChanceKBuilderConfiguration( KnowledgeBuilderConfiguration baseConf ) {
-        PackageBuilderConfiguration pbc = new PackageBuilderConfiguration();
-            pbc.getEvaluatorRegistry().addEvaluatorDefinition( new IsEvaluatorDefinition() );
-        return pbc;
-    }
+
+
+
+    /*********************************************************************************************************************************/
+
+
+
+
+
 
 
 }

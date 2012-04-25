@@ -28,6 +28,9 @@ public interface ImperfectField<T> {
     public void setValue(T value, boolean update);
 
 
+    public void setValue( T value, Degree deg, String... params );
+
+
     /**
      * Setter. Overrides the previous distribution, if any)
      * @param dist A distribution over a bean's field domain

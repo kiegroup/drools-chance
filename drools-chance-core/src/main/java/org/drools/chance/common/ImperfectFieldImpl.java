@@ -68,6 +68,10 @@ public class ImperfectFieldImpl<T> extends AbstractImperfectField<T> {
 
 
 
+    public void setValue(T value, Degree deg, String... params) {
+        setValue( getStrategies().toDistribution( value, deg, params ), false );
+    }
+
     public void setValue(Distribution<T> dist, boolean update) {
         if (update)
             getStrategies().merge(distr,dist);
