@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.chance.utils;
+package org.drools.chance.core.util;
 
 import java.util.*;
 
