@@ -17,7 +17,7 @@
 package org.drools.chance.distribution.probability.discrete;
 
 import org.drools.chance.degree.DegreeType;
-import org.drools.chance.degree.DegreeTypeRegistry;
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.junit.Test;
 
@@ -76,7 +76,7 @@ public class DiscreteDistributionStrategyTest {
 
     @Test
     public void testParse() throws Exception {
-        DegreeTypeRegistry.getSingleInstance().registerDegreeType(DegreeType.SIMPLE, SimpleDegree.class);
+        ChanceDegreeTypeRegistry.getSingleInstance().registerDegreeType(DegreeType.SIMPLE, SimpleDegree.class);
 
         DiscreteDistribution<String> dd= (DiscreteDistribution<String>) DisDisStrategy.parse("john/0.3, mark/0.7");
         assertEquals(0.3,dd.getDegree("john").getValue(),0);

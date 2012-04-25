@@ -1,69 +1,84 @@
 package org.drools.chance.kbase.fuzzy;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.chance.builder.*;
+import org.drools.chance.Chance;
 import org.drools.chance.common.ChanceStrategyFactory;
-import org.drools.chance.degree.simple.SimpleDegree;
-import org.drools.factmodel.ClassBuilderFactory;
+import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.linguistic.FuzzyConnectiveFactory;
+import org.drools.chance.kbase.AbstractChanceTest;
 import org.drools.factmodel.traits.TraitFactory;
-import org.drools.io.impl.ClassPathResource;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Map;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.junit.Assert.*;
 
-public class FuzzyKBTest {
-
-    private StatefulKnowledgeSession kSession;
-
+public class FuzzyKBTest extends AbstractChanceTest {
 
     @BeforeClass
     public static void setFactories() {
-        ChanceStrategyFactory.initDefaults();
-        ClassBuilderFactory.setBeanClassBuilderService(new ChanceBeanBuilderImpl());
-        ClassBuilderFactory.setTraitBuilderService( new ChanceTraitBuilderImpl() );
-        ClassBuilderFactory.setTraitProxyBuilderService( new ChanceTripleProxyBuilderImpl() );
-        ClassBuilderFactory.setPropertyWrapperBuilderService( new ChanceTriplePropertyWrapperClassBuilderImpl() );
-        ClassBuilderFactory.setEnumClassBuilderService( new ChanceEnumBuilderImpl() );
+
+        Chance.initialize();
+
+        ChanceStrategyFactory.setDefaultFactory( new FuzzyConnectiveFactory() );
 
     }
 
     @Before
     public void setUp() throws Exception {
         TraitFactory.reset();
-        TraitFactory.clearStore();
-        initObjects();
     }
 
-    private void initObjects() throws Exception {
+    @Test
+    public void testFuzzyIs() {
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder( ChanceStrategyFactory.getChanceKBuilderConfiguration() );
-        kBuilder.add( new ClassPathResource( "org/drools/chance/fuzzy/testFuzzyFacts.drl" ), ResourceType.DRL );
-        if ( kBuilder.hasErrors() ) {
-            fail( kBuilder.getErrors().toString() );
-        }
-        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
-        kBase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+        StatefulKnowledgeSession kSession = initBasicChanceTest( "org/drools/chance/fuzzy/testFuzzyIs.drl" );
+        Map map = (Map) kSession.getGlobal( MAP );
 
-        kSession = kBase.newStatefulKnowledgeSession();
-        kSession.setGlobal( "list", new ArrayList() );
-        kSession.fireAllRules();
+        assertEquals( 2, map.size() );
+        assertTrue( map.containsKey( "X" ) );
+        assertTrue( map.containsKey( "Y" ) );
+
+        assertEquals( 0.65,  (Double) map.get( "X" ), 1e-6 );
+        assertEquals( 0.65,  (Double) map.get( "Y" ), 1e-6 );
 
     }
-
 
 
     @Test
-    public void testFuzzy() {
+    public void testFuzzyFacts() {
+        StatefulKnowledgeSession kSession = initBasicChanceTest( "org/drools/chance/fuzzy/testFuzzyFacts.drl" );
+        Map map = (Map) kSession.getGlobal( MAP );
+
+
+        assertEquals( 2, map.size() );
+        assertTrue( map.containsKey( "X" ) );
+        assertTrue( map.containsKey( "Y" ) );
+
+        assertEquals( 0.15,  (Double) map.get( "X" ), 1e-6 );
+        assertEquals( 0.5,  (Double) map.get( "Y" ), 1e-6 );
+
+    }
+
+
+    @Test
+    public void testFuzzyPattern() {
+        StatefulKnowledgeSession kSession = initBasicChanceTest( "org/drools/chance/fuzzy/testFuzzyPattern.drl" );
+        Map map = (Map) kSession.getGlobal( MAP );
+
+
+
+        assertEquals( 3, map.size() );
+        assertTrue( map.containsKey( "X" ) );
+        assertTrue( map.containsKey( "Y" ) );
+        assertTrue( map.containsKey( "Z" ) );
+
+        assertEquals( 0.5,  (Double) map.get( "X" ), 1e-6 );
+        assertEquals( 0.5,  (Double) map.get( "Y" ), 1e-6 );
+        assertEquals( 0.35, (Double) map.get( "Z" ), 1e-6 );
 
     }
 }

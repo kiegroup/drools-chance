@@ -21,10 +21,10 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
-import org.drools.chance.builder.ChanceBeanBuilderImpl;
-import org.drools.chance.builder.ChanceTraitBuilderImpl;
-import org.drools.chance.builder.ChanceTriplePropertyWrapperClassBuilderImpl;
-import org.drools.chance.builder.ChanceTripleProxyBuilderImpl;
+import org.drools.chance.factmodel.ChanceBeanBuilderImpl;
+import org.drools.chance.factmodel.ChanceTraitBuilderImpl;
+import org.drools.chance.factmodel.ChanceTriplePropertyWrapperClassBuilderImpl;
+import org.drools.chance.factmodel.ChanceTripleProxyBuilderImpl;
 import org.drools.factmodel.ClassBuilderFactory;
 import org.drools.factmodel.traits.TraitFactory;
 import org.drools.io.impl.ClassPathResource;
@@ -61,7 +61,6 @@ public class ImperfectDRLTest {
     @Before
     public void setUp() throws Exception {
         TraitFactory.reset();
-        TraitFactory.clearStore();
         initObjects();
     }
 
@@ -69,7 +68,7 @@ public class ImperfectDRLTest {
     private void initObjects() throws Exception {
 
         KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ClassPathResource( "org/drools/chance/testImperfectRules.drl" ), ResourceType.DRL );
+        kBuilder.add( new ClassPathResource( "org/drools/chance/factmodel/testImperfectRules.drl" ), ResourceType.DRL );
         if ( kBuilder.hasErrors() ) {
             fail( kBuilder.getErrors().toString() );
         }

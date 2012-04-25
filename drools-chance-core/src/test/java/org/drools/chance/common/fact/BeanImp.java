@@ -21,6 +21,7 @@ import org.drools.chance.common.ChanceStrategyFactory;
 import org.drools.chance.common.ImperfectField;
 import org.drools.chance.common.ImperfectFieldImpl;
 import org.drools.chance.common.trait.ImpBean;
+import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.DegreeType;
 import org.drools.chance.distribution.Distribution;
 import org.drools.chance.distribution.ImpKind;
@@ -437,6 +438,13 @@ public class BeanImp implements ImpBean {
 
     public void updatePriceDistr(Distribution<Price> price_bit) {
         price_$$Imp.update(price_bit);
+        price = price_$$Imp.getCrisp();
+
+        bucks = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).defuzzify().intValue();
+    }
+    
+    public void updatePriceValue( Price val, Degree deg, String... args ) {
+        price_$$Imp.update( val, deg, args );
         price = price_$$Imp.getCrisp();
 
         bucks = ((LinguisticImperfectField<Price,Integer>) price_$$Imp).defuzzify().intValue();

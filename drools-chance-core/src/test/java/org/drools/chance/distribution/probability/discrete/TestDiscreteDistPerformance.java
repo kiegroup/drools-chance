@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestDiscreteDistPerformance {
 
-	private static int NUMADD=1000000;
+	private static int NUMADD=1000;
 
 	private static DiscreteDistributionTreeSet<String> treeSetDistr = new DiscreteDistributionTreeSet<String>();
 	private static DiscreteDistribution<String> sortMapDistr = new DiscreteDistribution<String>();

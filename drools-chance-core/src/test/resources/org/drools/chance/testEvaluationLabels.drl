@@ -23,21 +23,12 @@ import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
 import org.drools.chance.reteoo.ChanceActivation;
+
 import org.drools.chance.ChanceHelper;
 
+import java.util.Map;
 
 global java.util.Map map;
-
-    /*
-
-       SLIM      FAT
-  1.0    | \     / |
-         |   \ /   |
-         |   / \   |
-  0.0    | /     \ |
-       --------------->
-         0         100
-    */
 
 
 declare enum Weight
@@ -62,72 +53,51 @@ declare Imperson
     body    : Weight
                     @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, degree=DegreeType.SIMPLE, support="weight" )
 
-    weight  : Double    = 65.0
+    weight  : Double    = 70.0
 
 end
 
 
-declare CoreX
 
-    name    : String    = "philip"
-
-    weight  : Double    = 65.0
-
-end
-
-
-declare trait ImpersonTrait
-
-	name    : String
+declare Imperson2
+	name    : String    = "john/0.3, philip/0.2, mark/0.4, frank/0.1"
 	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DISCRETE, degree=DegreeType.SIMPLE )
+	age     : int
 
-    body    : Weight
-                    @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, degree=DegreeType.SIMPLE, support="weight" )
-
-    weight  : Double
-
+    weight  : Integer       = "60/0.05,80/0.05,100/0.9"
+                            @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DISCRETE, degree=DegreeType.SIMPLE )
 end
-
-
 
 
 rule "Init"
 when
 then
     insert( new Imperson( ) );
-    insert( new CoreX() );
-end
-
-rule "Don"
-no-loop
-when
-    $c : CoreX()
-then
-    don( $c, ImpersonTrait.class );
+    insert( new Imperson2( ) );
 end
 
 
-rule "Fuzzy Rule with Facts"
-salience 100
+rule "Labelled evals"
 dialect "mvel"
 when
-    $b : Imperson( name == "philip", body ~is Weight.FAT, body ~is Weight.SLIM )
-            @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, family=MvlFamilies.LUKAS, degree=DegreeType.SIMPLE )
+    $x : Imperson(  $w : weight ~is [ label=impIs ] Weight.FAT )        // impIs        --> 0.7
+       @Imperfect( label=patternAnd )                                   // patternAnd   --> 0.7, Imperson   --> 1.0
+
+    and @Imperfect( label=outerAnd )                                    // outerAnd     --> 0.55
+
+    $y : Imperson2( $n : name ~!= [ label=notFrank ] "frank"            // notFrank     --> 0.9
+                     && @Imperfect( label=innerAnd )                    // innerAnd     --> 0.85
+                    weight ~> [ label=betaJoin ] $w  )                  // betaJoin     --> 0.95
 then
-    System.err.println(">>> " + drools);
-    Degree x = chance.degree;
-    System.out.println( "X " + x );  // 0.15
-    map.put( "X", x.getValue() );
+
+    map.put( "X", chance.degree.value );
+
+    map.put( "impIs", chance.getDegree( "impIs" ).value );
+    map.put( "notFrank", chance.getDegree( "notFrank" ).value );
+    map.put( "betaJoin", chance.getDegree( "betaJoin" ).value );
+    map.put( "patternAnd", chance.getDegree( "patternAnd" ).value );
+    map.put( "outerAnd", chance.getDegree( "outerAnd" ).value );
+    map.put( "innerAnd", chance.getDegree( "innerAnd" ).value );
+    map.put( "Imperson", chance.getDegree( "Imperson" ).value );
 end
 
-
-rule "Fuzzy Rule with Traits"
-dialect "mvel"
-when
-    $b : ImpersonTrait( name == "philip", body ~is Weight.FAT, body ~is Weight.SLIM )
-            @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, family=MvlFamilies.GODEL, degree=DegreeType.SIMPLE )
-then
-    Degree x = chance.degree;
-    System.out.println( "Y " + x );  // 0.5
-    map.put( "Y", x.getValue() );
-end

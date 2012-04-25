@@ -19,17 +19,18 @@ package org.drools.chance.constraints.core.connectives.impl.product;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.drools.chance.constraints.core.connectives.IConnectiveCore;
-import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
+import org.drools.chance.rule.constraint.core.connectives.impl.LogicConnectives;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
+import org.drools.chance.rule.constraint.core.connectives.impl.product.And;
 
 
 public class AndTest extends TestCase {
 
 
-    IConnectiveCore and = org.drools.chance.constraints.core.connectives.impl.product.And.getInstance();
+    ConnectiveCore and = And.getInstance();
 
     public AndTest(String name) {
         super(name);
@@ -42,14 +43,14 @@ public class AndTest extends TestCase {
 
 
     public void testGetInstance() throws Exception {
-        And and2 = org.drools.chance.constraints.core.connectives.impl.product.And.getInstance();
+        And and2 = And.getInstance();
 
         assertNotNull(and2);
         assertEquals(and,and2);
     }
 
     public void testType() throws Exception {
-        assertEquals(LOGICCONNECTIVES.AND,and.getType());
+        assertEquals(LogicConnectives.AND,and.getType());
     }
 
 

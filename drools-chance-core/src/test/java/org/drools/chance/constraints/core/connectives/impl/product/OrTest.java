@@ -19,16 +19,17 @@ package org.drools.chance.constraints.core.connectives.impl.product;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.drools.chance.constraints.core.connectives.IConnectiveCore;
-import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
+import org.drools.chance.rule.constraint.core.connectives.impl.LogicConnectives;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
+import org.drools.chance.rule.constraint.core.connectives.impl.product.Or;
 
 
 public class OrTest extends TestCase {
 
-    IConnectiveCore or = org.drools.chance.constraints.core.connectives.impl.product.Or.getInstance();
+    ConnectiveCore or = Or.getInstance();
 
     public OrTest(String name) {
         super(name);
@@ -41,14 +42,14 @@ public class OrTest extends TestCase {
 
 
     public void testGetInstance() throws Exception {
-        Or or2 = org.drools.chance.constraints.core.connectives.impl.product.Or.getInstance();
+        Or or2 = Or.getInstance();
 
         assertNotNull(or2);
         assertEquals(or,or2);
     }
 
     public void testType() throws Exception {
-        assertEquals(LOGICCONNECTIVES.OR,or.getType());
+        assertEquals(LogicConnectives.OR,or.getType());
     }
 
 
