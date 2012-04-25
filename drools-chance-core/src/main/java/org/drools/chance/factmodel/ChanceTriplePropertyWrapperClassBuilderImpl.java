@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.chance.builder;
+package org.drools.chance.factmodel;
 
 import org.drools.RuntimeDroolsException;
 import org.drools.chance.distribution.ImpKind;
@@ -53,7 +53,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
         for ( FieldDefinition field : trait.getFieldsDefinitions() ) {
             if ( isVirtual( field ) ) continue;
-            if ( field instanceof ImperfectFieldDefinition ) {
+            if ( field instanceof ImperfectFieldDefinition) {
                 ImperfectFieldDefinition ifld = (ImperfectFieldDefinition) field;
 
                 if ( ImperfectFieldDefinition.isLinguistic(ifld) ) {
@@ -70,10 +70,9 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
             } else if ( field instanceof DirectAccessFieldDefinition ) {
 
-                System.out.println("Should I init core? " + field.getName());
             }
         }
-        return stackSize;
+        return stackSize + 2;
     }
 
 
@@ -105,7 +104,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitMethodInsn( INVOKEVIRTUAL,
                 wrapperName,
                 "propertyKey",
-                "(Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
+                "(Ljava/lang/Object;)Lorg/drools/core/util/Triple;");
         mv.visitMethodInsn( INVOKEVIRTUAL,
                 "org/drools/core/util/TripleStore",
                 "contains",
@@ -137,7 +136,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitMethodInsn( INVOKEVIRTUAL,
                 wrapperName,
                 "property",
-                "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;" );
+                "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/Triple;" );
         mv.visitMethodInsn( INVOKEVIRTUAL,
                 "org/drools/core/util/TripleStore",
                 "put",
@@ -167,7 +166,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitMethodInsn( INVOKEVIRTUAL,
                 wrapperName,
                 "propertyKey",
-                "(Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;" );
+                "(Ljava/lang/Object;)Lorg/drools/core/util/Triple;" );
         mv.visitMethodInsn( INVOKEVIRTUAL,
                 "org/drools/core/util/TripleStore",
                 "contains",
@@ -206,7 +205,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
         mv.visitMethodInsn( INVOKEVIRTUAL,
                 wrapperName,
                 "property",
-                "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
+                "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/Triple;");
         mv.visitMethodInsn( INVOKEVIRTUAL,
                 "org/drools/core/util/TripleStore",
                 "put",

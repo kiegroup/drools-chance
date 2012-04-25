@@ -1,4 +1,4 @@
-package org.drools.chance.builder;
+package org.drools.chance.factmodel;
 
 
 public @interface LinguisticPartition {

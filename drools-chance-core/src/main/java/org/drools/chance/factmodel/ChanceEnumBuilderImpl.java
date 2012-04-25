@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.chance.builder;
+package org.drools.chance.factmodel;
 
 import org.drools.chance.distribution.fuzzy.linguistic.Linguistic;
 import org.drools.factmodel.*;

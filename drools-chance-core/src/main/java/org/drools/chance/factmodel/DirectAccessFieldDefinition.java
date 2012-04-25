@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-package org.drools.chance.builder;
+package org.drools.chance.factmodel;
 
 
 import org.drools.factmodel.FieldDefinition;
 
-public class VirtualFieldDefinition extends FieldDefinition {
+public class DirectAccessFieldDefinition extends FieldDefinition {
 
+    private FieldDefinition target;
 
+    public DirectAccessFieldDefinition(FieldDefinition target) {
+        this.target = target;
+    }
+
+    public FieldDefinition getTarget() {
+        return target;
+    }
+
+    public void setTarget(FieldDefinition target) {
+        this.target = target;
+    }
 }

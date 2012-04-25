@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package org.drools.chance.builder;
+package org.drools.chance.factmodel;
 
 import org.drools.chance.common.ImperfectField;
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
+import org.drools.factmodel.AnnotationDefinition;
 import org.drools.factmodel.BuildUtils;
 import org.drools.factmodel.ClassDefinition;
 import org.drools.factmodel.FieldDefinition;
@@ -26,6 +31,7 @@ import org.drools.factmodel.traits.TraitTripleProxyClassBuilderImpl;
 import org.mvel2.asm.*;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 
@@ -33,22 +39,73 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
 
 
-    protected void buildConstructorCore( ClassWriter cw, MethodVisitor mv, String internalProxy, String internalWrapper, String internalCore, String descrCore, String mixin, Class mixinClass ) {
-        super.buildConstructorCore( cw, mv, internalProxy, internalWrapper, internalCore, descrCore, mixin, mixinClass );
+    protected int buildConstructorCore( ClassWriter cw, MethodVisitor mv, String internalProxy, String internalWrapper, String internalCore, String descrCore, String mixin, Class mixinClass ) {
+        int size = super.buildConstructorCore( cw, mv, internalProxy, internalWrapper, internalCore, descrCore, mixin, mixinClass );
 
+        List<AnnotationDefinition> annotations =  getTrait().getAnnotations();
+        if ( annotations != null ) {
+            for ( AnnotationDefinition adef : annotations ) {
+                if ( adef.getName().equals( Imperfect.class.getName() ) ) {
+                    String kind = adef.getValues().containsKey( ImpKind.name ) ?
+                            adef.getValues().get( ImpKind.name ).getValue().toString() :
+                            ImpKind.PROBABILITY.toString();
+
+                    String type = adef.getValues().containsKey( ImpType.name ) ?
+                            adef.getValues().get( ImpType.name ).getValue().toString() :
+                            ImpType.BASIC.toString();
+
+                    String degree = adef.getValues().containsKey( DegreeType.name ) ?
+                            adef.getValues().get( DegreeType.name ).getValue().toString() :
+                            ChanceDegreeTypeRegistry.getDefaultDegree().toString();
+
+
+                    mv.visitVarInsn( ALOAD, 0 );
+                    mv.visitTypeInsn( NEW, "org/drools/chance/common/ImperfectFieldImpl" );
+                    mv.visitInsn( DUP );
+                    mv.visitFieldInsn( GETSTATIC,
+                                       "org/drools/chance/distribution/ImpKind",
+                                       kind,
+                                       "Lorg/drools/chance/distribution/ImpKind;" );
+                    mv.visitFieldInsn( GETSTATIC,
+                                       "org/drools/chance/distribution/ImpType",
+                                       type,
+                                       "Lorg/drools/chance/distribution/ImpType;" );
+                    mv.visitFieldInsn( GETSTATIC,
+                                       "org/drools/chance/degree/DegreeType",
+                                       degree,
+                                       "Lorg/drools/chance/degree/DegreeType;" );
+                    mv.visitLdcInsn( Type.getType( "Ljava/lang/Boolean;" ) );
+                    mv.visitMethodInsn( INVOKESTATIC,
+                                        "org/drools/chance/common/ChanceStrategyFactory",
+                                        "buildStrategies",
+                                        "(Lorg/drools/chance/distribution/ImpKind;Lorg/drools/chance/distribution/ImpType;Lorg/drools/chance/degree/DegreeType;Ljava/lang/Class;)Lorg/drools/chance/distribution/DistributionStrategies;" );
+                    mv.visitMethodInsn( INVOKESPECIAL,
+                                        "org/drools/chance/common/ImperfectFieldImpl",
+                                        "<init>",
+                                        "(Lorg/drools/chance/distribution/DistributionStrategies;)V" );
+                    mv.visitFieldInsn( PUTFIELD,
+                                        "org/drools/chance/factmodel/ImperfectTraitProxy",
+                                        "holds",
+                                        "Lorg/drools/chance/common/ImperfectField;" );
+
+                }
+            }
+        }
+        
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKESPECIAL, internalProxy, "synchFields", "()V");
 
+        return size + 2;
     }
 
 
 
 
     protected void buildProxyAccessor(long mask, ClassWriter cw, String masterName, ClassDefinition core, Map<String, Method> mixinGetSet, FieldDefinition field, boolean isSoftField ) {
-        if ( field instanceof VirtualFieldDefinition ) return;
-        if ( ! ( field instanceof ImperfectFieldDefinition ) ) {
+        if ( field instanceof VirtualFieldDefinition) return;
+        if ( ! ( field instanceof ImperfectFieldDefinition) ) {
 
-            if ( field instanceof DirectAccessFieldDefinition ) {
+            if ( field instanceof DirectAccessFieldDefinition) {
                 DirectAccessFieldDefinition dfld = (DirectAccessFieldDefinition) field;
                 int j = 0;
                 for ( FieldDefinition x : getTrait().getFieldsDefinitions() ) {
@@ -259,7 +316,6 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
                     if ( ImperfectFieldDefinition.isLinguistic(ifld) ) {
 
                         FieldDefinition tfld = ifld.getSupportFieldDef();
-                        System.out.println("Synch ling " + ifld.getName());
                         synchLinguisticField(mv, ifld, tfld, proxyName, coreName);
 
                         hasLinguistic = true;
@@ -267,7 +323,6 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
 
                     } else {
-                        System.out.println("Synch " + ifld.getName());
                         synchField(mv, ifld, proxyName);
                     }
                 }
@@ -529,7 +584,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
             mv.visitVarInsn(ALOAD, 0);
             mv.visitLdcInsn( ifld.getName() + "_$$Imp" );
             mv.visitVarInsn(ALOAD, 1);
-            mv.visitMethodInsn(INVOKEVIRTUAL, BuildUtils.getInternalType( wrapperName ), "property", "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
+            mv.visitMethodInsn(INVOKEVIRTUAL, BuildUtils.getInternalType( wrapperName ), "property", "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/Triple;");
             mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "put", "(Lorg/drools/core/util/Triple;)Z");
             mv.visitInsn(POP);
 
@@ -878,7 +933,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
     protected int setTargetValue(MethodVisitor mv, String wrapperName, String coreName, FieldDefinition field, boolean isSoftField ) {
         if ( isSoftField ) {
 
-            mv.visitMethodInsn(INVOKEVIRTUAL, BuildUtils.getInternalType(wrapperName), "property", "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/TripleImpl;");
+            mv.visitMethodInsn(INVOKEVIRTUAL, BuildUtils.getInternalType(wrapperName), "property", "(Ljava/lang/String;Ljava/lang/Object;)Lorg/drools/core/util/Triple;");
             mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "put", "(Lorg/drools/core/util/Triple;)Z");
             mv.visitInsn(POP);
             return 2;
@@ -918,7 +973,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
         mv.visitVarInsn(ALOAD, 0);
         mv.visitLdcInsn(field.getName() + "_$$Imp");
         //TODO : how can this work??
-        mv.visitMethodInsn(INVOKEVIRTUAL, BuildUtils.getInternalType( wrapperName ), "propertyKey", "(Ljava/lang/String;)Lorg/drools/core/util/TripleImpl;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, BuildUtils.getInternalType( wrapperName ), "propertyKey", "(Ljava/lang/String;)Lorg/drools/core/util/Triple;");
         mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "get", "(Lorg/drools/core/util/Triple;)Lorg/drools/core/util/Triple;");
         mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/core/util/Triple", "getValue", "()Ljava/lang/Object;");
         mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType( ImperfectField.class.getName() ) );
@@ -934,7 +989,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
             mv.visitFieldInsn(GETFIELD, BuildUtils.getInternalType( wrapperName ), "store", "Lorg/drools/core/util/TripleStore;");
             mv.visitVarInsn(ALOAD, 0);
             mv.visitLdcInsn( field.getName() );
-            mv.visitMethodInsn(INVOKEVIRTUAL, BuildUtils.getInternalType( wrapperName ), "propertyKey", "(Ljava/lang/String;)Lorg/drools/core/util/TripleImpl;");
+            mv.visitMethodInsn(INVOKEVIRTUAL, BuildUtils.getInternalType( wrapperName ), "propertyKey", "(Ljava/lang/String;)Lorg/drools/core/util/Triple;");
             mv.visitMethodInsn(INVOKEVIRTUAL, "org/drools/core/util/TripleStore", "get", "(Lorg/drools/core/util/Triple;)Lorg/drools/core/util/Triple;");
             mv.visitMethodInsn(INVOKEINTERFACE, "org/drools/core/util/Triple", "getValue", "()Ljava/lang/Object;");
             mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType( field.getTypeName() ) );

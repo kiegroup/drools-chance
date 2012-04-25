@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.chance.builder;
+package org.drools.chance.factmodel;
 
 import org.drools.chance.common.ImperfectField;
 import org.drools.chance.distribution.Distribution;
@@ -45,7 +45,7 @@ public class ChanceTraitBuilderImpl extends TraitClassBuilderImpl {
         Collection<FieldDefinition> originalFields = new ArrayList<FieldDefinition>( classDef.getFieldsDefinitions() );
 
         for ( FieldDefinition fld : originalFields ) {
-            if ( ! ( fld instanceof ImperfectFieldDefinition ) && fld.getAnnotations() != null ) {
+            if ( ! ( fld instanceof ImperfectFieldDefinition) && fld.getAnnotations() != null ) {
                 for ( AnnotationDefinition ann : fld.getAnnotations() ) {
                     if ( ann.getName().equals( Imperfect.class.getName() ) ) {
                         ImperfectFieldDefinition ifld = ImperfectFieldDefinition.fromField( fld, ann );
