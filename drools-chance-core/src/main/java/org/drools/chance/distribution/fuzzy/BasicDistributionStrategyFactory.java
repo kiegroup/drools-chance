@@ -16,6 +16,8 @@
 
 package org.drools.chance.distribution.fuzzy;
 
+import org.drools.chance.common.ChanceStrategyFactory;
+import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
 import org.drools.chance.degree.DegreeType;
 import org.drools.chance.distribution.*;
 
@@ -29,7 +31,7 @@ public class BasicDistributionStrategyFactory<T> implements DistributionStrategy
 
 	public <T> DistributionStrategies buildStrategies(DegreeType degreeType, Class<T> domainType) {
 
-        return new BasicDistributionStrategy<T>(degreeType, domainType);
+        return new BasicDistributionStrategy<T>(degreeType, domainType, ChanceStrategyFactory.getConnectiveFactory( getImp_Kind(), getImp_Model() ) );
 	}
 
 

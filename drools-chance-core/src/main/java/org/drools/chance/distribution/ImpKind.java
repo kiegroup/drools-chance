@@ -24,10 +24,21 @@ public enum ImpKind {
     POSSIBILITY         ("possibility"),
     BELIEF              ("belief");
 
+    public static final String name = "kind";
+    
     private String kind;
     
     ImpKind( String kind ) {
         this.kind = kind;
+    }
+
+    public static ImpKind parse( String x ) {
+        if ( x == null || x.isEmpty() ) { return null; }
+        int dotPos = x.indexOf( '.' );
+        if ( dotPos >= 0 ) {
+            x = x.substring( dotPos + 1 );
+        }
+        return ImpKind.valueOf( x );
     }
 
 }

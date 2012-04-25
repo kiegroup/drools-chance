@@ -16,6 +16,7 @@
 
 package org.drools.chance.distribution;
 
+import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
 import org.drools.chance.degree.DegreeType;
 
 /**
@@ -32,7 +33,7 @@ public interface DistributionStrategyFactory<T> {
      * @return
      */
 
-    public <T> DistributionStrategies<T> buildStrategies( DegreeType degreeType, Class<T> priorType);
+    public <T> DistributionStrategies<T> buildStrategies( DegreeType degreeType, Class<T> priorType );
 
     /**
      * The kind of imperfection modelled

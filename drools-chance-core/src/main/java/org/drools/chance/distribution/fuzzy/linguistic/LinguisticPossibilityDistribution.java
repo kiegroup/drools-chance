@@ -66,5 +66,9 @@ public class LinguisticPossibilityDistribution<T extends Number>
         return cutPart;
     }
 
+    public boolean isDiscrete() {
+        return true;
+    }
+
 
 }

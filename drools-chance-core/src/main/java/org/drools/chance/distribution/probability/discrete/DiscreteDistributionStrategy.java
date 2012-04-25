@@ -18,7 +18,7 @@ package org.drools.chance.distribution.probability.discrete;
 
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.DegreeType;
-import org.drools.chance.degree.DegreeTypeRegistry;
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.DiscreteProbabilityDistribution;
 import org.drools.chance.distribution.Distribution;
@@ -52,7 +52,7 @@ public class DiscreteDistributionStrategy<T>  implements DistributionStrategies<
 
     private Constructor getDegreeStringConstructor() {
         if (degreeStringConstr == null) {
-            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString(degreeType);
+            degreeStringConstr = ChanceDegreeTypeRegistry.getSingleInstance().getConstructorByString(degreeType);
         }
         return degreeStringConstr;
     }
@@ -231,7 +231,7 @@ public class DiscreteDistributionStrategy<T>  implements DistributionStrategies<
     private Distribution<T> createUniformDistribution( Collection<T> focalElements) {
         DiscreteDistribution<T> ret = new DiscreteDistribution<T>();
                 for( Iterator<? extends T> currIt = focalElements.iterator(); currIt.hasNext() ; ) {
-                    ret.put( currIt.next(), DegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 1.0 / focalElements.size()) );
+                    ret.put( currIt.next(), ChanceDegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 1.0 / focalElements.size()) );
                 }
         return ret;
 	}

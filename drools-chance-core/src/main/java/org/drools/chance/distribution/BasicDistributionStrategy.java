@@ -16,9 +16,14 @@
 
 package org.drools.chance.distribution;
 
+import org.drools.chance.common.ChanceStrategyFactory;
+import org.drools.chance.constraints.core.connectives.ConnectiveCore;
+import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
+import org.drools.chance.constraints.core.connectives.impl.LogicConnectives;
+import org.drools.chance.constraints.core.connectives.impl.MvlFamilies;
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.DegreeType;
-import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.core.util.StringUtils;
 
@@ -35,7 +40,7 @@ import java.util.Set;
 public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> {
 
 
-
+    private ConnectiveFactory connFactory;
     private DegreeType degreeType;
     private Class<T> domainType;
 
@@ -46,21 +51,22 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
     private Degree unk;
 
 
-    public BasicDistributionStrategy( DegreeType degreeType, Class<T> domainType){
+    public BasicDistributionStrategy( DegreeType degreeType, Class<T> domainType, ConnectiveFactory connFactory ) {
+        this.connFactory = connFactory;
         this.degreeType = degreeType;
         this.domainType = domainType;
         try {
-            this.tru = DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().True();
+            this.tru = ChanceDegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().True();
         } catch( Exception e ) {
             this.tru = SimpleDegree.TRUE;
         }
         try {
-            this.fal = DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().False();
+            this.fal = ChanceDegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().False();
         } catch( Exception e ) {
             this.fal = SimpleDegree.FALSE;
         }
         try {
-            this.unk = DegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().Unknown();
+            this.unk = ChanceDegreeTypeRegistry.getSingleInstance().getDegreeClass( degreeType ).newInstance().Unknown();
         } catch( Exception e ) {
             this.unk = new SimpleDegree(0.5);
         }
@@ -69,7 +75,7 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
 
     private Constructor getDegreeStringConstructor() {
         if (degreeStringConstr == null) {
-            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType );
+            degreeStringConstr = ChanceDegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType );
         }
         return degreeStringConstr;
     }
@@ -104,7 +110,7 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
                 deg = tru;
             } else {
                 val = domainType.getConstructor(String.class).newInstance( distrAsString.substring( 0, idx ) );
-                deg = (Degree) DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType ).newInstance( distrAsString.substring( idx + 1 ) );
+                deg = (Degree) ChanceDegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType ).newInstance( distrAsString.substring( idx + 1 ) );
             }
 
             return new BasicDistribution<T>( val, deg );
@@ -178,7 +184,7 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
 
 
     public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit) {
-        return merge( current, newBit, "or" );
+        return merge( current, newBit, "operator=OR" );
     }
 
     public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, String strategy) {
@@ -188,41 +194,60 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
     public Distribution<T> merge(Distribution<T> current, Distribution<T> newBit, Object... params) {
         BasicDistribution<T> src = (BasicDistribution<T>) current;
         BasicDistribution<T> bit = (BasicDistribution<T>) newBit;
-        String strategy = null;
-        if ( params.length > 0 ) {
-            strategy = (String) params[0];
-        }
 
         T val = src.getValue();
         if ( val == null ) {
             val = ((BasicDistribution<T>) newBit).getValue();
             src.set( val, newBit.getDegree( val ) );
         } else if ( val.equals( bit.getValue() ) ) {
-            if (StringUtils.isEmpty( strategy ) || "or".equals( strategy ) ) {
-                Degree a = src.getDegree(val);
-                Degree b = bit.getDegree( val );
-                Degree c = a.sum( b.mul( a.True().sub( a ) ) );
-
-                src.setDegree( c.getValue() > 0.99 ? c.True() : c );
+            ConnectiveCore op = null;
+            if ( params.length > 0 ) {
+                op = parseParams( params );
             } else {
-                Degree a = src.getDegree(val);
-                Degree b = bit.getDegree( val );
-                Degree c = a.mul( a.True().sub( b ) );
-                src.setDegree( c.getValue() > 0.99 ? c.True() : c );
+                op = connFactory.getOr();
             }
+
+            Degree c = op.eval( src.getDegree(val), bit.getDegree( val ) );
+            src.setDegree( c.getValue() > 0.99 ? c.True() : c );
+
         } else {
-            Degree a = src.getDegree(val);
+
+            ConnectiveCore op =  connFactory.getConnective( LogicConnectives.AND, MvlFamilies.PRODUCT.value() );
+
+            Degree a = src.getDegree( val );
             Degree b = bit.getDegree( val );
-            Degree c = a.mul( b );
+            Degree c = op.eval( a, b );
+
             if ( c.equals( c.False() ) ) {
                 src.set( ((BasicDistribution<T>) newBit).getValue(), c.True() );
             } else {
                 src.setDegree( c );
             }
+
         }
         return src;
     }
 
+    private ConnectiveCore parseParams(Object[] params) {
+        LogicConnectives conn = LogicConnectives.OR;
+        String family = MvlFamilies.PRODUCT.value();
+
+        for ( int j = 0; j < params.length; j++ ) {
+            String param = (String) params[j];
+            int idx = param.indexOf( '=' );
+            if ( idx > 0 ) {
+                String key = param.substring( 0, idx ).trim();
+                if ( "family".equals( key ) ) {
+                    family = param.substring( idx + 1 );
+                } else if ( "operator".equals( key ) ) {
+                    conn = LogicConnectives.valueOf( param.substring( idx + 1 ) );
+                }
+            }
+        }
+
+        return connFactory.getConnective( conn, family );
+
+    }
 
 
     public Distribution<T> mergeAsNew(Distribution<T> current, Distribution<T> newBit) {

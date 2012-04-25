@@ -88,6 +88,10 @@ public class DiscreteDistributionTreeSet<T> implements Distribution<T> {
         return _multipleValue.size();
     }
 
+    public boolean isDiscrete() {
+        return true;
+    }
+
 
     public T sample() {
         double p = Math.random();

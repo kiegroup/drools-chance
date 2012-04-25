@@ -42,8 +42,12 @@ public class LinguisticImperfectField<T extends Linguistic, K extends Number> im
         innerField.setValue(value);
     }
 
-    public void setValue(T value, boolean update) {
-        innerField.setValue(value,update);
+    public void setValue( T value, boolean update ) {
+        innerField.setValue( value,update );
+    }
+
+    public void setValue(T value, Degree deg, String... params) {
+         innerField.setValue( value, deg, params );
     }
 
     public void setValue(Distribution<T> dist) {
@@ -83,8 +87,7 @@ public class LinguisticImperfectField<T extends Linguistic, K extends Number> im
     }
 
     public void update(T value, Degree deg, String... p) {
-        //TODO
-        throw new UnsupportedOperationException("TODO");
+        innerField.update( value, deg, p );
     }
 
     public void remove(T value, Degree deg, String... p) {

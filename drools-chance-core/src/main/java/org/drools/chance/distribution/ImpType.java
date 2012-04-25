@@ -23,12 +23,25 @@ public enum ImpType {
     TBM                 ("TBM"),
     DISCRETE            ("discrete"),
     DIRICHLET           ("dirichlet"),
-    BASIC               ("basic");
+    BASIC               ("basic"),
+    MVL                 ("many-valued");
+
+
+    public static final String name = "type";
 
     private String type;
 
     ImpType(String type) {
         this.type = type;
+    }
+    
+    public static ImpType parse( String x ) {
+        if ( x == null || x.isEmpty() ) { return null; }
+        int dotPos = x.indexOf( '.' );
+        if ( dotPos >= 0 ) {
+            x = x.substring( dotPos + 1 );
+        }
+        return ImpType.valueOf( x );
     }
 
 

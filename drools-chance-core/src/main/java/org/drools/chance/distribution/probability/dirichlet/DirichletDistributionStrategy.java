@@ -18,12 +18,12 @@ package org.drools.chance.distribution.probability.dirichlet;
 
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.DegreeType;
-import org.drools.chance.degree.DegreeTypeRegistry;
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.distribution.DiscreteDomainDistribution;
 import org.drools.chance.distribution.DiscreteProbabilityDistribution;
 import org.drools.chance.distribution.Distribution;
 import org.drools.chance.distribution.DistributionStrategies;
-import org.drools.chance.utils.ValueSortedMap;
+import org.drools.chance.core.util.ValueSortedMap;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -53,7 +53,7 @@ public class DirichletDistributionStrategy<T>  implements DistributionStrategies
 
     private Constructor getDegreeStringConstructor() {
     	if (degreeStringConstr == null)
-            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString(degreeType);
+            degreeStringConstr = ChanceDegreeTypeRegistry.getSingleInstance().getConstructorByString(degreeType);
         return degreeStringConstr;
     }
 

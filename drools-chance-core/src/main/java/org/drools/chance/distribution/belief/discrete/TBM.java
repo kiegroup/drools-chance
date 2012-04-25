@@ -276,6 +276,10 @@ public class TBM<T> implements DiscreteProbabilityDistribution<Set<T>> {
     }
 
 
+    public boolean isDiscrete() {
+        return true;
+    }
+
 
 
 

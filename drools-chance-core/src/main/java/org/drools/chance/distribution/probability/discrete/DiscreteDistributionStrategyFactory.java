@@ -32,7 +32,7 @@ public class DiscreteDistributionStrategyFactory<T> implements DistributionStrat
 
 	public <T> DistributionStrategies buildStrategies(DegreeType degreeType, Class<T> domainType) {
 
-        return new DiscreteDistributionStrategy<T>(degreeType, domainType);
+        return new DiscreteDistributionStrategy<T>( degreeType, domainType );
 	}
 
 

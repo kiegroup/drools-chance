@@ -17,12 +17,16 @@
 package org.drools.chance.distribution;
 
 
+import org.drools.chance.degree.Degree;
+
 import java.util.Set;
 
 public interface DiscreteDomainDistribution<T> extends Iterable<T> {
 
     
     public Set<T> getSupport();
+    
+    public Degree get( T object );
 
     public int size();
 

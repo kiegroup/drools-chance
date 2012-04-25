@@ -20,7 +20,7 @@ import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.DiscreteProbabilityDistribution;
-import org.drools.chance.utils.ValueSortedMap;
+import org.drools.chance.core.util.ValueSortedMap;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -171,6 +171,10 @@ public class DirichletDistribution<T> implements DiscreteProbabilityDistribution
                 sb.append(", ");
         }
         return sb.toString();
+    }
+
+    public boolean isDiscrete() {
+        return true;
     }
 
 

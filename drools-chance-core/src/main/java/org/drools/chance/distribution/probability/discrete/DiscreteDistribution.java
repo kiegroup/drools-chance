@@ -16,9 +16,9 @@
 
 package org.drools.chance.distribution.probability.discrete;
 
+import org.drools.chance.core.util.ValueSortedMap;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.distribution.DiscreteProbabilityDistribution;
-import org.drools.chance.utils.ValueSortedMap;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -101,6 +101,9 @@ public class DiscreteDistribution<T> implements DiscreteProbabilityDistribution<
     }
 
 
+    public boolean isDiscrete() {
+        return true;
+    }
 
 
     public Iterator<T> iterator() {

@@ -16,18 +16,13 @@
 
 package org.drools.chance.distribution.belief.discrete;
 
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.DegreeType;
-import org.drools.chance.degree.DegreeTypeRegistry;
-import org.drools.chance.distribution.DiscreteDomainDistribution;
-import org.drools.chance.distribution.DiscreteProbabilityDistribution;
 import org.drools.chance.distribution.Distribution;
 import org.drools.chance.distribution.DistributionStrategies;
-import org.drools.chance.distribution.probability.dirichlet.DirichletDistribution;
-import org.drools.chance.utils.ValueSortedMap;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 
@@ -54,7 +49,7 @@ public class TBMStrategy<T>  implements DistributionStrategies<T> {
 
     private Constructor getDegreeStringConstructor() {
         if (degreeStringConstr == null)
-            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType );
+            degreeStringConstr = ChanceDegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType );
         return degreeStringConstr;
     }
 
@@ -229,8 +224,8 @@ public class TBMStrategy<T>  implements DistributionStrategies<T> {
 
     public Distribution<T> parse( String distrAsString ) {
         TBM tbm = new TBM();
-        Degree mass = DegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 0.0 );
-        Degree universe = DegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 1.0 );
+        Degree mass = ChanceDegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 0.0 );
+        Degree universe = ChanceDegreeTypeRegistry.getSingleInstance().buildDegree( degreeType, 1.0 );
 
         int start = distrAsString.indexOf( "{" );
         int end = distrAsString.indexOf( "}" );

@@ -18,7 +18,7 @@ package org.drools.chance.distribution.fuzzy.linguistic;
 
 import de.lab4inf.fuzzy.FuzzyAlphaCutPartition;
 import org.drools.chance.degree.DegreeType;
-import org.drools.chance.degree.DegreeTypeRegistry;
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.distribution.Distribution;
 import org.drools.chance.distribution.DistributionStrategies;
@@ -43,7 +43,7 @@ public class LinguisticPossibilityDistributionStrategy<T extends Number> impleme
 
     private Constructor getDegreeStringConstructor() {
         if (degreeStringConstr == null)
-            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString(degreeType);
+            degreeStringConstr = ChanceDegreeTypeRegistry.getSingleInstance().getConstructorByString(degreeType);
         return degreeStringConstr;
     }
 

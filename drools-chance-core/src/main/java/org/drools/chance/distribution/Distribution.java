@@ -49,6 +49,7 @@ public interface Distribution<T>  {
     public Number domainSize();
 
 
+    public boolean isDiscrete();
 
 
 

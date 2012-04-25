@@ -16,11 +16,11 @@
 
 package org.drools.chance.distribution.fuzzy.linguistic;
 
+import org.drools.chance.core.util.ValueSortedMap;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.ContinuousPossibilityDistribution;
 import org.drools.chance.distribution.DiscretePossibilityDistribution;
-import org.drools.chance.utils.ValueSortedMap;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -147,5 +147,8 @@ public class ShapedFuzzyPartition<T extends Linguistic<Number>> implements Discr
         return map != null ? map.hashCode() : 0;
     }
 
+    public boolean isDiscrete() {
+        return true;
+    }
 
 }

@@ -18,8 +18,14 @@ package org.drools.chance.distribution;
 
 import org.drools.chance.constraints.core.connectives.impl.lukas.Not;
 import org.drools.chance.degree.Degree;
+import org.drools.chance.core.util.MicroMap;
+import org.drools.chance.core.util.MicroSet;
 
-public class BasicDistribution<T> implements ProbabilityDistribution<T> {
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+public class BasicDistribution<T> implements DiscretePossibilityDistribution<T>, DiscreteProbabilityDistribution<T> {
 
     private Degree degree;
 
@@ -47,8 +53,17 @@ public class BasicDistribution<T> implements ProbabilityDistribution<T> {
         }
     }
 
+    public Set<T> getSupport() {
+        return new MicroSet<T>( value );
+    }
+
+
     public Degree get(T value) {
         return getDegree( value );
+    }
+
+    public int size() {
+        return 1;
     }
 
     public T getValue() {
@@ -78,4 +93,15 @@ public class BasicDistribution<T> implements ProbabilityDistribution<T> {
         return "(Basic) : {" + value + "/" + degree + "}";
     }
 
+    public boolean isDiscrete() {
+        return true;
+    }
+
+    public Map<T, Degree> getDistribution() {
+        return new MicroMap<T,Degree>( value, degree );
+    }
+
+    public Iterator<T> iterator() {
+        return new MicroMap<T,Degree>( value, degree ).keySet().iterator();
+    }
 }

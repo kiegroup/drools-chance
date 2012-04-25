@@ -16,8 +16,8 @@
 
 package org.drools.chance.distribution.fuzzy.linguistic;
 
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.DegreeType;
-import org.drools.chance.degree.DegreeTypeRegistry;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.DiscretePossibilityDistribution;
@@ -47,7 +47,7 @@ public class ShapedFuzzyPartitionStrategy<T extends Linguistic> implements Distr
 
     private Constructor getDegreeStringConstructor() {
         if ( degreeStringConstr == null ) {
-            degreeStringConstr = DegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType );
+            degreeStringConstr = ChanceDegreeTypeRegistry.getSingleInstance().getConstructorByString( degreeType );
         }
         return degreeStringConstr;
     }
@@ -67,7 +67,9 @@ public class ShapedFuzzyPartitionStrategy<T extends Linguistic> implements Distr
 
     public Distribution<Linguistic> toDistribution(Linguistic value) {
         Distribution<Linguistic> dist = createEmptyPartition();
-        ((DiscretePossibilityDistribution<Linguistic>) dist).getDistribution().put(value,SimpleDegree.TRUE);
+        if ( value != null ) {
+            ((DiscretePossibilityDistribution<Linguistic>) dist).getDistribution().put(value,SimpleDegree.TRUE);
+        }
         return dist;
     }
 
@@ -76,7 +78,9 @@ public class ShapedFuzzyPartitionStrategy<T extends Linguistic> implements Distr
     }
 
     public Distribution<Linguistic> toDistribution(Linguistic value, Object... params) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ShapedFuzzyPartition part = (ShapedFuzzyPartition) createEmptyPartition();
+        part.reshape( value, (Degree) params[0] );
+        return part;
     }
 
 
@@ -191,7 +195,18 @@ public class ShapedFuzzyPartitionStrategy<T extends Linguistic> implements Distr
     }
 
     public Distribution<Linguistic> merge(Distribution<Linguistic> current, Distribution<Linguistic> newBit, Object... params) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ShapedFuzzyPartition part1 = (ShapedFuzzyPartition) current;
+        ShapedFuzzyPartition part2 = (ShapedFuzzyPartition) newBit;
+
+        Iterator<Linguistic<Number>> iter = part2.iterator();
+        while ( iter.hasNext() ) {
+            Linguistic<Number> ling = iter.next();
+            Degree deg1 = part1.getDegree( ling );
+            Degree deg2 = part2.getDegree( ling );
+
+            part1.reshape( ling, deg1.max( deg2 ) );
+        }
+        return part1;
     }
 
     public Distribution<Linguistic> mergeAsNew(Distribution<Linguistic> current, Distribution<Linguistic> newBit) {
