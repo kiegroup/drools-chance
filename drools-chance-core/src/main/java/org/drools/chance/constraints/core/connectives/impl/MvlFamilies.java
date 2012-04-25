@@ -17,21 +17,32 @@
 package org.drools.chance.constraints.core.connectives.impl;
 
 
-public enum MVLFAMILIES {
+public enum MvlFamilies {
 
-    PRODUCT("prod"),
+    PRODUCT("PRODUCT"),
 
-    GODEL("godel"),
+    GODEL("GODEL"),
 
-    LUKAS("lukas");
+    LUKAS("LUKAS");
+
+    public static final String name = "family";
 
     private final String value;
 
-    MVLFAMILIES(String value) {
+    MvlFamilies( String value ) {
         this.value = value;
     }
 
     public String value() {
         return value;
+    }
+
+    public static MvlFamilies parse( String x ) {
+        if ( x == null || x.isEmpty() ) { return null; }
+        int dotPos = x.indexOf( '.' );
+        if ( dotPos >= 0 ) {
+            x = x.substring( dotPos + 1 );
+        }
+        return MvlFamilies.valueOf( x );
     }
 }

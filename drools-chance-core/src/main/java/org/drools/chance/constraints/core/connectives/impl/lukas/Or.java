@@ -17,19 +17,14 @@
 package org.drools.chance.constraints.core.connectives.impl.lukas;
 
 import org.drools.chance.constraints.core.connectives.impl.AbstractConnective;
-import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
+import org.drools.chance.constraints.core.connectives.impl.LogicConnectives;
 import org.drools.chance.degree.Degree;
+import org.drools.chance.evaluation.Evaluation;
 
-/**
- * Created by IntelliJ IDEA.
- * User: doncat
- * Date: 25/01/11
- * Time: 21.33
- * To change this template use File | Settings | File Templates.
- */
+
 public class Or extends AbstractConnective {
 
-    private Or() { }
+    public Or() { }
 
     private static Or instance = new Or();
 
@@ -38,8 +33,8 @@ public class Or extends AbstractConnective {
     }
 
 
-    public LOGICCONNECTIVES getType() {
-        return LOGICCONNECTIVES.OR;
+    public LogicConnectives getType() {
+        return LogicConnectives.OR;
     }
 
 
@@ -64,6 +59,13 @@ public class Or extends AbstractConnective {
         return deg;
     }
 
+    public Degree eval(Evaluation... degs) {
+        Degree deg = degs[0].getDegree();
+        for (int j = 1; j < degs.length; j++) {
+            deg = this.eval( deg, degs[j].getDegree() );
+        }
+        return deg;
+    }
 
 
 

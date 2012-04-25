@@ -16,101 +16,164 @@
 
 package org.drools.chance.constraints.core.connectives.factories.probability.discrete;
 
-import org.drools.chance.constraints.core.IConstraintCore;
-import org.drools.chance.constraints.core.connectives.IConnectiveFactory;
-import org.drools.chance.constraints.core.connectives.impl.MVLFAMILIES;
-/**
- * Created by IntelliJ IDEA.
- * User: doncat
- * Date: 27/01/11
- * Time: 16.42
- * To change this template use File | Settings | File Templates.
- */
-public class DiscreteProbabilityConnectiveFactory implements IConnectiveFactory {
+import org.drools.chance.constraints.core.connectives.ConnectiveCore;
+import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
+import org.drools.chance.constraints.core.connectives.impl.LogicConnectives;
+import org.drools.chance.constraints.core.connectives.impl.MvlFamilies;
+import org.drools.chance.constraints.core.connectives.impl.product.Minus;
 
-    public IConstraintCore getAnd() {
+import java.util.HashMap;
+import java.util.Map;
+
+
+public class DiscreteProbabilityConnectiveFactory implements ConnectiveFactory {
+
+
+    private static Map<String, Class<?>> knownOperatorClasses;
+
+        protected static void addKnownClass( Class<?> k ) {
+            knownOperatorClasses.put( k.getName(), k );
+        }
+
+        static {
+            knownOperatorClasses = new HashMap<String, Class<?>>();
+
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.godel.And.class );
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.godel.Or.class );
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.godel.Not.class );
+
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.lukas.And.class );
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.lukas.Or.class );
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.lukas.Not.class );
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.lukas.Xor.class );
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.lukas.Equiv.class );
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.lukas.Implies.class );
+
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.product.And.class );
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.product.Or.class );
+            addKnownClass( org.drools.chance.constraints.core.connectives.impl.product.Not.class );
+
+        }
+
+
+        public Map<String, Class<?>> getKnownOperatorClasses() {
+            return knownOperatorClasses;
+        }
+
+    public ConnectiveCore getConnective(LogicConnectives conn, String type, Object... params) {
+            switch ( conn ) {
+                case AND: return getAnd( type, params );
+                case OR : return getOr( type, params );
+                case EQ : return getEquiv( type, params );
+                case NOT: return getNot( type, params );
+                case XOR: return getXor( type, params );
+                case IMPL:return getImplies( type, params );
+                default : return getAnd();
+            }
+        }
+
+    public ConnectiveCore getAnd() {
         return org.drools.chance.constraints.core.connectives.impl.product.And.getInstance();
     }
 
-    public IConstraintCore getAnd(String type) {
-        if (MVLFAMILIES.LUKAS.value().equals(type))
+    public ConnectiveCore getAnd(String type) {
+        if (MvlFamilies.LUKAS.value().equals(type))
             return org.drools.chance.constraints.core.connectives.impl.lukas.And.getInstance();
-        else if (MVLFAMILIES.GODEL.value().equals(type))
+        else if (MvlFamilies.GODEL.value().equals(type))
             return org.drools.chance.constraints.core.connectives.impl.godel.And.getInstance();
-        else if (MVLFAMILIES.GODEL.value().equals(type))
+        else if (MvlFamilies.GODEL.value().equals(type))
             return org.drools.chance.constraints.core.connectives.impl.product.And.getInstance();
         else
             return org.drools.chance.constraints.core.connectives.impl.product.And.getInstance();
     }
 
-    public IConstraintCore getAnd(String type, Object... params) {
+    public ConnectiveCore getAnd(String type, Object... params) {
         return getAnd(type);
     }
 
-    public IConstraintCore getOr() {
+    public ConnectiveCore getOr() {
         return org.drools.chance.constraints.core.connectives.impl.product.Or.getInstance();
     }
 
-    public IConstraintCore getOr(String type) {
-         if (MVLFAMILIES.LUKAS.value().equals(type))
+    public ConnectiveCore getOr(String type) {
+         if (MvlFamilies.LUKAS.value().equals(type))
             return org.drools.chance.constraints.core.connectives.impl.lukas.Or.getInstance();
-        else if (MVLFAMILIES.GODEL.value().equals(type))
+        else if (MvlFamilies.GODEL.value().equals(type))
             return org.drools.chance.constraints.core.connectives.impl.godel.Or.getInstance();
-        else if (MVLFAMILIES.GODEL.value().equals(type))
+        else if (MvlFamilies.GODEL.value().equals(type))
             return org.drools.chance.constraints.core.connectives.impl.product.Or.getInstance();
         else
             return org.drools.chance.constraints.core.connectives.impl.product.Or.getInstance();
     }
 
-    public IConstraintCore getOr(String type, Object... params) {
+
+    public ConnectiveCore getMinus() {
+        return Minus.getInstance();
+    }
+
+    public ConnectiveCore getMinus( String type ) {
+        return getMinus( type, null );
+    }
+
+    public ConnectiveCore getMinus( String type, Object... params ) {
+        MvlFamilies family = MvlFamilies.valueOf(type);
+        switch ( family ) {
+            case GODEL:     return org.drools.chance.constraints.core.connectives.impl.godel.Minus.getInstance();
+            case LUKAS:     return org.drools.chance.constraints.core.connectives.impl.lukas.Minus.getInstance();
+            case PRODUCT:   return org.drools.chance.constraints.core.connectives.impl.product.Minus.getInstance();
+            default:        return Minus.getInstance();
+        }
+    }
+
+    public ConnectiveCore getOr(String type, Object... params) {
         return getOr(type);
     }
 
-    public IConstraintCore getNot() {
+    public ConnectiveCore getNot() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getNot(String type) {
+    public ConnectiveCore getNot(String type) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getNot(String type, Object... params) {
+    public ConnectiveCore getNot(String type, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getXor() {
+    public ConnectiveCore getXor() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getXor(String type) {
+    public ConnectiveCore getXor(String type) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getXor(String type, Object... params) {
+    public ConnectiveCore getXor(String type, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getEquiv() {
+    public ConnectiveCore getEquiv() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getEquiv(String type) {
+    public ConnectiveCore getEquiv(String type) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getEquiv(String type, Object... params) {
+    public ConnectiveCore getEquiv(String type, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getImplies() {
+    public ConnectiveCore getImplies() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getImplies(String type) {
+    public ConnectiveCore getImplies(String type) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public IConstraintCore getImplies(String type, Object... params) {
+    public ConnectiveCore getImplies(String type, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

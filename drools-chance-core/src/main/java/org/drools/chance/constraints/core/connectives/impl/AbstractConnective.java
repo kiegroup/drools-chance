@@ -16,19 +16,14 @@
 
 package org.drools.chance.constraints.core.connectives.impl;
 
-import org.drools.chance.constraints.core.connectives.IConnectiveCore;
+import org.drools.chance.constraints.core.connectives.ConnectiveCore;
 import org.drools.chance.degree.Degree;
+import org.drools.chance.degree.simple.SimpleDegree;
 
-/**
- * Created by IntelliJ IDEA.
- * User: davide
- * Date: 1/29/11
- * Time: 12:30 PM
- * To change this template use File | Settings | File Templates.
- */
-public abstract class AbstractConnective implements IConnectiveCore {
 
-    public abstract LOGICCONNECTIVES getType();
+public abstract class AbstractConnective implements ConnectiveCore {
+
+    public abstract LogicConnectives getType();
 
     public abstract Degree eval(Degree deg);
     public abstract Degree eval(Degree left, Degree right);
@@ -40,30 +35,32 @@ public abstract class AbstractConnective implements IConnectiveCore {
 
 
     public Degree eval(Object left,Object right) {
-        if (left instanceof Degree && right instanceof Degree) {
-            return eval((Degree) left, (Degree) right);
-        } else {
-            throw new UnsupportedOperationException("Trying to aggregate " + left.getClass()
-                        + " and " + right.getClass() + " into a Degree" );
-        }
+        return eval( validate( left ), validate( right ) );
     }
 
     public Degree eval(Object obj) {
-        if (obj instanceof Degree) {
-            return eval((Degree) obj);
-        } else {
-            throw new UnsupportedOperationException("Trying to use " + obj.getClass() + " as Degree");
-        }
+        return eval( validate( obj ) );
     }
 
     public Degree eval(Object... objs) {
-        for (Object o : objs) {
-            if (! (o instanceof Degree))
-                throw new UnsupportedOperationException("Trying to use " + o.getClass() + " as Degree");
+        Degree[] args = new Degree[objs.length];
+        for ( int j = 0; j < objs.length; j++ ) {
+            args[j] = validate( objs[j] );
         }
-        return eval((Degree[]) objs);
+        return eval( args );
     }
 
+    
+    protected Degree validate( Object o ) {
+        if ( o instanceof Degree ) {
+            return (Degree) o;
+        }
+        if ( Boolean.class == o.getClass() ) {
+            return SimpleDegree.fromBooleanLiteral( (Boolean) o );
+        }
+        
+        throw new UnsupportedOperationException("Trying to use " + o.getClass() + " as Degree");
+    }
 
 
 

@@ -16,17 +16,20 @@
 
 package org.drools.chance.constraints.core.connectives;
 
-import org.drools.chance.constraints.core.IConstraintCore;
-import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
-import org.drools.chance.degree.Degree;
 
-public interface IConnectiveCore extends IConstraintCore {
+import org.drools.chance.constraints.core.ConstraintCore;
+import org.drools.chance.constraints.core.connectives.impl.LogicConnectives;
+import org.drools.chance.degree.Degree;
+import org.drools.chance.evaluation.Evaluation;
+
+public interface ConnectiveCore extends ConstraintCore {
 
     Degree eval(Degree deg);
     Degree eval(Degree left, Degree right);
     Degree eval(Degree... degs);
 
+    Degree eval(Evaluation... degs);
 
-    LOGICCONNECTIVES getType();
+    LogicConnectives getType();
 
 }

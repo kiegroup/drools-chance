@@ -18,37 +18,47 @@ package org.drools.chance.constraints.core.connectives.impl.lukas;
 
 import org.drools.chance.constraints.core.connectives.impl.AbstractConnective;
 import org.drools.chance.constraints.core.connectives.impl.LogicConnectives;
+import org.drools.chance.constraints.core.connectives.impl.godel.And;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.evaluation.Evaluation;
 
 
-public class And extends AbstractConnective {
+public class Minus extends AbstractConnective {
 
-    public And() { }
 
-    private static And instance = new And();
 
-    public static And getInstance() {
+    private static Minus instance = new Minus();
+    
+    private static And and = And.getInstance();
+    private static Not not = Not.getInstance();
+
+
+    public Minus() { }
+
+    public static Minus getInstance() {
         return instance;
     }
 
     public LogicConnectives getType() {
-        return LogicConnectives.AND;
+        return LogicConnectives.MINUS;
     }
+
 
 
     public Degree eval(Degree deg) {
         return deg;
     }
 
+
     public Degree eval(Degree left, Degree right) {
-        return left.sub( Not.getInstance().eval(right) );
+        return and.eval( left, not.eval( right ) );
     }
+
 
     public Degree eval(Degree... degs) {
         Degree deg = degs[0];
         for (int j = 1; j < degs.length; j++) {
-            deg = this.eval(deg,degs[j]);
+            deg = eval(deg, degs[j]);
         }
         return deg;
     }
@@ -56,12 +66,10 @@ public class And extends AbstractConnective {
     public Degree eval(Evaluation... degs) {
         Degree deg = degs[0].getDegree();
         for (int j = 1; j < degs.length; j++) {
-            deg = this.eval( deg, degs[j].getDegree() );
+            deg = eval( deg, degs[j].getDegree() );
         }
         return deg;
     }
-
-
 
 
     public boolean isUnary() {

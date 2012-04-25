@@ -17,8 +17,9 @@
 package org.drools.chance.constraints.core.connectives.impl.lukas;
 
 import org.drools.chance.constraints.core.connectives.impl.AbstractConnective;
-import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
+import org.drools.chance.constraints.core.connectives.impl.LogicConnectives;
 import org.drools.chance.degree.Degree;
+import org.drools.chance.evaluation.Evaluation;
 
 
 public class Not extends AbstractConnective {
@@ -33,8 +34,8 @@ public class Not extends AbstractConnective {
     }
 
 
-    public LOGICCONNECTIVES getType() {
-        return LOGICCONNECTIVES.NOT;
+    public LogicConnectives getType() {
+        return LogicConnectives.NOT;
     }
 
     public Degree eval(Degree deg) {
@@ -48,6 +49,12 @@ public class Not extends AbstractConnective {
     public Degree eval(Degree... degs) {
         return eval(degs[0]);
     }
+
+    public Degree eval(Evaluation... degs) {
+        return eval( degs[0].getDegree() );
+    }
+    
+    
 
     public boolean isUnary() {
         return true;

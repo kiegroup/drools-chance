@@ -17,19 +17,14 @@
 package org.drools.chance.constraints.core.connectives.impl.lukas;
 
 import org.drools.chance.constraints.core.connectives.impl.AbstractConnective;
-import org.drools.chance.constraints.core.connectives.impl.LOGICCONNECTIVES;
+import org.drools.chance.constraints.core.connectives.impl.LogicConnectives;
 import org.drools.chance.degree.Degree;
+import org.drools.chance.evaluation.Evaluation;
 
-/**
- * Created by IntelliJ IDEA.
- * User: doncat
- * Date: 25/01/11
- * Time: 21.35
- * To change this template use File | Settings | File Templates.
- */
+
 public class Implies extends AbstractConnective {
 
-    private Implies() { }
+    public Implies() { }
 
     private static Implies instance = new Implies();
 
@@ -37,8 +32,8 @@ public class Implies extends AbstractConnective {
         return instance;
     }
 
-    public LOGICCONNECTIVES getType() {
-        return LOGICCONNECTIVES.IMPL;
+    public LogicConnectives getType() {
+        return LogicConnectives.IMPL;
     }
 
 
@@ -54,6 +49,14 @@ public class Implies extends AbstractConnective {
         Degree deg = degs[0];
         for (int j = 1; j < degs.length; j++) {
             deg = this.eval(deg,degs[j]);
+        }
+        return deg;
+    }
+
+    public Degree eval(Evaluation... degs) {
+        Degree deg = degs[0].getDegree();
+        for (int j = 1; j < degs.length; j++) {
+            deg = this.eval( deg, degs[j].getDegree() );
         }
         return deg;
     }
