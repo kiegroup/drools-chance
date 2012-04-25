@@ -18,35 +18,33 @@ package org.drools.chance.constraints.core.evaluators.linguistic;
 
 
 import de.lab4inf.fuzzy.FuzzySet;
-import org.drools.base.BaseEvaluator;
+import org.drools.RuntimeDroolsException;
 import org.drools.base.ValueType;
 import org.drools.base.evaluators.EvaluatorDefinition;
 import org.drools.base.evaluators.Operator;
-import org.drools.chance.common.ImperfectField;
-import org.drools.chance.constraints.core.connectives.IConnectiveCore;
-import org.drools.chance.constraints.core.connectives.impl.godel.And;
-import org.drools.chance.constraints.core.connectives.impl.godel.Or;
+import org.drools.chance.constraints.ChanceOperators;
+import org.drools.chance.constraints.core.evaluators.BaseImperfectEvaluator;
 import org.drools.chance.degree.Degree;
-import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.fuzzy.linguistic.Linguistic;
-import org.drools.chance.distribution.fuzzy.linguistic.ShapedFuzzyPartition;
 import org.drools.common.InternalWorkingMemory;
-import org.drools.rule.VariableRestriction;
 import org.drools.spi.Evaluator;
-import org.drools.spi.FieldValue;
-import org.drools.spi.InternalReadAccessor;
 
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.Iterator;
 
 
 public class IsEvaluatorDefinition implements EvaluatorDefinition {
+
     public static final Operator IS = Operator.addOperatorToRegistry(
             "is", false);
-    private static final String[] SUPPORTED_IDS = { IS
-            .getOperatorString() };
+    public static final Operator IS_IMP = Operator.addOperatorToRegistry(
+            ChanceOperators.makeImperfect( IS.getOperatorString() ), false);
+
+    private static final String[] SUPPORTED_IDS = {
+            IS.getOperatorString(),
+            IS_IMP.getOperatorString()
+    };
 
     private Evaluator[] evaluator;
 
@@ -54,24 +52,24 @@ public class IsEvaluatorDefinition implements EvaluatorDefinition {
      * @inheridDoc
      */
     public Evaluator getEvaluator(ValueType type, Operator operator) {
-        return this.getEvaluator(type, operator.getOperatorString(), operator
-                .isNegated(), null);
+        return this.getEvaluator( type, operator.getOperatorString(), operator
+                .isNegated(), null );
     }
 
     /**
      * @inheridDoc
      */
     public Evaluator getEvaluator(ValueType type, Operator operator,
-            String parameterText) {
-        return this.getEvaluator(type, operator.getOperatorString(), operator
-                .isNegated(), parameterText);
+                                  String parameterText) {
+        return this.getEvaluator( type, operator.getOperatorString(), operator
+                .isNegated(), parameterText );
     }
 
     /**
      * @inheridDoc
      */
     public Evaluator getEvaluator(ValueType type, String operatorId,
-            boolean isNegated, String parameterText) {
+                                  boolean isNegated, String parameterText) {
         return getEvaluator(type, operatorId, isNegated, parameterText,
                 Target.FACT, Target.FACT);
     }
@@ -80,9 +78,11 @@ public class IsEvaluatorDefinition implements EvaluatorDefinition {
      * @inheridDoc
      */
     public Evaluator getEvaluator(ValueType type, String operatorId,
-            boolean isNegated, String parameterText, Target leftTarget,
-            Target rightTarget) {
-        IsEvaluator evaluator = new IsEvaluator( type, isNegated );
+                                  boolean isNegated, String parameterText, Target leftTarget,
+                                  Target rightTarget) {
+        IsEvaluator evaluator;
+        evaluator = new IsEvaluator( type, isNegated, ChanceOperators.isImperfect( operatorId ) );
+
         evaluator.setParameterText( parameterText );
         return evaluator;
     }
@@ -130,111 +130,38 @@ public class IsEvaluatorDefinition implements EvaluatorDefinition {
         out.writeObject(evaluator);
     }
 
-    public static class IsEvaluator extends BaseEvaluator {
+    public static class IsEvaluator extends BaseImperfectEvaluator {
 
-        private IConnectiveCore and = And.getInstance();
-        private IConnectiveCore or  = Or.getInstance();
 
-        public void setParameterText( String parameterText ) {
-
+        public IsEvaluator( final ValueType type, final boolean isNegated, boolean enableImperfectMode ) {
+            super( type, IS, enableImperfectMode );
         }
 
-        public IsEvaluator( final ValueType type, final boolean isNegated ) {
-            super( type, IS );
-        }
+        @Override
+        protected Degree matchValueToValue( Object leftValue, Object rightValue, InternalWorkingMemory workingMemory ) {
 
-        /**
-         * @inheridDoc
-         */
-        public boolean evaluate( InternalWorkingMemory workingMemory,
-                InternalReadAccessor extractor, Object object, FieldValue value ) {
-            final Object objectValue = extractor
-                    .getValue(workingMemory, object);
+            if ( leftValue instanceof Linguistic ) {
+                FuzzySet fs1 = ( (Linguistic) leftValue ).getSet();
+                FuzzySet fs2 = ( (Linguistic) rightValue ).getSet();
 
-            return compare( objectValue, value.getValue(), workingMemory );
-        }
-
-        public boolean evaluate( InternalWorkingMemory workingMemory,
-                                 InternalReadAccessor leftExtractor, Object left,
-                                 InternalReadAccessor rightExtractor, Object right ) {
-            final Object value1 = leftExtractor.getValue(workingMemory, left);
-            final Object value2 = rightExtractor.getValue(workingMemory, right);
-
-            Object source = value1;
-            Object target = value2;
-
-            return compare( source, target, workingMemory );
-        }
-
-
-        public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory,
-                VariableRestriction.VariableContextEntry context, Object right) {
-
-            Object target = right;
-            Object source = context.getObject();
-
-            return compare( source, target, workingMemory );
-        }
-
-        public boolean evaluateCachedRight(InternalWorkingMemory workingMemory,
-                VariableRestriction.VariableContextEntry context, Object left) {
-
-            Object target = left;
-            Object source = context.getObject();
-
-            return compare( source, target, workingMemory );
-        }
-
-
-
-        private boolean compare( Object source, Object target, InternalWorkingMemory workingMemory ) {
-            System.out.println( "IS Compare " + source + " vs " + target );
-
-            if ( ! ( target instanceof Linguistic ) ) {
-                throw new UnsupportedOperationException( "IS : Right value must be a Linguistic granule, found " + target );
-            }
-            FuzzySet ref = ( (Linguistic) target ).getSet();
-            
-            if ( source instanceof ImperfectField ) {
-                source = ((ImperfectField) source).getCurrent();
-            }
-
-            if ( source instanceof ShapedFuzzyPartition ) {
-
-                ShapedFuzzyPartition sfp = (ShapedFuzzyPartition) source;
-                Iterator<Linguistic> iter = sfp.iterator();
-                Degree res = new SimpleDegree( 0 );
-                while ( iter.hasNext() ) {
-                    Linguistic granule = iter.next();
-
-                    Degree x = new SimpleDegree( ref.intersection( granule.getSet() ).supremum() );
-                    Degree y = sfp.getDegree( granule );
-
-                    res = or.eval( res, and.eval( x, y ) );
-
-                    System.out.println( " intersecting " + ref + " with " + granule.getLabel() + " >> " + and.eval( x, y ) );
+                if ( ! leftValue.getClass().getName().equals( rightValue.getClass().getName() ) ) {
+                    throw new RuntimeDroolsException( "Fuzzy Sets from different partitions are being compared " + leftValue.getClass() + " vs " + rightValue.getClass() );
                 }
-                
 
-                System.out.println( "PARTITION-SET INTERSECTION " + res );
-              
-                return true;    
-            
-            } 
-            
-            
-            /* We should always look for the distribution, otherwise we won't have the shaping degrees */
-//            if ( source instanceof Linguistic ) {
-//                
-//                double sup = ref.intersection( ( (Linguistic) source ).getSet() ).supremum();
-//                System.out.println( "SET-SET INTERSECTION " + sup );
-//                return true;
-//                
-//            } 
-            
-            throw new UnsupportedOperationException( "IS : Left value must be a Fuzzy Set or Partition, found " + source );
-            
+                FuzzySet x = fs1.intersection( fs2 );
+                if ( fs1.xmin() >= fs2.xmax() || fs2.xmin() >= fs1.xmax()) {
+                    return getBaseDegree().False();
+                } else {
+                    return getBaseDegree().fromConst( fs1.intersection( fs2 ).supremum() );
+                }
+            } else if ( leftValue instanceof Double ) {
+                FuzzySet fs2 = ( (Linguistic) rightValue ).getSet();
+                return getBaseDegree().fromConst( fs2.containment( (Double) leftValue ) );
+            }
+
+            return getBaseDegree().False();
         }
+
 
         @Override
         public String toString() {

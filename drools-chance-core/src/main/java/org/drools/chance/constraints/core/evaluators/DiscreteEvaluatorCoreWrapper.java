@@ -16,8 +16,8 @@
 
 package org.drools.chance.constraints.core.evaluators;
 
-import org.drools.chance.constraints.core.IConstraintCore;
-import org.drools.chance.constraints.core.connectives.IConnectiveCore;
+import org.drools.chance.constraints.core.ConstraintCore;
+import org.drools.chance.constraints.core.connectives.ConnectiveCore;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.distribution.DiscreteDomainDistribution;
 import org.drools.chance.distribution.Distribution;
@@ -25,17 +25,17 @@ import org.drools.chance.distribution.Distribution;
 import java.util.Iterator;
 
 
-public class DiscreteEvaluatorCoreWrapper implements IConstraintCore {
+public class DiscreteEvaluatorCoreWrapper implements ConstraintCore {
 
-    private IConstraintCore core;
+    private ConstraintCore core;
 
-    private IConnectiveCore and;
-    private IConnectiveCore or;
+    private ConnectiveCore and;
+    private ConnectiveCore or;
 
     private Degree master;
 
 
-    public DiscreteEvaluatorCoreWrapper(IConstraintCore core, IConnectiveCore and, IConnectiveCore or, Degree master) {
+    public DiscreteEvaluatorCoreWrapper( ConstraintCore core, ConnectiveCore and, ConnectiveCore or, Degree master) {
         this.core = core;
         this.and = and;
         this.or = or;
