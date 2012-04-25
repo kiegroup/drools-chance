@@ -1,6 +1,6 @@
 package org.drools.chance.evaluation;
 
-import org.drools.chance.constraints.core.connectives.ConnectiveCore;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
 import org.drools.chance.degree.Degree;
 
 import java.util.Arrays;

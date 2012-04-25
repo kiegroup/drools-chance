@@ -16,16 +16,14 @@
 
 package org.drools.chance.distribution;
 
-import org.drools.chance.common.ChanceStrategyFactory;
-import org.drools.chance.constraints.core.connectives.ConnectiveCore;
-import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
-import org.drools.chance.constraints.core.connectives.impl.LogicConnectives;
-import org.drools.chance.constraints.core.connectives.impl.MvlFamilies;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveFactory;
+import org.drools.chance.rule.constraint.core.connectives.impl.LogicConnectives;
+import org.drools.chance.rule.constraint.core.connectives.impl.MvlFamilies;
 import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.DegreeType;
 import org.drools.chance.degree.simple.SimpleDegree;
-import org.drools.core.util.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -240,7 +238,7 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
                 if ( "family".equals( key ) ) {
                     family = param.substring( idx + 1 );
                 } else if ( "operator".equals( key ) ) {
-                    conn = LogicConnectives.valueOf( param.substring( idx + 1 ) );
+                    conn = LogicConnectives.valueOf(param.substring(idx + 1));
                 }
             }
         }

@@ -1,7 +1,7 @@
 package org.drools.chance.rule.constraint;
 
 
-import org.drools.chance.constraints.core.connectives.ConnectiveCore;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
 import org.drools.chance.degree.Degree;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;

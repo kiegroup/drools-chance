@@ -1,7 +1,7 @@
 package org.drools.chance.rule.builder;
 
 
-import org.drools.chance.constraints.core.evaluators.ImperfectEvaluatorWrapper;
+import org.drools.chance.rule.constraint.core.evaluators.ImperfectEvaluatorWrapper;
 import org.drools.lang.MVELDumper;
 import org.drools.lang.descr.*;
 

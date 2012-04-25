@@ -2,7 +2,7 @@ package org.drools.chance.rule.constraint;
 
 
 import org.drools.base.mvel.MVELCompilationUnit;
-import org.drools.chance.constraints.core.evaluators.ImperfectMvelConditionEvaluator;
+import org.drools.chance.rule.constraint.core.evaluators.ImperfectMvelConditionEvaluator;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.common.InternalFactHandle;

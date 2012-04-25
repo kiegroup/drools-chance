@@ -8,12 +8,10 @@ import org.drools.base.evaluators.Operator;
 import org.drools.base.mvel.MVELCompilationUnit;
 import org.drools.chance.factmodel.Imperfect;
 import org.drools.chance.common.ChanceStrategyFactory;
-import org.drools.chance.constraints.core.connectives.ConnectiveCore;
-import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
-import org.drools.chance.constraints.core.connectives.impl.MvlFamilies;
-import org.drools.chance.constraints.core.evaluators.ImperfectEvaluator;
-import org.drools.chance.constraints.core.evaluators.ImperfectEvaluatorWrapper;
-import org.drools.chance.constraints.core.evaluators.ImperfectMvelEvaluator;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveFactory;
+import org.drools.chance.rule.constraint.core.connectives.impl.MvlFamilies;
+import org.drools.chance.rule.constraint.core.evaluators.ImperfectEvaluator;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.DegreeType;
 import org.drools.chance.distribution.ImpKind;
@@ -21,6 +19,8 @@ import org.drools.chance.distribution.ImpType;
 import org.drools.chance.rule.constraint.ImperfectEvaluatorConstraint;
 import org.drools.chance.rule.constraint.ImperfectMvelConstraint;
 import org.drools.chance.rule.constraint.OperatorConstraint;
+import org.drools.chance.rule.constraint.core.evaluators.ImperfectEvaluatorWrapper;
+import org.drools.chance.rule.constraint.core.evaluators.ImperfectMvelEvaluator;
 import org.drools.compiler.AnalysisResult;
 import org.drools.compiler.DescrBuildError;
 import org.drools.lang.descr.*;
@@ -200,7 +200,7 @@ public class ChanceConstraintBuilder extends DefaultConstraintBuilder {
             if ( !isMvelOperator( operatorDescr.getOperator() ) ) {
                 Evaluator evaluator = restriction.getEvaluator();
                 if ( isImperfect ) {
-                    if ( evaluator instanceof ImperfectEvaluator ) {
+                    if ( evaluator instanceof ImperfectEvaluator) {
                         ImperfectEvaluatorConstraint iec = new ImperfectEvaluatorConstraint( restriction.getRequiredDeclarations(), evaluator, extractor );
                             iec.setLabel( extractConstraintLabel( operatorDescr.getParameters()) );
                         return iec;

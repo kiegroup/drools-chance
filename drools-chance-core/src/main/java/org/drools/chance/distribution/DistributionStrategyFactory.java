@@ -16,7 +16,6 @@
 
 package org.drools.chance.distribution;
 
-import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
 import org.drools.chance.degree.DegreeType;
 
 /**

@@ -16,7 +16,7 @@
 
 package org.drools.chance.distribution;
 
-import org.drools.chance.constraints.core.connectives.impl.lukas.Not;
+import org.drools.chance.rule.constraint.core.connectives.impl.lukas.Not;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.core.util.MicroMap;
 import org.drools.chance.core.util.MicroSet;

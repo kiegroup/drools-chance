@@ -17,7 +17,6 @@
 package org.drools.chance.distribution.fuzzy;
 
 import org.drools.chance.common.ChanceStrategyFactory;
-import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
 import org.drools.chance.degree.DegreeType;
 import org.drools.chance.distribution.*;
 
