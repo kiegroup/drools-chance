@@ -17,10 +17,10 @@
 package org.drools.chance.common;
 
 import com.google.common.collect.HashBasedTable;
-import org.drools.chance.constraints.core.connectives.ConnectiveFactory;
-import org.drools.chance.constraints.core.connectives.factories.fuzzy.linguistic.FuzzyConnectiveFactory;
-import org.drools.chance.constraints.core.connectives.factories.fuzzy.mvl.ManyValuedConnectiveFactory;
-import org.drools.chance.constraints.core.connectives.factories.probability.discrete.DiscreteProbabilityConnectiveFactory;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveFactory;
+import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.linguistic.FuzzyConnectiveFactory;
+import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.mvl.ManyValuedConnectiveFactory;
+import org.drools.chance.rule.constraint.core.connectives.factories.probability.discrete.DiscreteProbabilityConnectiveFactory;
 import org.drools.chance.degree.DegreeType;
 import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.interval.IntervalDegree;
