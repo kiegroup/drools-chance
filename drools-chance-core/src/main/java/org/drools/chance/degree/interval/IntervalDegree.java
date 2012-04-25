@@ -39,6 +39,7 @@ public class IntervalDegree implements Degree {
 
 
 
+    public IntervalDegree() { }
 
 	public IntervalDegree(double low, double upp) {
 		this.setTau(low);
@@ -56,6 +57,10 @@ public class IntervalDegree implements Degree {
 		return getTau();
 	}
 
+    public void setValue(double d) {
+        setTau( d );
+        setPhi( 1.0 - d );
+    }
 
     // coherent with simpleDegree, under CWA
 	public boolean toBoolean() {
@@ -231,6 +236,7 @@ public class IntervalDegree implements Degree {
        return new IntervalDegree(l,u);
     }
 
+
     public Degree max(Degree other) {
         return new IntervalDegree(
                 Math.max(this.getLow(), other.asIntervalDegree().getLow()),
@@ -253,6 +259,14 @@ public class IntervalDegree implements Degree {
         val = val.replace("[","").replace("]","");
         int pos = val.indexOf(",");
         return new IntervalDegree( Double.parseDouble( val.substring( 0, pos - 1 ) ), Double.parseDouble( val.substring( pos + 1 ) ) );
+    }
+    
+    public Degree fromBoolean( boolean val ) {
+        return fromBooleanLiteral( val );
+    }
+    
+    public static Degree fromBooleanLiteral( boolean val ) {
+        return val ? TRUE : FALSE;
     }
 
 

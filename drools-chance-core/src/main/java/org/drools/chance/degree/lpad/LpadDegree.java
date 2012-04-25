@@ -34,6 +34,10 @@ public class LpadDegree implements Degree {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public void setValue(double d) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public boolean toBoolean() {
         return asSimpleDegree().toBoolean();
     }
@@ -81,6 +85,10 @@ public class LpadDegree implements Degree {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public Degree neg() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public Degree max(Degree comp) {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -100,6 +108,16 @@ public class LpadDegree implements Degree {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public Degree fromBoolean(boolean val) {
+        return fromBooleanLiteral( val );
+    }
+
+    public static Degree fromBooleanLiteral( boolean val ) {
+        return val ? SimpleDegree.TRUE : SimpleDegree.FALSE;
+    }
+
+
 
     public int compareTo(Degree iDegree) {
         return asSimpleDegree().compareTo(iDegree);

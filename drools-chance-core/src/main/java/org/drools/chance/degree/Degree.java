@@ -19,6 +19,8 @@ package org.drools.chance.degree;
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
 
+import java.io.Serializable;
+
 
 /**
  * Interface for any class implementing the concept of degree.
@@ -31,14 +33,15 @@ import org.drools.chance.degree.simple.SimpleDegree;
  * - combinations thereof
  * - ...
  *
- * @author sotty
  */
-public interface Degree extends Comparable<Degree> {
+public interface Degree extends Comparable<Degree>, Serializable {
 
     /**
      * @return the degree, narrowed down to a simple double value
      */
 	public double getValue();
+
+    public void setValue( double d );
 
     /**
      * @return the degree, narrowed down to a boolean
@@ -112,7 +115,6 @@ public interface Degree extends Comparable<Degree> {
     public Degree sub(Degree term);
 
 
-
     /**
      * Computes a new degree taking the maximum between this and other
      * @param other
@@ -143,7 +145,15 @@ public interface Degree extends Comparable<Degree> {
      * @param val
      * @return  A degree such that this.asSimpleDegree().getValue() == val
      */
-    public Degree fromString(String val);
+    public Degree fromString( String val );
+
+
+    /**
+     * (instance) factory method: creates a new degree from a boolean value.
+     * @param val
+     * @return  A degree such that this.asSimpleDegree().getValue() == val
+     */
+    public Degree fromBoolean(boolean val);
 
 
 }

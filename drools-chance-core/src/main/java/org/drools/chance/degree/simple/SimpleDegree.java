@@ -34,6 +34,9 @@ public class SimpleDegree implements Degree {
 
 	private double value;
 
+
+
+
 	/**
 	 * @param value the degree to set
 	 */
@@ -112,6 +115,10 @@ public class SimpleDegree implements Degree {
         return new SimpleDegree(ret);
     }
 
+    public Degree neg() {
+        return new SimpleDegree( 1.0 - this.getValue() );
+    }
+
     public Degree max(Degree comp) {
         return new SimpleDegree( Math.max( this.getValue(), comp.getValue()) );
     }
@@ -128,6 +135,19 @@ public class SimpleDegree implements Degree {
        return new SimpleDegree( Double.parseDouble( number ) );
     }
 
+    public Degree fromBoolean(boolean val) {
+        return fromBooleanLiteral( val );
+    }
+
+    public static Degree fromBooleanLiteral( boolean val ) {
+        return val ? TRUE : FALSE;
+    }
+
+
+
+    public SimpleDegree() {
+
+    }
 
     public SimpleDegree(double degree) {
         if (degree < 0 || degree > 1)

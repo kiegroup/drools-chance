@@ -64,6 +64,7 @@ public class FuzzyNumberDegree implements Degree {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+
     public Degree max(Degree comp) {
         //TODO
         return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -104,7 +105,11 @@ public class FuzzyNumberDegree implements Degree {
 		return 0;
 	}
 
-	public boolean toBoolean() {
+    public void setValue(double d) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean toBoolean() {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -113,5 +118,17 @@ public class FuzzyNumberDegree implements Degree {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+    public Degree fromBoolean(boolean val) {
+        return fromBooleanLiteral( val );
+    }
+
+    public static Degree fromBooleanLiteral( boolean val ) {
+        return val ? TRUE : FALSE;
+    }
+
+    public static FuzzyNumberDegree TRUE = null;
+
+    public static FuzzyNumberDegree FALSE = null;
 
 }

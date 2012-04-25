@@ -23,12 +23,21 @@ public enum DegreeType {
     INTERVAL            ("interval"),
     LPAD                ("lpad");
 
+    public static final String name = "degree";
+    
     private String type;
 
     DegreeType(String type) {
         this.type = type;
     }
 
-
+    public static DegreeType parse( String x ) {
+        if ( x == null || x.isEmpty() ) { return null; }
+        int dotPos = x.indexOf( '.' );
+        if ( dotPos >= 0 ) {
+            x = x.substring( dotPos + 1 );
+        }
+        return DegreeType.valueOf( x );
+    }
 
 }
