@@ -132,6 +132,7 @@
                                        nodeType='element'; }
 
 
+            @if{ flat || ! prop.inherited }
             <bindings node=".//xsd:@{nodeType}[@name='@{prop.name}']">
                 <jxb:property generateIsSetMethod="true" name="@{prop.name}" >
                     @if{ "element".equals(nodeType) && ! prop.target.primitive }
@@ -157,6 +158,7 @@
 
 
             </bindings>
+            @end{}
             @end{}
         @end{}
 

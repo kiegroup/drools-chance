@@ -122,7 +122,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
 
 
-    private Element buildProperties( Concept con, Map<String, PropertyRelation> props, Element root, boolean includeTransient ) {
+    private Element buildProperties( Concept con, Map<String, PropertyRelation> props, Element root, boolean includeTransient, boolean excludeInherited ) {
         XSDModel xmodel = (XSDModel) getModel();
         String name = con.getName().substring(con.getName().lastIndexOf(".") + 1);
 
@@ -175,7 +175,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             PropertyRelation rel = props.get( propKey );
             Concept tgt = rel.getTarget();
 
-            if ( rel.isTransient() && ! includeTransient  ) {
+            if ( ( rel.isTransient() && ! includeTransient ) || ( rel.isInherited() && excludeInherited )) {
                 continue;
             }
 
@@ -293,7 +293,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         //        if ( params.containsKey( "abstract" ) ) {
         //            type.setAttribute( "abstract", "true" );
         //        }
-        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts");
+        Set<Concept> supers = (Set<Concept>) params.get( "superConcepts" );
         if ( supers.size() > 1 ) {
             System.err.println( " Cannot build a hierarchy with more than 1 ancestor for " + name + ", found " + supers );
         }
@@ -306,13 +306,13 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             Element ext = new Element("extension", xmodel.getNamespace( "xsd" ) );
             ext.setAttribute("base", "tns:"+sup.getName() );
 
-            buildProperties( con, (Map<String, PropertyRelation>) params.get( "properties" ), ext, includeTransient );
+            buildProperties( con, (Map<String, PropertyRelation>) params.get( "properties" ), ext, includeTransient, true );
 
             complex.setContent( ext );
             type.setContent( complex );
         } else {
             con.setChosenSuper( "Thing" );
-            buildProperties( con, (Map<String, PropertyRelation>) params.get( "properties" ), type, includeTransient );
+            buildProperties( con, (Map<String, PropertyRelation>) params.get( "properties" ), type, includeTransient, true );
         }
 
         return type;
@@ -335,7 +335,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
             Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
             props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
-            buildProperties( con, props, type, includeTransient );
+            buildProperties( con, props, type, includeTransient, false );
 
 
             System.err.println( "Concept " + name + ", had no supers" );
@@ -381,7 +381,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                 props.remove( propKey );
             }
 
-            buildProperties( con, props, ext, includeTransient );
+            buildProperties( con, props, ext, includeTransient, false );
 
             complex.setContent( ext );
             type.setContent( complex );
@@ -414,7 +414,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         props.putAll( ( Map<String, PropertyRelation>) params.get( "shadowProperties" ) );
 
 
-        buildProperties( con, props, type, includeTransient );
+        buildProperties( con, props, type, includeTransient, false );
 
         return type;
     }

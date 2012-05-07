@@ -38,6 +38,7 @@ public class PropertyRelation extends Relation {
 
 
     private boolean restricted = false;
+    private boolean inherited = false;
     private PropertyRelation baseProperty;
     private List<PropertyRelation> restrictedProperties = new ArrayList<PropertyRelation>();
 
@@ -277,6 +278,14 @@ public class PropertyRelation extends Relation {
 
     public void setInverse(boolean inverse) {
         this.inverse = inverse;
+    }
+
+    public boolean isInherited() {
+        return inherited;
+    }
+
+    public void setInherited(boolean inherited) {
+        this.inherited = inherited;
     }
 }
 

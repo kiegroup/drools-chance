@@ -83,7 +83,7 @@
         @if{ max == null || max > 1 }
             return ans;
         @else{}
-            return ans.size > 0 ? null : ans.get(0);
+            return ans.size() > 0 ? null : ans.get(0);
         @end{}
      }
 

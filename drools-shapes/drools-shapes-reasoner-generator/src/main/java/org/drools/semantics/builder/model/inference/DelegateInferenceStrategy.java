@@ -443,7 +443,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             System.err.println( "WARNING : Null target for property " + propIri );
         }
 
-        boolean inherited = false;
+        
         String restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
         String restrictedPropIri = propIri.replace(">", restrictedSuffix + ">");
 
@@ -529,6 +529,17 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             rel.setSubject( con.getIri() );
             rel.setDomain( con );
+            
+            boolean inherited = false;
+            for ( Concept sup : con.getSuperConcepts() ) {
+                if ( sup.getProperties().containsKey( rel.getProperty() ) ) {
+                    inherited = true;
+                    rel.setInherited( inherited );
+                    break;
+                }
+            }
+
+
             con.addProperty( rel.getProperty(), rel.getName(), rel );
 
             return rel;
