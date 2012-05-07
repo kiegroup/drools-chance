@@ -72,7 +72,9 @@
 
         if ( ans.size() < @{ min } ) {
             for ( int j = ans.size(); j < @{ min }; j++ ) {
-                ans.add( @{ skolem( type ) } );
+                @{ map( type, true ) } x = @{ skolem( type ) };
+                ans.add( x );
+                add@{ compactUpperCase( name ) }( x );
             }
         }
 
@@ -81,7 +83,7 @@
         @if{ max == null || max > 1 }
             return ans;
         @else{}
-            return ans.get(0);
+            return ans.size > 0 ? null : ans.get(0);
         @end{}
      }
 

@@ -220,6 +220,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                         }
                     }
                 }
+                con.setShadowed( true );
             }
             flat = true;
         }
@@ -263,6 +264,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         if ( isFlat() ) {
             for ( String conceptName : concepts.keySet() ) {
                 Concept con = concepts.get( conceptName );
+
                 Map<String, PropertyRelation> baseProps = con.getProperties();
                 Set<Concept> superConcepts = con.getSuperConcepts();
                 for ( Concept sup : superConcepts ) {
@@ -277,6 +279,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                 }
 
                 con.getShadowProperties().clear();
+                con.setShadowed( false );
             }
 
             flat = true;

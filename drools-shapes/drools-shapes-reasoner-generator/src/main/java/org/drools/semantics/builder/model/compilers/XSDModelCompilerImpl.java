@@ -300,6 +300,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
         if ( ! supers.isEmpty() ) {
             Concept sup = supers.iterator().next();
+            con.setChosenSuper( sup.getName() );
             Element complex = new Element( "complexContent", xmodel.getNamespace( "xsd" ) );
 
             Element ext = new Element("extension", xmodel.getNamespace( "xsd" ) );
@@ -310,6 +311,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             complex.setContent( ext );
             type.setContent( complex );
         } else {
+            con.setChosenSuper( "Thing" );
             buildProperties( con, (Map<String, PropertyRelation>) params.get( "properties" ), type, includeTransient );
         }
 

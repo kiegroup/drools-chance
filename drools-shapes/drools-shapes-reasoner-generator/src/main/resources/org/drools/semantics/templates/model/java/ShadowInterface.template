@@ -30,7 +30,11 @@ import com.clarkparsia.empire.annotation.RdfProperty;
 @RdfsClass( value="tns:@{name}" )
 @Namespaces({ "tns", "http://@{package}#" })
 public interface @{name + "$$Shadow"} extends com.clarkparsia.empire.SupportsRdfId
-                                 @if{ subConcepts.size > 0 } , @foreach{ sup : subConcepts } @{ compactUpperCase( sup.name ) + "$$Shadow" } @end{','} @end{}
+                                 @if{ shadowed }
+                                    @if{ subConcepts.size > 0 } , @foreach{ sup : subConcepts } @{ compactUpperCase( sup.name ) + "$$Shadow" } @end{','}  @end{}
+                                 @else{}
+                                    , @{name}
+                                 @end{}
 {
 
     @javax.xml.bind.annotation.XmlID

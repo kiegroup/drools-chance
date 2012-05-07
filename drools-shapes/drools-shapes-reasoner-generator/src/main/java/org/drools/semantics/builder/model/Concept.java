@@ -41,6 +41,7 @@ public class Concept {
     private     boolean                         anonymous               = false;
     private     boolean                         resolved                = false;
     private     Resolution                      resolvedAs              = Resolution.NONE;
+    private     boolean                         shadowed                = false;
 
 
 
@@ -306,6 +307,14 @@ public class Concept {
 
     public void setResolvedAs(Resolution resolvedAs) {
         this.resolvedAs = resolvedAs;
+    }
+
+    public boolean isShadowed() {
+        return shadowed;
+    }
+
+    public void setShadowed(boolean shadowed) {
+        this.shadowed = shadowed;
     }
 
     public static class Range {
