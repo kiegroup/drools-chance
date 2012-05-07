@@ -238,7 +238,7 @@ public class DL_2_ModelGenerationTest {
         assertTrue(
                 results.getConcept( "<" + ns +"ZimpleDomain>").getProperties().get(
                         "<_zimple>"
-                ).getTarget().equals( new Concept( "<http://www.w3.org/2001/XMLSchema#int>", "java.lang.Integer" ) )
+                ).getTarget().equals( new Concept( "<http://www.w3.org/2001/XMLSchema#int>", "java.lang.Integer", true ) )
         );
 
 

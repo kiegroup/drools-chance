@@ -114,7 +114,7 @@ public class GraphModelImpl extends ModelImpl implements GraphModel {
         }
         if ( obj == null ) {
             // literal aka datatype, most probably
-            Concept k = new Concept( rel.getObject(), ((PropertyRelation) rel).getTarget().getName() );
+            Concept k = new Concept( rel.getObject(), ((PropertyRelation) rel).getTarget().getName(), true );
             cgraph.addVertex( k );
             obj = k;
         }

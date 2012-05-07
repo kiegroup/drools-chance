@@ -17,6 +17,7 @@
 package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
+import org.drools.semantics.builder.DLUtils;
 
 import java.util.*;
 
@@ -45,25 +46,27 @@ public class Concept {
 
 
 
-    public Concept(String iri, String name) {
+    public Concept( String iri, String name, boolean primitive ) {
         this.iri = iri;
-        this.name = name;
+        this.name = primitive ? name : DLUtils.compactUpperCase( name );
         this.superConcepts = new HashSet();
         this.subConcepts = new HashSet();
         this.properties = new HashMap();
         this.shadowProperties = new HashMap();
         this.equivalentConcepts = new HashSet();
         this.keys = new ArrayList<PropertyRelation>();
+        this.primitive = primitive;
     }
 
-    public Concept(String iri, String name, Set superConcepts, Map properties, Set equivalentConcepts, Set subConcepts, Map shadowProperties ) {
+    public Concept( String iri, String name, Set superConcepts, Map properties, Set equivalentConcepts, Set subConcepts, Map shadowProperties, boolean primitive ) {
         this.iri = iri;
-        this.name = name;
+        this.name = primitive ? name : DLUtils.compactUpperCase( name );
         this.superConcepts = superConcepts != null ? superConcepts : new HashSet<Concept>();
         this.properties = properties != null ? properties : new HashMap<String, PropertyRelation>();
         this.shadowProperties = shadowProperties != null ? shadowProperties : new HashMap<String, PropertyRelation>();
         this.equivalentConcepts = equivalentConcepts != null ? equivalentConcepts : new HashSet<Concept>();
         this.subConcepts = subConcepts != null ? subConcepts : new HashSet<Concept>();
+        this.primitive = primitive;
     }
 
 

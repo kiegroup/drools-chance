@@ -60,8 +60,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
     private static void register( String prim, String klass ) {
         IRI i1 = IRI.create( prim );
-        Concept con = new Concept( i1.toQuotedString(), klass );
-        con.setPrimitive(true);
+        Concept con = new Concept( i1.toQuotedString(), klass, true );
         primitives.put( i1.toQuotedString(), con );
     }
 
@@ -1488,7 +1487,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             if ( baseModel.getConcept( con.getIRI().toQuotedString()) == null ) {
                 Concept concept =  new Concept(
                         con.getIRI().toQuotedString(),
-                        DLUtils.buildNameFromIri(con.getIRI()) );
+                        DLUtils.buildNameFromIri( con.getIRI() ),
+                        con.isOWLDatatype() );
 
                 for ( OWLAnnotation ann : con.getAnnotations( ontoDescr ) ) {
                     if ( ann.getProperty().isComment() && ann.getValue() instanceof OWLLiteral ) {
