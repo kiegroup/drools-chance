@@ -311,7 +311,7 @@ public class DL_99_ModelTest {
 
         URI uri = (new File(".")).getAbsoluteFile().toURI();
         System.out.println( uri );
-        
+
         String source = "wwtp.owl";
         //        String source = "kmr2" + File.separator + "KMR_Ontology.ttl";
         Resource res = ResourceFactory.newClassPathResource( source );
@@ -370,6 +370,8 @@ public class DL_99_ModelTest {
 
         xsdModel.streamIndividualFactory( System.out );
 
+        assertEquals( 22, xsdModel.getIndividuals().size() );
+
 
         System.out.println( "xx " );
 
@@ -392,14 +394,14 @@ public class DL_99_ModelTest {
         SemanticXSDModel xsdModel;
 
 
-        compiler.setMode(ModelCompiler.Mode.HIERARCHY);
+        compiler.setMode(ModelCompiler.Mode.FLAT);
         ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
         xsdModel = (SemanticXSDModel) compiler.compile( results );
 
         xsdModel.stream( System.out );
 
 
-        compiler.setMode(ModelCompiler.Mode.HIERARCHY);
+        compiler.setMode(ModelCompiler.Mode.FLAT);
         ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
         xsdModel = (SemanticXSDModel) compiler.compile( results );
 
@@ -474,7 +476,7 @@ public class DL_99_ModelTest {
         assertTrue( checkProperty( painting, pack, "involves", "Person", 0, null, false, true ) );
 
 
-        assertEquals( 19, ironInst.getProperties().size() );
+        assertEquals( 15, ironInst.getProperties().size() );
         assertTrue( checkProperty( ironInst, pack, "involvesMasons", "Mason", 1, null, true, false ) );
         assertTrue( checkProperty( ironInst, pack, "requiresWeldingTorchs", "WeldingTorch", 1, null, true, false ) );
         assertTrue( checkProperty( ironInst, pack, "requiresIronBars", "IronBar", 1, null, true, false ) );
@@ -484,8 +486,8 @@ public class DL_99_ModelTest {
         assertTrue( checkProperty( ironInst, pack, "involvesPersons", "Person", 1, null, true, true ) );
         assertTrue( checkProperty( ironInst, pack, "involvesLabourers", "Labourer", 2, null, true, false ) );
 //        assertTrue( checkProperty( ironInst, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
-        assertTrue( checkProperty( ironInst, pack, "hasComment", "xsd:string", 0, null, false, true ) );
-        assertTrue( checkProperty( ironInst, pack, "hasCommentString", "xsd:string", 1, 1, true, true ) );
+        assertTrue( checkProperty( ironInst, pack, "hasComment", "xsd:string", 1, 1, false, true ) );
+//        assertTrue( checkProperty( ironInst, pack, "hasCommentString", "xsd:string", 1, 1, true, true ) );
 
 
         assertTrue( checkProperty( wallRais, pack, "involves", "Person", 0, null, false, false ) );
@@ -510,19 +512,19 @@ public class DL_99_ModelTest {
                 assertFalse( con.isPrimitive() );
             }
         }
-        
+
         assertEquals( 7, wallRais.getEffectiveBaseProperties().size() );
 
         Set<PropertyRelation> wrEffectiveBaseProperties = wallRais.getEffectiveBaseProperties();
         for ( PropertyRelation p : wrEffectiveBaseProperties ) {
-                System.out.println( p );
-                for( PropertyRelation sub : wallRais.getProperties().values() ) {
-                    if ( sub.isRestricted() && sub.getBaseProperty().equals( p ) ) {
-                        if ( p.getName().equals( "involves" ) ) {
-                            assertTrue( sub.getName().equals( "involvesMasons" ) || sub.getName().equals( "involvesPersons" ) );
-                        }
+            System.out.println( p );
+            for( PropertyRelation sub : wallRais.getProperties().values() ) {
+                if ( sub.isRestricted() && sub.getBaseProperty().equals( p ) ) {
+                    if ( p.getName().equals( "involves" ) ) {
+                        assertTrue( sub.getName().equals( "involvesMasons" ) || sub.getName().equals( "involvesPersons" ) );
                     }
                 }
+            }
         }
 
 
@@ -542,6 +544,38 @@ public class DL_99_ModelTest {
                 && rel.getName().equals( propName )
                 && rel.isRestricted() == restricted
                 && rel.isInheritedFor( base ) == inherited;
+    }
+
+
+
+
+    @Test
+    public void testPartiallySpecifiedHierarchicalModelGeneration() {
+
+        Resource res = ResourceFactory.newClassPathResource( "missingDomRanHier.owl" );
+        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
+        OntoModel results = factory.buildModel( "partest", res );
+
+        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+        SemanticXSDModel xsdModel;
+
+
+        compiler.setMode(ModelCompiler.Mode.HIERARCHY);
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        xsdModel.stream( System.out );
+
+
+        compiler.setMode(ModelCompiler.Mode.HIERARCHY);
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+//        xsdModel.stream( System.out );
+
+        xsdModel.streamBindings( System.out );
+
+
     }
 
 

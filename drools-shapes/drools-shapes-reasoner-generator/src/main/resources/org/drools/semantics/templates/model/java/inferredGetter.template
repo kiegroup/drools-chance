@@ -24,7 +24,12 @@
         @javax.persistence.Transient
         public java.util.List<@{ map( type, true ) }> @{ getter( name, type ) }Inferred()  {
 
-            java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( @{ getter( name, type ) }() );
+            @if{ ! simple }
+                java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( @{ getter( name, type ) }() );
+            @else{}
+                java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( );
+                    ans.add( @{ getter( name, type ) }() );
+            @end{}
 
             // @{subs}
             @foreach{ sub : subs }

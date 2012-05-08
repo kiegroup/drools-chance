@@ -100,7 +100,8 @@ public class AccessorPlugin extends Plugin {
 //                if ( ! el.getTagName().equals( "property" ) ) { continue; }
                 String name = el.getAttribute( "name" );
                 String type = el.getAttribute( "type" );
-                PropEssentials prop = new PropEssentials( name, type );
+                String simp = el.getAttribute( "simple" );
+                PropEssentials prop = new PropEssentials( name, type, Boolean.valueOf( simp ) );
                 
                 for ( int k = 0; k < el.getChildNodes().getLength(); k++ ) {
                     Node m = el.getChildNodes().item( k );
@@ -123,6 +124,7 @@ public class AccessorPlugin extends Plugin {
             map.put( "name", prop.getName() );
             map.put( "type", prop.getType() );
             map.put( "subs", prop.getSubs() );
+            map.put( "simple", prop.isSimple() );
             String meta = SemanticXSDModelCompilerImpl.getTemplatedCode( inferredGetterTempl, map );
             co.implClass.direct( meta );
         }
@@ -193,6 +195,7 @@ public class AccessorPlugin extends Plugin {
         vars.put( "name", item.getAttribute( "name" ) );
         vars.put( "type", item.getAttribute( "type" ) );
         vars.put( "max", null );
+        vars.put( "simple", Boolean.valueOf(item.getAttribute("simple")) );
         vars.put( "primitive", Boolean.valueOf( item.getAttribute( "primitive" ) ) );
 
         String code;
@@ -211,12 +214,13 @@ public class AccessorPlugin extends Plugin {
         Map<String,Object> vars = new HashMap<String, Object>();
         vars.put( "name", item.getAttribute( "name" ) );
         vars.put( "type", item.getAttribute( "type" ) );
-        vars.put( "primitive", Boolean.valueOf(item.getAttribute("primitive")) );
-        vars.put( "min", Integer.valueOf(item.getAttribute("min")) );
+        vars.put( "primitive", Boolean.valueOf( item.getAttribute( "primitive" ) ) );
+        vars.put( "min", Integer.valueOf( item.getAttribute( "min" ) ) );
         vars.put( "max", item.getAttribute( "max" ).equals( "null") ? null : Integer.valueOf( item.getAttribute( "max" ) ) );
         vars.put( "inherited", Boolean.valueOf( item.getAttribute( "inherited" ) ) );
-        vars.put("base", item.getAttribute("base"));
-        vars.put( "baseType", item.getAttribute("baseType") );
+        vars.put( "base", item.getAttribute( "base" ) );
+        vars.put( "baseType", item.getAttribute( "baseType" ) );
+        vars.put( "simple", Boolean.valueOf(item.getAttribute("simple")) );
 
         Set<List<Link>> chains = new HashSet<List<Link>>();
         NodeList chainsList = item.getElementsByTagNameNS( uri, "chain");
@@ -323,12 +327,14 @@ public class AccessorPlugin extends Plugin {
     public static class PropEssentials {
         private String name;
         private String type;
+        private boolean simple;
         
         private List<Sub> subs;
 
-        public PropEssentials(String name, String type) {
+        public PropEssentials(String name, String type, boolean simple) {
             this.name = name;
             this.type = type;
+            this.simple = simple;
             this.subs = new ArrayList<Sub>();
         }
 
@@ -354,6 +360,14 @@ public class AccessorPlugin extends Plugin {
 
         public void addSub( Sub sub ) {
             subs.add( sub );
+        }
+
+        public boolean isSimple() {
+            return simple;
+        }
+
+        public void setSimple(boolean simple) {
+            this.simple = simple;
         }
 
         @Override

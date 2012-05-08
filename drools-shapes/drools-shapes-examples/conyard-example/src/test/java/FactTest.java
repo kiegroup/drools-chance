@@ -87,17 +87,17 @@ public class FactTest {
         painting = new PaintingImpl();
 
 
-        painting.setStartsOnDate( new Date() );
-        painting.setEndsOnDate( new Date() );
-        painting.setHasCommentString("Some comment on this object");
+        painting.setStartsOn(new Date());
+        painting.setEndsOn(new Date());
+        painting.setHasComment("Some comment on this object");
 
         Stair stair = new StairImpl();
 
-        stair.setStairLengthInteger( 10 );
+        stair.setStairLength(10);
 
         painting.setRequiresStair( stair );
 
-        painting.setOidString( "oidX" );
+        painting.setOid("oidX");
 
         painting.addRequiresAlso( stair );
 
@@ -110,9 +110,9 @@ public class FactTest {
 
         site = new SiteImpl();
 
-        site.setCenterXFloat( 10.0f );
-        site.setCenterYFloat( 20.0f );
-        site.setRadiusFloat( 100.0f );
+        site.setCenterX(10.0f);
+        site.setCenterY(20.0f);
+        site.setRadius(100.0f);
         paint.setStoredInSite(site);
         painting.addRequires(paint);
         painting.addRequires( new EquipmentImpl() );
@@ -137,7 +137,7 @@ public class FactTest {
 
         assertEquals( 1, painting.getRequiresAlso().size() );
         assertTrue( painting.getRequiresAlso().get( 0 ) instanceof StairImpl );
-        assertEquals( 10, (int) ((Stair) painting.getRequiresAlso().get( 0 )).getStairLengthInteger() );
+        assertEquals( 10, (int) ((Stair) painting.getRequiresAlso().get( 0 )).getStairLength() );
 
         assertEquals( 3, painting.getInvolves().size() );
 
@@ -176,17 +176,14 @@ public class FactTest {
         Painting pain = new PaintingImpl();
 
         Date d = new Date();
-        pain.setStartsOnDate( d );
-        assertEquals( d, pain.getStartsOnDate() );
-        assertEquals( 1, pain.getStartsOn().size() );
-        assertTrue(pain.getStartsOn().contains(d));
+        pain.setStartsOn(d);
+        assertEquals( d, pain.getStartsOn() );
 
         Labourer lab = new LabourerImpl();
-        lab.setOidString( "xyz" );
-        assertEquals("xyz", lab.getOidString());
-        lab.setOidString("abc");
-        assertEquals("abc", lab.getOidString());
-        assertEquals( 1, lab.getOid().size() );
+        lab.setOid("xyz");
+        assertEquals("xyz", lab.getOid());
+        lab.setOid("abc");
+        assertEquals("abc", lab.getOid());
 
     }
 
@@ -195,15 +192,15 @@ public class FactTest {
     public void testEqualityAndHashCode() {
 
         Painting px = new PaintingImpl();
-        px.setOidString( "oidX" );
-        px.setHasCommentString( "Some comment on this object" );
+        px.setOid( "oidX" );
+        px.setHasComment("Some comment on this object");
 
         assertEquals( px, painting );
         assertFalse( px.hashCode() == painting.hashCode() );
 
 
 
-        px.setHasCommentString( "Change value" );
+        px.setHasComment("Change value");
 
         assertFalse( px.equals( painting ) );
         assertFalse( px.hashCode() == painting.hashCode() );
@@ -371,10 +368,10 @@ public class FactTest {
 
         assertTrue( p2 instanceof Painting );
         assertTrue( p2 instanceof PaintingImpl );
-        assertEquals(  new Integer(10), p2.getRequiresStair().getStairLengthInteger() );
+        assertEquals(  new Integer(10), p2.getRequiresStair().getStairLength() );
 
-        p2.setHasCommentString(" Change my mind ");
-        p2.getRequiresStair().setStairLengthInteger(6);
+        p2.setHasComment(" Change my mind ");
+        p2.getRequiresStair().setStairLength(6);
 
         assertEquals(p2, painting);
         assertNotSame( painting, p2 );
@@ -497,6 +494,56 @@ public class FactTest {
             fail( ex.getMessage() );
         }
 
+    }
+
+
+    @Test
+    public void testBasicProperties() {
+        Empire.init(new OpenRdfEmpireModule());
+        EmpireOptions.STRICT_MODE = false;
+
+        PersistenceProvider aProvider = Empire.get().persistenceProvider();
+
+        EntityManagerFactory emf = aProvider.createEntityManagerFactory( ObjectFactory.class.getPackage().getName()
+                , getTestEMConfigMap() );
+        EntityManager em = emf.createEntityManager();
+
+        Stair st = new StairImpl();
+        st.setStairLength( 10 );
+        persist( st, em );
+
+        Stair s2 = (Stair) refreshOnJPA( st, st.getRdfId(), em );
+
+        assertEquals( new Integer(10), s2.getStairLength() );
+
+
+        em.close();
+    }
+
+    @Test
+    public void testCascadedBasicProperties() {
+        Empire.init(new OpenRdfEmpireModule());
+        EmpireOptions.STRICT_MODE = false;
+
+        PersistenceProvider aProvider = Empire.get().persistenceProvider();
+
+        EntityManagerFactory emf = aProvider.createEntityManagerFactory( ObjectFactory.class.getPackage().getName()
+                , getTestEMConfigMap() );
+        EntityManager em = emf.createEntityManager();
+
+        Painting p = new PaintingImpl();
+        Stair st = new StairImpl();
+        st.setStairLength( 10 );
+        p.addRequires( st );
+
+        persist( p, em );
+
+        Painting p2 = (Painting) refreshOnJPA( p, p.getRdfId(), em );
+
+        assertEquals( new Integer(10), p.getRequiresStair().getStairLength() );
+
+
+        em.close();
     }
 
 }

@@ -152,7 +152,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 if ( ! prop.isTopEntity() ) {
                     PropertyRelation rel = hierachicalModel.getProperty( prop.asOWLDataProperty().getIRI().toQuotedString() );
                     String propName = rel.getName();
-                    Set<OWLLiteral> propValues = individual.getDataPropertyValues( ontoDescr ).get(prop);
+                    Set<OWLLiteral> propValues = individual.getDataPropertyValues( ontoDescr ).get( prop );
                     Set<Individual.ValueTypePair> values = new HashSet<Individual.ValueTypePair>();
                     for ( OWLLiteral tgt : propValues ) {
                         String value = null;
@@ -164,7 +164,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         } else {
                             value = tgt.getLiteral();
                         }
-                        values.add( new Individual.ValueTypePair( value, typeName ) );
+                        Individual.ValueTypePair vtp = new Individual.ValueTypePair( value, typeName );
+                        values.add( vtp );
                     }
                     ind.setPropertyValues( propName, values );
                 }
@@ -176,7 +177,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     Set<Individual.ValueTypePair> values = new HashSet<Individual.ValueTypePair>();
                     for ( OWLIndividual tgt : propValues ) {
                         if ( tgt instanceof OWLNamedIndividual ) {
-                            values.add( new Individual.ValueTypePair( ((OWLNamedIndividual) tgt).getIRI().getFragment(), "object" ) );
+                            values.add( new Individual.ValueTypePair(
+                                    ((OWLNamedIndividual) tgt).getIRI().getFragment(),
+                                    "object" ) );
                         }
                     }
                     ind.setPropertyValues( propName, values );
@@ -521,9 +524,15 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 //            if ( dirty ) {
 
             if ( dirty ) {
-                rel.setRestricted( true );
-                rel.setName( rel.getBaseProperty().getName() + restrictedSuffix );
-                rel.setProperty( restrictedPropIri );
+                if ( ! target.isPrimitive() || ! rel.getDomain().equals( con ) ) {
+                    rel.setRestricted( true );
+                    rel.setName( rel.getBaseProperty().getName() + restrictedSuffix );
+                    rel.setProperty( restrictedPropIri );
+                } else {
+                    if ( rel.getMaxCard() <= 1 ) {
+                        rel.setSimple( true );
+                    }
+                }
 
             }
 

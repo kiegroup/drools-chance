@@ -125,6 +125,7 @@ public class Concept {
         this.name = name;
     }
 
+
     public String getFullyQualifiedName() {
         return fullyQualifiedName == null ? name : fullyQualifiedName;
     }
@@ -160,6 +161,10 @@ public class Concept {
 
     public void addProperty( String propIri, String propName, PropertyRelation prop ) {
         properties.put( propIri, prop );
+    }
+
+    public PropertyRelation getProperty( String propIri ) {
+        return properties.get( propIri );
     }
 
     public void removeProperty( String propIri ) {

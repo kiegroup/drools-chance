@@ -69,7 +69,7 @@ when
     not  ActivationPattern( this == $r )
     $x : PatternDescr( identifier == $uid )
     ValueConstraint( $cid : dyEntryId, // this memberOf $cons,       bug in equals?
-                     $field : onPropertyString, $op : hasOperatorString, $val : hasValueString )  from $cons
+                     $field : onPropertyString, $op : hasOperator, $val : hasValue )  from $cons
 then
     FieldConstraintDescr fcd = new FieldConstraintDescr( $field );
     LiteralRestrictionDescr lrd = new LiteralRestrictionDescr( $op, $val );
@@ -117,7 +117,7 @@ rule "Process MetaRule Patterns : Add constraints "
 when
     $p : ActivationPattern( $aid : dyEntryId, $ctx : hasConstraint )
     $d : PatternDescr( identifier == $aid )
-    $c : ValueConstraint( $prop : onPropertyString, $op : hasOperatorString, $val : hasValueString ) from $ctx
+    $c : ValueConstraint( $prop : onProperty, $op : hasOperator, $val : hasValue ) from $ctx
 then
     ExprConstraintDescr rn = new ExprConstraintDescr();
         rn.setExpression( "rule." + $prop + " " + $op + " " + $val );

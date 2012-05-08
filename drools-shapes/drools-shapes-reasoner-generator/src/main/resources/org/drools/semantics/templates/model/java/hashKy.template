@@ -15,8 +15,7 @@
             
             @foreach{ k : keys }
             {
-                java.util.List<@{k.type}> the@{compactUpperCase(k.name)};
-                the@{compactUpperCase(k.name)} = (this.isSet@{compactUpperCase(k.name)}()?this.get@{compactUpperCase(k.name)}():null);
+                Object the@{compactUpperCase(k.name)} = (this.isSet@{compactUpperCase(k.name)}()?this.get@{compactUpperCase(k.name)}():null);
                 currentHashCode = strategy.hashCode(org.jvnet.jaxb2_commons.locator.util.LocatorUtils.property(locator, "@{k.name}", the@{compactUpperCase(k.name)}), currentHashCode, the@{compactUpperCase(k.name)});
             }
             @end{}

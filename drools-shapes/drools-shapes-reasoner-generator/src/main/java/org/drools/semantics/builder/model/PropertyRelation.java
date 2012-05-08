@@ -39,6 +39,7 @@ public class PropertyRelation extends Relation {
 
     private boolean restricted = false;
     private boolean inherited = false;
+    private boolean simple = false;
     private PropertyRelation baseProperty;
     private List<PropertyRelation> restrictedProperties = new ArrayList<PropertyRelation>();
 
@@ -286,6 +287,14 @@ public class PropertyRelation extends Relation {
 
     public void setInherited(boolean inherited) {
         this.inherited = inherited;
+    }
+
+    public boolean isSimple() {
+        return simple;
+    }
+
+    public void setSimple(boolean simple) {
+        this.simple = simple;
     }
 }
 

@@ -1,0 +1,312 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix : <http://depict.lia.deis.unibo.it#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://depict.lia.deis.unibo.it> .
+
+<http://depict.lia.deis.unibo.it> rdf:type owl:Ontology .
+
+
+#################################################################
+#
+#    Datatypes
+#
+#################################################################
+
+
+
+
+#################################################################
+#
+#    Object Properties
+#
+#################################################################
+
+
+###  http://depict.lia.deis.unibo.it#hasJoint
+
+:hasJoint rdf:type owl:ObjectProperty ;
+          
+          rdfs:domain :Human ;
+          
+          rdfs:range :Joint .
+
+
+
+
+
+#################################################################
+#
+#    Data properties
+#
+#################################################################
+
+
+###  http://depict.lia.deis.unibo.it#coordAlpha
+
+:coordAlpha rdf:type owl:DatatypeProperty ;
+            
+            rdfs:domain :Joint ;
+            
+            rdfs:range xsd:double .
+
+
+
+###  http://depict.lia.deis.unibo.it#coordX
+
+:coordX rdf:type owl:DatatypeProperty ;
+        
+        rdfs:domain :Joint ;
+        
+        rdfs:range xsd:double ;
+        
+        rdfs:subPropertyOf owl:topDataProperty .
+
+
+
+###  http://depict.lia.deis.unibo.it#coordY
+
+:coordY rdf:type owl:DatatypeProperty ;
+        
+        rdfs:domain :Joint ;
+        
+        rdfs:range xsd:double .
+
+
+
+###  http://depict.lia.deis.unibo.it#coordZ
+
+:coordZ rdf:type owl:DatatypeProperty ;
+        
+        rdfs:domain :Joint ;
+        
+        rdfs:range xsd:double .
+
+
+
+###  http://depict.lia.deis.unibo.it#uid
+
+:uid rdf:type owl:DatatypeProperty ;
+     
+     rdfs:domain :Human ;
+     
+     rdfs:range xsd:integer .
+
+
+
+
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+
+###  http://depict.lia.deis.unibo.it#Elbow
+
+:Elbow rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Joint .
+
+
+
+###  http://depict.lia.deis.unibo.it#Foot
+
+:Foot rdf:type owl:Class ;
+      
+      rdfs:subClassOf :Joint .
+
+
+
+###  http://depict.lia.deis.unibo.it#Hand
+
+:Hand rdf:type owl:Class ;
+      
+      rdfs:subClassOf :Joint .
+
+
+
+###  http://depict.lia.deis.unibo.it#Head
+
+:Head rdf:type owl:Class ;
+      
+      rdfs:subClassOf :Joint .
+
+
+
+###  http://depict.lia.deis.unibo.it#Hip
+
+:Hip rdf:type owl:Class ;
+     
+     rdfs:subClassOf :Joint .
+
+
+
+###  http://depict.lia.deis.unibo.it#Human
+
+:Human rdf:type owl:Class ;
+       
+       rdfs:subClassOf [ rdf:type owl:Restriction ;
+                         owl:onProperty :uid ;
+                         owl:cardinality "1"^^xsd:nonNegativeInteger
+                       ] .
+
+
+
+###  http://depict.lia.deis.unibo.it#Joint
+
+:Joint rdf:type owl:Class ;
+       
+       rdfs:subClassOf [ rdf:type owl:Restriction ;
+                         owl:onProperty :coordZ ;
+                         owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :coordAlpha ;
+                         owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :coordY ;
+                         owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :coordX ;
+                         owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                       ] .
+
+
+
+###  http://depict.lia.deis.unibo.it#Knee
+
+:Knee rdf:type owl:Class ;
+      
+      rdfs:subClassOf :Joint .
+
+
+
+###  http://depict.lia.deis.unibo.it#LeftElbow
+
+:LeftElbow rdf:type owl:Class ;
+           
+           rdfs:subClassOf :Elbow .
+
+
+
+###  http://depict.lia.deis.unibo.it#LeftFoot
+
+:LeftFoot rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Foot .
+
+
+
+###  http://depict.lia.deis.unibo.it#LeftHand
+
+:LeftHand rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Hand .
+
+
+
+###  http://depict.lia.deis.unibo.it#LeftHip
+
+:LeftHip rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Hip .
+
+
+
+###  http://depict.lia.deis.unibo.it#LeftKnee
+
+:LeftKnee rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Knee .
+
+
+
+###  http://depict.lia.deis.unibo.it#LeftShoulder
+
+:LeftShoulder rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Shoulder .
+
+
+
+###  http://depict.lia.deis.unibo.it#Neck
+
+:Neck rdf:type owl:Class ;
+      
+      rdfs:subClassOf :Joint .
+
+
+
+###  http://depict.lia.deis.unibo.it#RightElbow
+
+:RightElbow rdf:type owl:Class ;
+            
+            rdfs:subClassOf :Elbow .
+
+
+
+###  http://depict.lia.deis.unibo.it#RightFoot
+
+:RightFoot rdf:type owl:Class ;
+           
+           rdfs:subClassOf :Foot .
+
+
+
+###  http://depict.lia.deis.unibo.it#RightHand
+
+:RightHand rdf:type owl:Class ;
+           
+           rdfs:subClassOf :Hand .
+
+
+
+###  http://depict.lia.deis.unibo.it#RightHip
+
+:RightHip rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Hip .
+
+
+
+###  http://depict.lia.deis.unibo.it#RightKnee
+
+:RightKnee rdf:type owl:Class ;
+           
+           rdfs:subClassOf :Knee .
+
+
+
+###  http://depict.lia.deis.unibo.it#RightShoulder
+
+:RightShoulder rdf:type owl:Class ;
+               
+               rdfs:subClassOf :Shoulder .
+
+
+
+###  http://depict.lia.deis.unibo.it#Shoulder
+
+:Shoulder rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Joint .
+
+
+
+###  http://depict.lia.deis.unibo.it#Torso
+
+:Torso rdf:type owl:Class ;
+       
+       rdfs:subClassOf :Joint .
+
+
+
+
+###  Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net
+

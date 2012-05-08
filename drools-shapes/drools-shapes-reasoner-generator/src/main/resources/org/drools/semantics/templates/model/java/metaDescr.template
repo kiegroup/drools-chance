@@ -26,7 +26,18 @@
         @code{ int j = 0; }
         switch ( index ) {
             @foreach{ prop : propertyNames }
-              case @{j++} : return inferred ? @{ getter( prop, "java.util.List" ) }Inferred() : @{ getter( prop, "java.util.List" ) }();
+              case @{j} : if ( inferred ) { return @{ getter( prop, "java.util.List" ) }Inferred(); }
+                else {
+                    // @{simpleFlags.get(j)}
+                    @if{ ! simpleFlags.get(j) }
+                        return @{ getter( prop, "java.util.List" ) }();
+                    @else{}
+                        java.util.List list = new java.util.ArrayList();
+                            list.add( @{ getter( prop, "java.util.List" ) }() );
+                        return list;
+                    @end{}
+                }
+                @code{ j++; }
             @end{}
             default : return java.util.Collections.emptyList();
         }

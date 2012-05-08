@@ -78,7 +78,7 @@
 
         <meta:type name="@{concept.name}">
         @foreach{ prop : concept.effectiveBaseProperties }
-            <meta:property name="@{prop.name}" type="@{prop.target.name}">
+            <meta:property name="@{prop.name}" type="@{prop.target.name}" simple="@{ concept.getProperty(prop.property).simple }">
                 @foreach{ subProp : concept.properties.values }
                 @if{ subProp.restricted && subProp.baseProperty == prop }
                     <meta:restriction name="@{subProp.name}" type="@{subProp.target.name}" single="@{subProp.maxCard == 1}"/>
@@ -107,7 +107,7 @@
             @if{ prop.transient }
                 <dsp:accessor name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}"
                               min="@{prop.minCard}" max="@{prop.maxCard}"
-                              inherited="@{prop.isInheritedFor(concept)}" base="@{prop.baseProperty.name}" baseType="@{prop.baseProperty.target.name}">
+                              inherited="@{prop.isInheritedFor(concept)}" base="@{prop.baseProperty.name}" baseType="@{prop.baseProperty.target.name}" simple="@{prop.simple}">
                     @foreach{ chain : prop.chains }
                         <dsp:chain>
                             @foreach{ link : chain } <dsp:link type="@{link.domain.name}">@{link.name}</dsp:link>@end{}
@@ -115,7 +115,7 @@
                     @end{}
                 </dsp:accessor>
             @else{}
-                <dsp:property name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}" restr="@{prop.addableTarget}" />
+                <dsp:property name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}" restr="@{prop.addableTarget}" simple="@{prop.simple}" />
             @end{}
         @end{}
         </dsp:accessors>
@@ -127,16 +127,18 @@
 
             @code{ nodeType = ''; if ( prop.target.primitive &&
                                        prop.maxCard <= 1 )
-                                       nodeType='attribute';
+                                       nodeType='element';
                                        else
                                        nodeType='element'; }
 
 
             @if{ flat || ! prop.inherited }
             <bindings node=".//xsd:@{nodeType}[@name='@{prop.name}']">
-                <jxb:property generateIsSetMethod="true" name="@{prop.name}" >
+                <jxb:property generateIsSetMethod="true" name="@{prop.name}">
                     @if{ "element".equals(nodeType) && ! prop.target.primitive }
                         <jxb:baseType name="@{package}.@{prop.target.name}" />
+                    @elseif{ prop.simple }
+                        <jxb:baseType name="@{ map( prop.target.name, true ) }" />
                     @end{}
                 </jxb:property>
 

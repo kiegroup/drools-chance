@@ -127,7 +127,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             vars.put( "properties", propCache );
             vars.put( "modelName", getModel().getName() );
             vars.put( "extra_code", prepareCodeExtensions( sxsdModel ) );
-            String bindings = TemplateRuntime.eval( template, vars ).toString();
+            String bindings = TemplateRuntime.eval( template, DLUtils.getInstance(), vars ).toString();
 
 
 //            System.out.println( vars.get("extra_code") );

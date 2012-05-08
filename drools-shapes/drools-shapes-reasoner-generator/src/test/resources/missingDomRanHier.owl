@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY Ontology1336224793199 "http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#"
+     xml:base="http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:Ontology1336224793199="http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="http://test"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#executed -->
+
+    <owl:ObjectProperty rdf:about="&Ontology1336224793199;executed"/>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#executes -->
+
+    <owl:ObjectProperty rdf:about="&Ontology1336224793199;executes"/>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#hasDisease -->
+
+    <owl:ObjectProperty rdf:about="&Ontology1336224793199;hasDisease"/>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#hasGender -->
+
+    <owl:ObjectProperty rdf:about="&Ontology1336224793199;hasGender"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#address -->
+
+    <owl:DatatypeProperty rdf:about="&Ontology1336224793199;address">
+        <rdfs:domain rdf:resource="&Ontology1336224793199;Patient"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#age -->
+
+    <owl:DatatypeProperty rdf:about="&Ontology1336224793199;age">
+        <rdfs:domain rdf:resource="&Ontology1336224793199;Patient"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#date -->
+
+    <owl:DatatypeProperty rdf:about="&Ontology1336224793199;date">
+        <rdfs:domain rdf:resource="&Ontology1336224793199;DateHour"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#name -->
+
+    <owl:DatatypeProperty rdf:about="&Ontology1336224793199;name">
+        <rdfs:domain rdf:resource="&Ontology1336224793199;Patient"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#surname -->
+
+    <owl:DatatypeProperty rdf:about="&Ontology1336224793199;surname">
+        <rdfs:domain rdf:resource="&Ontology1336224793199;Patient"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#Activity -->
+
+    <owl:Class rdf:about="&Ontology1336224793199;Activity">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&Ontology1336224793199;executed"/>
+                <owl:allValuesFrom rdf:resource="&Ontology1336224793199;DateHour"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#DateHour -->
+
+    <owl:Class rdf:about="&Ontology1336224793199;DateHour"/>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#Disease -->
+
+    <owl:Class rdf:about="&Ontology1336224793199;Disease"/>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#Female -->
+
+    <owl:Class rdf:about="&Ontology1336224793199;Female">
+        <rdfs:subClassOf rdf:resource="&Ontology1336224793199;Gender"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#Gender -->
+
+    <owl:Class rdf:about="&Ontology1336224793199;Gender"/>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#Male -->
+
+    <owl:Class rdf:about="&Ontology1336224793199;Male">
+        <rdfs:subClassOf rdf:resource="&Ontology1336224793199;Gender"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2012/4/Ontology1336224793199.owl#Patient -->
+
+    <owl:Class rdf:about="&Ontology1336224793199;Patient">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&Ontology1336224793199;hasGender"/>
+                <owl:allValuesFrom rdf:resource="&Ontology1336224793199;Gender"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&Ontology1336224793199;age"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&Ontology1336224793199;hasDisease"/>
+                <owl:allValuesFrom rdf:resource="&Ontology1336224793199;Disease"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&Ontology1336224793199;executes"/>
+                <owl:allValuesFrom rdf:resource="&Ontology1336224793199;Activity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&Ontology1336224793199;address"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>est une personne souffrant d&#39;une maladie pour laquelle elle est prise en
+charge à son domicile. Elle subit plusieurs activités et il y a plusieurs
+documents qui la concernent.</rdfs:comment>
+    </owl:Class>
+    <owl:Axiom>
+        <rdfs:comment xml:lang="fr"></rdfs:comment>
+        <owl:annotatedTarget>est une personne souffrant d&#39;une maladie pour laquelle elle est prise en
+charge à son domicile. Elle subit plusieurs activités et il y a plusieurs
+documents qui la concernent.</owl:annotatedTarget>
+        <owl:annotatedSource rdf:resource="&Ontology1336224793199;Patient"/>
+        <owl:annotatedProperty rdf:resource="&rdfs;comment"/>
+    </owl:Axiom>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+

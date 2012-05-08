@@ -67,6 +67,7 @@ public class IndividualFactory {
     }
 
     private static void build() {
+        @code{ String mode; }
 
         @foreach{ ind : individuals }
             @{ind.type} @{ind.name} = new @{ind.type}Impl();

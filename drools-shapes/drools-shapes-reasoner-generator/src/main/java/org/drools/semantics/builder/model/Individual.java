@@ -93,7 +93,7 @@ public class Individual {
         private String value;
         private String type;
 
-        public ValueTypePair(String value, String type) {
+        public ValueTypePair( String value, String type ) {
             this.value = value;
             this.type = type;
         }
