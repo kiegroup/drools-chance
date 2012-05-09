@@ -174,10 +174,16 @@ public class AccessorPlugin extends Plugin {
     }
 
     private void createShadowConstructor(JDefinedClass implClass, NodeList props) {
-        List<String> properties = new ArrayList<String>();
+        List<PropEssentials> properties = new ArrayList<PropEssentials>();
         for ( int j = 0; j < props.getLength(); j++ ) {
             Element el = (Element) props.item( j ) ;
-            properties.add( el.getAttribute("name") );
+
+            String name = el.getAttribute( "name" );
+            String type = el.getAttribute( "type" );
+            String simp = el.getAttribute( "simple" );
+            PropEssentials prop = new PropEssentials( name, type, Boolean.valueOf( simp ) );
+
+            properties.add( prop );
         }
 
         Map<String,Object> vars = new HashMap<String, Object>();

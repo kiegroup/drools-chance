@@ -24,7 +24,7 @@
     public @{ name + "Impl" }( @{name + "$$Shadow"} other ) {
         setDyEntryId( other.getDyEntryId() );
         @foreach{ prop : properties }
-            @{ setter( prop ) }( other.@{ getter( prop, "", null ) }() );
+            @{ setter( prop.name ) }( other.@{ getter( prop.name, prop.type, prop.simple ? 1 : null ) }() );
         @end{}
     }
 

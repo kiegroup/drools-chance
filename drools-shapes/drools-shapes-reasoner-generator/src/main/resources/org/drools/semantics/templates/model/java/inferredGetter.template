@@ -27,8 +27,9 @@
             @if{ ! simple }
                 java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( @{ getter( name, type ) }() );
             @else{}
+                //@{name}, @{type}
                 java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( );
-                    ans.add( @{ getter( name, type ) }() );
+                    ans.add( @{ getter( name, type, 1 ) }() );
             @end{}
 
             // @{subs}

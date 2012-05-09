@@ -55,11 +55,13 @@ public class MetadataPlugin extends Plugin {
             Element keyed = c.element;
             NodeList propList = keyed.getChildNodes();
             List<String> propNames = new ArrayList<String>();
-            List<Boolean> simpleFlags = new ArrayList<Boolean>(); 
+            List<String> typeNames = new ArrayList<String>();
+            List<Boolean> simpleFlags = new ArrayList<Boolean>();
             for ( int j = 0; j < propList.getLength(); j++ ) {
                 Node n = propList.item( j );
                 if ( n instanceof Element ) {
                     propNames.add( ((Element) n).getAttribute( "name" ) );
+                    typeNames.add( ((Element) n).getAttribute( "type" ) );
                     simpleFlags.add( Boolean.valueOf( ((Element) n).getAttribute( "simple" ) ) );
                 }
             }
@@ -69,6 +71,7 @@ public class MetadataPlugin extends Plugin {
             map.put( "klassName", co.target.shortName );
             map.put( "typeName", keyed.getAttribute( "name" ) );
             map.put( "propertyNames", propNames );
+            map.put( "typeNames", typeNames );
             map.put( "simpleFlags", simpleFlags );
 
 

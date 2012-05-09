@@ -529,7 +529,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     rel.setName( rel.getBaseProperty().getName() + restrictedSuffix );
                     rel.setProperty( restrictedPropIri );
                 } else {
-                    if ( rel.getMaxCard() <= 1 ) {
+                    if ( rel.getMaxCard() != null && rel.getMaxCard() <= 1 ) {
                         rel.setSimple( true );
                     }
                 }

@@ -30,10 +30,10 @@
                 else {
                     // @{simpleFlags.get(j)}
                     @if{ ! simpleFlags.get(j) }
-                        return @{ getter( prop, "java.util.List" ) }();
+                        return @{ getter( prop, typeNames.get(j) ) }();
                     @else{}
                         java.util.List list = new java.util.ArrayList();
-                            list.add( @{ getter( prop, "java.util.List" ) }() );
+                            list.add( @{ getter( prop, typeNames.get(j), 1 ) }() );
                         return list;
                     @end{}
                 }

@@ -115,7 +115,7 @@
                     @end{}
                 </dsp:accessor>
             @else{}
-                <dsp:property name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}" restr="@{prop.addableTarget}" simple="@{prop.simple}" />
+                <dsp:property name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}" restr="@{prop.addableTarget}" simple="@{prop.simple}" min="@{prop.minCard}" max="@{prop.maxCard}" />
             @end{}
         @end{}
         </dsp:accessors>
