@@ -47,17 +47,21 @@ public class DefaultChanceFactHandle extends DefaultFactHandle implements Chance
     public Evaluation getCachedEvaluation( int key ) {
         return cachedEvaluations.get( key );
     }
-    
+
     public boolean isEvaluationCached( int key ) {
         return cachedEvaluations.containsKey( key );
     }
-    
+
     public void addEvaluation( int key, Evaluation eval ) {
         if ( ! cachedEvaluations.containsKey( key ) ) {
             cachedEvaluations.put( key, eval );
         } else {
             cachedEvaluations.get( key ).merge( eval );
         }
+    }
+
+    public void setEvaluation( int key, Evaluation eval ) {
+        cachedEvaluations.put( key, eval );
     }
 
 }

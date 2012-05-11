@@ -49,8 +49,12 @@ public class ImperfectRuleTerminalNodeLeftTuple extends RuleTerminalNodeLeftTupl
     }
 
     public void addEvaluation( Evaluation evaluation ) {
+        if ( this.evaluation.getNodeId() == evaluation.getNodeId() ) {
+            this.evaluation = evaluation;
+        } else {
 //        this.evaluation = evaluation;
-        throw new UnsupportedOperationException( "Should not be called, no more evals at RuleTerminalNode?" );
+            throw new UnsupportedOperationException( "Should not be called, no more evals at RuleTerminalNode?" );
+        }
     }
 
     public Degree getDegree() {

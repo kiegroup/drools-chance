@@ -20,7 +20,7 @@ public class ChanceQueryActivationListenerFactory implements ActivationListenerF
                                                   BuildContext context,
                                                   Object... args ) {
 
-        return ReteooComponentFactory.getNodeFactoryService().newQueryTerminalNode( id, source, rule, subrule, subruleIndex, context );
+        return ReteooComponentFactory.getNodeFactoryService().buildQueryTerminalNode( id, source, rule, subrule, subruleIndex, context );
 
     }
 

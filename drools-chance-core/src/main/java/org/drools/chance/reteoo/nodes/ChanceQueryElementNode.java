@@ -1,8 +1,10 @@
 package org.drools.chance.reteoo.nodes;
 
 import org.drools.base.InternalViewChangedEventListener;
+import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.evaluation.CompositeEvaluation;
 import org.drools.chance.evaluation.Evaluation;
+import org.drools.chance.evaluation.MockEvaluation;
 import org.drools.chance.evaluation.QueryEvaluation;
 import org.drools.chance.reteoo.ChanceFactHandle;
 import org.drools.chance.reteoo.tuples.ImperfectQueryElementNodeLeftTuple;
@@ -17,9 +19,9 @@ import org.drools.rule.QueryElement;
 
 
 public class ChanceQueryElementNode extends QueryElementNode {
-    
+
     private int leftSourceId;
-    
+
 
     public ChanceQueryElementNode() {
 
@@ -33,7 +35,7 @@ public class ChanceQueryElementNode extends QueryElementNode {
                                    BuildContext context ) {
         super( id, tupleSource, queryElement, tupleMemoryEnabled, openQuery, context );
     }
-    
+
 
     public int getLeftSourceId() {
         return leftSourceId;
@@ -50,15 +52,19 @@ public class ChanceQueryElementNode extends QueryElementNode {
         ImperfectQueryElementNodeLeftTuple tup = new ImperfectQueryElementNodeLeftTuple( factHandle, sink, leftTupleMemoryEnabled );
 //        throw new UnsupportedOperationException( "Not yet" );
         int key = ( (LeftInputAdapterNode) this.getLeftTupleSource() ).getParentObjectSource().getId();
-        tup.addEvaluation( ((ChanceFactHandle) factHandle).getCachedEvaluation( key ) );
+        Evaluation eval = ((ChanceFactHandle) factHandle).getCachedEvaluation(key);
+        tup.addEvaluation( eval != null ? eval : new MockEvaluation( key, SimpleDegree.TRUE ) );
         return tup;
     }
 
     @Override
     public LeftTuple createLeftTuple(LeftTuple leftTuple, LeftTupleSink sink, boolean leftTupleMemoryEnabled) {
         ImperfectQueryElementNodeLeftTuple tup = new ImperfectQueryElementNodeLeftTuple( leftTuple, sink, leftTupleMemoryEnabled );
-        throw new UnsupportedOperationException( "Not yet" );
-//        return tup;
+        if ( leftTuple instanceof ImperfectTuple ) {
+            tup.addEvaluation( ((ImperfectTuple) leftTuple).getEvaluation() );
+        }
+//        throw new UnsupportedOperationException( "Not yet" );
+        return tup;
     }
 
     @Override
@@ -72,8 +78,9 @@ public class ChanceQueryElementNode extends QueryElementNode {
     @Override
     public LeftTuple createLeftTuple(LeftTuple leftTuple, RightTuple rightTuple, LeftTuple currentLeftChild, LeftTuple currentRightChild, LeftTupleSink sink, boolean leftTupleMemoryEnabled) {
         ImperfectQueryElementNodeLeftTuple tup = new ImperfectQueryElementNodeLeftTuple( leftTuple, rightTuple, currentLeftChild, currentRightChild, sink, leftTupleMemoryEnabled );
-        throw new UnsupportedOperationException( "Not yet" );
-//        return tup;
+            tup.addEvaluation( ((ImperfectTuple) leftTuple).getEvaluation() );
+            tup.addEvaluation( ((ImperfectTuple) rightTuple).getEvaluation() );
+        return tup;
     }
 
 

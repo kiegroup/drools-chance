@@ -18,6 +18,16 @@ public class ImperfectAlphaConstraintAdapter implements ImperfectAlphaConstraint
 
     private String label;
 
+    private boolean cutting;
+
+    public boolean isCutting() {
+        return cutting;
+    }
+
+    public void setCutting(boolean cutting) {
+        this.cutting = cutting;
+    }
+
     public String getLabel() {
         return label;
     }

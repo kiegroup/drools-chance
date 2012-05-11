@@ -1,0 +1,46 @@
+package org.drools.chance;
+
+import java.util.Map;
+import java.util.HashMap;
+import org.drools.chance.degree.Degree;
+import org.drools.chance.factmodel.Imperfect;
+
+
+global Map map;
+
+declare Imperson
+	name    : String    = "john/0.3, philip/0.2, mark/0.4, frank/0.1"
+	                @Imperfect( kind=ImpKind.PROBABILITY, type=ImpType.DISCRETE, degree=DegreeType.SIMPLE )
+    age     : int       = 18
+end
+
+declare Holder
+    imp     : Imperson
+end
+
+rule "Init"
+when
+then
+    insert( new Holder( new Imperson( ) ) );
+end
+
+
+
+rule "Complex from"
+when
+    Holder( $imp : imp )
+    $b : Imperson(
+                   $n : name ~== "philip"
+                    || @Imperfect( family=MvlFamilies.PRODUCT )                 // 0.52 = 0.4 + 0.2 - (0.4 * 0.2)
+                   ( name ~== "mark" && name == "mark" ),
+
+                   name ~== "frank"
+                    && @Imperfect( family=MvlFamilies.GODEL )                   // 0.1 = min( 0.3, 0.1 )
+                   $q: name ~== "john"
+    ) @Imperfect( family=MvlFamilies.PRODUCT ) from $imp
+then
+    Degree x = chance.getDegree();
+    System.out.println( "X " + x );                                             // 0.052 = 0.1 * 0.52
+    map.put( "X", x.getValue() );
+end
+

@@ -1,6 +1,7 @@
 package org.drools.chance.rule.constraint.core.connectives.impl.godel;
 
 
+import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
 import org.drools.chance.rule.constraint.core.connectives.impl.LogicConnectives;
 import org.drools.chance.degree.Degree;
@@ -8,13 +9,14 @@ import org.drools.chance.evaluation.Evaluation;
 
 public class Not implements ConnectiveCore {
 
+    private static Not INSTANCE = new Not();
     
     public static Not getInstance() {
-        return null;
+        return INSTANCE;
     }
 
-    public Degree eval(Degree deg) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Degree eval( Degree deg ) {
+        return ( deg.toBoolean() ? deg.False() : deg.True() );
     }
 
     public Degree eval(Degree left, Degree right) {

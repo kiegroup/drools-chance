@@ -1,12 +1,15 @@
 package org.drools.chance;
 
 
+import org.drools.KnowledgeBaseConfiguration;
+import org.drools.KnowledgeBaseFactory;
 import org.drools.RuleBaseConfiguration;
 import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.chance.common.ChanceStrategyFactory;
 import org.drools.chance.rule.builder.ChanceConstraintBuilderFactory;
 import org.drools.chance.rule.builder.ChanceMVELDumper;
 import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.mvl.ManyValuedConnectiveFactory;
+import org.drools.chance.rule.constraint.core.evaluators.HoldsEvaluatorDefinition;
 import org.drools.chance.rule.constraint.core.evaluators.ImperfectBaseEvaluatorDefinition;
 import org.drools.chance.rule.constraint.core.evaluators.IsAEvaluatorDefinition;
 import org.drools.chance.rule.constraint.core.evaluators.linguistic.IsEvaluatorDefinition;
@@ -28,6 +31,7 @@ import org.drools.rule.builder.dialect.java.JavaDialect;
 import org.drools.rule.builder.dialect.java.JavaRuleBuilderHelper;
 import org.drools.rule.builder.dialect.mvel.MVELConsequenceBuilder;
 import org.drools.rule.builder.dialect.mvel.MVELDialect;
+import org.drools.runtime.KnowledgeSessionConfiguration;
 import org.mvel2.Macro;
 
 public class Chance {
@@ -49,11 +53,11 @@ public class Chance {
 
         JavaRuleBuilderHelper.setConsequenceTemplate( "chanceRule.mvel" );
         MVELConsequenceBuilder.macros.put( "chance",
-                            new Macro() {
-                                public String doMacro() {
-                                    return "((org.drools.chance.ChanceHelper) drools)";
-                                }
-                            } );
+                new Macro() {
+                    public String doMacro() {
+                        return "((org.drools.chance.ChanceHelper) drools)";
+                    }
+                } );
 
 
         ClassBuilderFactory.setBeanClassBuilderService(new ChanceBeanBuilderImpl());
@@ -124,19 +128,35 @@ public class Chance {
     }
 
     public static KnowledgeBuilderConfiguration getChanceKBuilderConfiguration( KnowledgeBuilderConfiguration baseConf ) {
-        PackageBuilderConfiguration pbc = new PackageBuilderConfiguration();
+        PackageBuilderConfiguration pbc = (PackageBuilderConfiguration) baseConf;
 
-            pbc.getEvaluatorRegistry().addEvaluatorDefinition( new IsEvaluatorDefinition() );
-            pbc.getEvaluatorRegistry().addEvaluatorDefinition( new IsAEvaluatorDefinition() );
-            pbc.getEvaluatorRegistry().addEvaluatorDefinition( new ImperfectBaseEvaluatorDefinition() );
-
+        pbc.getEvaluatorRegistry().addEvaluatorDefinition( new IsEvaluatorDefinition() );
+        pbc.getEvaluatorRegistry().addEvaluatorDefinition( new IsAEvaluatorDefinition() );
+        pbc.getEvaluatorRegistry().addEvaluatorDefinition( new HoldsEvaluatorDefinition() );
+        pbc.getEvaluatorRegistry().addEvaluatorDefinition( new ImperfectBaseEvaluatorDefinition() );
 
         return pbc;
     }
 
-    public static RuleBaseConfiguration getRuleBaseConfiguration() {
-        RuleBaseConfiguration rbc = new RuleBaseConfiguration();
-            rbc.addActivationListener( "query", new ChanceQueryActivationListenerFactory() );
+
+    public static KnowledgeBaseConfiguration getChanceKnowledgeBaseConfiguration( KnowledgeBaseConfiguration baseConf ) {
+        RuleBaseConfiguration rbc = (RuleBaseConfiguration) baseConf;
+        rbc.addActivationListener( "query", new ChanceQueryActivationListenerFactory() );
         return rbc;
     }
+
+    public static KnowledgeBaseConfiguration getChanceKnowledgeBaseConfiguration() {
+        return getChanceKnowledgeBaseConfiguration(KnowledgeBaseFactory.newKnowledgeBaseConfiguration() );
+    }
+
+
+
+    public static KnowledgeSessionConfiguration getChanceKnowledgeSessionConfiguration( KnowledgeSessionConfiguration baseConf ) {
+        return baseConf;
+    }
+
+    public static KnowledgeSessionConfiguration getChanceKnowledgeSessionConfiguration( ) {
+        return getChanceKnowledgeSessionConfiguration( KnowledgeBaseFactory.newKnowledgeSessionConfiguration() );
+    }
+
 }

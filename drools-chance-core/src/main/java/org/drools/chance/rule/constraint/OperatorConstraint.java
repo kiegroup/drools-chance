@@ -20,6 +20,16 @@ public class OperatorConstraint implements ImperfectAlphaConstraint {
     private String label;
 
 
+    private boolean cutting;
+
+    public boolean isCutting() {
+        return cutting;
+    }
+
+    public void setCutting(boolean cutting) {
+        this.cutting = cutting;
+    }
+
     public OperatorConstraint( int arity, ConnectiveCore conn, String label ) {
         this.arity = arity;
         this.connective = conn;

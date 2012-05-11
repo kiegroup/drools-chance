@@ -8,11 +8,13 @@ import org.drools.common.BetaConstraints;
 import org.drools.reteoo.*;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.reteoo.builder.NodeFactory;
+import org.drools.rule.From;
 import org.drools.rule.GroupElement;
 import org.drools.rule.QueryElement;
 import org.drools.rule.Rule;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.drools.spi.Constraint;
+import org.drools.spi.DataProvider;
 import org.drools.spi.ObjectType;
 
 public class ChanceNodeFactory implements NodeFactory {
@@ -37,17 +39,21 @@ public class ChanceNodeFactory implements NodeFactory {
 
     }
 
-    public TerminalNode newQueryTerminalNode( int id, LeftTupleSource source, Rule rule, GroupElement subrule, int subruleIndex, BuildContext context ) {
+    public TerminalNode buildQueryTerminalNode( int id, LeftTupleSource source, Rule rule, GroupElement subrule, int subruleIndex, BuildContext context ) {
         return new ChanceQueryTerminalNode( id, source, rule, subrule, subruleIndex, context );
     }
 
-    public QueryElementNode newQueryElementNode( int id, LeftTupleSource tupleSource, QueryElement qe, boolean tupleMemoryEnabled, boolean openQuery, BuildContext context) {
+    public QueryElementNode buildQueryElementNode( int id, LeftTupleSource tupleSource, QueryElement qe, boolean tupleMemoryEnabled, boolean openQuery, BuildContext context) {
         return new ChanceQueryElementNode( id, tupleSource, qe, tupleMemoryEnabled, openQuery, context );
     }
 
     public LeftInputAdapterNode buildLeftInputAdapterNode( int id, ObjectSource objectSource, BuildContext context ) {
         // No modification needed for now
         return new LeftInputAdapterNode( id, objectSource, context );
+    }
+
+    public BaseNode buildFromNode( int id, DataProvider dataProvider, LeftTupleSource tupleSource, AlphaNodeFieldConstraint[] alphaNodeFieldConstraints, BetaConstraints betaConstraints, boolean tupleMemoryEnabled, BuildContext context, From from ) {
+        return new ChanceFromNode( id, dataProvider, tupleSource, alphaNodeFieldConstraints, betaConstraints, tupleMemoryEnabled, context, from );
     }
 
     public LogicalAplhaOperatorNode buildLogicalAlphaOperatorNode(int id, String label, ConnectiveCore conn, int arity, ObjectSource objectSource, BuildContext context) {
@@ -118,7 +124,9 @@ public class ChanceNodeFactory implements NodeFactory {
                 indexes[ arity - j - 1 ] = ((LeftInputAdapterNode) src).getParentObjectSource().getId();
             } else if ( src instanceof QueryElementNode ) {
                 indexes[ arity - j - 1 ] = src.getId();
-            }
+            } else if ( src instanceof FromNode ) {
+                            indexes[ arity - j - 1 ] = src.getId();
+                        }
             if ( j != arity-1 ) {
                 if ( src instanceof LogicalBetaOperatorNode ) {
                     src = consumeBeta( src );
@@ -149,6 +157,8 @@ public class ChanceNodeFactory implements NodeFactory {
             return ((BetaNode) src).getLeftTupleSource();
         } else if ( src instanceof QueryElementNode ) {
             return ((QueryElementNode) src).getLeftTupleSource();
+        } else if ( src instanceof FromNode ) {
+            return ((FromNode) src).getLeftTupleSource();
         } else {
             throw new UnsupportedOperationException( "Can't navigate this path " );
         }

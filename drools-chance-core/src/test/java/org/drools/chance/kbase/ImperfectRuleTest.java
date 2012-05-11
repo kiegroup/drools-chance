@@ -21,6 +21,7 @@ import org.drools.factmodel.traits.TraitFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -318,5 +319,57 @@ public class ImperfectRuleTest extends AbstractChanceTest {
 
     }
 
+
+    @Test
+    public void testFrom() {
+        StatefulKnowledgeSession kSession = initBasicChanceTest("org/drools/chance/testFrom.drl");
+        Map map = (Map) kSession.getGlobal( MAP );
+
+        kSession.fireAllRules();
+
+        System.out.println( map );
+
+        assertEquals( 1, map.size() );
+        assertTrue( map.containsKey( "X" ) );
+        assertEquals( 0.052,  (Double) map.get( "X" ), 1e-6 );
+
+    }
+
+
+
+
+    @Test
+    @Ignore( "Not implemented yet" )
+    public void testExists() {
+        StatefulKnowledgeSession kSession = initBasicChanceTest("org/drools/chance/testExists.drl");
+        Map map = (Map) kSession.getGlobal( MAP );
+
+        kSession.fireAllRules();
+
+        kSession.insert( 0.4 );
+        kSession.fireAllRules();
+
+        kSession.insert( 0.3 );
+        kSession.fireAllRules();
+
+        kSession.insert( 0.5 );
+        kSession.fireAllRules();
+
+        kSession.insert( 0.2 );
+        kSession.fireAllRules();
+
+        kSession.insert( -0.5 );
+        kSession.fireAllRules();
+
+        kSession.insert( 0.9 );
+        kSession.fireAllRules();
+
+        System.out.println( map );
+
+//        assertEquals( 1, map.size() );
+//        assertTrue( map.containsKey( "X" ) );
+//        assertEquals( 0.052,  (Double) map.get( "X" ), 1e-6 );
+
+    }
 
 }

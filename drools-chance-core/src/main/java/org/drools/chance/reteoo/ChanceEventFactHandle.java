@@ -43,4 +43,8 @@ public class ChanceEventFactHandle extends EventFactHandle implements ChanceFact
             cachedEvaluations.get( key ).merge( eval );
         }
     }
+
+    public void setEvaluation( int key, Evaluation eval ) {
+        cachedEvaluations.put( key, eval );
+    }
 }

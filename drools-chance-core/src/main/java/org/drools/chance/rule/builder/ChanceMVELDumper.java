@@ -161,8 +161,9 @@ public class ChanceMVELDumper extends MVELDumper {
             return super.evaluatorPrefix( isNegated );
         } else {
             if ( isNegated ) {
-                throw new UnsupportedOperationException("TODO : Negation with imperfaect evals");
+//                throw new UnsupportedOperationException("TODO : Negation with imperfaect evals");
 //            return "!( ";
+                return super.evaluatorPrefix( isNegated );
             }
             return "";
         }
@@ -173,8 +174,9 @@ public class ChanceMVELDumper extends MVELDumper {
             return super.evaluatorSufix( isNegated );
         } else {
             if ( isNegated ) {
-                throw new UnsupportedOperationException("TODO : Negation with imperfaect evals");
+//                throw new UnsupportedOperationException("TODO : Negation with imperfaect evals");
 //            return " )";
+                return super.evaluatorSufix( isNegated );
 
             }
             return "";

@@ -13,5 +13,7 @@ public interface ChanceFactHandle {
 
     public void addEvaluation( int key, Evaluation eval );
 
+    public void setEvaluation( int key, Evaluation eval );
+
 
 }

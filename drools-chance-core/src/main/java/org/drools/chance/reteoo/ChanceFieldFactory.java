@@ -15,7 +15,8 @@ public class ChanceFieldFactory extends FieldFactory {
                                      DateFormats dateFormats) {
 
         // intercepting linguistic, double-supported fields
-        if ( value instanceof Linguistic && valueType.equals( ValueType.DOUBLE_TYPE ) ) {
+        if ( value instanceof Linguistic &&
+                ( valueType.equals( ValueType.DOUBLE_TYPE ) || valueType.equals( ValueType.FLOAT_TYPE ) || valueType.equals( ValueType.BOOLEAN_TYPE ) ) ) {
             return new ObjectFieldImpl( value );
         }
         

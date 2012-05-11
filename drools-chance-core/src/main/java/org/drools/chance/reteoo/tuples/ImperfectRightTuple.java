@@ -31,11 +31,13 @@ public class ImperfectRightTuple extends RightTuple implements ImperfectTuple {
     }
 
     public Evaluation getCachedEvaluation( int idx ) {
-        return evaluation.getNodeId() == idx ? evaluation : null;
+        Evaluation eval = evaluation.getNodeId() == idx ? evaluation : null;
+        return eval != null ? eval : ((ChanceFactHandle) this.getFactHandle()).getCachedEvaluation( idx );
     }
 
 
     public void addEvaluation(Evaluation evaluation) {
+        this.evaluation = evaluation;
         ((ChanceFactHandle) this.getFactHandle()).addEvaluation( evaluation.getNodeId(), evaluation );
     }
 

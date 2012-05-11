@@ -1,14 +1,20 @@
 package org.drools.chance.reteoo.nodes;
 
 
+import org.drools.chance.evaluation.Evaluation;
+import org.drools.chance.reteoo.ChanceActivation;
 import org.drools.chance.reteoo.ChanceFactHandle;
 import org.drools.chance.reteoo.tuples.ImperfectRuleTerminalNodeLeftTuple;
 import org.drools.chance.reteoo.tuples.ImperfectTuple;
+import org.drools.common.AgendaItem;
+import org.drools.common.InternalAgenda;
 import org.drools.common.InternalFactHandle;
+import org.drools.common.InternalWorkingMemory;
 import org.drools.reteoo.*;
 import org.drools.reteoo.builder.BuildContext;
 import org.drools.rule.GroupElement;
 import org.drools.rule.Rule;
+import org.drools.spi.PropagationContext;
 
 public class ChanceRuleTerminalNode extends RuleTerminalNode {
 
@@ -39,7 +45,7 @@ public class ChanceRuleTerminalNode extends RuleTerminalNode {
     public LeftTuple createLeftTuple( LeftTuple leftTuple, LeftTupleSink sink, boolean leftTupleMemoryEnabled ) {
         ImperfectRuleTerminalNodeLeftTuple tuple = new ImperfectRuleTerminalNodeLeftTuple(leftTuple, sink, leftTupleMemoryEnabled);
 
-            tuple.setEvaluation( ((ImperfectTuple) leftTuple ).getEvaluation( ) );
+        tuple.setEvaluation( ((ImperfectTuple) leftTuple ).getEvaluation( ) );
 
         return tuple;
     }
@@ -63,8 +69,35 @@ public class ChanceRuleTerminalNode extends RuleTerminalNode {
 //        return tuple;
         throw new IllegalStateException( " Chance rule terminal nodes should not be called this way ! ");
     }
-    
-    
+
+
+
+
+    public void assertLeftTuple(final LeftTuple leftTuple,
+                                final PropagationContext context,
+                                final InternalWorkingMemory workingMemory) {
+
+        if ( leftTuple instanceof ImperfectTuple ) {
+            Evaluation eval = ((ImperfectTuple) leftTuple).getEvaluation();
+            if ( eval != null && ! eval.getDegree().toBoolean() ) {
+                return;
+            }
+        }
+        super.assertLeftTuple( leftTuple, context, workingMemory );
+    }
+
+    public void modifyLeftTuple(LeftTuple leftTuple,
+                                PropagationContext context,
+                                InternalWorkingMemory workingMemory) {
+        Object o = leftTuple.getObject();
+        if ( o instanceof ChanceActivation ) {
+            ((ChanceActivation) o ).setEvaluation( ((ImperfectTuple) leftTuple).getEvaluation() );
+        }
+        super.modifyLeftTuple( leftTuple, context, workingMemory );
+    }
+
+
+
 //    public LeftTupleSource unwrapTupleSource() {
 //        LeftTupleSource src = tupleSource;
 //        if ( tupleSource instanceof LogicalBetaOperatorNode ) {

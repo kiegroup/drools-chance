@@ -9,7 +9,7 @@ import org.drools.reteoo.LeftTuple;
 import org.drools.reteoo.RuleTerminalNode;
 import org.drools.spi.PropagationContext;
 
-public class ChanceActivation extends AgendaItem {
+public class ChanceActivation extends AgendaItem implements ChanceAgendaItem {
     
     private Evaluation evaluation;
 

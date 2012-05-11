@@ -20,6 +20,16 @@ public class ImperfectEvaluatorConstraint extends EvaluatorConstraint implements
 
     private String label;
 
+    private boolean cutting;
+
+    public boolean isCutting() {
+        return cutting;
+    }
+
+    public void setCutting(boolean cutting) {
+        this.cutting = cutting;
+    }
+
 
     public ImperfectEvaluatorConstraint( ) {
     }

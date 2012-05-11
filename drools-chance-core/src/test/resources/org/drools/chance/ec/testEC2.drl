@@ -1,0 +1,201 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Copyright 2011 JBoss Inc
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.drools.chance.ec;
+
+
+
+import org.drools.chance.factmodel.Imperfect;
+import org.drools.chance.factmodel.LinguisticPartition;
+
+import de.lab4inf.fuzzy.FuzzySet;
+import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
+
+import org.drools.chance.degree.Degree;
+import org.drools.chance.reteoo.ChanceActivation;
+import org.drools.chance.distribution.fuzzy.linguistic.Linguistic;
+import org.drools.chance.ChanceHelper;
+
+import java.util.*;
+
+
+
+global java.util.Map map;
+global org.drools.time.SessionPseudoClock clock;
+
+
+declare enum HandY
+@LinguisticPartition
+
+	DOWN( "down", new de.lab4inf.fuzzy.polygons.FuzzyTrapez( -100, -10, 40, 60 ) ),
+
+	UP( "up", new de.lab4inf.fuzzy.polygons.FuzzyTrapez( 40, 60, 110, 200 ) );
+
+    label : String
+
+    set   : FuzzySet
+
+end
+
+
+
+
+declare Hand extends Event
+    uid     : int       @key
+    y       : Double
+end
+
+
+
+declare HandUp extends Fluent
+    uid     : int
+end
+
+query handUp( HandUp $f, int $id )
+    $f := HandUp( $id := uid )
+end
+
+
+
+declare HandDown extends Fluent
+    uid     : int
+end
+
+query handDown( HandDown $f, int $id )
+    $f := HandDown( $id := uid )
+end
+
+
+rule "Init"
+dialect "mvel"
+when
+then
+    Hand h = new Hand( 1 );
+    HandUp hup = new HandUp().{
+        id = java.util.UUID.randomUUID().toString(),
+        uid = h.getUid(),
+        hist = new java.util.LinkedHashMap() };
+    HandDown hdn = new HandDown().{
+        id = java.util.UUID.randomUUID().toString(),
+        uid = h.getUid(),
+        hist = new java.util.LinkedHashMap() };
+
+    insert( h );
+
+    insert( hup );
+    insert( hdn );
+
+end
+
+
+
+rule "Hand"
+salience 1000
+dialect "mvel"
+when
+    $d : Double() from entry-point "handY"
+    $h : Hand( y != $d )
+then
+    retract( $d );
+    modify( $h ) {
+        setY( $d ),
+        setStart( clock.getCurrentTime() );
+    }
+end
+
+
+
+rule "HandPosDown"
+when
+    $event  : Hand( $id : uid, y ~is [label=down] HandY.DOWN, $t : start )
+    ?handDown( $fluent, $id ; )
+then
+    insert( new Declip( $t, $event, $fluent, chance.getDegree( "down" ) ) );
+end
+
+rule "HandPosDown Neg"
+when
+    $event  : Hand( $id : uid, y ~ not is [label=down] HandY.DOWN, $t : start )
+    ?handDown( $fluent, $id ; )
+then
+    insert( new Clip( $t, $event, $fluent, chance.getDegree( "down" ) ) );
+end
+
+rule "HandPosUp"
+when
+    $event  : Hand( $id : uid, y ~is [label=up] HandY.UP, $t : start )
+    ?handUp( $fluent, $id ; )
+then
+    insert( new Declip( $t, $event, $fluent, chance.getDegree( "up" ) ) );
+end
+
+rule "HandPosUp Neg"
+when
+    $event  : Hand( $id : uid, y ~ not is [label=up] HandY.UP, $t : start )
+    ?handUp( $fluent, $id ; )
+then
+    insert( new Clip( $t, $event, $fluent, chance.getDegree( "up" ) ) );
+end
+
+
+
+rule "Rec"
+salience -10
+when
+    $m1 : MVII( type == HandDown.class, status ~== true )
+    $m2 : MVII( type == HandUp.class, start > $m1.start, status ~== true )
+    $m3 : MVII( type == HandDown.class, start > $m2.start, status ~== true ) @Imperfect( label=test )
+then
+    // DECLIP SOME HIGHER LEVEL FLUENT ....
+
+    System.out.println( "***** WE have a Complex act " + chance.getDegree(  ) );
+    System.out.println( "M1 " + $m1.getStatus() );
+    System.out.println( "M2 " + $m2.getStatus() );
+    System.out.println( "M3 " + $m3.getStatus() );
+    System.out.println( "*************************** " );
+
+    map.put( clock.getCurrentTime(), chance.getDegree() );
+end
+
+
+rule "Check UP"
+when
+    $s : String( this == "check" )
+    ?handUp( $f, 1 ; )
+    ?holdsNow( $f ; )
+then
+    System.out.println( "***** Holds " + $f + " >> " + chance.getDegree(  ) );
+    map.put( "checkup", chance.getDegree() );
+end
+
+rule "Check DOWN"
+when
+    $s : String( this == "check" )
+    ?handDown( $f, 1 ; )
+    ?holdsNow( $f ; )
+then
+    System.out.println( "***** Holds " + $f + " >> " + chance.getDegree(  ) );
+    map.put( "checkdown", chance.getDegree() );
+end
+
+rule "Check DOWN PAST"
+when
+    $s : String( this == "check" )
+    ?handDown( $f, 1 ; )
+    ?holdsAt( $f, 14000L ; )
+then
+    System.out.println( "***** Held " + $f + " >> " + chance.getDegree(  ) );
+    map.put( "checkdown", chance.getDegree() );
+end

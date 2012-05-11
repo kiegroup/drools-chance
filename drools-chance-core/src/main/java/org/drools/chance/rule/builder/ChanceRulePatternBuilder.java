@@ -299,13 +299,13 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
             BaseDescr leftDescr = relDescr.getLeft();
             BaseDescr rightDescr = relDescr.getRight();
 
-            boolean isLeftImperfect = extractor.getExtractToClass().isAssignableFrom( ImperfectField.class );
+            boolean isLeftImperfect = ImperfectField.class.isAssignableFrom( extractor.getExtractToClass() );
             boolean isRightImperfect = false;
             if ( rightDescr instanceof AtomicExprDescr ) {
                 AtomicExprDescr right = ((AtomicExprDescr) relDescr.getRight());
                 String potentialVar = right.getExpression();
                 Declaration decl = context.getDeclarationResolver().getDeclaration(context.getRule(), potentialVar);
-                if ( decl != null && decl.getExtractor().getExtractToClass().isAssignableFrom( ImperfectField.class ) ) {
+                if ( decl != null && decl.getExtractor() != null && ImperfectField.class.isAssignableFrom( decl.getExtractor().getExtractToClass() ) ) {
                     isRightImperfect = true;
                 }
             }

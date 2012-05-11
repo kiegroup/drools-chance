@@ -40,10 +40,16 @@ public class IsEvaluatorDefinition implements EvaluatorDefinition {
             "is", false);
     public static final Operator IS_IMP = Operator.addOperatorToRegistry(
             ChanceOperators.makeImperfect( IS.getOperatorString() ), false);
+    public static final Operator NEG_IS = Operator.addOperatorToRegistry(
+            "is", true);
+    public static final Operator NEG_IS_IMP = Operator.addOperatorToRegistry(
+            ChanceOperators.makeImperfect( IS.getOperatorString() ), true);
 
     private static final String[] SUPPORTED_IDS = {
             IS.getOperatorString(),
-            IS_IMP.getOperatorString()
+            IS_IMP.getOperatorString(),
+            NEG_IS.getOperatorString(),
+            NEG_IS_IMP.getOperatorString()
     };
 
     private Evaluator[] evaluator;
@@ -132,14 +138,14 @@ public class IsEvaluatorDefinition implements EvaluatorDefinition {
 
     public static class IsEvaluator extends BaseImperfectEvaluator {
 
-
         public IsEvaluator( final ValueType type, final boolean isNegated, boolean enableImperfectMode ) {
-            super( type, IS, enableImperfectMode );
+            super( type, IS, isNegated, enableImperfectMode );
         }
 
         @Override
         protected Degree matchValueToValue( Object leftValue, Object rightValue, InternalWorkingMemory workingMemory ) {
-
+            Degree deg = getBaseDegree().False();
+            
             if ( leftValue instanceof Linguistic ) {
                 FuzzySet fs1 = ( (Linguistic) leftValue ).getSet();
                 FuzzySet fs2 = ( (Linguistic) rightValue ).getSet();
@@ -148,18 +154,21 @@ public class IsEvaluatorDefinition implements EvaluatorDefinition {
                     throw new RuntimeDroolsException( "Fuzzy Sets from different partitions are being compared " + leftValue.getClass() + " vs " + rightValue.getClass() );
                 }
 
-                FuzzySet x = fs1.intersection( fs2 );
+//                FuzzySet x = fs1.intersection( fs2 );
                 if ( fs1.xmin() >= fs2.xmax() || fs2.xmin() >= fs1.xmax()) {
-                    return getBaseDegree().False();
+                    deg = getBaseDegree().False();
                 } else {
-                    return getBaseDegree().fromConst( fs1.intersection( fs2 ).supremum() );
+                    deg = getBaseDegree().fromConst( fs1.intersection( fs2 ).supremum() );
                 }
-            } else if ( leftValue instanceof Double ) {
+            } else if ( leftValue instanceof Number ) {
                 FuzzySet fs2 = ( (Linguistic) rightValue ).getSet();
-                return getBaseDegree().fromConst( fs2.containment( (Double) leftValue ) );
+                deg =  getBaseDegree().fromConst( fs2.containment( ((Number) leftValue ).doubleValue() ) );
             }
 
-            return getBaseDegree().False();
+            if ( negated ) {
+                deg = not.eval( deg );
+            }
+            return deg;
         }
 
 

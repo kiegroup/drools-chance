@@ -9,4 +9,6 @@ public interface ImperfectConstraint extends Constraint {
 
     public void setLabel( String label );
 
+    public boolean isCutting();
+
 }

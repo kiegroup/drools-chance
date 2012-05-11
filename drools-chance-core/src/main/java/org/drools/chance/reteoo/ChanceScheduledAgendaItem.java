@@ -9,10 +9,9 @@ import org.drools.reteoo.RuleTerminalNode;
 import org.drools.spi.PropagationContext;
 
 
-public class ChanceScheduledAgendaItem extends ScheduledAgendaItem {
+public class ChanceScheduledAgendaItem extends ScheduledAgendaItem implements ChanceAgendaItem {
 
     private Evaluation evaluation;
-
 
     public ChanceScheduledAgendaItem( int i, LeftTuple tuple, ChanceAgenda chanceAgenda, PropagationContext context, RuleTerminalNode rtn ) {
         super( i, tuple, chanceAgenda, context, rtn );
@@ -32,4 +31,10 @@ public class ChanceScheduledAgendaItem extends ScheduledAgendaItem {
     }
 
 
+    @Override
+    public String toString() {
+        return "ChanceScheduledAgendaItem{" +
+                "evaluation=" + evaluation +
+                "} " + super.toString();
+    }
 }

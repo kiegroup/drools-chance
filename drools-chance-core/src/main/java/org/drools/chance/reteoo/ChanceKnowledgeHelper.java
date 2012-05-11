@@ -16,7 +16,7 @@ public class ChanceKnowledgeHelper extends DefaultKnowledgeHelper implements Cha
     }
 
     public Degree getDegree() {
-        return ((ChanceActivation) getActivation()).getDegree();
+        return ((ChanceAgendaItem) getActivation()).getDegree();
     }
 
     public Degree getDegree( String label ) {
@@ -27,7 +27,7 @@ public class ChanceKnowledgeHelper extends DefaultKnowledgeHelper implements Cha
     }
 
     public Evaluation getEvaluation() {
-        return ((ChanceActivation) getActivation()).getEvaluation();
+        return ((ChanceAgendaItem) getActivation()).getEvaluation();
     }
 
     public Evaluation getEvaluation( String label ) {

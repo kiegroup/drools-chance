@@ -1,5 +1,8 @@
 package org.drools.chance.reteoo.nodes;
 
+import org.drools.chance.degree.simple.SimpleDegree;
+import org.drools.chance.evaluation.MockEvaluation;
+import org.drools.chance.reteoo.tuples.ImperfectRuleTerminalNodeLeftTuple;
 import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.evaluation.CompositeEvaluation;
@@ -34,6 +37,7 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
     private LeftTupleSinkNode previousLeftTupleSinkNode;
     private LeftTupleSinkNode nextLeftTupleSinkNode;
     private boolean           tupleMemoryEnabled;
+    private boolean           fromLIA;
 
 
     public LogicalBetaOperatorNode( int id, String label, ConnectiveCore conn, int arity, int[] indexes, LeftTupleSource tupleSource, BuildContext context ) {
@@ -46,6 +50,7 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
         this.label = label;
 
         this.leftInput = tupleSource;
+        this.fromLIA = tupleSource instanceof LeftInputAdapterNode;
 
         this.tupleMemoryEnabled = context.isTupleMemoryEnabled();
 
@@ -79,6 +84,8 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
         this.leftInput.addTupleSink(this);
     }
 
+
+
     public void networkUpdated(UpdateContext updateContext) {
         updateContext.startVisitNode(leftInput);
         updateContext.endVisit();
@@ -87,11 +94,11 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
         }
     }
 
-    public void attach(final InternalWorkingMemory[] workingMemories) {
+    public void attach( BuildContext context ) {
         attach();
 
-        for ( int i = 0, length = workingMemories.length; i < length; i++ ) {
-            final InternalWorkingMemory workingMemory = workingMemories[i];
+        for ( int i = 0, length = context.getWorkingMemories().length; i < length; i++ ) {
+            final InternalWorkingMemory workingMemory = context.getWorkingMemories()[i];
             final PropagationContext propagationContext = new PropagationContextImpl( workingMemory.getNextPropagationIdCounter(),
                     PropagationContext.RULE_ADDITION,
                     null,
@@ -168,9 +175,17 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
         throw new UnsupportedOperationException( "Logical Beta Operator Node Pass-through, not implemented yet!" );
     }
 
-    @Override
     protected ObjectTypeNode getObjectTypeNode() {
-        throw new UnsupportedOperationException( "Logical Beta Operator Node Pass-through, not implemented yet!" );
+        ObjectTypeNode objectTypeNode = null;
+            ObjectSource source = ((LeftInputAdapterNode) this.getLeftTupleSource()).getParentObjectSource();
+            while ( source != null ) {
+                if ( source instanceof ObjectTypeNode ) {
+                    objectTypeNode = (ObjectTypeNode) source;
+                    break;
+                }
+                source = source.getParentObjectSource();
+            }
+        return objectTypeNode;
     }
 
 
@@ -199,6 +214,19 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
     }
 
     public void modifyLeftTuple( LeftTuple leftTuple, PropagationContext context, InternalWorkingMemory workingMemory ) {
+        if ( leftTuple.getFirstChild() == null ) {
+            return;
+        }
+        if ( ! fromLIA ) {
+            //TODO FIXME
+            if ( leftTuple.getParent() instanceof ImperfectTuple ) {
+                Evaluation eval = reevaluate( (ImperfectTuple) leftTuple.getParent(), (ImperfectTuple) leftTuple.getRightParent() );
+                if ( ! eval.getDegree().toBoolean() ) {
+                    return;
+                }
+                ((ImperfectTuple) leftTuple.getFirstChild()).addEvaluation( eval );
+            }
+        }
         this.sink.propagateModifyChildLeftTuple( leftTuple, context, workingMemory, isLeftTupleMemoryEnabled() );
     }
 
@@ -213,25 +241,31 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
     }
 
     public LeftTuple createLeftTuple( LeftTuple leftTuple, LeftTupleSink sink, boolean leftTupleMemoryEnabled ) {
-//        ImperfectRuleTerminalNodeLeftTuple tuple = new ImperfectRuleTerminalNodeLeftTuple(leftTuple, sink, leftTupleMemoryEnabled);
+        ImperfectRuleTerminalNodeLeftTuple tuple = new ImperfectRuleTerminalNodeLeftTuple( leftTuple, sink, leftTupleMemoryEnabled );
 //
-//        tuple.setEvaluation( ((ImperfectTuple) leftTuple ).getEvaluation( ) );
+        //TODO FIXME
+        if ( leftTuple instanceof ImperfectTuple ) {
+            tuple.setEvaluation( ((ImperfectTuple) leftTuple ).getEvaluation( ) );
+        }
 //
-//        return tuple;
-        throw new UnsupportedOperationException( "Not impl yet" );
+        return tuple;
+//        throw new UnsupportedOperationException( "Not impl yet" );
     }
 
     public LeftTuple createLeftTuple( LeftTuple leftTuple, RightTuple rightTuple, LeftTupleSink sink ) {
         ImperfectTuple tuple = new ImperfectLeftTuple( leftTuple, rightTuple, sink );
-        tuple.setEvaluation( reevaluate( (ImperfectTuple) leftTuple, (ImperfectTuple) rightTuple ) );
-
+        Evaluation eval = reevaluate( (ImperfectTuple) leftTuple, (ImperfectTuple) rightTuple );
+        tuple.setEvaluation( eval );
         return (LeftTuple) tuple;
     }
 
     public LeftTuple createLeftTuple(LeftTuple leftTuple, RightTuple rightTuple, LeftTuple currentLeftChild, LeftTuple currentRightChild, LeftTupleSink sink, boolean leftTupleMemoryEnabled) {
         ImperfectTuple tuple = new ImperfectLeftTuple( leftTuple, rightTuple, currentLeftChild, currentRightChild, sink, leftTupleMemoryEnabled );
 
-        tuple.setEvaluation( reevaluate( (ImperfectTuple) leftTuple, (ImperfectTuple) rightTuple ) );
+        //TODO FIXME
+        if ( leftTuple instanceof ImperfectTuple) {
+            tuple.setEvaluation( reevaluate( (ImperfectTuple) leftTuple, (ImperfectTuple) rightTuple ) );
+        }
 
         return (LeftTuple) tuple;
     }
@@ -242,9 +276,10 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
         Evaluation[] children = new Evaluation[arity];
 
         for ( int j = 0; j < arity - 1; j ++ ) {
+            //TODO FIXME NULL CHECKS
             Evaluation arg = left.getCachedEvaluation( this.argIndexes[j] );
-            children[ j ] = arg;
-            bits[ j ] = arg.getDegree();
+            children[ j ] = arg != null ? arg : new MockEvaluation( -1, SimpleDegree.TRUE );
+            bits[ j ] = arg != null ? arg.getDegree() : SimpleDegree.TRUE;
         }
         Evaluation rightEval = right.getCachedEvaluation( this.argIndexes[ arity - 1 ] );
         children[ arity - 1 ] = rightEval;

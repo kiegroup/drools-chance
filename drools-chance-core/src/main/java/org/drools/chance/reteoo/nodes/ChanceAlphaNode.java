@@ -27,13 +27,16 @@ public class ChanceAlphaNode extends AlphaNode {
 
     public ChanceAlphaNode(int id, AlphaNodeFieldConstraint constraint, ObjectSource objectSource, BuildContext context) {
         super(id, constraint, objectSource, context);
+        if ( constraint instanceof ImperfectConstraint && ((ImperfectConstraint) constraint).isCutting() ) {
+            alwaysPropagate = false;
+        }
     }
 
     public boolean isAlwaysPropagate() {
         return alwaysPropagate;
     }
 
-    public void setAlwaysPropagate(boolean alwaysPropagate) {
+    public void setAlwaysPropagate( boolean alwaysPropagate ) {
         this.alwaysPropagate = alwaysPropagate;
     }
 

@@ -27,8 +27,11 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
 
     protected ConnectiveCore and;
     protected ConnectiveCore or;
+    protected ConnectiveCore not;
     protected Degree baseDegree;
     private boolean imperfectOn;
+
+    protected boolean negated;
 
     public void setParameterText( String parameterText ) {
 
@@ -43,9 +46,18 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
         this( type, operator, Collections.<String>emptyList(), enableImperfection );
     }
 
+    public BaseImperfectEvaluator(  ValueType type, Operator operator, boolean isNegated, boolean enableImperfection ) {
+            this( type, operator, isNegated, Collections.<String>emptyList(), enableImperfection );
+        }
+
     public BaseImperfectEvaluator(  ValueType type, Operator operator, List<String> parameters, boolean enableImperfection ) {
+        this( type, operator, false, parameters, enableImperfection );
+    }
+
+    public BaseImperfectEvaluator(  ValueType type, Operator operator, boolean negated, List<String> parameters, boolean enableImperfection ) {
         super( type, operator );
-        imperfectOn = enableImperfection;
+        this.imperfectOn = enableImperfection;
+        this.negated = negated;
 
         if ( parameters != null && parameters.size() > 0 ) {
             Map<String,String> paramMap = processParameters( parameters );
@@ -60,6 +72,7 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
 
         and = factory.getAnd();
         or  = factory.getOr();
+        not = factory.getNot();
         baseDegree = ChanceDegreeTypeRegistry.getSingleInstance().buildDegree( ChanceDegreeTypeRegistry.getDefaultDegree(), 0 );
     }
 
@@ -75,6 +88,7 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
         
         and = family != null ? factory.getAnd( family ) : factory.getAnd();
         or  = family != null ? factory.getOr( family )  : factory.getOr();
+        not = family != null ? factory.getNot( family )  : factory.getNot();
         baseDegree = ChanceDegreeTypeRegistry.getSingleInstance().buildDegree( degT, 0 );
 
     }
@@ -113,10 +127,12 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
 
     public Degree match( InternalWorkingMemory workingMemory,
                          InternalReadAccessor extractor, Object object, FieldValue value ) {
-        final Object objectValue = extractor
-                .getValue(workingMemory, object);
+        Object objectValue = null;
+        if ( object != null ) {
+            objectValue = extractor.getValue( workingMemory, object );
+        }
 
-        return compare( objectValue, value.getValue(), workingMemory );
+        return compare( objectValue, value == null ? null : value.getValue(), workingMemory );
     }
 
     public Degree match( InternalWorkingMemory workingMemory,

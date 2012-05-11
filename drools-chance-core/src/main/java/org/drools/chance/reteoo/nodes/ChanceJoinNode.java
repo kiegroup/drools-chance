@@ -33,7 +33,7 @@ public class ChanceJoinNode extends JoinNode {
 
     @Override
     public RightTuple createRightTuple( InternalFactHandle handle, RightTupleSink sink, PropagationContext context ) {
-        Evaluation eval = ((ChanceFactHandle) handle).getCachedEvaluation(rightSourceId) ;
+        Evaluation eval = ((ChanceFactHandle) handle).getCachedEvaluation( rightSourceId ) ;
         if ( ! this.concurrentRightTupleMemory ) {
             if ( context.getActiveWindowTupleList() == null ) {
                 return new ImperfectRightTuple( handle,
@@ -114,7 +114,7 @@ public class ChanceJoinNode extends JoinNode {
             } else {
                 boolean allowed = ((BetaNodeFieldConstraint) con).isAllowedCachedRight( leftTuple, memory.getContext()[j] );
                 if ( ! allowed ) {
-                    System.err.println( "Crisp beta cnstraint blocked propagation on ChanceJoinNode propagateFromRight ");
+//                    System.err.println( "Crisp beta cnstraint blocked propagation on ChanceJoinNode propagateFromRight ");
                     return;
                 }
             }
@@ -128,6 +128,55 @@ public class ChanceJoinNode extends JoinNode {
                 context,
                 workingMemory,
                 true );
+    }
+
+
+    protected LeftTuple propagateOrModifyFromRight( RightTuple rightTuple, LeftTuple leftTuple, LeftTuple childLeftTuple, BetaMemory memory, PropagationContext context, InternalWorkingMemory workingMemory ) {
+
+        LinkedList constraintList = this.constraints.getConstraints();
+        Iterator iter = constraintList.iterator();
+        Object con;
+        int j = 0;
+        boolean allowed = true;
+        while ( ( con = iter.next() ) != null ) {
+            Degree degree;
+            con = ( (LinkedListEntry) con ).getObject();
+
+            if ( con instanceof ImperfectBetaConstraint ) {
+                ImperfectBetaConstraint ibc = (ImperfectBetaConstraint) con;
+                degree = ibc.matchCachedRight( leftTuple, memory.getContext()[j] );
+                Evaluation eval = new SimpleEvaluationImpl( ibc.getNodeId(), con.toString(), degree, ibc.getLabel() );
+                ((ImperfectRightTuple) rightTuple).addEvaluation( eval );
+            } else {
+                allowed = ((BetaNodeFieldConstraint) con).isAllowedCachedRight( leftTuple, memory.getContext()[j] );
+            }
+            j++;
+        }
+
+
+        if ( allowed ) {
+            if ( childLeftTuple == null || childLeftTuple.getLeftParent() != leftTuple ) {
+                this.sink.propagateAssertLeftTuple( leftTuple,
+                        rightTuple,
+                        null,
+                        childLeftTuple,
+                        context,
+                        workingMemory,
+                        true );
+            } else {
+                childLeftTuple = this.sink.propagateModifyChildLeftTuple( childLeftTuple,
+                        leftTuple,
+                        context,
+                        workingMemory,
+                        true );
+            }
+        } else if ( childLeftTuple != null && childLeftTuple.getLeftParent() == leftTuple ) {
+            childLeftTuple = this.sink.propagateRetractChildLeftTuple( childLeftTuple,
+                    leftTuple,
+                    context,
+                    workingMemory );
+        }
+        return childLeftTuple;
     }
 
     @Override
@@ -149,7 +198,7 @@ public class ChanceJoinNode extends JoinNode {
             } else {
                 boolean allowed = ((BetaNodeFieldConstraint) con).isAllowedCachedLeft( contextEntry[j], rightTuple.getFactHandle() );
                 if ( ! allowed ) {
-                    System.err.println( "Crisp beta cnstraint blocked propagation on ChanceJoinNode propagateFromRight ");
+//                    System.err.println( "Crisp beta cnstraint blocked propagation on ChanceJoinNode propagateFromLeft ");
                     return;
                 }
             }

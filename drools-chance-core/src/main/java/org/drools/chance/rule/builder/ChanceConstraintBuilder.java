@@ -108,9 +108,9 @@ public class ChanceConstraintBuilder extends DefaultConstraintBuilder {
                                              String rightValue,
                                              InternalReadAccessor extractor,
                                              LiteralRestrictionDescr restrictionDescr) {
-        
+
         boolean isImperfect = ChanceOperators.isImperfect( operator );
-        
+
         if (USE_MVEL_EXPRESSION) {
             if ( ! isMvelOperator( operator ) ) {
                 // custom or complex operator
@@ -119,7 +119,7 @@ public class ChanceConstraintBuilder extends DefaultConstraintBuilder {
                     if ( evaluator instanceof ImperfectEvaluator ) {
                         // imperfect evaluator, to be used imperfectly
                         ImperfectEvaluatorConstraint iec = new ImperfectEvaluatorConstraint( field, evaluator, extractor );
-                            iec.setLabel( extractConstraintLabel(restrictionDescr.getParameters()) );
+                        iec.setLabel( extractConstraintLabel(restrictionDescr.getParameters()) );
                         return iec;
                     } else {
                         // imperfect eval can work in a single
@@ -140,18 +140,22 @@ public class ChanceConstraintBuilder extends DefaultConstraintBuilder {
 
             } else {
 
-                
+
 
                 if ( isImperfect ) {
 
                     ImperfectMvelEvaluator evaluator = new ImperfectMvelEvaluator( vtype,
-                                                                                   Operator.determineOperator( ChanceOperators.makePerfect( operator ), false ),
-                                                                                   restrictionDescr.getParameters(),
-                                                                                   true,
-                                                                                   rightValue );
+                            Operator.determineOperator( ChanceOperators.makePerfect( operator ), false ),
+                            restrictionDescr.getParameters(),
+                            true,
+                            rightValue );
 
                     ImperfectEvaluatorConstraint iec = new ImperfectEvaluatorConstraint( field, evaluator, extractor );
-                        iec.setLabel( extractConstraintLabel( restrictionDescr.getParameters()) );
+
+                    if ( restrictionDescr.getParameters() != null && restrictionDescr.getParameters().contains( "cut" ) ) {
+                        iec.setCutting( true );
+                    }
+                    iec.setLabel( extractConstraintLabel( restrictionDescr.getParameters()) );
                     return iec;
                 } else {
 
@@ -202,7 +206,7 @@ public class ChanceConstraintBuilder extends DefaultConstraintBuilder {
                 if ( isImperfect ) {
                     if ( evaluator instanceof ImperfectEvaluator) {
                         ImperfectEvaluatorConstraint iec = new ImperfectEvaluatorConstraint( restriction.getRequiredDeclarations(), evaluator, extractor );
-                            iec.setLabel( extractConstraintLabel( operatorDescr.getParameters()) );
+                        iec.setLabel( extractConstraintLabel( operatorDescr.getParameters()) );
                         return iec;
                     } else {
                         return new EvaluatorConstraint( restriction.getRequiredDeclarations(), evaluator, extractor );
@@ -216,7 +220,7 @@ public class ChanceConstraintBuilder extends DefaultConstraintBuilder {
                     Evaluator evaluator = restriction.getEvaluator();
 
                     ImperfectEvaluatorConstraint iec = new ImperfectEvaluatorConstraint( restriction.getRequiredDeclarations(), evaluator, extractor );
-                        iec.setLabel( extractConstraintLabel( operatorDescr.getParameters()) );
+                    iec.setLabel( extractConstraintLabel( operatorDescr.getParameters()) );
                     return iec;
 
                 } else {
@@ -242,6 +246,12 @@ public class ChanceConstraintBuilder extends DefaultConstraintBuilder {
 
     public Constraint buildMvelConstraint(String packageName, String expression, Declaration[] declarations, MVELCompilationUnit compilationUnit, boolean isDynamic) {
         return new ImperfectMvelConstraint( packageName, expression, declarations, compilationUnit, isDynamic );
+    }
+
+    public Constraint buildMvelConstraint(String packageName, String expression, Declaration[] declarations, MVELCompilationUnit compilationUnit, boolean isDynamic, PredicateDescr base ) {
+        ImperfectMvelConstraint imc = new ImperfectMvelConstraint( packageName, expression, declarations, compilationUnit, isDynamic );
+            imc.setLabel( extractConstraintLabel( base.getParameters() ) );
+        return imc;
     }
 
     public Constraint buildMvelConstraint(String packageName, String expression, MVELCompilationUnit compilationUnit, boolean isIndexable, FieldValue fieldValue, InternalReadAccessor extractor) {

@@ -26,6 +26,16 @@ public class ImperfectMvelConstraint extends MvelConstraint implements Imperfect
 
     private String label;
 
+    private boolean cutting;
+
+    public boolean isCutting() {
+        return cutting;
+    }
+
+    public void setCutting(boolean cutting) {
+        this.cutting = cutting;
+    }
+
     public ImperfectMvelConstraint() {
     }
 
@@ -48,6 +58,15 @@ public class ImperfectMvelConstraint extends MvelConstraint implements Imperfect
 
 
     protected Degree match(Object object, InternalWorkingMemory workingMemory, LeftTuple leftTuple) {
+        prepare( object, workingMemory, leftTuple );
+        if ( ! wrapsPerfectConstraint ) {
+            return ((ImperfectMvelConditionEvaluator) conditionEvaluator).match(object, workingMemory, leftTuple);
+        } else {
+            return conditionEvaluator.evaluate(object, workingMemory, leftTuple) ? SimpleDegree.TRUE : SimpleDegree.FALSE;
+        }
+    }
+
+    private void prepare(Object object, InternalWorkingMemory workingMemory, LeftTuple leftTuple) {
         if ( ! jitted ) {
             if ( conditionEvaluator == null) {
                 createImperfectMvelConditionEvaluator(workingMemory);
@@ -60,11 +79,7 @@ public class ImperfectMvelConstraint extends MvelConstraint implements Imperfect
                 jitEvaluator(object, workingMemory, leftTuple);
             }
         }
-        if ( ! wrapsPerfectConstraint ) {
-            return ((ImperfectMvelConditionEvaluator) conditionEvaluator).match(object, workingMemory, leftTuple);
-        } else {
-            return conditionEvaluator.evaluate(object, workingMemory, leftTuple) ? SimpleDegree.TRUE : SimpleDegree.FALSE;
-        }
+
     }
 
     protected void createImperfectMvelConditionEvaluator(InternalWorkingMemory workingMemory) {
@@ -86,11 +101,29 @@ public class ImperfectMvelConstraint extends MvelConstraint implements Imperfect
     }
 
     public Degree matchCachedLeft( ContextEntry context, InternalFactHandle handle ) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object o = handle.getObject();
+        LeftTuple tup = ((MvelContextEntry) context).getLeftTuple();
+        InternalWorkingMemory wm = ((MvelContextEntry) context).getWorkingMemory();
+
+        prepare( o, wm, tup );
+        if ( ! wrapsPerfectConstraint ) {
+            return ((ImperfectMvelConditionEvaluator) conditionEvaluator).match( o, wm, tup );
+        } else {
+            return conditionEvaluator.evaluate( o, wm, tup ) ? SimpleDegree.TRUE : SimpleDegree.FALSE;
+        }
     }
 
-    public Degree matchCachedRight( LeftTuple context, ContextEntry tuple ) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Degree matchCachedRight( LeftTuple tuple, ContextEntry context ) {
+        Object o = tuple.getHandle().getObject();
+        LeftTuple tup = ((MvelContextEntry) context).getLeftTuple();
+        InternalWorkingMemory wm = ((MvelContextEntry) context).getWorkingMemory();
+
+        prepare( o, wm, tup );
+        if ( ! wrapsPerfectConstraint ) {
+            return ((ImperfectMvelConditionEvaluator) conditionEvaluator).match( o, wm, tup );
+        } else {
+            return conditionEvaluator.evaluate( o, wm, tup ) ? SimpleDegree.TRUE : SimpleDegree.FALSE;
+        }
     }
 
     public int getNodeId() {
