@@ -23,14 +23,14 @@
     <parent>
         <groupId>org.drools</groupId>
         <artifactId>drools-shapes-examples</artifactId>
-            <version>5.5.0-SNAPSHOT</version>
+        <version>5.5.0-SNAPSHOT</version>
     </parent>
 
     <name>Drools :: Semantic Translator Example</name>
 
     <groupId>org.drools</groupId>
     <artifactId>translator-example</artifactId>
-    
+
     <properties>
         <drools.version>5.5.0-SNAPSHOT</drools.version>
         <jpa.provider>hibernate</jpa.provider>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            
+
             <scope>test</scope>
         </dependency>
 
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            
+
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -183,27 +183,26 @@
 
         <resources>
             <resource>
-                <directory>${pom.basedir}/target/generated-sources/META-INF</directory>
-                <includes>
-                    <include>**/*.*</include>
-                </includes>
-            </resource>
-            <resource>
                 <directory>${pom.basedir}/src/main/resources</directory>
                 <includes>
                     <include>**/*.*</include>
                 </includes>
             </resource>
             <resource>
-                <directory>${pom.basedir}/target/generated-sources/xjc</directory>
+                <directory>${pom.basedir}/src/test/resources</directory>
                 <includes>
-                    <include>**/*.index</include>
+                    <include>**/*.*</include>
                 </includes>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
+            </resource>
+            <resource>
+                <directory>${pom.basedir}/target/generated-sources/META-INF</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
             </resource>
         </resources>
+
+
 
         <plugins>
 
@@ -219,7 +218,9 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${pom.basedir}/target/generated-sources</source>
+                                <source>${pom.basedir}/target/generated-sources/xjc</source>
+                                <source>${pom.basedir}/target/generated-sources/java</source>
+                                <source>${pom.basedir}/target/generated-sources/META-INF</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -390,6 +391,61 @@
                 </executions>
             </plugin>
         </plugins>
+
+        <!--pluginManagement>
+        			<plugins>
+        				<plugin>
+        					<groupId>org.eclipse.m2e</groupId>
+        					<artifactId>lifecycle-mapping</artifactId>
+        					<version>1.0.0</version>
+        					<configuration>
+        						<lifecycleMappingMetadata>
+        							<pluginExecutions>
+        								<pluginExecution>
+        									<pluginExecutionFilter>
+        										<groupId>org.apache.maven.plugins</groupId>
+        										<artifactId>maven-dependency-plugin</artifactId>
+        										<versionRange>[2.4,)</versionRange>
+        										<goals>
+        											<goal>copy-dependencies</goal>
+        										</goals>
+        									</pluginExecutionFilter>
+        									<action>
+        										<ignore />
+        									</action>
+        								</pluginExecution>
+        								<pluginExecution>
+        									<pluginExecutionFilter>
+        										<groupId>org.jvnet.hyperjaxb3</groupId>
+        										<artifactId>maven-hyperjaxb3-plugin</artifactId>
+        										<versionRange>[0.5.6,)</versionRange>
+        										<goals>
+        											<goal>generate</goal>
+        										</goals>
+        									</pluginExecutionFilter>
+        									<action>
+        										<ignore />
+        									</action>
+        								</pluginExecution>
+        								<pluginExecution>
+        									<pluginExecutionFilter>
+        										<groupId>org.drools</groupId>
+        										<artifactId>drools-shapes-generator-plugin</artifactId>
+        										<versionRange>[5.5.0-SNAPSHOT,)</versionRange>
+        										<goals>
+        											<goal>cast</goal>
+        										</goals>
+        									</pluginExecutionFilter>
+        									<action>
+        										<ignore />
+        									</action>
+        								</pluginExecution>
+        							</pluginExecutions>
+        						</lifecycleMappingMetadata>
+        					</configuration>
+        				</plugin>
+        			</plugins>
+        		</pluginManagement-->
     </build>
 
 
