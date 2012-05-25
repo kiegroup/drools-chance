@@ -151,9 +151,9 @@ rule "processDataField_define"
 dialect "mvel"
 salience 1
 when
-    $fld : DataField( $n : name, $t : dataType)
+    $fld : DataField( $n : name, $t : dataType )
     not FieldMarker( name == $n )
-    eval( ! utils.isModelBeanDefined(utils.compactUpperCase($n)) )
+    eval( ! utils.isModelBeanDefined( utils.compactUpperCase( $n ) ) )
 then
     utils.addModelBeanDefinition( utils.compactUpperCase( $n ) );
     HashMap map = new HashMap( 7 );
@@ -177,8 +177,8 @@ end
 rule "processDataField_entry"
 dialect "mvel"
 when
-    $fld : DataField( $vals : values , $isize : intervals )
-    $validVals : List( $vsize : size ) from collect (
+    $fld        : DataField( $vals : values , $isize : intervals )
+    $validVals  : List( $vsize : size ) from collect (
         Value( property != "invalid", property != "missing" ) from $vals
     )
 then
@@ -202,7 +202,7 @@ salience 999
 dialect "java"
 when
     $fld : DataField( $ivals : intervals )
-    $i : Interval( leftMargin == null ) from $ivals
+    $i   : Interval( leftMargin == null ) from $ivals
 then
     $i.setLeftMargin(-Double.MAX_VALUE);
 end
@@ -213,7 +213,7 @@ salience 999
 dialect "mvel"
 when
     $fld : DataField( $ivals : intervals )
-    $i : Interval( rightMargin == null ) from $ivals
+    $i   : Interval( rightMargin == null ) from $ivals
 then
     $i.setRightMargin(Double.MAX_VALUE);
 end
@@ -236,62 +236,59 @@ end
 rule "processDataField_valueValidation_valid"
 dialect "mvel"
 when
-    $fld : DataField( $vals : values, $vsize : values.size() > 0 )
-    $validz : List( size > 0 ) from accumulate (
-                        $val : Value( property == null || (property != "missing" && property != "invalid") ) from $vals,
-                        init ( List validz = new java.util.LinkedList(); ),
-                        action ( validz.add(utils.format($fld,$val)); ),
-                        result ( validz )
-                      )
+    $fld    : DataField( $vals : values, $vsize : values.size() > 0 )
+    accumulate (
+                $val : Value( property == null || (property != "missing" && property != "invalid") ) from $vals,
+                $validz : collectList( utils.format( $fld, $val ) );
+                $validz.size > 0
+               )
 then
-    HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("vals",$validz);
-        map.put("field",$fld);
-    applyTemplate("valuesOnDomainRestriction.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "vals", $validz );
+        map.put( "field", $fld );
+    applyTemplate( "valuesOnDomainRestriction.drlt", utils, registry, map, theory );
 end
 
 
 rule "processDataField_valueValidation_missing"
 dialect "mvel"
 when
-    $fld : DataField( $vals : values, $vsize : values.size() > 0,
+    $fld      : DataField( $vals : values, $vsize : values.size() > 0,
                       ( optype == OPTYPE.CONTINUOUS || optype == OPTYPE.CATEGORICAL ) )
-    $missingz : List( size > 0 ) from accumulate(
-                        $val : Value( property == "missing" ) from $vals,
-                        init( List missingz = new java.util.LinkedList(); ),
-                        action( missingz.add(utils.format($fld,$val)); ),
-                        result( missingz )
-                      )
+    accumulate (
+                $val : Value( property == "missing" ) from $vals,
+                $missingz : collectList( utils.format( $fld, $val ) );
+                $missingz.size > 0
+               )
 then
     HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("vals",$missingz);
-        map.put("field",$fld);
-    applyTemplate("valuesOnDomainRestrictionMissing.drlt", utils, registry, map, theory);
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "vals", $missingz );
+        map.put( "field", $fld );
+    applyTemplate( "valuesOnDomainRestrictionMissing.drlt", utils, registry, map, theory );
 end
 
 
 rule "processDataField_valueValidation_invalid"
 dialect "mvel"
 when
-    $fld : DataField( $vals : values, $vsize : values.size() > 0,
-                      ( optype == OPTYPE.CONTINUOUS || optype == OPTYPE.CATEGORICAL ) )
-    $invalidz : List( size > 0 ) from accumulate(
-                        $val : Value( property == "invalid" ) from $vals,
-                        init( List invalidz = new java.util.LinkedList(); ),
-                        action( invalidz.add(utils.format($fld,$val)); ),
-                        result( invalidz )
-                      )
+    $fld      : DataField( $vals : values, $vsize : values.size() > 0,
+                           ( optype == OPTYPE.CONTINUOUS || optype == OPTYPE.CATEGORICAL ) )
+    accumulate (
+                $val : Value( property == "invalid" ) from $vals,
+                $invalidz : collectList( utils.format( $fld, $val ) );
+                $invalidz.size > 0
+               )
 then
-    HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("vals",$invalidz);
-        map.put("field",$fld);
-    applyTemplate("valuesOnDomainRestrictionInvalid.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "vals", $invalidz );
+        map.put( "field", $fld );
+    applyTemplate( "valuesOnDomainRestrictionInvalid.drlt", utils, registry, map, theory );
 end
 
 
@@ -317,21 +314,21 @@ dialect "mvel"
 salience 1
 when
     $fld : DerivedField( $n : name, $t :  dataType )
-    not FieldMarker( name == $n )
+    not    FieldMarker( name == $n )
 then
 //    String opt = $fld.optype.v alue;
-    HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("fullName",$fld.displayName);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("type",utils.mapDatatype($fld.dataType));
-        map.put("super",null);
-        map.put("modelType",null);
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "fullName", $fld.displayName );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "type", utils.mapDatatype( $fld.dataType ) );
+        map.put( "super", null );
+        map.put( "modelType", null );
 //        map.put("cyclic",false);
 //        map.put("categorical","categorical".equalsIgnoreCase(opt));
 //        map.put("continuous","continuous".equalsIgnoreCase(opt));
 //        map.put("ordinal","ordinal".equalsIgnoreCase(opt));
-    applyTemplate("ioTypeDeclare.drlt", utils, registry, map, theory);
+    applyTemplate( "ioTypeDeclare.drlt", utils, registry, map, theory );
 //    applyTemplate("updateIOField.drlt", utils, registry, map, theory);
 end
 
@@ -341,8 +338,8 @@ dialect "mvel"
 when
     $fld : DerivedField( $n : name, $t : dataType )
 then
-    insert( new FieldMarker($n,$t) );
-    insertLogical( new TypeOfField($n,$t) );
+    insert( new FieldMarker( $n,$t ) );
+    insertLogical( new TypeOfField( $n, $t ) );
 end
 
 
@@ -357,14 +354,14 @@ rule "processDerivedField_linearize_missing"
 dialect "mvel"
 when
     $fld : DerivedField( $nc : normContinuous )
-    NormContinuous( this == $nc, $mapMissing : mapMissingTo != null )
+           NormContinuous( this == $nc, $mapMissing : mapMissingTo != null )
 then
-    HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("origField",utils.compactUpperCase($nc.field));
-        map.put("target",$mapMissing);
-    applyTemplate("mapMissingValues.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "origField", utils.compactUpperCase( $nc.field ) );
+        map.put( "target", $mapMissing );
+    applyTemplate( "mapMissingValues.drlt", utils, registry, map, theory );
 end
 
 
@@ -380,16 +377,16 @@ then
     int j = 1;
     while (j < num) {
         java.util.HashMap map = new java.util.HashMap();
-            map.put("context",utils.context);
-            map.put("name",utils.compactUpperCase($fld.name));
-            map.put("origField",utils.compactUpperCase($nc.field));
-            map.put("xmin",((LinearNorm) $tracts.get(j-1)).orig);
-            map.put("ymin",((LinearNorm) $tracts.get(j-1)).norm);
-            map.put("xmax",((LinearNorm) $tracts.get(j)).orig);
-            map.put("ymax",((LinearNorm) $tracts.get(j)).norm);
-            map.put("index",j);
-            map.put("type",utils.mapDatatype($type));
-        applyTemplate("linearTractNormalization.drlt", utils, registry, map, theory);
+            map.put( "context",utils.context );
+            map.put( "name", utils.compactUpperCase( $fld.name ) );
+            map.put( "origField", utils.compactUpperCase($nc.field));
+            map.put( "xmin", ( (LinearNorm) $tracts.get( j-1 ) ).orig);
+            map.put( "ymin", ( (LinearNorm) $tracts.get( j-1 ) ).norm );
+            map.put( "xmax", ( (LinearNorm) $tracts.get( j ) ).orig );
+            map.put( "ymax", ( (LinearNorm) $tracts.get( j ) ).norm );
+            map.put( "index",j );
+            map.put( "type", utils.mapDatatype( $type ) );
+        applyTemplate( "linearTractNormalization.drlt", utils, registry, map, theory );
         j++;
     }
 end
@@ -405,13 +402,13 @@ when
     $XMAX : Double() from accumulate ( LinearNorm( $x : orig ) from $tracts, max( $x ) )
 then
     HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("origField",utils.compactUpperCase($nc.field));
-        map.put("xmin",$XMIN);
-        map.put("xmax",$XMAX);
-        map.put("type",utils.mapDatatype($type));
-    applyTemplate("normContOutliersAsMissing.drlt", utils, registry, map, theory);
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "origField", utils.compactUpperCase( $nc.field ) );
+        map.put( "xmin", $XMIN );
+        map.put( "xmax", $XMAX );
+        map.put( "type", utils.mapDatatype( $type ) );
+    applyTemplate( "normContOutliersAsMissing.drlt", utils, registry, map, theory );
 end
 
 
@@ -428,7 +425,6 @@ when
     $YMAX : Double() from accumulate ( LinearNorm( $y : norm ) from $tracts, max( $y ) )
 
 then
-    System.err.println("XXXXXXXXXXXXXXXXXXXXXXXXXX");
     HashMap map = new HashMap( 7 );
         map.put( "context", utils.context );
         map.put( "name", utils.compactUpperCase( $fld.name ) );
@@ -649,7 +645,7 @@ rule "processDerivedField_Discretize_bin"
 dialect "mvel"
 when
     $fld : DerivedField( $dx : discretize )
-    Discretize( this == $dx, $f : field , $d : defaultValue != null, $bins : discretizeBins, $dataType : dataType )
+           Discretize( this == $dx, $f : field , $d : defaultValue != null, $bins : discretizeBins, $dataType : dataType )
     $bin : DiscretizeBin( $interval : interval, $x : binValue ) from $bins
 then
     HashMap map = new HashMap(7);
@@ -689,7 +685,7 @@ rule "processDerivedField_MapValues_support_init"
 dialect "mvel"
 when
     $fld : DerivedField( $map : mapValues )
-    MapValues( this == $map )
+           MapValues( this == $map )
 then
     MapSupportBean msb = new MapSupportBean();
         msb.setRef($map);
@@ -702,7 +698,7 @@ rule "processDerivedField_MapValues_support"
 dialect "mvel"
 when
     $fld : DerivedField( $map : mapValues )
-    MapValues( this == $map, $fcpairs : fieldColumnPairs )
+           MapValues( this == $map, $fcpairs : fieldColumnPairs )
     $sup : MapSupportBean( ref == $map )
     $fcp : FieldColumnPair() from $fcpairs
 then
@@ -714,7 +710,7 @@ rule "processDerivedField_MapValues_support2"
 dialect "mvel"
 when
     $fld : DerivedField( $map : mapValues )
-    MapValues( this == $map, $fcpairs : fieldColumnPairs )
+           MapValues( this == $map, $fcpairs : fieldColumnPairs )
     $sup : MapSupportBean( ref == $map )
     $fcp : FieldColumnPair() from $fcpairs
     DataField( name == $fcp.field, $type : dataType )
@@ -727,7 +723,7 @@ rule "processDerivedField_extract"
 salience -1
 when
     $fld : DerivedField( $map : mapValues )
-    MapValues( this == $map, $rows : inlineTable.rows, $outColumn : outputColumn )
+           MapValues( this == $map, $rows : inlineTable.rows, $outColumn : outputColumn )
     $row : Row( $cells : content ) from $rows
 then
     insertLogical( $row );
@@ -750,7 +746,7 @@ when
                              tagName memberOf $keys, tagName memberOf $tkeys ) from $cells,
         init( java.util.HashMap restr = new java.util.HashMap(); ),
         action(
-            restr.put($colMap.get($tag),format($typeMap.get($tag),$text));
+            restr.put( $colMap.get( $tag ), format( $typeMap.get($tag), $text ) );
         ),
         result( restr )
     )
@@ -772,7 +768,7 @@ dialect "mvel"
 salience -10
 when
     $fld : DerivedField( $map : mapValues )
-    MapValues( this == $map )
+           MapValues( this == $map )
 then
     retract($map);
 end
@@ -788,16 +784,16 @@ rule "processDerivedField_Collect"
 dialect "mvel"
 when
     $fld : DerivedField( $ag : aggregate )
-    Aggregate( this == $ag, $func : this.function == "multiset",
-                $groupBy : groupField, $afield : field, $constr : sqlWhere )
+           Aggregate( this == $ag, $func : this.function == "multiset",
+                      $groupBy : groupField, $afield : field, $constr : sqlWhere )
 then
-    HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("groupBy",$groupBy);
-        map.put("afield",$afield);
-        map.put("constr",$constr);
-    applyTemplate("collect.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "groupBy", $groupBy );
+        map.put( "afield", $afield );
+        map.put( "constr", $constr );
+    applyTemplate( "collect.drlt", utils, registry, map, theory );
 end
 
 
@@ -805,18 +801,18 @@ rule "processDerivedField_Aggregation"
 dialect "mvel"
 when
     $fld : DerivedField( $ag : aggregate )
-    Aggregate( this == $ag, $func : this.function != "multiset",
-                $groupBy : groupField, $afield : field, $constr : sqlWhere )
+           Aggregate( this == $ag, $func : this.function != "multiset",
+                      $groupBy : groupField, $afield : field, $constr : sqlWhere )
 then
-    HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("groupBy",$groupBy);
-        map.put("afield",$afield);
-        map.put("dataType",utils.mapDatatype($fld.dataType));
-        map.put("constr",$constr);
-        map.put("aggrFunc",$func);
-    applyTemplate("aggregate.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "groupBy", $groupBy);
+        map.put( "afield", $afield);
+        map.put( "dataType", utils.mapDatatype( $fld.dataType ) );
+        map.put( "constr", $constr );
+        map.put( "aggrFunc", $func );
+    applyTemplate( "aggregate.drlt", utils, registry, map, theory );
 end
 
 
@@ -825,7 +821,7 @@ dialect "mvel"
 salience -10
 when
     $fld : DerivedField( $agg : aggregate )
-    Aggregate( this == $agg )
+           Aggregate( this == $agg )
 then
     retract($agg);
 end
@@ -839,7 +835,7 @@ end
 
 
 declare FunctionResult
-    expr : String
+    expr   : String
     father : Apply
 end
 
@@ -852,26 +848,25 @@ salience -5
 when
     $fld : DerivedField( $app : apply )
     $a : Apply( this == $app, $fun : this.function, $arity : constantsAndFieldRevesAndNormContinuouses.size() )
-    $args : List( size == $arity ) from accumulate (
+    accumulate (
         $res : FunctionResult( father == $a, $x : expr ),
-        init( List list = new LinkedList(); ),
-        action( list.add($x); ),
-        result ( list )
+        $args : collectList( $x );
+        $args.size == $arity
     )
 then
     String funExpr = utils.mapFunction($fun, $args);
     //System.err.println(">>>>>>>>>>>>>>>>>>>>>>>>>  Built bit " + funExpr);
 
     Map exprFieldList = new java.util.LinkedHashMap();
-    HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("dataType",utils.mapDatatype($fld.dataType));
-        map.put("funExpr",funExpr);
-        map.put("exprFieldList",fld2var);
-    applyTemplate("apply.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "dataType", utils.mapDatatype( $fld.dataType ) );
+        map.put( "funExpr", funExpr );
+        map.put( "exprFieldList", fld2var );
+    applyTemplate( "apply.drlt", utils, registry, map, theory );
 
-    retract($a);
+    retract( $a );
     fld2var.clear();
 end
 
@@ -888,7 +883,7 @@ when
     $c : Constant( this memberOf $expr, $x : value)
 then
     //System.out.println("Visit const : " + $x + " child of " + $f);
-    insertLogical( new FunctionResult($x, $a) );
+    insertLogical( new FunctionResult( $x, $a ) );
 end
 
 rule "NestedRef"
@@ -900,9 +895,9 @@ when
 then
     //System.out.println("Visit field : " + $x + " child of " + $f + " || " + fld2var);
     if (! fld2var.containsKey($x)) {
-        fld2var.put($x,"$var"+fld2var.size());
+        fld2var.put( $x, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult((String) fld2var.get($x), $a) );
+    insertLogical( new FunctionResult( (String) fld2var.get( $x ), $a ) );
 end
 
 
@@ -910,19 +905,18 @@ rule "Scoop"
 dialect "mvel"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
+    $a  : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $a2 : Apply( this memberOf $expr, $f2 : this.function, $arity : constantsAndFieldRevesAndNormContinuouses.size() )
-    $args : List( size == $arity ) from accumulate (
+    accumulate (
         $res : FunctionResult( father == $a2, $x : expr ),
-        init( List list = new LinkedList(); ),
-        action( list.add($x); ),
-        result ( list )
+        $args : collectList( $x );
+        $args.size == $arity
     )
 then
     //System.err.println("Building bit for " + $f2 + " child of " + $f + " with args " + $args.size);
-    String bit = utils.mapFunction($f2, $args);
+    String bit = utils.mapFunction( $f2, $args );
     //System.err.println("Built bit " + bit + ", result for " + $f);
-    insertLogical( new FunctionResult( bit , $a) );
+    insertLogical( new FunctionResult( bit , $a ) );
     //System.err.println("Kill " + $f2 + "and its children results");
 end
 
@@ -933,21 +927,21 @@ rule "NestedAggregate_onBasicField"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
-    $agg : Aggregate( this memberOf $expr, $aggField : field )
+    $a     : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
+    $agg   : Aggregate( this memberOf $expr, $aggField : field )
     $super : DataField( name == $aggField, $optype : optype, $dataType : dataType)
 then
     String name = "Inner"+utils.nextCount();
     DerivedField mockField = new DerivedField();
-        mockField.setName(name);
-        mockField.setOptype($optype);
-        mockField.setDataType($dataType);
-        mockField.setAggregate($agg);
-    insertLogical(mockField);
-    if (! fld2var.containsKey(name)) {
-        fld2var.put( name,"$var"+fld2var.size() );
+        mockField.setName( name );
+        mockField.setOptype( $optype );
+        mockField.setDataType( $dataType );
+        mockField.setAggregate( $agg );
+    insertLogical( mockField );
+    if ( ! fld2var.containsKey( name ) ) {
+        fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult((String) fld2var.get(name), $a) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
 end
 
 
@@ -955,19 +949,19 @@ rule "NestedAggregate_onDerivedField"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
-    $agg : Aggregate( this memberOf $expr, $aggField : field )
-    $super : DerivedField( name == $aggField, $optype : optype, $dataType : dataType)
+    $a     : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
+    $agg   : Aggregate( this memberOf $expr, $aggField : field )
+    $super : DerivedField( name == $aggField, $optype : optype, $dataType : dataType )
 then
-    String name = "Inner"+utils.nextCount();
+    String name = "Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
-        mockField.setName(name);
-        mockField.setOptype($optype);
-        mockField.setDataType($dataType);
-        mockField.setAggregate($agg);
-    insertLogical(mockField);
-    if (! fld2var.containsKey(name)) {
-        fld2var.put(name,"$var"+fld2var.size());
+        mockField.setName( name );
+        mockField.setOptype( $optype );
+        mockField.setDataType( $dataType );
+        mockField.setAggregate( $agg );
+    insertLogical( mockField );
+    if ( ! fld2var.containsKey( name ) ) {
+        fld2var.put( name, "$var" + fld2var.size() );
     }
     insertLogical( new FunctionResult((String) fld2var.get(name), $a) );
 end
@@ -977,20 +971,20 @@ rule "NestedMapValues"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
+    $a   : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $map : MapValues( this memberOf $expr, $dataType : dataType  )
 then
-    String name = "Inner"+utils.nextCount();
+    String name = "Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
-        mockField.setName(name);
-        mockField.setDataType($dataType);
-        mockField.setMapValues($map);
-        mockField.setOptype(OPTYPE.CONTINUOUS);
-    insertLogical(mockField);
-    if (! fld2var.containsKey(name)) {
-        fld2var.put(name,"$var"+fld2var.size());
+        mockField.setName( name );
+        mockField.setDataType( $dataType );
+        mockField.setMapValues( $map );
+        mockField.setOptype( OPTYPE.CONTINUOUS );
+    insertLogical( mockField );
+    if ( ! fld2var.containsKey( name ) ) {
+        fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult((String) fld2var.get(name), $a) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
 end
 
 
@@ -998,20 +992,20 @@ rule "NestedDiscretize"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
+    $a   : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $dix : Discretize( this memberOf $expr, $dataType : dataType  )
 then
-    String name = "Inner"+utils.nextCount();
+    String name = "Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
-        mockField.setName(name);
-        mockField.setDataType($dataType);
-        mockField.setDiscretize($dix);
-        mockField.setOptype(OPTYPE.CATEGORICAL);
-    insertLogical(mockField);
-    if (! fld2var.containsKey(name)) {
-        fld2var.put(name,"$var"+fld2var.size());
+        mockField.setName( name );
+        mockField.setDataType( $dataType );
+        mockField.setDiscretize( $dix );
+        mockField.setOptype( OPTYPE.CATEGORICAL );
+    insertLogical( mockField );
+    if ( ! fld2var.containsKey( name ) ) {
+        fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult((String) fld2var.get(name), $a) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
 end
 
 
@@ -1019,20 +1013,20 @@ rule "NestedNormContinuous"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
+    $a   : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $nct : NormContinuous( this memberOf $expr  )
 then
-    String name = "Inner"+utils.nextCount();
+    String name = "Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
-        mockField.setName(name);
-        mockField.setDataType(DATATYPE.DOUBLE);
-        mockField.setNormContinuous($nct);
-        mockField.setOptype(OPTYPE.CONTINUOUS);
-    insertLogical(mockField);
-    if (! fld2var.containsKey(name)) {
-        fld2var.put(name,"$var"+fld2var.size());
+        mockField.setName( name );
+        mockField.setDataType( DATATYPE.DOUBLE );
+        mockField.setNormContinuous( $nct );
+        mockField.setOptype( OPTYPE.CONTINUOUS );
+    insertLogical( mockField );
+    if ( ! fld2var.containsKey( name ) ) {
+        fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult((String) fld2var.get(name), $a) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
 end
 
 
@@ -1041,20 +1035,20 @@ rule "NestedNormDiscrete"
 dialect "java"
 salience -5
 when
-    $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
+    $a   : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $ndx : NormDiscrete( this memberOf $expr  )
 then
-    String name = "Inner"+utils.nextCount();
+    String name = "Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
-        mockField.setName(name);
-        mockField.setDataType(DATATYPE.DOUBLE);
-        mockField.setNormDiscrete($ndx);
-        mockField.setOptype(OPTYPE.CATEGORICAL);
-    insertLogical(mockField);
-    if (! fld2var.containsKey(name)) {
-        fld2var.put(name,"$var"+fld2var.size());
+        mockField.setName( name );
+        mockField.setDataType( DATATYPE.DOUBLE );
+        mockField.setNormDiscrete( $ndx );
+        mockField.setOptype( OPTYPE.CATEGORICAL );
+    insertLogical( mockField );
+    if ( ! fld2var.containsKey( name ) ) {
+        fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult((String) fld2var.get(name), $a) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
 end
 
 
@@ -1069,134 +1063,122 @@ end
 
 
 
- declare MatchContext
-     father : Apply @key
-     root : Apply @key
-     body : Object
-     params : Map
- end
+declare MatchContext
+    father : Apply @key
+    root   : Apply @key
+    body   : Object
+    params : Map
+end
 
 
- rule "visitApply_user_root"
- salience 15
- no-loop
- when
-     $a : Apply( $args : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
-     DefineFunction( name == $fun, apply != $a )
-     $df : DerivedField( apply == $a )
- then
-     Apply idApply = new Apply();
-         idApply.setFunction("identity");
-         idApply.getConstantsAndFieldRevesAndNormContinuouses().add($a);
-     $df.setNormContinuous(null);
-     $df.setApply(idApply);
-     retract($a);
-     update($df);
- end
+rule "visitApply_user_root"
+salience 15
+no-loop
+when
+    $a :  Apply( $args : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
+          DefineFunction( name == $fun, apply != $a )
+    $df : DerivedField( apply == $a )
+then
+    retract( $a );
+    Apply idApply = new Apply();
+       idApply.setFunction( "identity" );
+        idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $a );
+    modify ( $df ) {
+       setNormContinuous( null ),
+       setApply( idApply );
+    }
+end
 
 
 
- rule "visitApply_user_nested"
- salience -1
- no-loop
- when
-     $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
-     DefineFunction( name == $fun, $body : apply != $a, $paramFields : parameterFields )
-     $father : Apply( $superArgs : constantsAndFieldRevesAndNormContinuouses contains $a )
-     $params : java.util.LinkedHashMap() from accumulate (
-         ParameterField( $name : name, $type : dataType ) from $paramFields,
-         init( java.util.LinkedHashMap map = new java.util.LinkedHashMap(); int j = 0; ),
-         action( map.put($name,new Integer(j++)); ),
-         result( map )
-     )
- then
-     //System.out.println("\n\nINTERCEPTED USER-DEFINED APPLY " + $fun + " with params " + $params + " and args " + $expr.size() );
+rule "visitApply_user_nested"
+salience -1
+no-loop
+when
+    $a      : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
+              DefineFunction( name == $fun, $body : apply != $a, $paramFields : parameterFields )
+    $father : Apply( $superArgs : constantsAndFieldRevesAndNormContinuouses contains $a )
+    $params : java.util.LinkedHashMap() from accumulate (
+        ParameterField( $name : name, $type : dataType ) from $paramFields,
+        init( java.util.LinkedHashMap map = new java.util.LinkedHashMap(); int j = 0; ),
+        action( map.put($name,new Integer(j++)); ),
+        result( map )
+    )
+then
+    //System.out.println("\n\nINTERCEPTED USER-DEFINED APPLY " + $fun + " with params " + $params + " and args " + $expr.size() );
 
-
-     // copy the function body to instantiate it
-     Apply bodyInstance = (Apply) utils.copy($body);
-
-     MatchContext mc = new MatchContext();
-         mc.setFather($father);
-         mc.setRoot($a);
-         mc.setBody(bodyInstance.getConstantsAndFieldRevesAndNormContinuouses().get(0)); //body here is always identity
-         mc.setParams($params);
-     //System.out.println("\t About to insert context for");
-     //System.out.println("\t\t father : " + $father);
-     //System.out.println("\t\t root : " + $a);
-     //System.out.println("\t\t body : " + mc.getBody());
-     //System.out.println("\t\t ctx : " + $params + "\n\n");
-
+    // copy the function body to instantiate it
+    Apply bodyInstance = (Apply) utils.copy( $body );
+     MatchContext mc = new MatchContext(
+        $father,
+        $a,
+        bodyInstance.getConstantsAndFieldRevesAndNormContinuouses().get( 0 ),
+        $params );
+    //System.out.println("\t About to insert context for");
+    //System.out.println("\t\t father : " + $father);
+    //System.out.println("\t\t root : " + $a);
+    //System.out.println("\t\t body : " + mc.getBody());
+    //System.out.println("\t\t ctx : " + $params + "\n\n");
      insert( mc );
-
-
- end
+end
 
 
 
- rule "pre_visit_mc"
- no-loop
- salience 1000
- when
-     MatchContext( $body : body )
- then
-     insertLogical( $body );
- end
+rule "pre_visit_mc"
+no-loop
+salience 1000
+when
+    MatchContext( $body : body )
+then
+    insertLogical( $body );
+end
 
 
- rule "visit_mc"
- no-loop
- salience -1
- when
-     MatchContext( $body : body, $params : params, $root : root )
-     Apply( this == $root, $args : constantsAndFieldRevesAndNormContinuouses )
-     $a : Apply( $bodyArgs : constantsAndFieldRevesAndNormContinuouses )
-     $ref : FieldRef( this memberOf $bodyArgs, $fname : field )
-     java.util.LinkedHashMap( keySet contains $fname ) from $params
- then
-     //System.out.println("MC with body and args, found ref  " + $ref);
-
-     int index = $bodyArgs.indexOf($ref);
-     $bodyArgs.remove(index);
-     Object arg = $args.get((Integer) $params.get($fname));
-     $bodyArgs.add(index, utils.copy(arg));
-
+rule "visit_mc"
+no-loop
+salience -1
+when
+           MatchContext( $body : body, $params : params, $root : root )
+           Apply( this == $root, $args : constantsAndFieldRevesAndNormContinuouses )
+    $a   : Apply( $bodyArgs : constantsAndFieldRevesAndNormContinuouses )
+    $ref : FieldRef( this memberOf $bodyArgs, $fname : field )
+    java.util.LinkedHashMap( keySet contains $fname ) from $params
+then
+    //System.out.println("MC with body and args, found ref  " + $ref);
+    int index = $bodyArgs.indexOf( $ref );
+    $bodyArgs.remove( index );
+    Object arg = $args.get( (Integer) $params.get( $fname ) );
+    $bodyArgs.add( index, utils.copy( arg ) );
      //System.out.println("REPLACE fieldRef in function " + $fname + " with " + arg + " in context " + $params);
- end
+end
 
 
 
 
+rule "rebuildApply"
+salience -1
+no-loop
+when
+    $mc : MatchContext( $father: father, $a : root, $newbody : body )
+          Apply(  this == $a, $expr : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
+          DefineFunction( name == $fun )
+          Apply( this == $father, $superArgs : constantsAndFieldRevesAndNormContinuouses )
+then
+    //System.out.println("\t After some processing: matchContext ");
+    //System.out.println("\t\t father : " + $mc.getFather());
+    //System.out.println("\t\t root : " + $mc.getRoot());
+    //System.out.println("\t\t body : " + $mc.getBody());
+    //System.out.println("\t\t ctx : " + $mc.getParams() + "\n\n");
+    retract( $newbody );
 
-
-
-
-
- rule "rebuildApply"
- salience -1
- no-loop
- when
-     $mc : MatchContext( $father: father, $a : root, $newbody : body )
-     Apply(  this == $a, $expr : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
-     DefineFunction( name == $fun )
-     Apply( this == $father, $superArgs : constantsAndFieldRevesAndNormContinuouses )
- then
-      //System.out.println("\t After some processing: matchContext ");
-     //System.out.println("\t\t father : " + $mc.getFather());
-     //System.out.println("\t\t root : " + $mc.getRoot());
-     //System.out.println("\t\t body : " + $mc.getBody());
-     //System.out.println("\t\t ctx : " + $mc.getParams() + "\n\n");
-     retract($newbody);
-
-     //System.out.println("REBUILD APPLY " + $fun + " with " + $newbody);
-     int index = $superArgs.indexOf($a);
-     $superArgs.remove(index);
-     $superArgs.add(index,$newbody);
-
+    //System.out.println("REBUILD APPLY " + $fun + " with " + $newbody);
+    int index = $superArgs.indexOf( $a );
+    $superArgs.remove( index );
+    $superArgs.add( index, $newbody );
      //System.out.println("FATHER IS NOW  " + $father);
-     retract($mc);
-     update($father);
- end
+    retract( $mc );
+    modify( $father ) {}
+end
 
 
 
@@ -1218,7 +1200,7 @@ rule "InitStats"
 when
 
 then
-    insert(new ModelStat());
+    insert( new ModelStat() );
 end
 
 
@@ -1247,10 +1229,10 @@ when
     $fld : MiningField( this memberOf $inputs, usageType == FIELDUSAGETYPE.ACTIVE )
 then
     //System.err.println("Found Mined Field " + $fld.name );
-    HashMap map = new HashMap(7);
-        map.put("name",utils.compactUpperCase($fld.name));
-        map.put("model",utils.context);
-    applyTemplate("miningField.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.compactUpperCase( $fld.name ) );
+        map.put( "model", utils.context );
+    applyTemplate( "miningField.drlt", utils, registry, map, theory );
 end
 
 rule "Create IO Trait"
@@ -1268,10 +1250,10 @@ when
         result( map )
     )
 then
-    HashMap map = new HashMap(7);
-        map.put("context",utils.context);
-        map.put("fields", $fields );
-    applyTemplate("ioTrait.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "fields", $fields );
+    applyTemplate( "ioTrait.drlt", utils, registry, map, theory );
 end
 
 
@@ -1295,7 +1277,7 @@ when
 then
     HashMap map = new HashMap( 7 );
         map.put( "name", utils.compactUpperCase( $name ) );
-        map.put( "model", utils.context);
+        map.put( "model", utils.context );
         map.put( "replacement", utils.format( utils.mapDatatype( $type ), $val ) );
     applyTemplate( "miningFieldInvalid.drlt", utils, registry, map, theory );
 end
@@ -1332,12 +1314,12 @@ when
                         $low : lowValue, $upp : highValue )
     TypeOfField( name == $name, $type : dataType )
 then
-    HashMap map = new HashMap(7);
-        map.put("name",utils.compactUpperCase($name));
-        map.put("model",utils.context);
-        map.put("upp",utils.format(utils.mapDatatype($type),$upp));
-        map.put("low",utils.format(utils.mapDatatype($type),$low));
-    applyTemplate("miningFieldOutlierAsMissing.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "model", utils.context );
+        map.put( "upp", utils.format( utils.mapDatatype( $type ), $upp ) );
+        map.put( "low", utils.format( utils.mapDatatype( $type ), $low ) );
+    applyTemplate( "miningFieldOutlierAsMissing.drlt", utils, registry, map, theory );
 end
 
 
@@ -1351,11 +1333,11 @@ when
                         $low : lowValue != null )
     TypeOfField( name == $name, $type : dataType )
 then
-    HashMap map = new HashMap(7);
-        map.put("name",utils.compactUpperCase($name));
-        map.put("model",utils.context);
-        map.put("low",utils.format(utils.mapDatatype($type),$low));
-    applyTemplate("miningFieldOutlierAsExtremeLow.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "model", utils.context );
+        map.put( "low", utils.format( utils.mapDatatype( $type ), $low ) );
+    applyTemplate( "miningFieldOutlierAsExtremeLow.drlt", utils, registry, map, theory );
 end
 
 
@@ -1402,15 +1384,15 @@ end
                  $cast : castInteger, $max : max, $min : min, $offset : rescaleConstant, $scale : rescaleFactor  )
     MiningField( name == $field, usageType == FIELDUSAGETYPE.PREDICTED )
  then
-     HashMap map = new HashMap(7);
-         map.put("model",utils.context);
-         map.put("field",utils.compactUpperCase($field));
-         map.put("cast",$cast);
-         map.put("min",$min);
-         map.put("max",$max);
-         map.put("offset",$offset);
-         map.put("scale",$scale);
-     applyTemplate("targetReshape.drlt", utils, registry, map, theory);
+     HashMap map = new HashMap( 7 );
+         map.put( "model", utils.context );
+         map.put( "field", utils.compactUpperCase( $field ) );
+         map.put( "cast", $cast );
+         map.put( "min", $min );
+         map.put( "max", $max );
+         map.put( "offset", $offset );
+         map.put( "scale", $scale );
+     applyTemplate( "targetReshape.drlt", utils, registry, map, theory );
  end
 
 
@@ -1424,19 +1406,19 @@ end
 
 rule "Output_Type"
 when
-     $of : OutputField( $name : name, $dataType : dataType != null)
+     $of : OutputField( $name : name, $dataType : dataType != null )
 then
-     insertLogical(new TypeOfField($name,$dataType));
+     insertLogical( new TypeOfField( $name, $dataType ) );
 end
 
 
   rule "Output_Type2"
   no-loop
   when
-      $of : OutputField( $name : name, dataType == null, $tgt : targetField)
+      $of : OutputField( $name : name, dataType == null, $tgt : targetField )
       TypeOfField( name == $tgt, $dataType : dataType )
   then
-      insertLogical(new TypeOfField($name,$dataType));
+      insertLogical( new TypeOfField( $name, $dataType ) );
   end
 
 
@@ -1446,28 +1428,28 @@ end
  dialect "mvel"
  salience 1
  when
-     $of : OutputField( $name : name, $tgt : targetField )
-     $tf : TypeOfField( name == $name )
+     $of  : OutputField( $name : name, $tgt : targetField )
+     $tf  : TypeOfField( name == $name )
      $mod : OutputParentModel( field == $of, $mt : modelType )
-     eval(! utils.isModelBeanDefined(utils.compactUpperCase($name)) )
+     eval(! utils.isModelBeanDefined( utils.compactUpperCase( $name ) ) )
  then
-    utils.addModelBeanDefinition($name);
-     HashMap map = new HashMap(7);
-         map.put("context",utils.context);
-         map.put("fullName",$of.displayName);
-         map.put("name",utils.compactUpperCase($of.name));
-         map.put("super","OutputField");
-         map.put("modelType",$mt)
-         map.put("type",utils.mapDatatype($tf.dataType));
-     applyTemplate("ioTypeDeclare.drlt", utils, registry, map, theory);
-     applyTemplate("updateIOField.drlt", utils, registry, map, theory);
+    utils.addModelBeanDefinition( $name );
+     HashMap map = new HashMap( 7 );
+         map.put( "context", utils.context );
+         map.put( "fullName", $of.displayName );
+         map.put( "name", utils.compactUpperCase( $of.name ) );
+         map.put( "super", "OutputField" );
+         map.put( "modelType", $mt )
+         map.put( "type", utils.mapDatatype( $tf.dataType ) );
+     applyTemplate( "ioTypeDeclare.drlt", utils, registry, map, theory );
+     applyTemplate( "updateIOField.drlt", utils, registry, map, theory );
  end
 
  rule "Output_Expose"
  when
      $of : OutputField( $name : name )
  then
-      insert( new QueryMarker(utils.compactUpperCase($name),utils.context) );
+      insert( new QueryMarker( utils.compactUpperCase( $name ), utils.context ) );
  end
 
 
@@ -1479,13 +1461,13 @@ end
      $of : OutputField( $tgt : targetField, $val : value, $name : name, feature == null || feature == RESULTFEATURE.PREDICTED_VALUE )
      $tf : TypeOfField( name == $name, $type : dataType )
  then
-     HashMap map = new HashMap(7);
-         map.put("context",utils.context);
-         map.put("origField",utils.compactUpperCase($tgt));
-         map.put("name",utils.compactUpperCase($name));
-         map.put("value",$val);
-         map.put("type",$type);
-     applyTemplate("aliasedOutput.drlt", utils, registry, map, theory);
+     HashMap map = new HashMap( 7 );
+         map.put( "context", utils.context );
+         map.put( "origField", utils.compactUpperCase( $tgt ) );
+         map.put( "name", utils.compactUpperCase( $name ) );
+         map.put( "value", $val );
+         map.put( "type", $type );
+     applyTemplate( "aliasedOutput.drlt", utils, registry, map, theory );
  end
 
 
@@ -1528,21 +1510,23 @@ rule "setupNNs"
 when
    NeuralNetwork( $name : modelName )
    $stat : ModelStat( neuralNetwork == false )
-   eval( ! utils.isModelBeanDefined("Stym") )
+   eval( ! utils.isModelBeanDefined( "Stym" ) )
 then
-   HashMap map = new HashMap(7);
-        map.put("name", utils.compactUpperCase( $name ) );
-        map.put("type","NeuralNetwork");
-   applyTemplate("modelMark.drlt", null, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "type","NeuralNetwork" );
+    applyTemplate( "modelMark.drlt", null, registry, map, theory );
 
-   utils.addModelBeanDefinition("Stym");
-   utils.addModelBeanDefinition("Charge");
-   utils.addModelBeanDefinition("Synapse");
-   applyTemplate("neuralBeans.drlt", null, registry, null, theory);
+    utils.addModelBeanDefinition( "Stym" );
+    utils.addModelBeanDefinition( "Charge" );
+    utils.addModelBeanDefinition( "Synapse" );
+    applyTemplate( "neuralBeans.drlt", null, registry, null, theory );
 
-   applyTemplate("neuralLinkSynapses.drlt", null, registry, null, theory);
-   $stat.setNeuralNetwork(true);
-   update($stat);
+    applyTemplate( "neuralLinkSynapses.drlt", null, registry, null, theory );
+
+    modify ( $stat ) {
+        setNeuralNetwork( true );
+    }
 end
 
 
@@ -1552,48 +1536,48 @@ salience -9
 when
     $net : NeuralNetwork( $name : modelName )
 then
-    utils.context = utils.compactUpperCase($name);
+    utils.context = utils.compactUpperCase( $name );
 end
 
 
 rule "Neural_InputFieldGeneration"
 when
-    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName)
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
     NeuralInputs( this memberOf $info, $nis : neuralInputs )
-    $ni : NeuralInput( this memberOf $nis, $fld : derivedField, $id : id)
+    $ni : NeuralInput( this memberOf $nis, $fld : derivedField, $id : id )
 then
-    String name = utils.compactUpperCase($nn)+"_"+$id;
-    $fld.setName(name);
-    insertLogical($fld);
+    String name = utils.compactUpperCase( $nn ) + "_" + $id;
+    $fld.setName( name );
+    insertLogical( $fld );
 
-    HashMap map = new HashMap(7);
-        map.put("name",utils.compactUpperCase(name));
-        map.put("context",utils.context);
-        map.put("index",$id);
-    applyTemplate("neuralWireInput.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.compactUpperCase( name ) );
+        map.put( "context", utils.context );
+        map.put( "index", $id );
+    applyTemplate( "neuralWireInput.drlt", utils, registry, map, theory );
 end
 
 
 rule "Neural_DerivedInputFieldOverride"
 dialect "mvel"
 when
-    NeuralInput( derivedField != null, $fld : derivedField.name != null)
+    NeuralInput( derivedField != null, $fld : derivedField.name != null )
 then
-    HashMap map = new HashMap(7);
-        map.put("name",utils.compactUpperCase($fld));
-        map.put("context",utils.context);
-    applyTemplate("updateIOField.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.compactUpperCase( $fld ) );
+        map.put( "context", utils.context );
+    applyTemplate( "updateIOField.drlt", utils, registry, map, theory );
 end
 
 rule "Neural_RefInputFieldOverride"
 dialect "mvel"
 when
-    NeuralInput( derivedField != null, $fld :derivedField.fieldRef != null)
+    NeuralInput( derivedField != null, $fld :derivedField.fieldRef != null )
 then
-    HashMap map = new HashMap(7);
-        map.put("name",utils.compactUpperCase($fld.field));
-        map.put("context",utils.context);
-    applyTemplate("updateIOField.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.compactUpperCase( $fld.field ) );
+        map.put( "context", utils.context);
+    applyTemplate( "updateIOField.drlt", utils, registry, map, theory );
 end
 
 
@@ -1603,20 +1587,22 @@ rule "SetDefaultActivation"
 salience 100
 when
     NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs, $act : activationFunction )
-    $nl : NeuralLayer( this memberOf $info, activationFunction == null)
+    $nl : NeuralLayer( this memberOf $info, activationFunction == null )
 then
-    $nl.setActivationFunction($act);
-    update($nl);
+    modify ( $nl ) {
+        setActivationFunction( $act );
+    }
 end
 
 rule "SetDefaultThreshold"
 salience 100
 when
     NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs, $thold : threshold )
-    $nl : NeuralLayer( this memberOf $info, threshold == null)
+    $nl : NeuralLayer( this memberOf $info, threshold == null )
 then
-    $nl.setThreshold($thold);
-    update($nl);
+    modify ( $nl ) {
+        setThreshold( $thold );
+    }
 end
 
 
@@ -1625,8 +1611,9 @@ salience 100
 when
     $n : Neuron( bias == null )
 then
-    $n.setBias(0.0);
-    update($n);
+    modify ( $n ) {
+        setBias( 0.0 );
+    }
 end
 
 
@@ -1637,8 +1624,9 @@ when
                     $norm : normalizationMethod != null && normalizationMethod != NNNORMALIZATIONMETHOD.NONE )
     $nl : NeuralLayer( this memberOf $info, normalizationMethod == null)
 then
-    $nl.setNormalizationMethod($norm);
-    update($nl);
+    modify ( $nl ) {
+        setNormalizationMethod( $norm );
+    }
 end
 
 rule "Synapses"
@@ -1646,11 +1634,11 @@ salience -10
 when
     $n : Neuron( $links : cons, $index : id )
 then
-    HashMap map = new HashMap(7);
-        map.put("model",utils.context);
-        map.put("index",$index);
-        map.put("links",$links);
-    applyTemplate("neuralBuildSynapses.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "model", utils.context );
+        map.put( "index", $index );
+        map.put( "links", $links );
+    applyTemplate( "neuralBuildSynapses.drlt", utils, registry, map, theory );
 end
 
 
@@ -1662,45 +1650,45 @@ when
 then
     //System.err.println("CREATE NEURON RULE FOR " + $index + " >> " + $act + "  " + $bias + "  " + $thold);
 
-     HashMap map = new HashMap(7);
-        map.put("model",utils.context);
-        map.put("index",$index);
-        map.put("actFun",$act);
-        map.put("needsNormal",$norm != null );
-        map.put("bias",$bias);
-        map.put("thold",$thold);
-        map.put("inLink",$in.size());
-    applyTemplate("neuralFire.drlt", utils, registry, map, theory);
+     HashMap map = new HashMap( 7 );
+        map.put( "model", utils.context );
+        map.put( "index", $index );
+        map.put( "actFun", $act );
+        map.put( "needsNormal", $norm != null );
+        map.put( "bias", $bias );
+        map.put( "thold", $thold );
+        map.put( "inLink", $in.size() );
+    applyTemplate( "neuralFire.drlt", utils, registry, map, theory );
 end
 
 
 rule "Neural_Layer_Max_Normalization"
 salience -9
 when
-    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName)
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
     $nl : NeuralLayer( this memberOf $info, $ns : neurons,
                  normalizationMethod != null && normalizationMethod == NNNORMALIZATIONMETHOD.SIMPLEMAX )
 then
-    HashMap map = new HashMap(7);
-        map.put("model",utils.context);
-        map.put("neurons",$ns);
-        map.put("j",utils.nextCount());
-    applyTemplate("neuralLayerMaxNormalization.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "model", utils.context );
+        map.put( "neurons", $ns );
+        map.put( "j", utils.nextCount() );
+    applyTemplate( "neuralLayerMaxNormalization.drlt", utils, registry, map, theory );
 end
 
 
 rule "Neural_Layer_Max_SoftNormalization"
 salience -9
 when
-    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName)
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
     $nl : NeuralLayer( this memberOf $info, $ns : neurons,
                  normalizationMethod != null && normalizationMethod == NNNORMALIZATIONMETHOD.SOFTMAX )
 then
-    HashMap map = new HashMap(7);
-        map.put("model",utils.context);
-        map.put("neurons",$ns);
-        map.put("j",utils.nextCount());
-    applyTemplate("neuralLayerSoftMaxNormalization.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "model", utils.context );
+        map.put( "neurons", $ns );
+        map.put( "j", utils.nextCount() );
+    applyTemplate( "neuralLayerSoftMaxNormalization.drlt", utils, registry, map, theory );
 end
 
 
@@ -1708,31 +1696,31 @@ end
 rule "Neural_Output_Field_Def"
 salience -9
 when
-    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName)
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
     NeuralOutputs( this memberOf $info, $outs : neuralOutputs )
     $out : NeuralOutput( $id : outputNeuron, $fld : derivedField )
 then
     String name = utils.compactUpperCase($nn)+"_"+$id;
 
-    HashMap map = new HashMap(7);
-        map.put("model",utils.context);
-        map.put("name",name);
-        map.put("index",$id);
-    applyTemplate("neuralOutputField.drlt", utils, registry, map, theory);
+    HashMap map = new HashMap( 7 );
+        map.put( "model", utils.context );
+        map.put( "name", name );
+        map.put( "index", $id );
+    applyTemplate( "neuralOutputField.drlt", utils, registry, map, theory );
 
     map = new HashMap();
-        map.put("context",utils.context);
-        map.put("fullName",name);
-        map.put("name",name);
-        map.put("super",null);
-        map.put("type",utils.mapDatatype(DATATYPE.DOUBLE));
-        map.put("cyclic",false);
-        map.put("categorical",false);
-        map.put("continuous",true);
-        map.put("ordinal",false);
-        map.put("modelType",null);
-    applyTemplate("ioTypeDeclare.drlt", utils, registry, map, theory);
-    applyTemplate("updateIOField.drlt", utils, registry, map, theory);
+        map.put( "context", utils.context );
+        map.put( "fullName", name );
+        map.put( "name", name );
+        map.put( "super", null );
+        map.put( "type", utils.mapDatatype( DATATYPE.DOUBLE ) );
+        map.put( "cyclic", false );
+        map.put( "categorical", false );
+        map.put( "continuous", true );
+        map.put( "ordinal", false );
+        map.put( "modelType", null );
+    applyTemplate( "ioTypeDeclare.drlt", utils, registry, map, theory );
+    applyTemplate( "updateIOField.drlt", utils, registry, map, theory );
 end
 
 /*
@@ -1760,33 +1748,33 @@ when
     NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName, functionName == MININGFUNCTION.REGRESSION )
     NeuralOutputs( this memberOf $info, $outs : neuralOutputs )
     $out : NeuralOutput( $id : outputNeuron, $fld : derivedField )
-    $df : DerivedField( $norm : normContinuous != null ) from $fld
+    $df  : DerivedField( $norm : normContinuous != null ) from $fld
     NormContinuous( $mmt : mapMissingTo, $field : field, $outl : outliers, $ls : linearNorms ) from $norm
 then
 
     //insert( new QueryMarker(utils.compactUpperCase($field),utils.context) );
 
     NormContinuous invertedNC = new NormContinuous();
-        invertedNC.setMapMissingTo($mmt);
-        invertedNC.setField(utils.compactUpperCase($nn)+"_"+$id);
-        invertedNC.setOutliers($outl);
-        for (int j = 0; j < $ls.size(); j++) {
-            LinearNorm orig = (LinearNorm) $ls.get(j);
+        invertedNC.setMapMissingTo( $mmt );
+        invertedNC.setField( utils.compactUpperCase( $nn ) + "_" + $id );
+        invertedNC.setOutliers( $outl );
+        for ( int j = 0; j < $ls.size(); j++ ) {
+            LinearNorm orig = (LinearNorm) $ls.get( j );
             LinearNorm inv = new LinearNorm();
-                inv.setNorm(orig.getOrig());
-                inv.setOrig(orig.getNorm());
-            invertedNC.getLinearNorms().add(inv);
+                inv.setNorm( orig.getOrig() );
+                inv.setOrig( orig.getNorm() );
+            invertedNC.getLinearNorms().add( inv );
         }
 
 //    HashMap map = new HashMap(7);
 //        map.put("name",utils.compactUpperCase($field));
 //    applyTemplate("confirm.drlt", utils, registry, map, theory);
 
-    $df.setName($field);
-    $df.setNormContinuous(invertedNC);
+    $df.setName( $field );
+    $df.setNormContinuous( invertedNC );
 
-    insertLogical($df);
-    insertLogical(invertedNC);
+    insertLogical( $df );
+    insertLogical( invertedNC );
 end
 
 
@@ -1798,7 +1786,7 @@ when
     NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName, functionName == MININGFUNCTION.CLASSIFICATION )
     NeuralOutputs( this memberOf $info, $outs : neuralOutputs )
     $out : NeuralOutput( $id : outputNeuron, $fld : derivedField )
-    $df : DerivedField( $norm : normDiscrete != null) from $fld
+    $df  : DerivedField( $norm : normDiscrete != null) from $fld
     NormDiscrete( $field : field, $val : value ) from $norm
     TypeOfField( name == $field, $type : dataType )
 then
@@ -1825,17 +1813,17 @@ when
     NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName)
     NeuralOutputs( this memberOf $info, $outs : neuralOutputs )
     $out : NeuralOutput( $id : outputNeuron, $fld : derivedField )
-    $df : DerivedField( $ref : fieldRef != null ) from $fld
+    $df  : DerivedField( $ref : fieldRef != null ) from $fld
     FieldRef( $field : field ) from $ref
 then
 
     //insert( new QueryMarker(utils.compactUpperCase($field),utils.context) );
 
-    $df.setName($field);
-    $ref.setField(utils.compactUpperCase($nn)+"_"+$id);
+    $df.setName( $field );
+    $ref.setField( utils.compactUpperCase( $nn ) + "_" + $id );
 
-    insertLogical($ref);
-    insertLogical($fld);
+    insertLogical( $ref );
+    insertLogical( $fld );
 end
 
 
@@ -1856,7 +1844,7 @@ rule "TreeRoot"
 when
     $tree : TreeModel()
 then
-    System.err.println("COmpiling tree");
+    System.err.println( "Compiling tree" );
 end
 
 rule "visitTree_context"
@@ -1864,8 +1852,8 @@ salience -9
 when
     $net : TreeModel( $name : modelName )
 then
-    System.out.println("Set context, now is " + $name);
-    utils.context = utils.compactUpperCase($name);
+    System.out.println( "Set context, now is " + $name );
+    utils.context = utils.compactUpperCase( $name );
 end
 
 rule "CompileNode"
@@ -1905,8 +1893,8 @@ salience -9
 when
     $svm : SupportVectorMachineModel( $name : modelName )
 then
-    System.out.println("Set context, now is " + $name);
-    utils.context = utils.compactUpperCase($name);
+    System.out.println( "Set context, now is " + $name );
+    utils.context = utils.compactUpperCase( $name );
 end
 
 rule "SVM_Cleanup"
@@ -1940,13 +1928,13 @@ rule "Clean_WM_Pre"
 salience -18
 dialect "mvel"
 when
-    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName)
-    $ms : MiningSchema( this memberOf $info, $fields : miningFields )
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
+    $ms :  MiningSchema( this memberOf $info, $fields : miningFields )
     $fld : MiningField( usageType != null &&
-                 ( usageType == FIELDUSAGETYPE.PREDICTED || usageType == FIELDUSAGETYPE.SUPPLEMENTARY )
-               ) from $fields
+                        ( usageType == FIELDUSAGETYPE.PREDICTED || usageType == FIELDUSAGETYPE.SUPPLEMENTARY )
+           ) from $fields
 then
-    $fields.remove($fld);
+    $fields.remove( $fld );
 end
 
 
@@ -1954,7 +1942,7 @@ rule "Clean_WM"
 salience -19
 dialect "mvel"
 when
-    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName)
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
     $ms : MiningSchema( this memberOf $info, $fields : miningFields )
 then
     HashMap map = new HashMap( 7 );
@@ -1986,7 +1974,7 @@ rule "checkDataDictionary"
 when
     DataDictionary( $exp : numberOfFields != null, $act : dataFields.size() != $exp )
 then
-   System.err.println("TODO WARNING : Expected number of fields in datadictionary different from actual : " + $exp + " vs " + $act);
+   System.err.println("TODO WARNING : Expected number of fields in DataDictionary different from actual : " + $exp + " vs " + $act );
 end
 
 
@@ -1999,7 +1987,7 @@ when
     $df : DataField()
     not PMML()
 then
-    retract($df);
+    retract( $df );
 end
 
 rule "CleanOnFinish_ModelStat"
@@ -2008,7 +1996,7 @@ when
     $ms : ModelStat()
     not PMML()
 then
-    retract($ms);
+    retract( $ms );
 end
 
 rule "CleanOnFinish_Qry"
@@ -2017,6 +2005,6 @@ when
     $qm : QueryMarker()
     not PMML()
 then
-    retract($qm);
+    retract( $qm );
 end
 
