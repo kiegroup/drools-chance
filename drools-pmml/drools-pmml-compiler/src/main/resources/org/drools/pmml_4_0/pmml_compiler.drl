@@ -30,9 +30,15 @@ global PMML4Wrapper utils;
 
 
  function void applyTemplate(String templateName, Object context, TemplateRegistry registry, Map vars, StringBuilder builder) {
-
     CompiledTemplate template = (CompiledTemplate) registry.getNamedTemplate(templateName);
-    builder.append( TemplateRuntime.execute(template, context, vars) );
+    if ( templateName.contains("svm")) {
+        String t = TemplateRuntime.execute(template, context, vars).toString();
+        System.err.println("TEMPLATE EXECT " + templateName +  " with params " + vars );
+        System.err.println( t );
+        builder.append( t );
+    } else {
+        builder.append( TemplateRuntime.execute(template, context, vars) );
+    }
  }
 
 
@@ -1897,7 +1903,9 @@ rule "SVMRoot"
 when
     $svm : SupportVectorMachineModel()
 then
-
+    applyTemplate( "svmDeclare.drlt", utils, registry, null, theory );
+    applyTemplate( "svmFunctions.drlt", utils, registry, null, theory );
+    applyTemplate( "svmOutputGeneration.drlt", utils, registry, null, theory );
 end
 
 rule "visitSVM_context"
@@ -1905,9 +1913,157 @@ salience -9
 when
     $svm : SupportVectorMachineModel( $name : modelName )
 then
-    System.out.println("Set context, now is " + $name);
-    utils.context = utils.compactUpperCase($name);
+    System.out.println( "Set context, now is " + $name );
+    utils.context = utils.compactUpperCase( $name );
 end
+
+
+rule "visitSVM_SVM_Params"
+salience -16
+when
+    $svmm : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries )
+    $svm  : SupportVectorMachine( this memberOf $info,
+                                  $bias : coefficients.absoluteValue,
+                                  $noc : coefficients.numberOfCoefficients,
+                                  $nos : supportVectors.numberOfSupportVectors,
+                                  $coeffs : coefficients, $svs : supportVectors )
+    $dic : VectorDictionary( this memberOf $info, $vlist : vectorInstances )
+    accumulate( Coefficient( $val : value ),
+                $cx : collectList( $val );
+                $cx.size == $noc )
+    accumulate( SupportVectorReference( $index : index, supportVector memberOf $svs.supportVectors ),
+                $ix : collectList ( $index );
+                $ix.size == $nos )
+then
+     HashMap map = new HashMap(7);
+            map.put( "modelName", utils.context );
+            map.put( "svmId", utils.context + utils.nextCount() );
+            map.put( "absoluteValue", $bias );
+            map.put( "indexes", $ix );
+            map.put( "coeffs", $cx );
+     applyTemplate( "svmBuild.drlt", utils, registry, map, theory );
+end
+
+
+
+declare SupportVectorReference
+    vectorInstance : VectorInstance
+    supportVector  : SupportVector
+    index          : int
+    sparse         : boolean
+end
+
+rule "Join Support Vectors and Instances"
+when
+    $sm : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries )
+    $dx : VectorDictionary( this memberOf $info, $vlist : vectorInstances )
+    $sv : SupportVector( $vid : vectorId )
+    $vi : VectorInstance( id == $vid, this memberOf $vlist )
+then
+    System.out.println( "Insert SVR " );
+    insertLogical( new SupportVectorReference( $vi, $sv, $vlist.indexOf ( $vi ), $vi.getREALSparseArray() != null ) );
+end
+
+rule "SVM_InitSupportVectors"
+salience -16
+when
+    $svmm : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries )
+    $svm  : SupportVectorMachine( this memberOf $info,
+                                  $nos : supportVectors.numberOfSupportVectors,
+                                  $svs : supportVectors,
+                                  $nat : supportVectors.numberOfAttributes )
+    accumulate( $svr : SupportVectorReference( $index : index, supportVector memberOf $svs.supportVectors ),
+                $ix : collectList ( $svr );
+                $ix.size == $nos )
+then
+     HashMap map = new HashMap(7);
+            map.put( "modelName", utils.context );
+            map.put( "size", $nat.intValue() );
+            map.put( "vectors", $ix );
+     applyTemplate( "svmInitSupportVector.drlt", utils, registry, map, theory );
+end
+
+
+
+rule "SVM_InputVector"
+salience -16
+when
+    $svmm : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries  )
+    $vd   : VectorDictionary( this memberOf $info, $flds : vectorFields.fieldReves )
+then
+     HashMap map = new HashMap(3);
+            map.put( "modelName", utils.context );
+            map.put( "inputVectors", $flds );
+     applyTemplate( "svmInitInputVector.drlt", utils, registry, map, theory );
+end
+
+
+
+rule "SVM_KernelEvals_RBF"
+salience -16
+when
+    $svmm : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries )
+    $rbkt : RadialBasisKernelType ( this memberOf $info, $gamma : gamma )
+then
+     HashMap map = new HashMap(7);
+            map.put( "modelName", utils.context );
+            map.put( "kernelType", "rbf" );
+     applyTemplate( "svmKernelEval.drlt", utils, registry, map, theory );
+            map.put( "gamma", $gamma );
+            map.put( "coef0", 0.0 );
+            map.put( "degree", 0.0 );
+     applyTemplate( "svmParams.drlt", utils, registry, map, theory );
+
+end
+
+rule "SVM_KernelEvals_POLY"
+   salience -16
+   when
+       $svmm : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries )
+       $pkt : PolynomialKernelType ( this memberOf $info, $gamma : gamma, $coef0 : coef0, $degree : degree )
+   then
+        HashMap map = new HashMap(7);
+               map.put( "modelName", utils.context );
+               map.put( "kernelType", "poly" );
+        applyTemplate( "svmKernelEval.drlt", utils, registry, map, theory );
+               map.put( "gamma", $gamma );
+               map.put( "coef0", $coef0 );
+               map.put( "degree", $degree );
+        applyTemplate( "svmParams.drlt", utils, registry, map, theory );
+   end
+
+rule "SVM_KernelEvals_LINEAR"
+   salience -16
+   when
+       $svmm : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries )
+       $lkt : LinearKernelType ( this memberOf $info )
+   then
+        HashMap map = new HashMap(7);
+               map.put( "modelName", utils.context );
+               map.put( "kernelType", "linear" );
+        applyTemplate( "svmKernelEval.drlt", utils, registry, map, theory );
+               map.put( "gamma", 0.0 );
+               map.put( "coef0", 0.0 );
+               map.put( "degree", 0.0 );
+        applyTemplate( "svmParams.drlt", utils, registry, map, theory );
+   end
+
+rule "SVM_KernelEvals_SIMOID"
+   salience -16
+   when
+       $svmm : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries )
+       $pkt : SigmoidKernelType ( this memberOf $info, $gamma : gamma, $coef0 : coef0)
+   then
+        HashMap map = new HashMap(7);
+               map.put( "modelName", utils.context );
+               map.put( "kernelType", "sigmoid" );
+        applyTemplate( "svmKernelEval.drlt", utils, registry, map, theory );
+               map.put( "gamma", $gamma );
+               map.put( "coef0", $coef0 );
+               map.put( "degree", 0.0 );
+        applyTemplate( "svmParams.drlt", utils, registry, map, theory );
+   end
+
 
 rule "SVM_Cleanup"
 salience -20

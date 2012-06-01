@@ -23,10 +23,7 @@ import org.drools.pmml_4_0.descr.Value;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class PMML4Wrapper {
@@ -531,12 +528,28 @@ public class PMML4Wrapper {
 		while (tok.hasMoreTokens())
 			sb.append(capitalize(tok.nextToken()));
 
-	    return sb.toString();
+        String out = sb.toString();
+         if(out.matches("\\d.*"))
+             out = "DF_" + out;
+	    return out;
 	 }
 
      public String capitalize(String s) {
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
      }
+
+    public String getToken( String s, int j ) {
+        StringTokenizer tok = new StringTokenizer( s );
+        for ( int i = 0; i < j; i++ ) {
+            tok.nextToken();
+            if ( ! tok.hasMoreTokens() ) {
+                return null;
+            }
+        }
+        return tok.nextToken();
+    }
+
+
 
 
 

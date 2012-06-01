@@ -361,7 +361,7 @@ end
  rule "MiningSchema"
  salience -7
  when
-     $m : MiningSchema( $fields : miningFields)
+     $m : MiningSchema( $fields : miningFields )
      $o : Object() from $fields
  then
      insertLogical($o);
@@ -575,14 +575,48 @@ end
 rule "visitSVM"
 salience -10
 when
-    $net : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries, $name : modelName)
+    $net : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries, $name : modelName )
     $o : Object() from $info
 then
     insertLogical($o);
 end
 
 
+rule "visitVectorDictionary"
+salience -11
+when
+    $vd : VectorDictionary( $info : vectorInstances, $nrvect : numberOfVectors )
+    $ls : VectorInstance() from $info
+then
+    insertLogical($ls);
+end
 
+rule "visitCoefficients"
+salience -13
+when
+    $net : SupportVectorMachine( $cfs : coefficients, $svs : supportVectors )
+then
+    insertLogical( $cfs );
+    insertLogical( $svs );
+end
+
+rule "visitCoefficient"
+salience -14
+when
+    $coe : Coefficients( $info : coefficients )
+    $ls  : Coefficient() from $info
+then
+    insertLogical($ls);
+end
+
+rule "visitSupportVector"
+salience -15
+when
+    $svs : SupportVectors( $info : supportVectors )
+    $sv  : SupportVector() from $info
+then
+    insertLogical( $sv );
+end
 
 
    /*

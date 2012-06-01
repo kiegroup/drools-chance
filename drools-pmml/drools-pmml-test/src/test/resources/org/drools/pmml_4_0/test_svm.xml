@@ -68,9 +68,9 @@
           <SupportVector vectorId="vec4" />
         </SupportVectors>
         <Coefficients absoluteValue="0" numberOfCoefficients="4">
-          <Coefficient value="-1.0" />
+          <Coefficient value="-2.0" />
           <Coefficient value="1.0" />
-          <Coefficient value="1.0" />
+          <Coefficient value="1.01" />
           <Coefficient value="-1.0" />
         </Coefficients>
       </SupportVectorMachine>
