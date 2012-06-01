@@ -31,8 +31,14 @@ global PMML4Wrapper utils;
 
  function void applyTemplate(String templateName, Object context, TemplateRegistry registry, Map vars, StringBuilder builder) {
     CompiledTemplate template = (CompiledTemplate) registry.getNamedTemplate(templateName);
-    builder.append(" // fired template " + templateName );
-    builder.append(TemplateRuntime.execute(template, context, vars));
+       if ( templateName.contains("svm")) {
+           String t = TemplateRuntime.execute(template, context, vars).toString();
+           System.err.println("TEMPLATE EXECT " + templateName +  " with params " + vars );
+           System.err.println( t );
+           builder.append( t );
+       } else {
+           builder.append( TemplateRuntime.execute(template, context, vars) );
+       }
 	//builder.append(TemplateRuntime.execute(template, context, new org.mvel2.integration.impl.DefaultLocalVariableResolverFactory()));
  }
 
