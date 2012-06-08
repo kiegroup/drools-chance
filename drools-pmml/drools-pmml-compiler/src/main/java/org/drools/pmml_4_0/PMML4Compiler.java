@@ -127,6 +127,18 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/neural/neuralOutputField.drlt",
             "models/neural/neuralClean.drlt",
 
+            "models/svm/svmParams.drlt",
+            "models/svm/svmDeclare.drlt",
+            "models/svm/svmFunctions.drlt",
+            "models/svm/svmBuild.drlt",
+            "models/svm/svmInitSupportVector.drlt",
+            "models/svm/svmInitInputVector.drlt",
+            "models/svm/svmKernelEval.drlt",
+            "models/svm/svmOutputGeneration.drlt",
+            "models/svm/svmOutputVoteDeclare.drlt",
+            "models/svm/svmOutputVote1vN.drlt",
+            "models/svm/svmOutputVote1v1.drlt",
+
 
 
             "informer/modelQuestionnaire.drlt",

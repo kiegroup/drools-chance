@@ -34,7 +34,7 @@ when
 	association : DomainModelAssociation(questionId == questionId, object : object, property : property, lastAnswer == answer )
 	$bean : DataField( this == object, valid == false )
 then
-    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> REVAL : " + $bean + " on " + association + " sue to " + question );
+//    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> REVAL : " + $bean + " on " + association + " sue to " + question );
     $bean.setValid(false);
 
     Class propertyClass = PropertyUtils.getPropertyType(object, property);
@@ -59,7 +59,7 @@ when
 	association : DomainModelAssociation(questionId == questionId, object : object, property : property );
 	$bean : DataField( this == object )
 then
-    System.out.println(" @@@@@@@@@@@@@@@@@ killing " + $bean );
+//    System.out.println(" @@@@@@@@@@@@@@@@@ killing " + $bean );
     retract($bean);
 end
 @end{}

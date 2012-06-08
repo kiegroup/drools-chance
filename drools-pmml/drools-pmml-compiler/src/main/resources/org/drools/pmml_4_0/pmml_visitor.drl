@@ -39,9 +39,9 @@ when
         $tranDic : transformationDictionary
     )
 then
-   insert($header);
-   insert($dataDic);
-   insert($tranDic);
+   insert( $header );
+   insert( $dataDic );
+   insert( $tranDic );
 end
 
 
@@ -50,7 +50,7 @@ salience -9999
 when
     $p: PMML( )
 then
-   retract($p);
+   retract( $p );
 end
 
 
@@ -62,7 +62,7 @@ rule "visitDataDictionary"
 salience -10
 when
     $dataDic : DataDictionary( $flds : dataFields )
-    $fld : DataField() from $flds
+    $fld     : DataField() from $flds
 then
 //System.err.println("INSERT FIELD " + $fld);
    insert($fld);
@@ -74,7 +74,7 @@ salience -11
 when
     $dataDic : DataDictionary( )
 then
-    retract($dataDic);
+    retract( $dataDic );
 end
 
 
@@ -88,7 +88,7 @@ when
     $fld : DerivedField( ) from $flds
 then
    //System.err.println("INSERT DERIVED FIELD " + $fld);
-   insert($fld);
+   insert( $fld );
 end
 
 rule "visitTransformationDictionary_cleanup"
@@ -97,7 +97,7 @@ salience -21
 when
     $tranDic : TransformationDictionary( )
 then
-   retract($tranDic);
+   retract( $tranDic );
 end
 
 
@@ -114,7 +114,7 @@ salience -1
 when
     $fld : DerivedField( $nc : normContinuous != null )
 then
-    insertLogical($nc);
+    insertLogical( $nc );
 end
 
 
@@ -125,7 +125,7 @@ salience -1
 when
     $fld : DerivedField( $c : constant != null )
 then
-    insertLogical($c);
+    insertLogical( $c );
 end
 
  //------------------------------------------------------------------------------------------------------------//
@@ -135,7 +135,7 @@ salience -1
 when
     $fld : DerivedField( $f : fieldRef != null )
 then
-    insertLogical($f);
+    insertLogical( $f );
 end
 
 //------------------------------------------------------------------------------------------------------------//
@@ -145,7 +145,7 @@ salience -1
 when
     $fld : DerivedField( $nd : normDiscrete != null )
 then
-    insertLogical($nd);
+    insertLogical( $nd );
 end
 
  //------------------------------------------------------------------------------------------------------------//
@@ -155,7 +155,7 @@ salience -1
 when
     $fld : DerivedField( $dx : discretize != null )
 then
-    insertLogical($dx);
+    insertLogical( $dx );
 end
 
 
@@ -167,7 +167,7 @@ salience -1
 when
     $fld : DerivedField( $map : mapValues != null )
 then
-    insertLogical($map);
+    insertLogical( $map );
 end
 
 
@@ -179,7 +179,7 @@ salience -1
 when
     $fld : DerivedField( $agg : aggregate != null )
 then
-    insertLogical($agg);
+    insertLogical( $agg );
 end
 
 
@@ -191,7 +191,7 @@ salience -1
 when
     $fld : DerivedField( $app : apply != null )
 then
-    insertLogical($app);
+    insertLogical( $app );
 end
 
 
@@ -201,10 +201,10 @@ end
 rule "visitDefFunctTransform"
 salience -1
 when
-    TransformationDictionary( $funs : defineFunctions )
+           TransformationDictionary( $funs : defineFunctions )
     $fun : DefineFunction() from $funs
 then
-    insert($fun);
+    insert( $fun );
 end
 
 
@@ -214,27 +214,30 @@ rule "visitDefineFunction_Apply"
 salience 15
 no-loop
 when
-   $def : DefineFunction( $apply : apply != null, apply.function != "identity" )
+    $def : DefineFunction( $apply : apply != null, apply.function != "identity" )
 then
-   Apply idApply = new Apply();
-        idApply.setFunction("identity");
-        idApply.getConstantsAndFieldRevesAndNormContinuouses().add($apply);
-   $def.setApply(idApply);
-   update($def);
+    Apply idApply = new Apply();
+          idApply.setFunction( "identity" );
+          idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $apply );
+    modify ( $def ) {
+        setApply( idApply );
+    }
 end
 
 rule "visitDefineFunction_NormCont"
 salience 15
 no-loop
 when
-   $def : DefineFunction( $nc : normContinuous != null )
+    $def : DefineFunction( $nc : normContinuous != null )
 then
-   Apply idApply = new Apply();
-        idApply.setFunction("identity");
-        idApply.getConstantsAndFieldRevesAndNormContinuouses().add($nc);
-   $def.setNormContinuous(null);
-   $def.setApply(idApply);
-   update($def);
+    Apply idApply = new Apply();
+          idApply.setFunction("identity");
+          idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $nc );
+
+    modify ( $def ) {
+        setNormContinuous( null ),
+        setApply( idApply );
+    }
 end
 
 
@@ -242,84 +245,96 @@ rule "visitDefineFunction_Aggregate"
 salience 15
 no-loop
 when
-   $def : DefineFunction( $agg : aggregate != null )
+    $def : DefineFunction( $agg : aggregate != null )
 then
-   Apply idApply = new Apply();
-        idApply.setFunction("identity");
-        idApply.getConstantsAndFieldRevesAndNormContinuouses().add($agg);
-   $def.setNormContinuous(null);
-   $def.setApply(idApply);
-   update($def);
+    Apply idApply = new Apply();
+         idApply.setFunction( "identity" );
+         idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $agg );
+
+    modify ( $def ) {
+        setNormContinuous( null ),
+        setApply( idApply );
+    }
 end
 
 rule "visitDefineFunction_Mapvalue"
 salience 15
 no-loop
 when
-   $def : DefineFunction( $map : mapValues != null )
+    $def : DefineFunction( $map : mapValues != null )
 then
-   Apply idApply = new Apply();
-        idApply.setFunction("identity");
-        idApply.getConstantsAndFieldRevesAndNormContinuouses().add($map);
-   $def.setNormContinuous(null);
-   $def.setApply(idApply);
-   update($def);
+    Apply idApply = new Apply();
+          idApply.setFunction( "identity" );
+          idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $map );
+
+    modify ( $def ) {
+        setNormContinuous( null ),
+        setApply( idApply );
+    }
 end
 
 rule "visitDefineFunction_Discretize"
 salience 15
 no-loop
 when
-   $def : DefineFunction( $dx : discretize != null )
+    $def : DefineFunction( $dx : discretize != null )
 then
-   Apply idApply = new Apply();
-        idApply.setFunction("identity");
-        idApply.getConstantsAndFieldRevesAndNormContinuouses().add($dx);
-   $def.setNormContinuous(null);
-   $def.setApply(idApply);
-   update($def);
+    Apply idApply = new Apply();
+          idApply.setFunction( "identity" );
+          idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $dx );
+
+    modify ( $def ) {
+        setNormContinuous( null ),
+        setApply( idApply );
+    }
 end
 
 rule "visitDefineFunction_NormDiscrete"
 salience 15
 no-loop
 when
-   $def : DefineFunction( $nd : normDiscrete != null )
+    $def : DefineFunction( $nd : normDiscrete != null )
 then
-   Apply idApply = new Apply();
-        idApply.setFunction("identity");
-        idApply.getConstantsAndFieldRevesAndNormContinuouses().add($nd);
-   $def.setNormContinuous(null);
-   $def.setApply(idApply);
-   update($def);
+    Apply idApply = new Apply();
+          idApply.setFunction( "identity" );
+          idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $nd );
+
+    modify ( $def ) {
+        setNormContinuous( null ),
+        setApply( idApply );
+    }
 end
 
 rule "visitDefineFunction_FldRef"
 salience 15
 no-loop
 when
-   $def : DefineFunction( $ref : fieldRef != null )
+    $def : DefineFunction( $ref : fieldRef != null )
 then
-   Apply idApply = new Apply();
-        idApply.setFunction("identity");
-        idApply.getConstantsAndFieldRevesAndNormContinuouses().add($ref);
-   $def.setNormContinuous(null);
-   $def.setApply(idApply);
-   update($def);
+    Apply idApply = new Apply();
+          idApply.setFunction( "identity" );
+          idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $ref );
+
+    modify ( $def ) {
+        setNormContinuous( null ),
+        setApply( idApply );
+    }
 end
 
 rule "visitDefineFunction_Const"
 salience 15
 no-loop
 when
-   $def : DefineFunction( $k : constant != null )
+    $def : DefineFunction( $k : constant != null )
 then
-   Apply idApply = new Apply();
-        idApply.setFunction("identity");
-        idApply.getConstantsAndFieldRevesAndNormContinuouses().add($k);
-   $def.setNormContinuous(null);
-   $def.setApply(idApply);
-   update($def);
+    Apply idApply = new Apply();
+          idApply.setFunction( "identity" );
+          idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $k );
+
+    modify ( $def ) {
+        setNormContinuous( null ),
+        setApply( idApply );
+    }
 end
 
 
@@ -333,7 +348,7 @@ when
     Apply( $args : constantsAndFieldRevesAndNormContinuouses, $fun : this.function )
     $arg : Object() from $args
 then
-   insertLogical($arg);
+   insertLogical( $arg );
 end
 
 
@@ -350,7 +365,7 @@ when
    PMML( $modelList : associationModelsAndClusteringModelsAndGeneralRegressionModels )
    $model : Object() from $modelList
 then
-   insert($model);
+   insert( $model );
 end
 
 
@@ -358,14 +373,14 @@ end
 //------------------------------------------------------------------------------------------------------------//
 
 
- rule "MiningSchema"
- salience -7
- when
-     $m : MiningSchema( $fields : miningFields)
-     $o : Object() from $fields
- then
-     insertLogical($o);
- end
+rule "MiningSchema"
+salience -7
+when
+    $m : MiningSchema( $fields : miningFields )
+    $o : Object() from $fields
+then
+    insertLogical( $o );
+end
 
 
 
@@ -378,7 +393,7 @@ when
     Targets( $tgts : targets )
     $t : Target() from $tgts
 then
-    insertLogical($t);
+    insertLogical( $t );
 end
 
 
@@ -393,93 +408,93 @@ end
 rule "Outputs_Neural"
 when
     $out : Output( $outs : outputFields )
-    $of : OutputField() from $outs
+    $of  : OutputField() from $outs
     NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs contains $out )
 then
-    insertLogical($of);
-    insertLogical(new OutputParentModel($of,"NeuralNetwork"));
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "NeuralNetwork" ) );
 end
 
 rule "Outputs_Association"
 when
     $out : Output( $outs : outputFields )
-    $of : OutputField() from $outs
+    $of  : OutputField() from $outs
     AssociationModel( $info : extensionsAndMiningSchemasAndOutputs contains $out )
 then
-    insertLogical($of);
-    insertLogical(new OutputParentModel($of,"Association"));
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "Association" ) );
 end
 
 rule "Outputs_Clustering"
 when
     $out : Output( $outs : outputFields )
-    $of : OutputField() from $outs
+    $of  : OutputField() from $outs
     ClusteringModel( $info : extensionsAndClustersAndComparisonMeasures contains $out )
 then
-    insertLogical($of);
-    insertLogical(new OutputParentModel($of,"Clustering"));
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "Clustering" ) );
 end
 
 rule "Outputs_Regression"
 when
     $out : Output( $outs : outputFields )
-    $of : OutputField() from $outs
+    $of  : OutputField() from $outs
     RegressionModel( $info : extensionsAndRegressionTablesAndMiningSchemas contains $out )
 then
-    insertLogical($of);
-    insertLogical(new OutputParentModel($of,"Regression"));
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "Regression" ) );
 end
 
 
 rule "Outputs_GenRegression"
 when
     $out : Output( $outs : outputFields )
-    $of : OutputField() from $outs
+    $of  : OutputField() from $outs
     GeneralRegressionModel( $info : extensionsAndParamMatrixesAndPPMatrixes contains $out )
 then
-    insertLogical($of);
-    insertLogical(new OutputParentModel($of,"GeneralRegression"));
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "GeneralRegression" ) );
 end
 
 
 rule "Outputs_NaiveBayes"
 when
     $out : Output( $outs : outputFields )
-    $of : OutputField() from $outs
+    $of  : OutputField() from $outs
     NaiveBayesModel( $info : extensionsAndBayesOutputsAndBayesInputs contains $out )
 then
-    insertLogical($of);
-    insertLogical(new OutputParentModel($of,"NaiveBayes"));
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "NaiveBayes" ) );
 end
 
 rule "Outputs_RuleSet"
 when
     $out : Output( $outs : outputFields )
-    $of : OutputField() from $outs
+    $of  : OutputField() from $outs
     RuleSetModel( $info : extensionsAndRuleSetsAndMiningSchemas contains $out )
 then
-    insertLogical($of);
-    insertLogical(new OutputParentModel($of,"RuleSet"));
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "RuleSet" ) );
 end
 
 rule "Outputs_SVM"
 when
     $out : Output( $outs : outputFields )
-    $of : OutputField() from $outs
+    $of  : OutputField() from $outs
     SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries contains $out )
 then
-    insertLogical($of);
-    insertLogical(new OutputParentModel($of,"SVM"));
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "SVM" ) );
 end
 
 rule "Outputs_Tree"
 when
     $out : Output( $outs : outputFields )
-    $of : OutputField() from $outs
+    $of  : OutputField() from $outs
     TreeModel( $info : extensionsAndNodesAndMiningSchemas contains $out )
 then
-    insertLogical($of);
-    insertLogical(new OutputParentModel($of,"Tree"));
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "Tree" ) );
 end
 
 
@@ -499,10 +514,10 @@ end
 rule "visitNeuralNetwork"
 salience -10
 when
-    $net : NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs, $name : modelName)
+    $net : NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs, $name : modelName )
     $o : Object() from $info
 then
-    insertLogical($o);
+    insertLogical( $o );
 end
 
 
@@ -515,7 +530,7 @@ when
     NeuralInputs( $nis : neuralInputs )
     $ni : NeuralInput( $fld : derivedField, $id : id) from $nis
 then
-    insertLogical($ni);
+    insertLogical( $ni );
 end
 
 
@@ -527,7 +542,7 @@ when
     NeuralLayer( $ns : neurons, activationFunction != null, threshold != null )
     $n : Neuron( ) from $ns
 then
-    insertLogical($n);
+    insertLogical( $n );
 end
 
 
@@ -539,7 +554,7 @@ when
     NeuralOutputs( $outs : neuralOutputs )
     $out : NeuralOutput() from $outs
 then
-    insertLogical($out);
+    insertLogical( $out );
 end
 
 
@@ -552,10 +567,10 @@ end
 rule "visitTree"
 salience -10
 when
-    $tree : TreeModel( $info : extensionsAndNodesAndMiningSchemas, $name : modelName)
+    $tree : TreeModel( $info : extensionsAndNodesAndMiningSchemas, $name : modelName )
     $o : Object() from $info
 then
-    insertLogical($o);
+    insertLogical( $o );
 end
 
 
@@ -575,10 +590,47 @@ end
 rule "visitSVM"
 salience -10
 when
-    $net : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries, $name : modelName)
+    $net : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries, $name : modelName )
     $o : Object() from $info
 then
-    insertLogical($o);
+    insertLogical( $o );
+end
+
+
+rule "visitVectorDictionary"
+salience -11
+when
+    $vd : VectorDictionary( $info : vectorInstances, $nrvect : numberOfVectors )
+    $ls : VectorInstance() from $info
+then
+    insertLogical( $ls );
+end
+
+rule "visitCoefficients"
+salience -13
+when
+    $net : SupportVectorMachine( $cfs : coefficients, $svs : supportVectors )
+then
+    insertLogical( $cfs );
+    insertLogical( $svs );
+end
+
+rule "visitCoefficient"
+salience -14
+when
+    $coe : Coefficients( $info : coefficients )
+    $ls  : Coefficient() from $info
+then
+    insertLogical( $ls );
+end
+
+rule "visitSupportVector"
+salience -15
+when
+    $svs : SupportVectors( $info : supportVectors )
+    $sv  : SupportVector() from $info
+then
+    insertLogical( $sv );
 end
 
 
