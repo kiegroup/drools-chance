@@ -137,4 +137,9 @@
             </NeuralOutput>
         </NeuralOutputs>
     </NeuralNetwork>
+
+    <Extension>
+        <Surveyable/>
+    </Extension>
+
 </PMML>

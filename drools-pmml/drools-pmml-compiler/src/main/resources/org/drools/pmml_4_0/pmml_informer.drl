@@ -28,41 +28,44 @@ global Map fld2var;
 global PMML4Wrapper utils;
 
 
+declare EnableSurvey end
 
- function void applyTemplate(String templateName, Object context, TemplateRegistry registry, Map vars, StringBuilder builder) {
-    CompiledTemplate template = (CompiledTemplate) registry.getNamedTemplate(templateName);
-    builder.append(" // fired template " + templateName );
-    builder.append(TemplateRuntime.execute(template, context, vars));
-	//builder.append(TemplateRuntime.execute(template, context, new org.mvel2.integration.impl.DefaultLocalVariableResolverFactory()));
- }
-
-
+rule "Enable Survey"
+when
+           PMML( $exts : extensions )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey() );
+end
 
 
 rule "Invalid_meta"
 salience -999
 dialect "mvel"
 when
+    EnableSurvey()
 then
     //System.err.println("Found Mined Field " + $fld.name );
     HashMap map = new HashMap();
-    applyTemplate("modelInvalidAnswer.drlt", utils, registry, map, theory);
-    applyTemplate("modelRevalidate.drlt", utils, registry, map, theory);
+    applyTemplate( "modelInvalidAnswer.drlt", utils, registry, map, theory );
+    applyTemplate( "modelRevalidate.drlt", utils, registry, map, theory );
 end
 
 
 rule "Questionnaire"
 dialect "mvel"
 when
+    EnableSurvey()
     MiningSchema( $inputs : miningFields )
 then
     //System.err.println("Found Mined Field " + $fld.name );
     HashMap map = new HashMap();
         map.put("fields",$inputs);
         map.put("model",utils.context);
-    applyTemplate("modelQuestionnaire.drlt", utils, registry, map, theory);
+    applyTemplate( "modelQuestionnaire.drlt", utils, registry, map, theory );
 
-    applyTemplate("modelAddQuestionsToQuestionnaire.drlt", utils, registry, map, theory);
+    applyTemplate( "modelAddQuestionsToQuestionnaire.drlt", utils, registry, map, theory );
 end
 
 
@@ -73,52 +76,53 @@ end
 rule "Question"
 dialect "java"
 when
-    MiningSchema(  $inputs : miningFields )
-    $fld : MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType == FIELDUSAGETYPE.ACTIVE )
-    TypeOfField( name == $name, $type : dataType )
+            EnableSurvey()
+            MiningSchema(  $inputs : miningFields )
+    $fld  : MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType == FIELDUSAGETYPE.ACTIVE )
+            TypeOfField( name == $name, $type : dataType )
     $dfld : DataField( $vsize : values.size() == 0, name == $name, $full : displayName )
 then
     String fullS = ""+$full;  //avoiding obscure MVEL problem in choosing between overloaded versions of format() in PMML4Wrapper
     HashMap map = new HashMap();
-        map.put("name",utils.compactUpperCase($name));
-        map.put("displayName",fullS);
-        map.put("model",utils.context);
-        map.put("dataType",$type);
-    System.out.println(map);
-    applyTemplate("modelQuestion.drlt", utils, registry, map, theory);
-    applyTemplate("modelQuestionBinding.drlt", utils, registry, map, theory);
-    applyTemplate("modelQuestionRebinding.drlt", utils, registry, map, theory);
-    applyTemplate("modelCreateByBinding.drlt", utils, registry, map, theory);
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "displayName", fullS );
+        map.put( "model", utils.context );
+        map.put( "dataType", $type );
+    System.out.println( map );
+    applyTemplate( "modelQuestion.drlt", utils, registry, map, theory );
+    applyTemplate( "modelQuestionBinding.drlt", utils, registry, map, theory );
+    applyTemplate( "modelQuestionRebinding.drlt", utils, registry, map, theory );
+    applyTemplate( "modelCreateByBinding.drlt", utils, registry, map, theory );
 end
 
 
 rule "Question_Multi"
 dialect "java"
 when
-    MiningSchema(  $inputs : miningFields )
-    $fld : MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType == FIELDUSAGETYPE.ACTIVE )
-    TypeOfField( name == $name, $type : dataType )
+            EnableSurvey()
+            MiningSchema(  $inputs : miningFields )
+    $fld :  MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType == FIELDUSAGETYPE.ACTIVE )
+            TypeOfField( name == $name, $type : dataType )
     $dfld : DataField( $vals : values, $vsize : values.size() > 0, name == $name, $full : displayName )
-    $validz : List( size > 0 ) from accumulate(
+            accumulate(
                         $val : Value( property == null || (property != "missing" && property != "invalid") ) from $vals ,
-                        init( List validz = new java.util.LinkedList(); ),
-                        action( validz.add(utils.format($dfld,$val)); ),
-                        result( validz )
+                        $validz : collectList( utils.format( $dfld, $val ) );
+                        $validz.size > 0
                       )
 
 then
     HashMap map = new HashMap();
-        map.put("name",utils.compactUpperCase($name));
-        map.put("fullName",$full);
-        map.put("model",utils.context);
-        map.put("dataType",$type);
-        map.put("valid",$validz);
-        map.put("invalid",new java.util.ArrayList());
-        map.put("missing",new java.util.ArrayList());
-    applyTemplate("modelMultiQuestion.drlt", utils, registry, map, theory);
-    applyTemplate("modelQuestionBinding.drlt", utils, registry, map, theory);
-    applyTemplate("modelQuestionRebinding.drlt", utils, registry, map, theory);
-    applyTemplate("modelCreateByBinding.drlt", utils, registry, map, theory);
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "fullName", $full );
+        map.put( "model", utils.context );
+        map.put( "dataType", $type );
+        map.put( "valid", $validz );
+        map.put( "invalid", new java.util.ArrayList() );
+        map.put( "missing", new java.util.ArrayList() );
+    applyTemplate( "modelMultiQuestion.drlt", utils, registry, map, theory );
+    applyTemplate( "modelQuestionBinding.drlt", utils, registry, map, theory );
+    applyTemplate( "modelQuestionRebinding.drlt", utils, registry, map, theory );
+    applyTemplate( "modelCreateByBinding.drlt", utils, registry, map, theory );
 end
 
 
@@ -129,49 +133,52 @@ end
 
 rule "Output_Predicted_AsNotes"
 when
-    MiningSchema(  $inputs : miningFields )
-    $fld : MiningField( this memberOf $inputs,  $name : name, usageType == FIELDUSAGETYPE.PREDICTED )
+            EnableSurvey()
+            MiningSchema(  $inputs : miningFields )
+    $fld  : MiningField( this memberOf $inputs,  $name : name, usageType == FIELDUSAGETYPE.PREDICTED )
 //    TypeOfField( name == $name, $type : dataType )
     $dfld : DataField( name == $name, $full : displayName )
 then
     HashMap map = new HashMap();
-        map.put("name",utils.compactUpperCase($name));
-        map.put("fullName",$full);
-        map.put("model",utils.context);
-        map.put("outType","Predicted");
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "fullName", $full );
+        map.put( "model", utils.context );
+        map.put( "outType"," Predicted" );
 //        map.put("dataType",$type);
-    applyTemplate("modelOutputBinding.drlt", utils, registry, map, theory);
+    applyTemplate( "modelOutputBinding.drlt", utils, registry, map, theory );
 end
 
 
 
 rule "Outputs_AsNotes_Data"
 when
-    OutputField( $name : name, $tgt : targetField )
+            EnableSurvey()
+            OutputField( $name : name, $tgt : targetField )
     $dfld : DataField( name == $tgt, $full : displayName )
 then
     HashMap map = new HashMap();
-        map.put("name",utils.compactUpperCase($name));
-        map.put("fullName",$full);
-        map.put("model",utils.context);
-        map.put("outType","Out");
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "fullName", $full );
+        map.put( "model", utils.context );
+        map.put( "outType", "Out" );
 //        map.put("dataType",$type);
-    applyTemplate("modelOutputBinding.drlt", utils, registry, map, theory);
+    applyTemplate( "modelOutputBinding.drlt", utils, registry, map, theory );
 end
 
 
 
 rule "Outputs_AsNotes_Derived"
 when
-    OutputField( $name : name, $tgt : targetField )
+            EnableSurvey()
+            OutputField( $name : name, $tgt : targetField )
     $dfld : DerivedField( name == $tgt, $full : displayName )
-    not DataField( name == $tgt )
+    not     DataField( name == $tgt )
 then
     HashMap map = new HashMap();
-        map.put("name",utils.compactUpperCase($name));
-        map.put("fullName",$full);
-        map.put("model",utils.context);
-        map.put("outType","Out");
+        map.put( "name",utils.compactUpperCase( $name ) );
+        map.put( "fullName", $full );
+        map.put( "model", utils.context );
+        map.put( "outType", "Out" );
 //        map.put("dataType",$type);
-    applyTemplate("modelOutputBinding.drlt", utils, registry, map, theory);
+    applyTemplate( "modelOutputBinding.drlt", utils, registry, map, theory );
 end

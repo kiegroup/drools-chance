@@ -95,7 +95,7 @@ public class SVMTest extends DroolsAbstractPMMLTest {
 
         System.err.println( reportWMObjects(kSession)  );
 
-        checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "yes" );
+        checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "no" );
 
     }
 

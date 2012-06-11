@@ -23,7 +23,7 @@ import org.junit.Test;
 
 public class MiningSchemaTest extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
     private static final String source = "org/drools/pmml_4_0/test_miningSchema.xml";
     private static final String packageName = "org.drools.pmml_4_0.test";
 
