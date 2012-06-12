@@ -15,27 +15,38 @@
   limitations under the License.
 }
 
+
+
+
 @comment{
-    Generates a field instance with a constant value
-    /**
-    * @param name        - derived field name
-    * @param konst       - the value to set
-    */
+
+}
+
+@declare{'regCommon'}
+
+function double probitPhi( double z ) {
+    if ( z < -8.0 ) { return 0.0; }
+    if ( z >  8.0 ) { return 1.0; }
+    double sum = 0.0;
+    double term = z;
+        for ( int i = 3; sum + term != sum; i += 2 ) {
+            sum  = sum + term;
+            term = term * z * z / i;
+        }
+    return 0.5 + sum * Math.exp( -z * z / 2.0 ) / Math.sqrt( 2 * Math.PI );
 }
 
 
-@declare{'constantFieldRule'}
-rule "constantField_@{name}"
+rule "After Normalization"
+salience -1
 when
+    $rnf : RegNormalizationFactor();
 then
-  @{name} x = new @{name}();
-    x.setValue( @{format( type, konst ) } );
-    x.setMissing( false );
-    x.setValid( true );
-    x.setName( @{format( "string", name ) } );
-    x.setContext( "@{context}" );
-  insertLogical(x);
+    retract( $rnf );
 end
+
+
 @end{}
 
-@includeNamed{'constantFieldRule'}
+
+@includeNamed{'regCommon'}

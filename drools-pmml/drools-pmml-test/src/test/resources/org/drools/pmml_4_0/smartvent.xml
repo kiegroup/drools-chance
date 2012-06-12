@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<PMML version="4.0" xmlns="http://www.dmg.org/PMML-4_0">
+<PMML version="4.0" xsi:schemaLocation="http://www.dmg.org/PMML-4_0 http://www.dmg.org/v4-0/pmml-4-0.xsd" xmlns="http://www.dmg.org/PMML-4_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Header copyright="JBoss" description=" Mock Smart Vent Model ">
         <Application name="Drools PMML Generator" version="0.01 Alpha"/>
         <Timestamp>Fri Dec 30 13:18:00 CET 2011</Timestamp>

@@ -140,6 +140,14 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/svm/svmOutputVote1v1.drlt",
 
 
+            "models/regression/regDeclare.drlt",
+            "models/regression/regCommon.drlt",
+            "models/regression/regParams.drlt",
+            "models/regression/regEval.drlt",
+            "models/regression/regClaxOutput.drlt",
+            "models/regression/regNormalization.drlt",
+            "models/regression/regDecumulation.drlt",
+
 
             "informer/modelQuestionnaire.drlt",
             "informer/modelAddQuestionsToQuestionnaire.drlt",

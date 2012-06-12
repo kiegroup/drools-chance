@@ -479,13 +479,14 @@ end
 rule "processDerivedField_constant"
 dialect "mvel"
 when
-    $fld : DerivedField( $c : constant )
-    Constant( this == $c, $x : value)
+    $fld : DerivedField( $c : constant, $type : dataType )
+    Constant( this == $c, $x : value )
 then
     HashMap map = new HashMap(7);
         map.put( "context", utils.context );
         map.put( "name", utils.compactUpperCase( $fld.name ) );
         map.put( "konst", $x );
+        map.put( "type", $type );
     applyTemplate( "constantField.drlt", utils, registry, map, theory );
 end
 
@@ -1240,7 +1241,8 @@ dialect "mvel"
 salience -10
 when
     MiningSchema( $miningFields : miningFields )
-    $fields : java.util.Map() from accumulate (
+    accumulate( $mf : MiningField( usageType == FIELDUSAGETYPE.ACTIVE ) from $miningFields, $expNum : count( $mf ) )
+    $fields : java.util.Map( size == $expNum ) from accumulate (
             MiningField( this memberOf $miningFields, $name : name, usageType == FIELDUSAGETYPE.ACTIVE )
             and
             TypeOfField( $n : name == $name, $type : dataType )
@@ -1408,88 +1410,88 @@ rule "Output_Type"
 when
      $of : OutputField( $name : name, $dataType : dataType != null )
 then
-     insertLogical( new TypeOfField( $name, $dataType ) );
+
+    insertLogical( new TypeOfField( $name, $dataType ) );
+end
+
+rule "Output_Type2"
+no-loop
+when
+    $of : OutputField( $name : name, dataType == null, $tgt : targetField )
+    TypeOfField( name == $tgt, $dataType : dataType )
+then
+    insertLogical( new TypeOfField( $name, $dataType ) );
 end
 
 
-  rule "Output_Type2"
-  no-loop
-  when
-      $of : OutputField( $name : name, dataType == null, $tgt : targetField )
-      TypeOfField( name == $tgt, $dataType : dataType )
-  then
-      insertLogical( new TypeOfField( $name, $dataType ) );
-  end
 
 
-
-
- rule "DeclareOutput_Neural"
- dialect "mvel"
- salience 1
- when
-     $of  : OutputField( $name : name, $tgt : targetField )
-     $tf  : TypeOfField( name == $name )
-     $mod : OutputParentModel( field == $of, $mt : modelType )
-     eval(! utils.isModelBeanDefined( utils.compactUpperCase( $name ) ) )
- then
+rule "DeclareOutput_Neural"
+dialect "mvel"
+salience 1
+when
+    $of  : OutputField( $name : name, $tgt : targetField )
+    $tf  : TypeOfField( name == $name )
+    $mod : OutputParentModel( field == $of, $mt : modelType )
+    eval(! utils.isModelBeanDefined( utils.compactUpperCase( $name ) ) )
+then
     utils.addModelBeanDefinition( $name );
-     HashMap map = new HashMap( 7 );
-         map.put( "context", utils.context );
-         map.put( "fullName", $of.displayName );
-         map.put( "name", utils.compactUpperCase( $of.name ) );
-         map.put( "super", "OutputField" );
-         map.put( "modelType", $mt )
-         map.put( "type", utils.mapDatatype( $tf.dataType ) );
-     applyTemplate( "ioTypeDeclare.drlt", utils, registry, map, theory );
-     applyTemplate( "updateIOField.drlt", utils, registry, map, theory );
- end
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "fullName", $of.displayName );
+        map.put( "name", utils.compactUpperCase( $of.name ) );
+        map.put( "super", "OutputField" );
+        map.put( "modelType", $mt )
+        map.put( "type", utils.mapDatatype( $tf.dataType ) );
+    applyTemplate( "ioTypeDeclare.drlt", utils, registry, map, theory );
+    applyTemplate( "updateIOField.drlt", utils, registry, map, theory );
+end
 
- rule "Output_Expose"
- when
-     $of : OutputField( $name : name )
- then
-      insert( new QueryMarker( utils.compactUpperCase( $name ), utils.context ) );
- end
-
-
-
-
- rule "SimpleValueOutput"
- dialect "mvel"
- when
-     $of : OutputField( $tgt : targetField, $val : value, $name : name, feature == null || feature == RESULTFEATURE.PREDICTED_VALUE )
-     $tf : TypeOfField( name == $name, $type : dataType )
- then
-     HashMap map = new HashMap( 7 );
-         map.put( "context", utils.context );
-         map.put( "origField", utils.compactUpperCase( $tgt ) );
-         map.put( "name", utils.compactUpperCase( $name ) );
-         map.put( "value", $val );
-         map.put( "type", $type );
-     applyTemplate( "aliasedOutput.drlt", utils, registry, map, theory );
- end
+rule "Output_Expose"
+when
+    $of : OutputField( $name : name )
+then
+    insert( new QueryMarker( utils.compactUpperCase( $name ), utils.context ) );
+end
 
 
 
 
+rule "SimpleValueOutput"
+dialect "mvel"
+when
+    $of : OutputField( $tgt : targetField, $val : value, $name : name, feature == null || feature == RESULTFEATURE.PREDICTED_VALUE )
+    $tf : TypeOfField( name == $name, $type : dataType )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "origField", utils.compactUpperCase( $tgt ) );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "value", $val );
+        map.put( "type", $type );
+    applyTemplate( "aliasedOutput.drlt", utils, registry, map, theory );
+end
 
- rule "AddFeature_DisplayValue"
- dialect "mvel"
- when
-     $of : OutputField( $tgt : targetField, $val : value, $name : name,
-                        feature == RESULTFEATURE.PREDICTED_DISPLAY_VALUE )
-     $tf : TypeOfField( name == $name, $type : dataType )
- then
-     HashMap map = new HashMap( 7 );
-         map.put( "context", utils.context );
-         map.put( "origField", utils.compactUpperCase( $tgt ) );
-         map.put( "name", utils.compactUpperCase( $name ) );
-         map.put( "value", $val );
-         map.put( "type", $type );
-         map.put( "feature", "displayValue" );
-     applyTemplate( "addOutputFeature.drlt", utils, registry, map, theory );
- end
+
+
+
+
+rule "AddFeature_DisplayValue"
+dialect "mvel"
+when
+    $of : OutputField( $tgt : targetField, $val : value, $name : name,
+                       feature == RESULTFEATURE.PREDICTED_DISPLAY_VALUE )
+    $tf : TypeOfField( name == $name, $type : dataType )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "origField", utils.compactUpperCase( $tgt ) );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "value", $val );
+        map.put( "type", $type );
+        map.put( "feature", "displayValue" );
+    applyTemplate( "addOutputFeature.drlt", utils, registry, map, theory );
+end
 
 
 
@@ -1510,16 +1512,12 @@ rule "setupNNs"
 when
    NeuralNetwork( $name : modelName )
    $stat : ModelStat( neuralNetwork == false )
-   eval( ! utils.isModelBeanDefined( "Stym" ) )
 then
     HashMap map = new HashMap( 7 );
         map.put( "name", utils.compactUpperCase( $name ) );
         map.put( "type","NeuralNetwork" );
     applyTemplate( "modelMark.drlt", null, registry, map, theory );
 
-    utils.addModelBeanDefinition( "Stym" );
-    utils.addModelBeanDefinition( "Charge" );
-    utils.addModelBeanDefinition( "Synapse" );
     applyTemplate( "neuralBeans.drlt", null, registry, null, theory );
 
     applyTemplate( "neuralLinkSynapses.drlt", null, registry, null, theory );
@@ -1825,6 +1823,46 @@ then
     insertLogical( $ref );
     insertLogical( $fld );
 end
+
+
+rule "Clean_WM"
+salience -19
+dialect "mvel"
+when
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
+    $ms : MiningSchema( this memberOf $info, $fields : miningFields )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "model", utils.context );
+        map.put( "fields", $fields );
+    applyTemplate( "neuralClean.drlt", utils, registry, map, theory );
+end
+
+
+rule "Clean_WM_Pre"
+salience -18
+dialect "mvel"
+when
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
+    $ms :  MiningSchema( this memberOf $info, $fields : miningFields )
+    $fld : MiningField( usageType != null &&
+                        ( usageType == FIELDUSAGETYPE.PREDICTED || usageType == FIELDUSAGETYPE.SUPPLEMENTARY )
+           ) from $fields
+then
+    $fields.remove( $fld );
+end
+
+
+
+rule "Neural_Cleanup"
+salience -20
+when
+    $nn : NeuralNetwork( )
+then
+    utils.context = null;
+    retract( $nn );
+end
+
 
 
 
@@ -2143,60 +2181,176 @@ end
 
 
 
-
-
-
-
-
   //******************************************************************************************************************
-  //     Cleanup
+  //     REGRESSION MODEL
   //
   //******************************************************************************************************************
 
 
 
 
-
-
-
-
-rule "Clean_WM_Pre"
-salience -18
-dialect "mvel"
+rule "Regression Root"
 when
-    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
-    $ms :  MiningSchema( this memberOf $info, $fields : miningFields )
-    $fld : MiningField( usageType != null &&
-                        ( usageType == FIELDUSAGETYPE.PREDICTED || usageType == FIELDUSAGETYPE.SUPPLEMENTARY )
-           ) from $fields
+    $reg : RegressionModel()
 then
-    $fields.remove( $fld );
+    applyTemplate( "regDeclare.drlt", utils, registry, null, theory );
+end
+
+rule "visitRegression_context"
+salience -9
+when
+    $reg : RegressionModel( $name : modelName )
+then
+    utils.context = utils.compactUpperCase( $name );
 end
 
 
-rule "Clean_WM"
-salience -19
-dialect "mvel"
+
+rule "Regression Table"
+salience -15
 when
-    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
-    $ms : MiningSchema( this memberOf $info, $fields : miningFields )
+    $reg : RegressionModel( $regTables : extensionsAndRegressionTablesAndMiningSchemas )
+    $tab : RegressionTable( this memberOf $regTables,
+                            $c0 : intercept, $tgtCat : targetCategory, $num : numericPredictors, $cat : categoricalPredictors, $trm : predictorTerms )
+    accumulate( NumericPredictor( this memberOf $num, $c : coefficient, $e : exponent ), $numC : collectList( $c ), $numE : collectList( $e.doubleValue() ) )
+    accumulate( CategoricalPredictor( this memberOf $cat, $c : coefficient ), $catC : collectList( $c ) )
+    accumulate( PredictorTerm( this memberOf $trm, $c : coefficient ), $trmC : collectList( $c ) )
+           MiningSchema( $mfs : miningFields, this memberOf $regTables )
+           MiningField( this memberOf $mfs, usageType == FIELDUSAGETYPE.PREDICTED, $tgt : name )
 then
     HashMap map = new HashMap( 7 );
-        map.put( "model", utils.context );
-        map.put( "fields", $fields );
-    applyTemplate( "neuralClean.drlt", utils, registry, map, theory );
+        map.put( "context", utils.context );
+        map.put( "c0", $c0 );
+        map.put( "numCoeffs", $numC );
+        map.put( "catCoeffs", $catC );
+        map.put( "trmCoeffs", $trmC );
+        map.put( "numExps", $numE );
+        map.put( "target", utils.compactUpperCase( $tgt ) );
+        map.put( "category", $tgtCat );
+        map.put( "index", $regTables.indexOf( $tab ) );
+    applyTemplate( "regParams.drlt", utils, registry, map, theory );
 end
 
 
 
-rule "Neural_Cleanup"
+rule "Regression Table : regression"
+salience -15
+when
+    $reg : RegressionModel( $regTables : extensionsAndRegressionTablesAndMiningSchemas, functionName == MININGFUNCTION.REGRESSION,
+                            $norm : normalizationMethod == null
+                                                     || == REGRESSIONNORMALIZATIONMETHOD.NONE
+                                                     || == REGRESSIONNORMALIZATIONMETHOD.EXP
+                                                     || == REGRESSIONNORMALIZATIONMETHOD.SOFTMAX
+                                                     || == REGRESSIONNORMALIZATIONMETHOD.LOGIT )
+    $tab : RegressionTable( this memberOf $regTables, $c0 : intercept, $cat : targetCategory,
+                            $nps : numericPredictors, $cps : categoricalPredictors, $tps : predictorTerms )
+           accumulate( $np : NumericPredictor( this memberOf $nps ), $numPs : collectList( $np ) )
+           accumulate( $cp : CategoricalPredictor( this memberOf $cps ), $catPs : collectList( $cp ) )
+           accumulate( $tp : PredictorTerm( this memberOf $tps ), $trmPs : collectList( $tp ) )
+           MiningSchema( $mfs : miningFields, this memberOf $regTables )
+           accumulate( $mf : MiningField( this memberOf $mfs, usageType != FIELDUSAGETYPE.PREDICTED, $fldName : name ), $flds : collectList( $mf ) )
+           MiningField( this memberOf $mfs, usageType == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "inputFields", $flds );
+        map.put( "numPredictors", $numPs );
+        map.put( "catPredictors", $catPs );
+        map.put( "trmPredictors", $trmPs );
+        map.put( "normalization", $norm );
+        map.put( "isRegression", true );
+        map.put( "category", $cat );
+        map.put( "target", utils.compactUpperCase( $tgt ) );
+    applyTemplate( "regEval.drlt", utils, registry, map, theory );
+end
+
+
+rule "Regression Table : classification"
+salience -15
+when
+    $reg : RegressionModel( $regTables : extensionsAndRegressionTablesAndMiningSchemas, functionName == MININGFUNCTION.CLASSIFICATION,
+                            $norm : normalizationMethod  )
+    $tab : RegressionTable( this memberOf $regTables, $c0 : intercept, $cat : targetCategory,
+                            $nps : numericPredictors, $cps : categoricalPredictors, $tps : predictorTerms )
+           accumulate( $np : NumericPredictor( this memberOf $nps ), $numPs : collectList( $np ) )
+           accumulate( $cp : CategoricalPredictor( this memberOf $cps ), $catPs : collectList( $cp ) )
+           accumulate( $tp : PredictorTerm( this memberOf $tps ), $trmPs : collectList( $tp ) )
+           MiningSchema( $mfs : miningFields, this memberOf $regTables )
+           accumulate( $mf : MiningField( this memberOf $mfs, usageType != FIELDUSAGETYPE.PREDICTED, $fldName : name ), $flds : collectList( $mf ) )
+           MiningField( this memberOf $mfs, usageType == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+           (
+             DataField( name == $tgt, $opType : optype )
+             or
+             DerivedField( name == $tgt, $opType : optype )
+           )
+then
+    HashMap map = new HashMap( 11 );
+        map.put( "context", utils.context );
+        map.put( "inputFields", $flds );
+        map.put( "numPredictors", $numPs );
+        map.put( "catPredictors", $catPs );
+        map.put( "trmPredictors", $trmPs );
+        map.put( "normalization", $norm );
+        map.put( "isRegression", false );
+        map.put( "isCategorical", OPTYPE.CATEGORICAL.equals( $opType ) );
+        map.put( "category", $cat );
+        map.put( "target", utils.compactUpperCase( $tgt ) );
+    applyTemplate( "regEval.drlt", utils, registry, map, theory );
+end
+
+rule "Regression Model Output Reconciliation"
+salience -15
+when
+    $reg : RegressionModel( $regTables : extensionsAndRegressionTablesAndMiningSchemas, functionName == MININGFUNCTION.CLASSIFICATION,
+                            $norm : normalizationMethod  )
+           accumulate( $rt : RegressionTable( this memberOf $regTables ), $numTabs : count( $rt ) )
+           MiningSchema( $mfs : miningFields, this memberOf $regTables )
+           MiningField( this memberOf $mfs, usageType == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "target", utils.compactUpperCase( $tgt ) );
+        map.put( "num", $numTabs );
+    applyTemplate( "regClaxOutput.drlt", utils, registry, map, theory );
+    applyTemplate( "regNormalization.drlt", utils, registry, map, theory );
+end
+
+
+rule "Regression Model Ordinal Output"
+salience -15
+when
+    $reg : RegressionModel( $regTables : extensionsAndRegressionTablesAndMiningSchemas, functionName == MININGFUNCTION.CLASSIFICATION,
+                            $norm : normalizationMethod  )
+           accumulate( $rt : RegressionTable( this memberOf $regTables ), $numTabs : count( $rt ) )
+           MiningSchema( $mfs : miningFields, this memberOf $regTables )
+           MiningField( this memberOf $mfs, usageType == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+           (
+             DataField( name == $tgt, $opType : optype == OPTYPE.ORDINAL )
+             or
+             DerivedField( name == $tgt, $opType : optype == OPTYPE.ORDINAL )
+           )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "target", utils.compactUpperCase( $tgt ) );
+        map.put( "num", $numTabs );
+    applyTemplate( "regDecumulation.drlt", utils, registry, map, theory );
+end
+//
+
+
+rule "Regression_Cleanup"
 salience -20
 when
-    $nn : NeuralNetwork( )
+    $reg : RegressionModel( )
 then
     utils.context = null;
-    retract( $nn );
+    retract( $reg );
 end
+
+
+
+
 
 
 //**********************************************************************************************************

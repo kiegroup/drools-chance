@@ -591,7 +591,7 @@ rule "visitSVM"
 salience -10
 when
     $net : SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries, $name : modelName )
-    $o : Object() from $info
+    $o   : Object() from $info
 then
     insertLogical( $o );
 end
@@ -634,7 +634,44 @@ then
 end
 
 
+ //------------------------------------------------------------------------------------------------------------//
 
+
+rule "visitRegression"
+salience -11
+when
+    $reg : RegressionModel( $info : extensionsAndRegressionTablesAndMiningSchemas, $name : modelName )
+    $o   : Object() from $info
+then
+    insertLogical( $o );
+end
+
+rule "visitRegressionTable Numeric"
+salience -11
+when
+    $tab : RegressionTable( $nums : numericPredictors )
+    $num : NumericPredictor() from $nums
+then
+    insertLogical( $num );
+end
+
+rule "visitRegressionTable Categorical"
+salience -11
+when
+    $tab : RegressionTable( $cats : categoricalPredictors )
+    $cat : CategoricalPredictor() from $cats
+then
+    insertLogical( $cat );
+end
+
+rule "visitRegressionTable Terms"
+salience -11
+when
+    $tab : RegressionTable( $trms : predictorTerms )
+    $trm : PredictorTerm() from $trms
+then
+    insertLogical( $trm );
+end
 
 
    /*

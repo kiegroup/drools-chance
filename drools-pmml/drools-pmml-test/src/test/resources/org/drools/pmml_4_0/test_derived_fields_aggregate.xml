@@ -15,8 +15,7 @@
   ~ limitations under the License.
   -->
 
-<PMML version="4.0" xmlns="http://www.dmg.org/PMML-4_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.dmg.org/PMML-4_0 http://www.dmg.org/v4-0-1/pmml-4-0.xsd">
+<PMML version="4.0" xsi:schemaLocation="http://www.dmg.org/PMML-4_0 http://www.dmg.org/v4-0/pmml-4-0.xsd" xmlns="http://www.dmg.org/PMML-4_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Header copyright="Jboss"/>
   <DataDictionary>
     <DataField name="Age" optype="continuous" dataType="integer">

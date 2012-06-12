@@ -19,6 +19,7 @@ package org.drools.pmml_4_0;
 import org.drools.base.TypeResolver;
 import org.drools.pmml_4_0.descr.DATATYPE;
 import org.drools.pmml_4_0.descr.DataField;
+import org.drools.pmml_4_0.descr.REGRESSIONNORMALIZATIONMETHOD;
 import org.drools.pmml_4_0.descr.Value;
 
 import java.io.*;
@@ -520,6 +521,41 @@ public class PMML4Wrapper {
         }
      }
 
+    public String mapRegModelRegressionNormalization( String method, String arg  ) {
+        if ( method == null || REGRESSIONNORMALIZATIONMETHOD.NONE.value().equals( method ) ) {
+            return arg;
+        } else if ( REGRESSIONNORMALIZATIONMETHOD.EXP.value().equals( method ) ) {
+            return "Math.exp( " + arg + " )";
+        } else if ( REGRESSIONNORMALIZATIONMETHOD.SOFTMAX.value().equals( method ) || REGRESSIONNORMALIZATIONMETHOD.LOGIT.value().equals( method ) ) {
+            return "1.0 / ( 1.0 + Math.exp( -" + arg + " ) ) ";
+        } else {
+            throw new UnsupportedOperationException( "Regression models can't support " + method + ", check that a classification model was not required instead. " );
+        }
+    }
+
+    public String mapRegModelClassificationNormalization( String method, String arg  ) {
+        if ( method == null || REGRESSIONNORMALIZATIONMETHOD.NONE.value().equals( method ) ) {
+            return arg;
+        } else if ( REGRESSIONNORMALIZATIONMETHOD.EXP.value().equals( method ) ) {
+            return "Math.exp( " + arg + " )";
+        } else if ( REGRESSIONNORMALIZATIONMETHOD.SOFTMAX.value().equals( method ) ) {
+            return "Math.exp( " + arg + " )";
+        } else if ( REGRESSIONNORMALIZATIONMETHOD.LOGIT.value().equals( method ) ) {
+            return "1.0 / ( 1.0 + Math.exp( -" + arg + " ) )";
+        } else if ( REGRESSIONNORMALIZATIONMETHOD.PROBIT.value().equals( method ) ) {
+            return "probitPhi( " + arg + " )";
+        } else if ( REGRESSIONNORMALIZATIONMETHOD.CLOGLOG.value().equals( method ) ) {
+            return "1.0 - Math.exp( - Math.exp( " + arg + " ) )";
+        } else if ( REGRESSIONNORMALIZATIONMETHOD.LOGLOG.value().equals( method ) ) {
+            return "Math.exp( - Math.exp( -" + arg + " ) )";
+        } else if ( REGRESSIONNORMALIZATIONMETHOD.CAUCHIT.value().equals( method ) ) {
+            return "0.5 + Math.atan( " + arg + " ) / Math.PI";
+        } else {
+            throw new UnsupportedOperationException( "Unknown normalization method :" + method );
+        }
+
+    }
+
 
     public String compactUpperCase(String s) {
         java.util.StringTokenizer tok = new java.util.StringTokenizer(s);
@@ -550,11 +586,6 @@ public class PMML4Wrapper {
         }
         return tok.nextToken();
     }
-
-
-
-
-
 
 
 
