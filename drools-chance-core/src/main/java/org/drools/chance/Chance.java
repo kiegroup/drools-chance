@@ -43,12 +43,12 @@ public class Chance {
 
         ChanceStrategyFactory.initDefaults();
 
-        JavaDialect.PATTERN_BUILDER = new ChanceRulePatternBuilder();
-        JavaDialect.GE_BUILDER      = new ChanceRuleGroupElementBuilder();
+        JavaDialect.setPatternBuilder( new ChanceRulePatternBuilder() );
+        JavaDialect.setGEBuilder( new ChanceRuleGroupElementBuilder() );
         JavaDialect.reinitBuilder();
 
-        MVELDialect.PATTERN_BUILDER = new ChanceRulePatternBuilder();
-        MVELDialect.GE_BUILDER      = new ChanceRuleGroupElementBuilder();
+        MVELDialect.setPatternBuilder( new ChanceRulePatternBuilder() );
+        MVELDialect.setGEBuilder( new ChanceRuleGroupElementBuilder() );
         MVELDialect.reinitBuilder();
 
         JavaRuleBuilderHelper.setConsequenceTemplate( "chanceRule.mvel" );
@@ -73,7 +73,7 @@ public class Chance {
         ReteooComponentFactory.setNodeFactoryProvider( new ChanceNodeFactory() );
         ReteooComponentFactory.setRuleBuilderProvider( new ChanceRuleBuilderFactory() );
         ReteooComponentFactory.setAgendaFactory( new ChanceAgendaFactory() );
-        ReteooComponentFactory.setFieldFactory( new ChanceFieldFactory() );
+        ReteooComponentFactory.setFieldDataFactory( new ChanceFieldFactory() );
         ReteooComponentFactory.setTripleFactory( new ImperfectTripleFactory() );
         ReteooComponentFactory.setKnowledgeHelperFactory( new ChanceKnowledgeHelperFactory() );
         ReteooComponentFactory.setLogicTransformer( new ChanceLogicTransformer() );
@@ -89,12 +89,12 @@ public class Chance {
     public static void restoreDefaults() {
 
 
-        JavaDialect.PATTERN_BUILDER = new PatternBuilder();
-        JavaDialect.GE_BUILDER      = new GroupElementBuilder();
+        JavaDialect.setPatternBuilder( new PatternBuilder() );
+        JavaDialect.setGEBuilder( new GroupElementBuilder() );
         JavaDialect.reinitBuilder();
 
-        MVELDialect.PATTERN_BUILDER = new PatternBuilder();
-        MVELDialect.GE_BUILDER      = new GroupElementBuilder();
+        MVELDialect.setPatternBuilder( new PatternBuilder() );
+        MVELDialect.setGEBuilder( new GroupElementBuilder() );
         MVELDialect.reinitBuilder();
 
         JavaRuleBuilderHelper.setConsequenceTemplate( "javaRule.mvel" );

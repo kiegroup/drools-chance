@@ -194,6 +194,11 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
     }
 
     public void assertLeftTuple( LeftTuple leftTuple, PropagationContext context, InternalWorkingMemory workingMemory ) {
+
+        //TODO Fixme Until all nodes have been made imperfect, tuples might come without evaluations
+        if (  ((ImperfectTuple)leftTuple).getEvaluation() != null && !  ((ImperfectTuple)leftTuple).getDegree().toBoolean()) {
+            return;
+        }
         this.sink.propagateAssertLeftTuple( leftTuple, context, workingMemory, isLeftTupleMemoryEnabled() );
     }
 
@@ -224,9 +229,12 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
                 if ( ! eval.getDegree().toBoolean() ) {
                     return;
                 }
-                ((ImperfectTuple) leftTuple.getFirstChild()).addEvaluation( eval );
+                if ( leftTuple.getFirstChild() != null ) {
+                    ((ImperfectTuple) leftTuple.getFirstChild()).addEvaluation( eval );
+                }
             }
         }
+
         this.sink.propagateModifyChildLeftTuple( leftTuple, context, workingMemory, isLeftTupleMemoryEnabled() );
     }
 

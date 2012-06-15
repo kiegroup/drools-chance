@@ -255,7 +255,7 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                           PatternDescr patternDescr,
                           Pattern pattern,
                           ConstraintConnectiveDescr descr ) {
-        pattern.addConstraint( ((ChanceConstraintBuilder) getConstraintBuilder()).buildOperatorConstraint( context, patternDescr, pattern, descr ) );
+        pattern.addConstraint( ((ChanceMVELConstraintBuilder) getConstraintBuilder()).buildOperatorConstraint( context, patternDescr, pattern, descr ) );
     }
 
 

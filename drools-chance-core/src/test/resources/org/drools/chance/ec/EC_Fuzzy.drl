@@ -11,8 +11,8 @@ import org.drools.chance.distribution.fuzzy.linguistic.Linguistic;
 
 
 declare Event
-	@role(event)
-	@timestamp(start)
+	@role( event )
+	@timestamp( start )
 
 	start : long
 end
@@ -77,6 +77,9 @@ end
 
 
 
+query holds( Fluent $f )
+	$f := Fluent( status == true )
+end
 
 query holdsNow( Fluent $f )
 	$f := Fluent( status ~== true )
@@ -110,9 +113,30 @@ rule "OnClip"
 dialect "mvel"
 when
     $c : Clip( $fluent : fluent, $ev : event, $deg : degree )
-    $f : Fluent( this == $fluent, $mvi : mvi != null, $beg : mvi.start )
+    $f : Fluent( this == $fluent, $mvi : mvi ~!= [cut] null, $beg : mvi.start )
 then
     retract( $c );
+
+    modify ( $mvi ) {
+        status.update( true, $deg, "operator=MINUS", "family=GODEL" );
+    }
+//    System.out.println( "After the effect of a klip on " + $f + ", the mvi is " + $mvi.getStatusDistr().get( true ) );
+
+    modify( $f ) {
+        setEvent( $ev ),
+        hist.put( $ev.start, new MuEntry( $ev.start, $f.statusDistr.get( true ) ) ),
+        status.setValue( true, $deg );
+    }
+end
+
+
+
+rule "OnClip Off"
+dialect "mvel"
+when
+    $f : Fluent( $ev : event != [cut] null, $mvi : mvi ~!= [ cut ] null, $beg : mvi.start, mvi.status ~ not holds [family=GODEL] true )
+then
+//    System.out.println(" OFFICIAL THE MVI for " + $f + "  STOPPED TO HOLD" + chance.getDegree() );
 
     modify ( $mvi ) {
         finish = $ev.start,
@@ -121,11 +145,10 @@ then
 
     modify( $f ) {
         mvi = null ,
-        setEvent( $ev ),
-        hist.put( $ev.start, new MuEntry( $ev.start, $f.statusDistr.get( true ) ) ),
-        status.setValue( true, $deg.False() );
+        status.setValue( true, chance.getDegree().False() );
     }
 end
+
 
 
 rule "OnDeClip - MVI"
@@ -135,16 +158,17 @@ when
     $d : Declip( $fluent : fluent, $ev : event, $deg : degree )
     $f : Fluent( this == $fluent, mvi == null )
 then
-
+//    System.out.println( "Declaip stage 1");
     MVII mvii = new MVII();
         mvii.start = $ev.start;
         mvii.flId  = $f.getId();
         mvii.type = $f.class;
 
+    insert( mvii );
+
     modify( $f ) {
         mvi = mvii;
     }
-    insert( mvii );
 end
 
 rule "OnDeClip"
@@ -159,6 +183,7 @@ then
     modify ( $mvi ) {
         status.update( true, $deg, "operator=OR", "family=GODEL" );
     }
+//    System.out.println( "Declaip stage 2 " + $mvi + " >> " + $mvi.getStatusDistr().getDegree( true ) );
 
     modify( $f ) {
         event = $ev,
@@ -167,3 +192,12 @@ then
     }
 end
 
+
+
+rule "Clean MVII"
+when
+    $m : MVII( $flid : flId )
+    not  Fluent( id == $flid )
+then
+    retract( $m );
+end

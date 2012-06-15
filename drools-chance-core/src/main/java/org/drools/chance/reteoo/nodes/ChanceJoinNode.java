@@ -98,6 +98,7 @@ public class ChanceJoinNode extends JoinNode {
     @Override
     protected void propagateFromRight(RightTuple rightTuple, LeftTuple leftTuple, BetaMemory memory, PropagationContext context, InternalWorkingMemory workingMemory) {
 
+
         LinkedList constraintList = this.constraints.getConstraints();
         Iterator iter = constraintList.iterator();
         Object con;
@@ -132,6 +133,10 @@ public class ChanceJoinNode extends JoinNode {
 
 
     protected LeftTuple propagateOrModifyFromRight( RightTuple rightTuple, LeftTuple leftTuple, LeftTuple childLeftTuple, BetaMemory memory, PropagationContext context, InternalWorkingMemory workingMemory ) {
+
+        if ( rightTuple.getFactHandle().getObject().getClass().getName().endsWith("MVII")) {
+            System.out.println( "POMFR "+ rightTuple.getFactHandle().getObject());
+        }
 
         LinkedList constraintList = this.constraints.getConstraints();
         Iterator iter = constraintList.iterator();
@@ -212,6 +217,63 @@ public class ChanceJoinNode extends JoinNode {
                 context,
                 workingMemory,
                 useLeftMemory );
+
+    }
+
+    @Override
+    protected LeftTuple propagateOrModifyFromLeft(RightTuple rightTuple, LeftTuple leftTuple, LeftTuple childLeftTuple, ContextEntry[] contextEntry, PropagationContext context, InternalWorkingMemory workingMemory) {
+        if ( rightTuple.getFactHandle().getObject().getClass().getName().endsWith("MVII")) {
+                    System.out.println( "POMFLLLLLL "+ rightTuple.getFactHandle().getObject());
+                }
+
+        LinkedList constraintList = this.constraints.getConstraints();
+        Iterator iter = constraintList.iterator();
+        Object con;
+        int j = 0;
+        boolean allowed = true;
+        while ( ( con = iter.next() ) != null ) {
+            Degree degree;
+            con = ( (LinkedListEntry) con ).getObject();
+
+            if ( con instanceof ImperfectBetaConstraint ) {
+                ImperfectBetaConstraint ibc = (ImperfectBetaConstraint) con;
+                degree = ibc.matchCachedRight( leftTuple, contextEntry[j] );
+                Evaluation eval = new SimpleEvaluationImpl( ibc.getNodeId(), con.toString(), degree, ibc.getLabel() );
+                ((ImperfectRightTuple) rightTuple).addEvaluation( eval );
+            } else {
+                allowed = ((BetaNodeFieldConstraint) con).isAllowedCachedRight( leftTuple, contextEntry[j] );
+            }
+            j++;
+        }
+
+        if ( rightTuple.getFactHandle().getObject().getClass().getName().endsWith("MVII")) {
+                            System.out.println( "POMFLLLLLL "+ allowed);
+                        }
+
+
+        if ( allowed ) {
+            if ( childLeftTuple == null || childLeftTuple.getLeftParent() != leftTuple || childLeftTuple.getFirstChild() == null ) {
+                this.sink.propagateAssertLeftTuple( leftTuple,
+                        rightTuple,
+                        null,
+                        childLeftTuple,
+                        context,
+                        workingMemory,
+                        true );
+            } else {
+                childLeftTuple = this.sink.propagateModifyChildLeftTuple( childLeftTuple,
+                        leftTuple,
+                        context,
+                        workingMemory,
+                        true );
+            }
+        } else if ( childLeftTuple != null && childLeftTuple.getLeftParent() == leftTuple ) {
+            childLeftTuple = this.sink.propagateRetractChildLeftTuple( childLeftTuple,
+                    leftTuple,
+                    context,
+                    workingMemory );
+        }
+        return childLeftTuple;
 
     }
 }

@@ -336,6 +336,19 @@ public class ImperfectRuleTest extends AbstractChanceTest {
     }
 
 
+    @Test
+    @Ignore
+    public void testMVELMatchesOperator() {
+        StatefulKnowledgeSession kSession = initBasicChanceTest("org/drools/chance/testMVELMatchesOperator.drl");
+        Map res = (Map) kSession.getGlobal( MAP );
+
+
+        assertTrue( res.containsKey( "X" ) );
+
+        assertEquals( 1.0 , (Double) res.get( "X" ), 1e-6 );
+
+    }
+
 
 
     @Test

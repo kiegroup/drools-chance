@@ -9,6 +9,7 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.time.SessionPseudoClock;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;
@@ -57,6 +58,7 @@ public class ImperfectECTest extends AbstractChanceTest {
 
 
     @Test
+    @Ignore
     public void testEC2() throws InterruptedException {
         Random rand = new Random();
         rand.setSeed(123456);
