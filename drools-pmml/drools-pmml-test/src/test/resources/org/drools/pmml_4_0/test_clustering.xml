@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Copyright 2011 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<PMML version="4.0" xsi:schemaLocation="http://www.dmg.org/PMML-4_0 http://www.dmg.org/v4-0/pmml-4-0.xsd" xmlns="http://www.dmg.org/PMML-4_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Header description="Clustering Test" copyright="JBoss"/>
+
+    <DataDictionary numberOfFields="3">
+        <DataField name="fld0" optype="categorical" dataType="string">
+            <Value value="x"/>
+            <Value value="y"/>
+            <Value value="z"/>
+        </DataField>
+        <DataField name="fld1" optype="continuous" dataType="double"/>
+        <DataField name="fld2" optype="continuous" dataType="double">
+            <Value value="-1" property="missing" />
+            <Value value="0.3" property="valid" />
+            <Value value="0.4" property="valid" />
+            <Value value="0.5" property="valid" />
+            <Value value="0.6" property="valid" />
+            <Value value="0.7" property="valid" />
+        </DataField>
+    </DataDictionary>
+
+    <ClusteringModel modelName="CenterClustering"
+                     functionName="clustering"
+                     modelClass="centerBased"
+                     numberOfClusters="2">
+        <MiningSchema>
+            <MiningField name="fld0"/>
+            <MiningField name="fld1"/>
+            <MiningField name="fld2"/>
+        </MiningSchema>
+
+        <LocalTransformations>
+            <DerivedField name="fld3" optype="continuous" dataType="double">
+                <NormDiscrete field="fld0" value="x"/>
+            </DerivedField>
+            <DerivedField name="fld4" optype="continuous" dataType="double">
+                <NormDiscrete field="fld0" value="y"/>
+            </DerivedField>
+            <DerivedField name="fld5" optype="continuous" dataType="double">
+                <NormDiscrete field="fld0" value="z"/>
+            </DerivedField>
+        </LocalTransformations>
+
+        <ComparisonMeasure kind="distance" compareFunction="absDiff">
+            <squaredEuclidean/>
+        </ComparisonMeasure>
+
+        <ClusteringField field="fld1" fieldWeight="0.8" isCenterField="true" />
+        <ClusteringField field="fld2" compareFunction="gaussSim" similarityScale="0.99" isCenterField="true" />
+        <ClusteringField field="fld3" isCenterField="true" compareFunction="equal" />
+        <ClusteringField field="fld4" fieldWeight="0.6" compareFunction="delta"/>
+        <ClusteringField field="fld5" compareFunction="table">
+            <Comparisons>
+                <Matrix nbCols="3" nbRows="3" kind="symmetric" diagDefault="-1" offDiagDefault="99">
+                    <MatCell row="1" col="1">4.0</MatCell>
+                    <MatCell row="1" col="2">5.0</MatCell>
+                    <MatCell row="2" col="2">6.0</MatCell>
+                </Matrix>
+            </Comparisons>
+        </ClusteringField>
+
+        <MissingValueWeights>
+            <Array n="5" type="real">1 0.5 1 1 1</Array>
+        </MissingValueWeights>
+
+        <Cluster name="Klust1">
+            <KohonenMap coord1="3" coord3="7" />
+            <Array n="5" type="real">0.5 0.4 0.1 0.3 1</Array>
+        </Cluster>
+        <Cluster name="Klust2">
+            <Array n="5" type="real">0.7 0.4 0.5 0.1 2</Array>
+        </Cluster>
+
+    </ClusteringModel>
+</PMML>

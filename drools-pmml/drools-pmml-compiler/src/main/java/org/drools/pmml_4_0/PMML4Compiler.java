@@ -57,6 +57,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "global/pmml_header.drlt",
             "global/modelMark.drlt",
 
+            "global/dataDefinition/common.drlt",
             "global/dataDefinition/rootDataField.drlt",
             "global/dataDefinition/ioTypeDeclare.drlt",
             "global/dataDefinition/updateIOField.drlt",
@@ -147,6 +148,13 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/regression/regClaxOutput.drlt",
             "models/regression/regNormalization.drlt",
             "models/regression/regDecumulation.drlt",
+
+
+            "models/clustering/clusteringDeclare.drlt",
+            "models/clustering/clusteringInit.drlt",
+            "models/clustering/clusteringEvalDistance.drlt",
+            "models/clustering/clusteringEvalSimilarity.drlt",
+            "models/clustering/clusteringMatrixCompare.drlt",
 
 
             "informer/modelQuestionnaire.drlt",

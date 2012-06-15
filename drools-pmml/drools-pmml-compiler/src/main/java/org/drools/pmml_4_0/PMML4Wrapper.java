@@ -17,10 +17,7 @@
 package org.drools.pmml_4_0;
 
 import org.drools.base.TypeResolver;
-import org.drools.pmml_4_0.descr.DATATYPE;
-import org.drools.pmml_4_0.descr.DataField;
-import org.drools.pmml_4_0.descr.REGRESSIONNORMALIZATIONMETHOD;
-import org.drools.pmml_4_0.descr.Value;
+import org.drools.pmml_4_0.descr.*;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -585,6 +582,40 @@ public class PMML4Wrapper {
             }
         }
         return tok.nextToken();
+    }
+    
+    public String[] tokenize( String s ) {
+        StringTokenizer tok = new StringTokenizer( s );
+        int num = tok.countTokens();
+        String[] toks = new String[ num ];
+        
+        for ( int j = 0; j < num; j++ ) {
+            toks[ j ] = tok.nextToken();            
+        }
+        return toks;
+    }
+    
+    public String[] ones( Integer num ) {
+        String[] ones = new String[ num ];
+        Arrays.fill( ones, "1.0" );
+        return ones;
+    }
+    
+    
+    public String mapComparisonFunction( COMPAREFUNCTION fun, String arg1, String arg2, String scope, String local ) {
+        switch ( fun ) {
+            case ABS_DIFF:
+                return "Math.abs( " + arg1 + " - " + arg2 + ")";
+            case DELTA:
+                return " ( " + arg1 + " == " + arg2 + " ) ? 0.0 : 1.0";
+            case EQUAL:
+                return " ( " + arg1 + " == " + arg2 + " ) ? 1.0 : 0.0";
+            case GAUSS_SIM:
+                return "Math.exp( - Math.log( 2.0 ) * ( " + arg1 + " - " + arg2 + " ) * ( " + arg1 + " - " + arg2 + " ) / ( " + scope + " * " + scope + " ) )";
+            case TABLE:
+                return local;
+        }
+        throw new IllegalStateException( "Unrecognized PMML CompareFunction " + fun );
     }
 
 

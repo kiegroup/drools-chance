@@ -2352,6 +2352,316 @@ end
 
 
 
+  //******************************************************************************************************************
+  //     CLUSTERING MODEL
+  //
+  //******************************************************************************************************************
+
+
+
+
+rule "Clustering Root"
+when
+    $reg : ClusteringModel()
+then
+    applyTemplate( "clusteringDeclare.drlt", utils, registry, null, theory );
+end
+
+rule "visitClustering_context"
+salience -9
+when
+    $klu : ClusteringModel( $name : modelName )
+then
+    utils.context = utils.compactUpperCase( $name );
+end
+
+
+query extractMissingWeights( java.util.Collection $info, int $num, Object $missingWgts )
+    (
+      MissingValueWeights( this memberOf $info, $data : array.content )
+      and
+      $missingWgts := List() from collect ( String() from utils.tokenize( $data ) )
+    )
+    or
+    ( not MissingValueWeights( this memberOf $info )
+      and
+      $missingWgts := List() from collect ( String() from utils.ones( $num ) )
+    )
+end
+
+rule "Init Clustering"
+salience -17
+when
+    $klu : ClusteringModel( $info : extensionsAndClustersAndComparisonMeasures,
+                            $name : modelName,
+                            functionName == MININGFUNCTION.CLUSTERING,
+                            modelClass == "centerBased",
+                            $numClusters : numberOfClusters.intValue() )
+    accumulate( $k : Cluster() from $info,                              //need 'from' to preserve order!
+                $clusterList : collectList( $k ),
+                $num         : count( $k );
+                $num == $numClusters
+              )
+    accumulate( $kf : ClusteringField( isCenterField == true,
+                                       $fw : fieldWeight,
+                                       $fs : similarityScale ) from $info,  //need 'from' to preserve order!
+                $fieldList   : collectList( $kf ),
+                $fieldScopes : collectList( $fs != null ? $fs : 1.0 ),
+                $fieldWgts   : collectList( $fw ),
+                $numFields   : count( $kf )
+              )
+    extractMissingWeights( $info, $numFields, $missingWgts ; )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "numClusters", $numClusters );
+        map.put( "numFields", $numFields );
+        map.put( "fieldWeights", $fieldWgts );
+        map.put( "fieldScopes", $fieldScopes );
+        map.put( "missingWeights", $missingWgts );
+        map.put( "klusters", $clusterList );
+    applyTemplate( "clusteringInit.drlt", utils, registry, map, theory );
+end
+
+rule "Eval Clustering"
+salience -18
+when
+    $klu : ClusteringModel( $info : extensionsAndClustersAndComparisonMeasures,
+                            $name : modelName,
+                            functionName == MININGFUNCTION.CLUSTERING,
+                            modelClass == "centerBased",
+                            $numClusters : numberOfClusters.intValue() )
+    $msr : ComparisonMeasure( this memberOf $info, $defCmp : compareFunction, $kind : kind )
+    accumulate( $k : Cluster() from $info,                              //need 'from' to preserve order!
+                $clusterList : collectList( $k ),
+                $num         : count( $k );
+                $num == $numClusters
+              )
+    accumulate( $kf : ClusteringField( isCenterField == true ) from $info,  //need 'from' to preserve order!
+                $inputFields : collectList( $kf ),
+                $numFields   : count( $kf )
+              )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "numClusters", $numClusters );
+        map.put( "numFields", $numFields.intValue() );
+        map.put( "klusters", $clusterList );
+        map.put( "inputFields", $inputFields );
+        map.put( "defaultCompareFunction", $defCmp );
+        map.put( "msr", $msr );
+    if ( $kind.equals( "distance" ) ) {
+        applyTemplate( "clusteringEvalDistance.drlt", utils, registry, map, theory );
+    } else {
+        applyTemplate( "clusteringEvalSimilarity.drlt", utils, registry, map, theory );
+    }
+end
+
+
+
+rule "Clustering Map Comparison"
+salience -15
+when
+    $klu : ClusteringModel( $info : extensionsAndClustersAndComparisonMeasures,
+                            $name : modelName,
+                            functionName == MININGFUNCTION.CLUSTERING,
+                            modelClass == "centerBased",
+                            $numClusters : numberOfClusters.intValue() )
+    $kf : ClusteringField( $fld : field, $cmp : comparisons != null )  //need 'from' to preserve order!
+    $db : DoubleMatrix( src == $cmp.matrix )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "fieldName", $fld );
+        map.put( "matrix", $db );
+    applyTemplate( "clusteringMatrixCompare.drlt", utils, registry, map, theory );
+end
+
+
+
+
+rule "Clustering_Cleanup"
+salience -20
+when
+    $klu : ClusteringModel( )
+then
+    utils.context = null;
+    retract( $klu );
+end
+
+
+
+
+
+
+
+
+
+//**********************************************************************************************************
+//
+//  GENERAL STRUCTURE
+//
+//**********************************************************************************************************
+
+
+declare DataMatrix
+    rows    : int
+    cols    : int
+    src     : Matrix
+end
+
+declare StringMatrix extends DataMatrix
+    data    : String[][]
+end
+
+declare IntMatrix extends DataMatrix
+    data    : Integer[][]
+end
+
+declare DoubleMatrix extends DataMatrix
+    data    : Double[][]
+end
+
+
+rule "Support Matrix Runtime"
+when
+    $mat : Matrix( )
+then
+    applyTemplate( "common.drlt", utils, registry, null, theory );
+end
+
+
+rule "Create Sparse Matrix"
+when
+    $mat : Matrix( $cells : matCells, arraies.size() == 0, $nc : nbCols, $nr : nbRows )
+    accumulate ( $cell : MatCell( $j : row.intValue(), $k : col.intValue(), $val : value ) from $cells,
+                 $rows : max( $j ),
+                 $cols : max( $k );
+                 $rows > 0 && $cols > 0
+               )
+then
+    int c = $nc != null ? Math.max( $nc.intValue(), $cols.intValue() ) : $cols.intValue();
+    int r = $nr != null ? Math.max( $nr.intValue(), $rows.intValue() ) : $rows.intValue();
+    insert( new DoubleMatrix( r, c, $mat, new Double[ r ][ c ] ) );
+end
+
+
+rule "Init Sparse Matrix Diagonal"
+salience 100
+when
+    $dat : DoubleMatrix( $nc : cols, $nr : rows == $nr, $data : data )
+    $mat : Matrix( $cells : matCells, arraies.size() == 0,
+                   $diag : diagDefault != null && != 0.0 )
+then
+    for ( int j = 0; j < $nr; j++ ) {
+        $data[ j ][ j ] = $diag;
+    }
+end
+
+rule "Init Sparse Matrix"
+salience 100
+when
+    $dat : DoubleMatrix( $nc : cols, $nr : rows, $data : data )
+    $mat : Matrix( $cells : matCells, arraies.size() == 0,
+                   $off : offDiagDefault != null && != 0.0 )
+then
+    for ( int j = 0; j < $nr; j++ ) {
+        for ( int k = 0; k < $nc; k++ ) {
+            if ( j != k ) {
+                $data[ j ][ k ] = $off;
+            }
+        }
+    }
+end
+
+
+rule "Build Sparse Matrix"
+when
+    $dat : DoubleMatrix( $nc : cols, $nr : rows == $nr, $data : data )
+    $mat : Matrix( $cells : matCells, arraies.size() == 0, $kind : kind )
+    $cel : MatCell( $row : row.intValue(), $col : col.intValue(), $val : value ) from $cells
+then
+    $data[ $row - 1 ][ $col - 1 ] = Double.valueOf( $val );
+    if ( "symmetric".equals( $kind ) ) {
+        $data[ $col - 1 ][ $row - 1 ] = Double.valueOf( $val );
+    }
+end
+
+
+
+
+rule "Create Arrayed Matrix - Int"
+when
+    $mat : Matrix( $cells : matCells, $arrays : arraies,
+                   $rows : arraies.size() > 0,
+                   $cols : arraies[0].n.intValue(),
+                   arraies[0].type == "int" )
+then
+    insert( new IntMatrix( $rows, $cols, $mat, new Integer[ $rows ][ $cols ] ) );
+end
+
+rule "Create Arrayed Matrix - Double"
+when
+    $mat : Matrix( $cells : matCells, $arrays : arraies,
+                   $rows : arraies.size() > 0,
+                   $cols : arraies[0].n.intValue(),
+                   arraies[0].type == "double" )
+then
+    insert( new DoubleMatrix( $rows, $cols, $mat, new Double[ $rows ][ $cols ] ) );
+end
+
+rule "Create Arrayed Matrix - String"
+when
+    $mat : Matrix( $cells : matCells, $arrays : arraies,
+                   $rows : arraies.size() > 0,
+                   $cols : arraies[0].n.intValue(),
+                   arraies[0].type == "string" )
+then
+    insert( new StringMatrix( $rows, $cols, $mat, new String[ $rows ][ $cols ] ) );
+end
+
+rule "Fill matrix from double arrays"
+when
+    $dat : DoubleMatrix( $data : data )
+    $mat : Matrix( $arrays : arraies, arraies.size() > 0 )
+    $arr : Array( $row : content ) from $arrays
+then
+    int rowIndex = $arrays.indexOf( $arr );
+    String[] row = utils.tokenize( $row );
+    for ( int j = 0; j < $data[0].length; j++ ) {
+        $data[ rowIndex ][ j ] = Double.valueOf( row[ j ] );
+    }
+end
+
+rule "Fill matrix from int arrays"
+when
+    $dat : IntMatrix( $data : data )
+    $mat : Matrix( $arrays : arraies, arraies.size() > 0 )
+    $arr : Array( $row : content ) from $arrays
+then
+    int rowIndex = $arrays.indexOf( $arr );
+    String[] row = utils.tokenize( $row );
+    for ( int j = 0; j < $data[0].length; j++ ) {
+        $data[ rowIndex ][ j ] = Integer.valueOf( row[ j ] );
+    }
+end
+
+rule "Fill matrix from String arrays"
+when
+    $dat : StringMatrix( $data : data )
+    $mat : Matrix( $arrays : arraies, arraies.size() > 0 )
+    $arr : Array( $row : content ) from $arrays
+then
+    int rowIndex = $arrays.indexOf( $arr );
+    String[] row = utils.tokenize( $row );
+    for ( int j = 0; j < $data[0].length; j++ ) {
+        $data[ rowIndex ][ j ] = row[ j ];
+    }
+end
+
+
+
+
 
 //**********************************************************************************************************
 //

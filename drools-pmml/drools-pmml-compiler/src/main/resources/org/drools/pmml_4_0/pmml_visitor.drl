@@ -101,6 +101,24 @@ then
 end
 
 
+rule "visitLocalTransformation"
+salience -15
+when
+    LocalTransformations( $flds : derivedFields )
+    $fld : DerivedField( ) from $flds
+then
+   //System.err.println("INSERT DERIVED FIELD " + $fld);
+   insert( $fld );
+end
+
+rule "visitLocalTransformation_cleanup"
+// after visitDataDictionary
+salience -21
+when
+    $local : LocalTransformations( )
+then
+   retract( $local );
+end
 
 
 
@@ -672,6 +690,38 @@ when
 then
     insertLogical( $trm );
 end
+
+
+//------------------------------------------------------------------------------------------------------------//
+
+
+rule "visitClustering"
+salience -11
+when
+    $reg : ClusteringModel( $info : extensionsAndClustersAndComparisonMeasures, $name : modelName )
+    $o   : Object() from $info
+then
+    insertLogical( $o );
+end
+
+
+
+rule "visitClusteringComparison"
+salience -11
+when
+    $fld : ClusteringField( $cmp : comparisons )
+then
+    insertLogical( $cmp );
+end
+
+rule "visitClusteringComparisonMatrixes"
+when
+    $cmp : Comparisons( $mat : matrix )
+then
+    insertLogical( $mat );
+end
+
+
 
 
    /*
