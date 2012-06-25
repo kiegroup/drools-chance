@@ -15,34 +15,31 @@
   limitations under the License.
 }
 
-@declare{'ioTraitRule'}
-
- declare trait @{context}Input
-
-     @foreach{ fldName : fields.keySet }
-        @{fldName}   :  @{mapDatatype(fields.get(fldName))}
-     @end{}
-
- end
 
 
- rule "Link @{context}Input"
- dialect "mvel"
- when
-    @{context}Input(
-       @foreach{ fldName : fields.keySet }
-          @{fldName}   :  @{fldName}
-       @end{','}
-    )
- then
-    @foreach{ fldName : fields.keySet }
-        drools.getEntryPoint("in_@{compactUpperCase(fldName)}").insert(@{fldName});
-    @end{}
- end
+
+@comment{
+
+}
+
+@declare{'treeDeclare'}
+
+declare TreeToken
+    context     : String
+    current     : String
+    trail       : java.util.List
+    results     : java.util.Map
+end
+
+declare TreeNode
+    context     : String
+    id          : String
+    parent      : String
+    children    : java.util.List
+    outcome     : String
+end
 
 @end{}
 
 
-
-@includeNamed{'ioTraitRule'}
-
+@includeNamed{'treeDeclare'}

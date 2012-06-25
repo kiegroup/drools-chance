@@ -141,8 +141,8 @@ dialect "mvel"
 when
     $fld : DataField( $n : name, $t : dataType )
 then
-    insert( new FieldMarker($n,$t) );
-    insertLogical( new TypeOfField($n,$t) );
+    insert( new FieldMarker( $n, $t ) );
+    insertLogical( new TypeOfField( $n, $t ) );
 end
 
 
@@ -1205,6 +1205,179 @@ then
 end
 
 
+//**********************************************************************************************************
+//
+//  GENERAL STRUCTURE
+//
+//**********************************************************************************************************
+
+
+declare DataMatrix
+    rows    : int
+    cols    : int
+    src     : Matrix
+end
+
+declare StringMatrix extends DataMatrix
+    data    : String[][]
+end
+
+declare IntMatrix extends DataMatrix
+    data    : Integer[][]
+end
+
+declare DoubleMatrix extends DataMatrix
+    data    : Double[][]
+end
+
+
+rule "Support Matrix Runtime"
+when
+    $mat : Matrix( )
+then
+    applyTemplate( "common.drlt", utils, registry, null, theory );
+end
+
+
+rule "Create Sparse Matrix"
+when
+    $mat : Matrix( $cells : matCells, arraies.size() == 0, $nc : nbCols, $nr : nbRows )
+    accumulate ( $cell : MatCell( $j : row.intValue(), $k : col.intValue(), $val : value ) from $cells,
+                 $rows : max( $j ),
+                 $cols : max( $k );
+                 $rows > 0 && $cols > 0
+               )
+then
+    int c = $nc != null ? Math.max( $nc.intValue(), $cols.intValue() ) : $cols.intValue();
+    int r = $nr != null ? Math.max( $nr.intValue(), $rows.intValue() ) : $rows.intValue();
+    insert( new DoubleMatrix( r, c, $mat, new Double[ r ][ c ] ) );
+end
+
+
+rule "Init Sparse Matrix Diagonal"
+salience 100
+when
+    $dat : DoubleMatrix( $nc : cols, $nr : rows == $nr, $data : data )
+    $mat : Matrix( $cells : matCells, arraies.size() == 0,
+                   $diag : diagDefault != null && != 0.0 )
+then
+    for ( int j = 0; j < $nr; j++ ) {
+        $data[ j ][ j ] = $diag;
+    }
+end
+
+rule "Init Sparse Matrix"
+salience 100
+when
+    $dat : DoubleMatrix( $nc : cols, $nr : rows, $data : data )
+    $mat : Matrix( $cells : matCells, arraies.size() == 0,
+                   $off : offDiagDefault != null && != 0.0 )
+then
+    for ( int j = 0; j < $nr; j++ ) {
+        for ( int k = 0; k < $nc; k++ ) {
+            if ( j != k ) {
+                $data[ j ][ k ] = $off;
+            }
+        }
+    }
+end
+
+
+rule "Build Sparse Matrix"
+when
+    $dat : DoubleMatrix( $nc : cols, $nr : rows == $nr, $data : data )
+    $mat : Matrix( $cells : matCells, arraies.size() == 0, $kind : kind )
+    $cel : MatCell( $row : row.intValue(), $col : col.intValue(), $val : value ) from $cells
+then
+    $data[ $row - 1 ][ $col - 1 ] = Double.valueOf( $val );
+    if ( "symmetric".equals( $kind ) ) {
+        $data[ $col - 1 ][ $row - 1 ] = Double.valueOf( $val );
+    }
+end
+
+
+
+
+rule "Create Arrayed Matrix - Int"
+when
+    $mat : Matrix( $cells : matCells, $arrays : arraies,
+                   $rows : arraies.size() > 0,
+                   $cols : arraies[0].n.intValue(),
+                   arraies[0].type == "int" )
+then
+    insert( new IntMatrix( $rows, $cols, $mat, new Integer[ $rows ][ $cols ] ) );
+end
+
+rule "Create Arrayed Matrix - Double"
+when
+    $mat : Matrix( $cells : matCells, $arrays : arraies,
+                   $rows : arraies.size() > 0,
+                   $cols : arraies[0].n.intValue(),
+                   arraies[0].type == "double" )
+then
+    insert( new DoubleMatrix( $rows, $cols, $mat, new Double[ $rows ][ $cols ] ) );
+end
+
+rule "Create Arrayed Matrix - String"
+when
+    $mat : Matrix( $cells : matCells, $arrays : arraies,
+                   $rows : arraies.size() > 0,
+                   $cols : arraies[0].n.intValue(),
+                   arraies[0].type == "string" )
+then
+    insert( new StringMatrix( $rows, $cols, $mat, new String[ $rows ][ $cols ] ) );
+end
+
+rule "Fill matrix from double arrays"
+when
+    $dat : DoubleMatrix( $data : data )
+    $mat : Matrix( $arrays : arraies, arraies.size() > 0 )
+    $arr : Array( $row : content ) from $arrays
+then
+    int rowIndex = $arrays.indexOf( $arr );
+    String[] row = utils.tokenize( $row );
+    for ( int j = 0; j < $data[0].length; j++ ) {
+        $data[ rowIndex ][ j ] = Double.valueOf( row[ j ] );
+    }
+end
+
+rule "Fill matrix from int arrays"
+when
+    $dat : IntMatrix( $data : data )
+    $mat : Matrix( $arrays : arraies, arraies.size() > 0 )
+    $arr : Array( $row : content ) from $arrays
+then
+    int rowIndex = $arrays.indexOf( $arr );
+    String[] row = utils.tokenize( $row );
+    for ( int j = 0; j < $data[0].length; j++ ) {
+        $data[ rowIndex ][ j ] = Integer.valueOf( row[ j ] );
+    }
+end
+
+rule "Fill matrix from String arrays"
+when
+    $dat : StringMatrix( $data : data )
+    $mat : Matrix( $arrays : arraies, arraies.size() > 0 )
+    $arr : Array( $row : content ) from $arrays
+then
+    int rowIndex = $arrays.indexOf( $arr );
+    String[] row = utils.tokenize( $row );
+    for ( int j = 0; j < $data[0].length; j++ ) {
+        $data[ rowIndex ][ j ] = row[ j ];
+    }
+end
+
+
+
+query formatArray( Array $arr, String $out )
+    $arr := Array( $type : type, $content : content )
+    $out := String() from accumulate (
+        $s : String() from utils.tokenize( $content ),
+        init( String x = ""; ),
+        action( x = ( "".equals(x) ? ", " : "" ) + utils.format( $type, $s ) + x; ),
+        result( x )
+    )
+end
 
 
 
@@ -1243,12 +1416,12 @@ when
     MiningSchema( $miningFields : miningFields )
     accumulate( $mf : MiningField( usageType == FIELDUSAGETYPE.ACTIVE ) from $miningFields, $expNum : count( $mf ) )
     $fields : java.util.Map( size == $expNum ) from accumulate (
-            MiningField( this memberOf $miningFields, $name : name, usageType == FIELDUSAGETYPE.ACTIVE )
+            MiningField( this memberOf $miningFields, $name : name, usageType == FIELDUSAGETYPE.ACTIVE ) from $miningFields
             and
             TypeOfField( $n : name == $name, $type : dataType )
          ,
-        init( Map map = new HashMap(); ),
-        action( map.put( utils.compactUpperCase( $n ), $type ) ),
+        init( java.util.Map map = new java.util.LinkedHashMap(); ),
+        action( map.put( utils.compactUpperCase( $n ), $type ); ),
         result( map )
     )
 then
@@ -1882,30 +2055,176 @@ rule "TreeRoot"
 when
     $tree : TreeModel()
 then
-    System.err.println( "Compiling tree" );
+    applyTemplate( "treeDeclare.drlt", utils, registry, null, theory );
 end
+
 
 rule "visitTree_context"
 salience -9
 when
-    $net : TreeModel( $name : modelName )
+    $tree : TreeModel( $name : modelName )
 then
-    System.out.println( "Set context, now is " + $name );
     utils.context = utils.compactUpperCase( $name );
 end
 
-rule "CompileNode"
-when
-    $node : Node( $nid : id, $score : score, nodes != null, $c : nodes )
-then
-    System.err.println( $node + "  " + $nid + " / " + $score + " | " + $c.size() );
+query treeParent( Node $n, Node $par )
+    $n   := Node()
+    $par := Node( nodes contains $n )
 end
 
-rule "CompileLeaf"
+rule "Init tree nodes"
+salience -10
 when
-    $node : Node( $nid : id, $score : score, nodes == null)
+    $net : TreeModel( $info : extensionsAndNodesAndMiningSchemas )
+    accumulate ( $n : Node( ),
+                 $nodes : collectList( $n );
+                 $nodes.size() > 0
+               )
+    $parents : java.util.Map() from accumulate (
+                 $n : Node( $nid : id ) and treeParent( $n, $par ; ),
+                 init( java.util.Map m = new java.util.HashMap(); ),
+                 action( m.put( $nid, $par.getId() ); ),
+                 result( m )
+               )
+    MiningSchema( this memberOf $info, $mfs : miningFields )
+    MiningField( this memberOf $mfs, usageType == FIELDUSAGETYPE.PREDICTED, $name : name )
+    TypeOfField( name == $name, $type : dataType )
 then
-    System.err.println( "LEAF " + $node + "  " + $nid + " / " + $score );
+    java.util.List orderedNodeList = new java.util.ArrayList( $nodes );
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "tgtType", $type );
+        map.put( "parents", $parents );
+        map.put( "nodes", $nodes );
+    applyTemplate( "treeInit.drlt", utils, registry, map, theory );
+end
+
+
+rule "Declare tree input"
+when
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas )
+    MiningSchema( $miningFields : miningFields, this memberOf $info )
+    accumulate( $mf : MiningField( usageType == FIELDUSAGETYPE.ACTIVE ) from $miningFields, $expNum : count( $mf ) )
+    $fields : java.util.Map( size == $expNum ) from accumulate (
+            MiningField( this memberOf $miningFields, $name : name, usageType == FIELDUSAGETYPE.ACTIVE ) from $miningFields
+            and
+            TypeOfField( $n : name == $name, $type : dataType )
+         ,
+        init( java.util.Map map = new java.util.LinkedHashMap(); ),
+        action( map.put( utils.compactUpperCase( $n ), $type ); ),
+        result( map )
+    )
+    $root : Node( $rid : id, this memberOf $info)
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "fields", $fields );
+        map.put( "rootId", $rid );
+    applyTemplate( "treeInputDeclare.drlt", utils, registry, map, theory );
+end
+
+
+query compilePredicate( java.util.List $parent, String $pred, String $fld )
+    ( SimplePredicate( this memberOf $parent, $fld := field, $op : operator, $val : value )
+      and
+      TypeOfField( $fld, $type ; )
+      and
+      $pred := String() from "( " +
+                                "m" + utils.compactUpperCase( $fld ) + " == false && " +
+                                "v" + utils.compactUpperCase( $fld ) + " " + utils.mapOperator( $op ) + " " + utils.format( $type, $val ) +
+                             " )"
+    )
+    or
+    (
+      SimpleSetPredicate( this memberOf $parent, $fld := field, $op : booleanOperator, $arr : array )
+      and
+      formatArray( $arr, $out ; )
+      and
+      $pred := String() from "( " + "m" + utils.compactUpperCase( $fld ) + " == false && " +
+                                    "v" + utils.compactUpperCase( $fld ) + ( "isNotIn".equals( $op ) ? " not" : "" ) + " in ( " + $out + " ) )"
+    )
+    or
+    ( True( this memberOf $parent ) and $pred := String() from "1 == 1" )
+      and
+      $fld := String() from ""
+    or
+    ( False( this memberOf $parent ) and $pred := String() from "1 == 0" )
+      and
+      $fld := String() from ""
+    or
+    ( (
+        $cp : CompoundPredicate( this memberOf $parent, $sub : simplePredicatesAndCompoundPredicatesAndSimpleSetPredicates )
+        and
+        $pred := String() from accumulate( CompoundPredicate( this == $cp, $bop : booleanOperator )
+                                           and
+                                           compilePredicate( $sub, $p, $fld2 ; ),
+                                           init( String x = "" ),
+                                           action( x = "( "
+
+                                                            + $p + " )"
+                                                       + ( "".equals(x) ? "" : utils.mapTreeOp( $bop ) )
+                                                       + x; ),
+                                           result( x )
+                                         )
+    ) )
+end
+
+query treeNode( java.util.Collection $cll, String $id )
+    Node( $id := id, this memberOf $cll )
+    or
+    (
+        Node( this memberOf $cll, $children : nodes )
+        and
+        treeNode( $children, $id ; )
+    )
+end
+
+rule "Node Evaluation"
+salience -13
+when
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas )
+    Node( $id : id, $coll : extensionsAndSimplePredicatesAndCompoundPredicates )
+    ?treeNode( $info, $id ; )
+    compilePredicate( $coll, $pred, $fld ; )
+    MiningSchema( this memberOf $info, $fields : miningFields )
+    MiningField( usageType != null && == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+then
+    System.out.println( " >>>>>>>>>>>>>>>> " + $pred + " >>>>>>>> " + $fld );
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "id", $id );
+        map.put( "constraints", $pred );
+        map.put( "name", utils.compactUpperCase( $tgt ) );
+    applyTemplate( "treeEval.drlt", utils, registry, map, theory );
+end
+
+
+//rule "CompileLeaf"
+//when
+//    $node : Node( $nid : id, $score : score, nodes.size() == 0 )
+//then
+//    System.err.println( "LEAF " + $node + "  " + $nid + " / " + $score );
+//end
+
+
+
+
+
+rule "TreeNodes need an ID!"
+when
+    $tree : TreeModel( $name : modelName )
+    $node : Node( id == null )
+then
+    modify ( $node ) { setId( $name + utils.nextCount() ); }
+end
+
+rule "Tree_Cleanup"
+salience -20
+when
+    $tri : TreeModel( )
+then
+    utils.context = null;
+    retract( $tri );
 end
 
 
@@ -2494,170 +2813,6 @@ end
 
 
 
-
-
-
-//**********************************************************************************************************
-//
-//  GENERAL STRUCTURE
-//
-//**********************************************************************************************************
-
-
-declare DataMatrix
-    rows    : int
-    cols    : int
-    src     : Matrix
-end
-
-declare StringMatrix extends DataMatrix
-    data    : String[][]
-end
-
-declare IntMatrix extends DataMatrix
-    data    : Integer[][]
-end
-
-declare DoubleMatrix extends DataMatrix
-    data    : Double[][]
-end
-
-
-rule "Support Matrix Runtime"
-when
-    $mat : Matrix( )
-then
-    applyTemplate( "common.drlt", utils, registry, null, theory );
-end
-
-
-rule "Create Sparse Matrix"
-when
-    $mat : Matrix( $cells : matCells, arraies.size() == 0, $nc : nbCols, $nr : nbRows )
-    accumulate ( $cell : MatCell( $j : row.intValue(), $k : col.intValue(), $val : value ) from $cells,
-                 $rows : max( $j ),
-                 $cols : max( $k );
-                 $rows > 0 && $cols > 0
-               )
-then
-    int c = $nc != null ? Math.max( $nc.intValue(), $cols.intValue() ) : $cols.intValue();
-    int r = $nr != null ? Math.max( $nr.intValue(), $rows.intValue() ) : $rows.intValue();
-    insert( new DoubleMatrix( r, c, $mat, new Double[ r ][ c ] ) );
-end
-
-
-rule "Init Sparse Matrix Diagonal"
-salience 100
-when
-    $dat : DoubleMatrix( $nc : cols, $nr : rows == $nr, $data : data )
-    $mat : Matrix( $cells : matCells, arraies.size() == 0,
-                   $diag : diagDefault != null && != 0.0 )
-then
-    for ( int j = 0; j < $nr; j++ ) {
-        $data[ j ][ j ] = $diag;
-    }
-end
-
-rule "Init Sparse Matrix"
-salience 100
-when
-    $dat : DoubleMatrix( $nc : cols, $nr : rows, $data : data )
-    $mat : Matrix( $cells : matCells, arraies.size() == 0,
-                   $off : offDiagDefault != null && != 0.0 )
-then
-    for ( int j = 0; j < $nr; j++ ) {
-        for ( int k = 0; k < $nc; k++ ) {
-            if ( j != k ) {
-                $data[ j ][ k ] = $off;
-            }
-        }
-    }
-end
-
-
-rule "Build Sparse Matrix"
-when
-    $dat : DoubleMatrix( $nc : cols, $nr : rows == $nr, $data : data )
-    $mat : Matrix( $cells : matCells, arraies.size() == 0, $kind : kind )
-    $cel : MatCell( $row : row.intValue(), $col : col.intValue(), $val : value ) from $cells
-then
-    $data[ $row - 1 ][ $col - 1 ] = Double.valueOf( $val );
-    if ( "symmetric".equals( $kind ) ) {
-        $data[ $col - 1 ][ $row - 1 ] = Double.valueOf( $val );
-    }
-end
-
-
-
-
-rule "Create Arrayed Matrix - Int"
-when
-    $mat : Matrix( $cells : matCells, $arrays : arraies,
-                   $rows : arraies.size() > 0,
-                   $cols : arraies[0].n.intValue(),
-                   arraies[0].type == "int" )
-then
-    insert( new IntMatrix( $rows, $cols, $mat, new Integer[ $rows ][ $cols ] ) );
-end
-
-rule "Create Arrayed Matrix - Double"
-when
-    $mat : Matrix( $cells : matCells, $arrays : arraies,
-                   $rows : arraies.size() > 0,
-                   $cols : arraies[0].n.intValue(),
-                   arraies[0].type == "double" )
-then
-    insert( new DoubleMatrix( $rows, $cols, $mat, new Double[ $rows ][ $cols ] ) );
-end
-
-rule "Create Arrayed Matrix - String"
-when
-    $mat : Matrix( $cells : matCells, $arrays : arraies,
-                   $rows : arraies.size() > 0,
-                   $cols : arraies[0].n.intValue(),
-                   arraies[0].type == "string" )
-then
-    insert( new StringMatrix( $rows, $cols, $mat, new String[ $rows ][ $cols ] ) );
-end
-
-rule "Fill matrix from double arrays"
-when
-    $dat : DoubleMatrix( $data : data )
-    $mat : Matrix( $arrays : arraies, arraies.size() > 0 )
-    $arr : Array( $row : content ) from $arrays
-then
-    int rowIndex = $arrays.indexOf( $arr );
-    String[] row = utils.tokenize( $row );
-    for ( int j = 0; j < $data[0].length; j++ ) {
-        $data[ rowIndex ][ j ] = Double.valueOf( row[ j ] );
-    }
-end
-
-rule "Fill matrix from int arrays"
-when
-    $dat : IntMatrix( $data : data )
-    $mat : Matrix( $arrays : arraies, arraies.size() > 0 )
-    $arr : Array( $row : content ) from $arrays
-then
-    int rowIndex = $arrays.indexOf( $arr );
-    String[] row = utils.tokenize( $row );
-    for ( int j = 0; j < $data[0].length; j++ ) {
-        $data[ rowIndex ][ j ] = Integer.valueOf( row[ j ] );
-    }
-end
-
-rule "Fill matrix from String arrays"
-when
-    $dat : StringMatrix( $data : data )
-    $mat : Matrix( $arrays : arraies, arraies.size() > 0 )
-    $arr : Array( $row : content ) from $arrays
-then
-    int rowIndex = $arrays.indexOf( $arr );
-    String[] row = utils.tokenize( $row );
-    for ( int j = 0; j < $data[0].length; j++ ) {
-        $data[ rowIndex ][ j ] = row[ j ];
-    }
-end
 
 
 

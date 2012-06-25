@@ -620,7 +620,28 @@ public class PMML4Wrapper {
 
 
 
-
+    public String mapOperator( String op ) {
+        if ( "equal".equals( op ) ) {
+            return "==";
+        } else if ( "notEqual".equals( op ) ) {
+            return "!=";
+        } else if ( "lessThan".equals( op ) ) {
+            return "<";
+        } else if ( "lessOrEqual".equals( op ) ) {
+            return "<=";
+        } else if ( "greaterThan".equals( op ) ) {
+            return ">";
+        } else if ( "greaterOrEqual".equals( op ) ) {
+            return ">=";
+        } else if ( "and".equals( op ) ) {
+            return "&&";
+        } else if ( "or".equals( op ) ) {
+            return "||";
+        } else if ( "xor".equals( op ) ) {
+            return "^^";
+        }
+        throw new IllegalStateException( "Unrecognized PMML Operator " + op );
+    }
 
 
 
@@ -720,6 +741,20 @@ public class PMML4Wrapper {
 		else
 			return "Question.QuestionType.TYPE_TEXT";
 	}
+    
+    public String mapTreeOp( String op ) {
+        if ( "and".equals( op ) ) {
+            return " && ";
+        } else if ( "or".equals( op ) ) {
+            return " || ";
+        } else if ( "xor".equals( op ) ) {
+            return " ^^ ";
+        } else if ( "surrogate".equals( op ) ) {
+            return " || ";
+        } else {
+            return " , ";
+        }
+    }
 
 
 }

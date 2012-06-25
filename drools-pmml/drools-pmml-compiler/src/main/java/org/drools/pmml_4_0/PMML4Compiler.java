@@ -156,6 +156,12 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/clustering/clusteringEvalSimilarity.drlt",
             "models/clustering/clusteringMatrixCompare.drlt",
 
+            "models/tree/treeDeclare.drlt",
+            "models/tree/treeInputDeclare.drlt",
+            "models/tree/treeInit.drlt",
+            "models/tree/treeEval.drlt",
+            "models/tree/treeNode.drlt",
+
 
             "informer/modelQuestionnaire.drlt",
             "informer/modelAddQuestionsToQuestionnaire.drlt",

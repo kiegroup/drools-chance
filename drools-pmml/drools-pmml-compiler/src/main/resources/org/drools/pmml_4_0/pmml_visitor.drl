@@ -601,6 +601,32 @@ then
     insertLogical( $child );
 end
 
+rule "Visit Node Predicates"
+salience -9
+when
+    $node  : Node( $children : extensionsAndSimplePredicatesAndCompoundPredicates )
+    $child : Object() from $children
+then
+    insertLogical( $child );
+end
+
+rule "Visit Compound Predicates"
+salience -9
+when
+    $node  : CompoundPredicate( $children : simplePredicatesAndCompoundPredicatesAndSimpleSetPredicates )
+    $child : Object() from $children
+then
+    insertLogical( $child );
+end
+
+rule "Visit Set Predicates"
+salience -9
+when
+    $node  : SimpleSetPredicate( $arr : array )
+then
+    insertLogical( $arr );
+end
+
 
  //------------------------------------------------------------------------------------------------------------//
 
