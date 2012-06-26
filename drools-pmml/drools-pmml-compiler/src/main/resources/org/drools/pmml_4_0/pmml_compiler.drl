@@ -2072,6 +2072,20 @@ query treeParent( Node $n, Node $par )
     $par := Node( nodes contains $n )
 end
 
+
+rule "Tree Common Rules"
+salience -9
+when
+    $tree : TreeModel( $name : modelName, $info : extensionsAndNodesAndMiningSchemas )
+    MiningSchema( this memberOf $info, $mfs : miningFields )
+    MiningField( this memberOf $mfs, usageType == FIELDUSAGETYPE.PREDICTED, $tgtName : name )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "model", utils.context );
+        map.put( "name", utils.compactUpperCase( $tgtName ) );
+    applyTemplate( "treeCommon.drlt", utils, registry, map, theory );
+end
+
 rule "Init tree nodes"
 salience -10
 when
@@ -2086,6 +2100,38 @@ when
                  action( m.put( $nid, $par.getId() ); ),
                  result( m )
                )
+    $totals  : java.util.Map() from accumulate (
+                 $n : Node( $nid : id, $tot : recordCount ),
+                 init( java.util.Map m = new java.util.HashMap(); ),
+                 action( m.put( $nid, $tot != null ? $tot.intValue() : 0 ); ),
+                 result( m )
+               )
+    $counts  : java.util.Map() from accumulate (
+                 $n : Node( $nid : id, $scores : scoreDistributions )
+                 and
+                 $rcounts : java.util.Map() from accumulate (
+                    ScoreDistribution( $val : value, $num : recordCount ) from $scores,
+                    init( java.util.Map n = new java.util.HashMap(); ),
+                    action( n.put( $val, $num ); ),
+                    result( n )
+                 ),
+                 init( java.util.Map m = new java.util.HashMap(); ),
+                 action( m.put( $nid, $rcounts ); ),
+                 result( m )
+               )
+    $confs   : java.util.Map() from accumulate (
+                 $n : Node( $nid : id, $scores : scoreDistributions )
+                 and
+                 $ccounts : java.util.Map() from accumulate (
+                    ScoreDistribution( $val : value, $num : confidence ) from $scores,
+                    init( java.util.Map n = new java.util.HashMap(); ),
+                    action( n.put( $val, $num ); ),
+                    result( n )
+                 ),
+                 init( java.util.Map m = new java.util.HashMap(); ),
+                 action( m.put( $nid, $ccounts ); ),
+                 result( m )
+               )
     MiningSchema( this memberOf $info, $mfs : miningFields )
     MiningField( this memberOf $mfs, usageType == FIELDUSAGETYPE.PREDICTED, $name : name )
     TypeOfField( name == $name, $type : dataType )
@@ -2096,13 +2142,16 @@ then
         map.put( "tgtType", $type );
         map.put( "parents", $parents );
         map.put( "nodes", $nodes );
+        map.put( "totals", $totals );
+        map.put( "counts", $counts );
+        map.put( "confs", $confs );
     applyTemplate( "treeInit.drlt", utils, registry, map, theory );
 end
 
 
 rule "Declare tree input"
 when
-    TreeModel( $info : extensionsAndNodesAndMiningSchemas )
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas, $miss : missingValueStrategy )
     MiningSchema( $miningFields : miningFields, this memberOf $info )
     accumulate( $mf : MiningField( usageType == FIELDUSAGETYPE.ACTIVE ) from $miningFields, $expNum : count( $mf ) )
     $fields : java.util.Map( size == $expNum ) from accumulate (
@@ -2115,17 +2164,58 @@ when
         result( map )
     )
     $root : Node( $rid : id, this memberOf $info)
+    MiningField( this memberOf $miningFields, usageType == FIELDUSAGETYPE.PREDICTED, $tgtName : name )
+    TypeOfField( name == $tgtName, $tgtType : dataType )
 then
     HashMap map = new HashMap( 7 );
         map.put( "context", utils.context );
         map.put( "fields", $fields );
         map.put( "rootId", $rid );
+        map.put( "visitMode", $miss );
+        map.put( "targetField", utils.compactUpperCase( $tgtName ) );
+        map.put( "targetType", $tgtType );
     applyTemplate( "treeInputDeclare.drlt", utils, registry, map, theory );
+    applyTemplate( "treeIOBinding.drlt", utils, registry, map, theory );
 end
 
 
-query compilePredicate( java.util.List $parent, String $pred, String $fld )
-    ( SimplePredicate( this memberOf $parent, $fld := field, $op : operator, $val : value )
+
+query compilePredicateForMissing( java.util.List $parent, String $pred, Object $src )
+    (
+      $src  := SimplePredicate( this memberOf $parent, $fld := field, $op : operator, $val : value )
+      and
+      $pred := String() from "( " + "m" + utils.compactUpperCase( $fld ) + " == true " + " )"
+    )
+    or
+    (
+      $src  := SimpleSetPredicate( this memberOf $parent, $fld := field )
+      and
+      $pred := String() from "( " + "m" + utils.compactUpperCase( $fld ) + " == true " + " )"
+    )
+    or
+    ( $src  := True( this memberOf $parent ) and $pred := String() from "false" )
+    or
+    ( $src  := False( this memberOf $parent ) and $pred := String() from "false" )
+//    or
+//    ( $src  := CompoundPredicate( this memberOf $parent, booleanOperator == "surrogate" ) and $pred := String() from "false" )
+    or
+    ( (
+        $src  := CompoundPredicate( this memberOf $parent, $sub : simplePredicatesAndCompoundPredicatesAndSimpleSetPredicates )
+        and
+        $pred := String() from accumulate( compilePredicateForMissing( $sub, $p, $fld2 ; ),
+                                           init( String x = "" ),
+                                           action( x = "( " + $p + " )"
+                                                       + ( "".equals(x) ? "" : " || " )
+                                                       + x; ),
+                                           result( x )
+                                         )
+    ) )
+end
+
+
+query compilePredicate( java.util.List $parent, String $pred, Object $src )
+    (
+      $src  := SimplePredicate( this memberOf $parent, $fld := field, $op : operator, $val : value )
       and
       TypeOfField( $fld, $type ; )
       and
@@ -2136,7 +2226,7 @@ query compilePredicate( java.util.List $parent, String $pred, String $fld )
     )
     or
     (
-      SimpleSetPredicate( this memberOf $parent, $fld := field, $op : booleanOperator, $arr : array )
+      $src  := SimpleSetPredicate( this memberOf $parent, $fld := field, $op : booleanOperator, $arr : array )
       and
       formatArray( $arr, $out ; )
       and
@@ -2144,26 +2234,38 @@ query compilePredicate( java.util.List $parent, String $pred, String $fld )
                                     "v" + utils.compactUpperCase( $fld ) + ( "isNotIn".equals( $op ) ? " not" : "" ) + " in ( " + $out + " ) )"
     )
     or
-    ( True( this memberOf $parent ) and $pred := String() from "1 == 1" )
-      and
-      $fld := String() from ""
+    ( $src  := True( this memberOf $parent ) and $pred := String() from "1 == 1" )
     or
-    ( False( this memberOf $parent ) and $pred := String() from "1 == 0" )
-      and
-      $fld := String() from ""
+    ( $src  := False( this memberOf $parent ) and $pred := String() from "1 == 0" )
     or
     ( (
-        $cp : CompoundPredicate( this memberOf $parent, $sub : simplePredicatesAndCompoundPredicatesAndSimpleSetPredicates )
+        $src  := CompoundPredicate( this memberOf $parent, $sub : simplePredicatesAndCompoundPredicatesAndSimpleSetPredicates, booleanOperator != "surrogate")
         and
-        $pred := String() from accumulate( CompoundPredicate( this == $cp, $bop : booleanOperator )
+        $pred := String() from accumulate( CompoundPredicate( this == $src, $bop : booleanOperator )
                                            and
                                            compilePredicate( $sub, $p, $fld2 ; ),
                                            init( String x = "" ),
-                                           action( x = "( "
-
-                                                            + $p + " )"
+                                           action( x = "( " + $p + " )"
                                                        + ( "".equals(x) ? "" : utils.mapTreeOp( $bop ) )
                                                        + x; ),
+                                           result( x )
+                                         )
+    ) )
+    or
+    ( (
+        $src  := CompoundPredicate( this memberOf $parent, $sub : simplePredicatesAndCompoundPredicatesAndSimpleSetPredicates, booleanOperator == "surrogate" )
+        and
+        $pred := String() from accumulate( compilePredicate( $sub, $p, $xx ; )
+                                           and
+                                           ?compilePredicateForMissing( $sub, $m, $xx ; ),
+                                           init( String x = ""; String m = "true"; boolean first = true; ),
+                                           action(
+                                                   x = $p
+                                                       + ( first ? "" : " || "
+                                                       + "( " + m + " && ( " + x + " ) )" );
+                                                   m = $m;
+                                                   first = false;
+                                           ),
                                            result( x )
                                          )
     ) )
@@ -2182,31 +2284,114 @@ end
 rule "Node Evaluation"
 salience -13
 when
-    TreeModel( $info : extensionsAndNodesAndMiningSchemas )
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas, $penalty : missingValuePenalty, $missStrat : missingValueStrategy )
     Node( $id : id, $coll : extensionsAndSimplePredicatesAndCompoundPredicates )
     ?treeNode( $info, $id ; )
-    compilePredicate( $coll, $pred, $fld ; )
+    compilePredicate( $coll, $pred, $src ; )
+    ?compilePredicateForMissing( $coll, $miss, $src ; )
     MiningSchema( this memberOf $info, $fields : miningFields )
     MiningField( usageType != null && == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+    TypeOfField( name == $tgt, $tgtType : dataType )
 then
-    System.out.println( " >>>>>>>>>>>>>>>> " + $pred + " >>>>>>>> " + $fld );
     HashMap map = new HashMap( 7 );
         map.put( "context", utils.context );
         map.put( "id", $id );
         map.put( "constraints", $pred );
+        map.put( "missings", $miss );
+        map.put( "penalty", $penalty != null ? $penalty : 1.0 );
         map.put( "name", utils.compactUpperCase( $tgt ) );
+        map.put( "tgtType", $tgtType );
     applyTemplate( "treeEval.drlt", utils, registry, map, theory );
+
+    if ( $missStrat.equals( MISSINGVALUESTRATEGY.AGGREGATE_NODES ) ) {
+        applyTemplate( "treeAggregateEval.drlt", utils, registry, map, theory );
+    }
+
+    if ( $missStrat.equals( MISSINGVALUESTRATEGY.DEFAULT_CHILD ) ) {
+        applyTemplate( "treeDefaultEval.drlt", utils, registry, map, theory );
+    }
+
 end
 
 
-//rule "CompileLeaf"
-//when
-//    $node : Node( $nid : id, $score : score, nodes.size() == 0 )
-//then
-//    System.err.println( "LEAF " + $node + "  " + $nid + " / " + $score );
-//end
+
+rule "Missing Handler Aggregate Strategy"
+salience -13
+when
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas, missingValueStrategy == MISSINGVALUESTRATEGY.AGGREGATE_NODES )
+    MiningSchema( this memberOf $info, $fields : miningFields )
+    MiningField( usageType != null && == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+    TypeOfField( name == $tgt, $tgtType : dataType )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $tgt ) );
+        map.put( "tgtType", $tgtType );
+    applyTemplate( "treeMissHandleAggregate.drlt", utils, registry, map, theory );
+end
 
 
+rule "Missing Handler Weighted Strategy"
+salience -13
+when
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas, missingValueStrategy == MISSINGVALUESTRATEGY.WEIGHTED_CONFIDENCE )
+    MiningSchema( this memberOf $info, $fields : miningFields )
+    MiningField( usageType != null && == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+    TypeOfField( name == $tgt, $tgtType : dataType )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $tgt ) );
+        map.put( "tgtType", $tgtType );
+    applyTemplate( "treeMissHandleWeighted.drlt", utils, registry, map, theory );
+end
+
+rule "Missing Handler Last Prediction Strategy"
+salience -13
+when
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas, missingValueStrategy == MISSINGVALUESTRATEGY.LAST_PREDICTION )
+    MiningSchema( this memberOf $info, $fields : miningFields )
+    MiningField( usageType != null && == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+    TypeOfField( name == $tgt, $tgtType : dataType )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $tgt ) );
+        map.put( "tgtType", $tgtType );
+    applyTemplate( "treeMissHandleLast.drlt", utils, registry, map, theory );
+end
+
+rule "Missing Handler Null Strategy"
+salience -13
+when
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas, missingValueStrategy == MISSINGVALUESTRATEGY.NULL_PREDICTION )
+    MiningSchema( this memberOf $info, $fields : miningFields )
+    MiningField( usageType != null && == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+    TypeOfField( name == $tgt, $tgtType : dataType )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $tgt ) );
+        map.put( "tgtType", $tgtType );
+    applyTemplate( "treeMissHandleNull.drlt", utils, registry, map, theory );
+end
+
+
+rule "Missing Handler None Strategy"
+salience -13
+when
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas,
+                       missingValueStrategy == MISSINGVALUESTRATEGY.NONE, noTrueChildStrategy == NOTRUECHILDSTRATEGY.RETURN_LAST_PREDICTION )
+    MiningSchema( this memberOf $info, $fields : miningFields )
+    MiningField( usageType != null && == FIELDUSAGETYPE.PREDICTED, $tgt : name )
+    TypeOfField( name == $tgt, $tgtType : dataType )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $tgt ) );
+        map.put( "tgtType", $tgtType );
+    applyTemplate( "treeMissHandleNone.drlt", utils, registry, map, theory );
+end
 
 
 

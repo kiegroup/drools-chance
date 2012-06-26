@@ -19,7 +19,7 @@
 
 
 @comment{
-
+    All node-specific rules, which require context information to be applied
 }
 
 @declare{'treeEval'}
@@ -29,65 +29,57 @@ rule "Eval Tree Node @{context} - @{id} - Down"
 salience $children.size() - $children.indexOf( $child )
 dialect "mvel"
 when
-    $node : TreeNode( context == "@{context}", $id : id == "@{id}", $out : outcome, $master : parent, $children : children, children.size > 0 )
+    $node : TreeNode( context == "@{context}", $id : id == "@{id}", $children : children, children.size > 0 )
     $tok  : @{context}TreeToken( context == "@{context}", current == "@{id}", $trail : trail,
-                                 @{constraints} )
+                                 ( @{constraints} ) || ( visitMode == "AGGREGATE_NODES" && ( @{missings} ) ) )
     $child : String( this not memberOf $trail ) from $children
 then
-    System.out.println( "Im here at @{id}, going down to " + $child );
-    $trail.add( $child );
+//    System.out.println( "Visiting node @{id}, going down to " + $child );
     modify ( $tok ) {
+        getTrail().add( $child ),
+        setDownward( true ),
         setCurrent( $child );
     }
 end
 
 
-rule "Eval Tree Node @{context} - @{id} - At"
-salience 2
-when
-    $node : TreeNode( context == "@{context}", $id : id == "@{id}", $out : outcome, $master : parent )
-    $tok  : @{context}TreeToken( context == "@{context}", current == "@{id}", $trail : trail,
-                                 @{constraints}, $res : results, results.keySet not contains "@{id}" )
-then
-    $res.put( "@{id}", $out );
 
-    System.out.println( "I'm here at @{id} !!!! @{constraints.replace("\"","")}" );
+rule "Eval Tree Node @{context} - @{id} - True"
+salience 3
+no-loop
+when
+    $node : TreeNode( context == "@{context}", $id : id == "@{id}", $out : outcome,
+                      children.size == 0, $conf : confidence, $tot : recordCount )
+    $tok  : @{context}TreeToken( context == "@{context}", current == "@{id}", $baseConf : confidence,
+                                 $res : results, results.keySet not contains "@{id}",
+                                 visitMode != "AGGREGATE_NODES",
+                                 @{constraints}
+                               )
+then
+//    System.out.println( "TRUE Solution found at @{id} !!!! " );
+    modify( $tok ) {
+       setConfidence( $baseConf * ( $conf.containsKey( $out ) ? (Double) $conf.get( $out ) : 1.0 ) ),
+       setTotalCount( $tot ),
+       setOutcome( $out ),
+       setCurrent( "null" );
+    }
 end
 
 
-rule "Eval Tree Node @{context} - @{id} - True" extends "Eval Tree Node @{context} - @{id} - At"
+
+
+rule "Eval Tree Node @{context} - @{id} - Unknown Weighted"
 salience 3
 when
-    TreeNode( this == $node, children.size == 0 )
+    $node : TreeNode( context == "@{context}", $id : id == "@{id}", $out : outcome )
+    $tok  : @{context}TreeToken( context == "@{context}", current == "@{id}",
+                                 visitMode == "WEIGHTED_CONFIDENCE" || == "LAST_PREDICTION" || == "NULL_PREDICTION",
+                                 results.keySet not contains "@{id}",
+                                 @{missings} )
 then
-    $res.put( "@{id}", "" );
-    System.out.println( "Solution found at @{id} !!!! " );
-    @{name} x = new @{name}();
-            x.setContext( "@{context}" );
-            x.setValid( true );
-            x.setMissing( false );
-            x.setValue( $out );
-    insertLogical(x);
+//    System.out.println( "UNKNOWN found at @{id}, collecting for later evaluation !!!! " );
+    modify ( $tok ) { getResults().put( "@{id}", $out ); }
 end
-
-
-
-
-rule "Eval Tree Node @{context} - @{id} - Up"
-when
-    $node : TreeNode( context == "@{context}", $id : id == "@{id}", $out : outcome, $master : parent )
-    $tok  : @{context}TreeToken( context == "@{context}", current == "@{id}", $trail : trail )
-    not @{name}( context == "@{context}" )
-then
-    modify ( $tok ) {
-        setCurrent( $master );
-    }
-    System.out.println( "Im here at @{id}, going back up to " + $master );
-end
-
-
-
-
 
 
 @end{}

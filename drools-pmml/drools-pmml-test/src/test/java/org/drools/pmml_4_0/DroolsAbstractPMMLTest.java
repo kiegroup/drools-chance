@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
@@ -81,15 +82,15 @@ public abstract class DroolsAbstractPMMLTest {
 
 
         if (! verbose) {
-            for (String pmmlSource : pmmlSources) {
+            for ( String pmmlSource : pmmlSources ) {
                 kbuilder.add(ResourceFactory.newClassPathResource(pmmlSource),ResourceType.PMML);
             }
         } else {
 
             try {
-                for (String pmmlSource : pmmlSources) {
-                    String src = compiler.compile(ResourceFactory.newClassPathResource(pmmlSource).getInputStream(),null);
-                    kbuilder.add(ResourceFactory.newByteArrayResource(src.getBytes()),ResourceType.DRL);
+                for ( String pmmlSource : pmmlSources ) {
+                    String src = compiler.compile( ResourceFactory.newClassPathResource( pmmlSource ).getInputStream(), null );
+                    kbuilder.add( ResourceFactory.newByteArrayResource( src.getBytes() ), ResourceType.DRL );
                     System.out.println(src);
                 }
             } catch (IOException e) {
@@ -106,10 +107,10 @@ public abstract class DroolsAbstractPMMLTest {
             throw new IllegalArgumentException("Could not parse knowledge.");
         }
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
-        conf.setEventProcessingMode(EventProcessingOption.STREAM);
+        conf.setEventProcessingMode( EventProcessingOption.STREAM );
         //conf.setConflictResolver(LifoConflictResolver.getInstance());
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase(conf);
-        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase( conf );
+        kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
         return kbase.newStatefulKnowledgeSession();
 
     }
@@ -248,27 +249,28 @@ public abstract class DroolsAbstractPMMLTest {
 
     protected void checkFirstDataFieldOfTypeStatus(FactType type, boolean valid, boolean missing, String ctx, Object... target) {
         Class<?> klass = type.getFactClass();
-        Iterator iter = getKSession().getObjects(new ClassObjectFilter(klass)).iterator();
+        Iterator iter = getKSession().getObjects( new ClassObjectFilter( klass ) ).iterator();
+        assertTrue( iter.hasNext() );
         Object obj = iter.next();
         if (ctx == null) {
-            while (type.get(obj,"context") != null && iter.hasNext())
+            while ( type.get( obj, "context" ) != null && iter.hasNext() )
                 obj = iter.next();
         } else {
-            while ( (! ctx.equals(type.get(obj,"context"))) && iter.hasNext())
+            while ( ( ! ctx.equals( type.get( obj, "context" ) ) ) && iter.hasNext() )
                 obj = iter.next();
         }
-        assertEquals(target[0], type.get(obj, "value"));
-        assertEquals(valid, type.get(obj, "valid"));
-        assertEquals(missing, type.get(obj, "missing"));
+        assertEquals( target[0], type.get( obj, "value" ) );
+        assertEquals( valid, type.get( obj, "valid" ) );
+        assertEquals( missing, type.get( obj, "missing" ) );
 
     }
 
 
     protected double queryDoubleField(String target, String modelName) {
-        QueryResults results = getKSession().getQueryResults(target,modelName);
-        assertEquals(1, results.size());
+        QueryResults results = getKSession().getQueryResults( target, modelName );
+        assertEquals( 1, results.size() );
 
-        return (Double) results.iterator().next().get("result");
+        return (Double) results.iterator().next().get( "result" );
     }
 
 

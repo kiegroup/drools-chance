@@ -26,26 +26,11 @@
 
 declare @{context}TreeToken extends TreeToken
     @foreach{ inputField : fields.keySet }
-        v@{inputField}  : @{mapDatatype(fields[inputField])}
-        m@{inputField} : boolean
+        v@{inputField}   : @{mapDatatype(fields[inputField])}
+        m@{inputField}   : boolean
     @end{}
+    outcome              : @{ box( mapDatatype( targetType ) ) }
 end
-
-rule "Tree Input Link @{context}"
-when
-    @foreach{ inputField : fields.keySet }
-        @{inputField}( context == "@{context}", @{inputField} : value, m@{inputField} : missing, valid == true || ( valid == false && missing == true) )
-    @end{}
-then
-    @{context}TreeToken tok = new @{context}TreeToken( "@{context}",
-                                                       "@{rootId}",
-                                                       new java.util.ArrayList(),
-                                                       new java.util.HashMap(),
-                                                       @foreach{ inputField : fields.keySet } @{inputField}, m@{inputField} @end{','} );
-
-    insertLogical( tok );
-end
-
 
 @end{}
 

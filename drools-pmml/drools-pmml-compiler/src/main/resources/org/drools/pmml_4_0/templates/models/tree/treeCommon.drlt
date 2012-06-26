@@ -22,33 +22,22 @@
 
 }
 
-@declare{'treeDeclare'}
+@declare{'treeCommon'}
 
-declare TreeToken
-    context     : String
-    current     : String
-    marker      : String
-    visitMode   : String
-    downward    : boolean
-    trail       : java.util.List
-    results     : java.util.Map
-    confidence  : double
-    totalCount  : double
-end
-
-declare TreeNode
-    context     : String
-    id          : String
-    parent      : String
-    children    : java.util.List
-    outcome     : String
-    recordCount : int
-    counts      : java.util.Map
-    confidence  : java.util.Map
-    defaultChld : String
+rule "Eval Tree Node @{context} - Up"
+when
+    $node : TreeNode( context == "@{context}", $id : id, $master : parent )
+    $tok  : @{context}TreeToken( context == "@{context}", current == $id )
+    not @{name}( context == "@{context}" )
+then
+//    System.out.println( "I'm here at " + $id +  ", going back up to " + $master );
+    modify ( $tok ) {
+        setDownward( false ),
+        setCurrent( $master );
+    }
 end
 
 @end{}
 
 
-@includeNamed{'treeDeclare'}
+@includeNamed{'treeCommon'}

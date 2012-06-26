@@ -157,10 +157,18 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/clustering/clusteringMatrixCompare.drlt",
 
             "models/tree/treeDeclare.drlt",
+            "models/tree/treeCommon.drlt",
             "models/tree/treeInputDeclare.drlt",
             "models/tree/treeInit.drlt",
+            "models/tree/treeAggregateEval.drlt",
+            "models/tree/treeDefaultEval.drlt",
             "models/tree/treeEval.drlt",
-            "models/tree/treeNode.drlt",
+            "models/tree/treeIOBinding.drlt",
+            "models/tree/treeMissHandleAggregate.drlt",
+            "models/tree/treeMissHandleWeighted.drlt",
+            "models/tree/treeMissHandleLast.drlt",
+            "models/tree/treeMissHandleNull.drlt",
+            "models/tree/treeMissHandleNone.drlt",
 
 
             "informer/modelQuestionnaire.drlt",
@@ -243,7 +251,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 
 
-	protected String generateTheory(PMML pmml) {
+	public String generateTheory( PMML pmml ) {
         StringBuilder sb = new StringBuilder();
 
 
@@ -253,14 +261,14 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 //            System.err.println(o);
 //        }
 
-        visitorSession.setGlobal("registry",registry);
-            visitorSession.setGlobal("fld2var",new HashMap());
-            visitorSession.setGlobal("utils",context);
+        visitorSession.setGlobal( "registry", registry );
+            visitorSession.setGlobal( "fld2var", new HashMap() );
+            visitorSession.setGlobal( "utils", context );
 
-        visitorSession.setGlobal("theory",sb);
+        visitorSession.setGlobal( "theory", sb );
 
 
-        FactHandle pmh = visitorSession.insert(pmml);
+        FactHandle pmh = visitorSession.insert( pmml );
             visitorSession.fireAllRules();
 
 
@@ -299,16 +307,16 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 
     public String compile(InputStream source, Map<String,PackageRegistry> registries) {
-        PMML pmml = loadModel(PMML,source);
-        if (registries != null) {
-            if (registries.containsKey(context.getPack())) {
-                context.setResolver(registries.get(context.getPack()).getTypeResolver());
+        PMML pmml = loadModel( PMML, source );
+        if ( registries != null ) {
+            if ( registries.containsKey( context.getPack() ) ) {
+                context.setResolver( registries.get( context.getPack() ).getTypeResolver() );
             } else {
-                context.setResolver(null);
+                context.setResolver( null );
             }
 
         }
-        return generateTheory(pmml);
+        return generateTheory( pmml );
     }
 
 
@@ -345,13 +353,13 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 	 * @param source		the name of the PMML resource storing the predictive model
 	 * @return				the Java Descriptor of the PMML resource
 	 */
-	protected PMML  loadModel(String model, InputStream source) {
+	public PMML loadModel( String model, InputStream source ) {
 		try {
-			JAXBContext jc = JAXBContext.newInstance(model);
+			JAXBContext jc = JAXBContext.newInstance( model );
 			Unmarshaller unmarshaller = jc.createUnmarshaller();
 
-			return (PMML) unmarshaller.unmarshal(source);
-		} catch (JAXBException e) {
+			return (PMML) unmarshaller.unmarshal( source );
+		} catch ( JAXBException e ) {
 			e.printStackTrace();
 			return null;
 		}

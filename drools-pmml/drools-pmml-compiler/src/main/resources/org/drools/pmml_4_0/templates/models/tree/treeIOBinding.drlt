@@ -22,14 +22,7 @@
 
 }
 
-@declare{'treeInputDeclare'}
-
-declare @{context}TreeToken extends TreeToken
-    @foreach{ inputField : fields.keySet }
-        @{inputField}  : @{mapDatatype(fields[inputField])}
-        m@{inputField} : boolean
-    @end{}
-end
+@declare{'treeIOBinding'}
 
 rule "Tree Input Link @{context}"
 when
@@ -37,18 +30,38 @@ when
         @{inputField}( context == "@{context}", @{inputField} : value, m@{inputField} : missing, valid == true || ( valid == false && missing == true) )
     @end{}
 then
+//    System.out.println( "Creating the tree token" );
     @{context}TreeToken tok = new @{context}TreeToken( "@{context}",
                                                        "@{rootId}",
                                                        null,
+                                                       "@{visitMode}",
+                                                       true,
                                                        new java.util.ArrayList(),
-                                                       null,
-                                                       @foreach{ inputField : fields.keySet } @{inputField}, m@{inputField} @end{','} );
-
+                                                       new java.util.HashMap(),
+                                                       1.0,
+                                                       0.0,
+                                                       @foreach{ inputField : fields.keySet } @{inputField}, m@{inputField} @end{','},
+                                                       null
+                                                       );
     insertLogical( tok );
+end
+
+rule "Result @{context}"
+salience -2
+when
+    $tok  : @{context}TreeToken( context == "@{context}", current == "null", $out : outcome != null, $conf : confidence )
+then
+//    System.out.println( "EVENTUALLY GENERATE THE SOLUTION ");
+    @{targetField} x = new @{targetField}();
+            x.setContext( "@{context}" );
+            x.setValid( true );
+            x.setMissing( false );
+            x.setValue( $out );
+    insertLogical( x );
 end
 
 
 @end{}
 
 
-@includeNamed{'treeInputDeclare'}
+@includeNamed{'treeIOBinding'}
