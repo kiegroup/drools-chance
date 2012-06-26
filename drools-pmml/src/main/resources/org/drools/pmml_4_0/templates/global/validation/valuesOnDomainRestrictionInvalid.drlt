@@ -34,9 +34,10 @@ when
           @foreach{ v : vals } value == @{v} @end{' || '}
           )
 then
-    System.out.println("--- Invalid -> iknvalid");
-    $in.valid=false;
-    update($in);
+//    System.out.println("--- Invalid -> iknvalid");
+    modify ( $in ) {
+        setValid( false );
+    }
 end
 @end{}
 

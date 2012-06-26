@@ -44,8 +44,8 @@ then
 
 	association.setLastAnswer(answer);
 
-    update($bean);
-	update(association);
+    modify( $bean ) {}
+	modify( association ) {}
 
 end
 
@@ -60,7 +60,7 @@ when
 	$bean : DataField( this == object )
 then
 //    System.out.println(" @@@@@@@@@@@@@@@@@ killing " + $bean );
-    retract($bean);
+    retract( $bean );
 end
 @end{}
 

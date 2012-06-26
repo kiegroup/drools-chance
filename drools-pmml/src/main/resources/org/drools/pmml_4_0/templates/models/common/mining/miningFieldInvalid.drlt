@@ -32,10 +32,11 @@ when
  $x : @{name}( $m : missing, $v : valid == false,
                context == @{format("string",model)} )
 then
-    $x.setValue(@{replacement});
-    $x.setMissing(@{replacement == null});
-    $x.setValid(true);
-  update($x);
+    modify ( $x ) {
+        setValue( @{replacement} ),
+        setMissing( @{replacement == null} ),
+        setValid( true );
+    }
 end
 @end{}
 

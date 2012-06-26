@@ -48,9 +48,10 @@ then
     //System.out.println(">>>>>>>>>>>>>>  SOFTMAX LAYER SUM " + $den );
     for (int j = 0; j < $list.size(); j++) {
         Stym s = (Stym) $list.get(j);
-        s.setNormalized(true);
-        s.setValue(Math.exp(s.getValue()) / $den);
-        update(s);
+        modify ( s ) {
+            setNormalized( true ),
+            setValue( Math.exp( s.getValue() ) / $den );
+        }
     }
 end
 

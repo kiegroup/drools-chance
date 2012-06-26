@@ -34,10 +34,11 @@ when
                context == @{format("string",model)},
                value > @{upp} )
 then
-    $x.setValue(@{upp});
-    $x.setMissing(false);
-    $x.setValid(true);
-  update($x);
+    modify ( $x ) {
+        setValue( @{upp} ),
+        setMissing( false ),
+        setValid( true );
+    }
 end
 @end{}
 

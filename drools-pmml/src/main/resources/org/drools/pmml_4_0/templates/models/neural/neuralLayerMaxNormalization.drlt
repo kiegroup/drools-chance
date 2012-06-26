@@ -46,9 +46,10 @@ then
     //System.out.println(">>>>>>>>>>>>>>  MAX LAYER SUM " + $den );
     for (int j = 0; j < $list.size(); j++) {
         Stym s = (Stym) $list.get(j);
-        s.setNormalized(true);
-        s.setValue(s.getValue() / $den);
-        update(s);
+        modify ( s ) {
+            setNormalized( true ),
+            setValue( s.getValue() / $den );
+        }
     }
 end
 

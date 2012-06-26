@@ -68,8 +68,10 @@ then
         x = @if{scale != null} @{scale} * @end{} x @if{offset != null} + @{offset} @end{} ;
     @end{}
 
-    $src.setValue(x);
-    update($src);
+
+    modify ( $src ) {
+        setValue( x );
+    }
 end
 @end{}
 

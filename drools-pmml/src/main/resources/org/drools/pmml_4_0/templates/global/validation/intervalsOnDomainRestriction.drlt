@@ -42,8 +42,9 @@ when
           @end{' || '}
             )
 then
-    $in.valid=true;
-    update($in);
+    modify ( $in ) {
+        setValid( true );
+    }
 end
 @end{}
 

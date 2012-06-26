@@ -38,10 +38,11 @@ when
                @if{ upp != null } value > @{upp} @end{}
                 )
 then
-    $x.setValue(null);
-    $x.setMissing(true);
-    $x.setValid(false);
-  update($x);
+    modify ( $x ) {
+        setValue( null ),
+        setMissing( true ),
+        setValid( false );
+    }
 end
 @end{}
 
