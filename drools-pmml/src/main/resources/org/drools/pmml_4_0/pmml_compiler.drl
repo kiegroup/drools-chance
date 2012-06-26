@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.drools.pmml_4_0.compiler;
 
 import org.drools.pmml_4_0.descr.*;
 import org.drools.pmml_4_0.ModelMarker;
@@ -24,8 +25,8 @@ import java.util.LinkedList;
 
 global StringBuilder theory;
 global TemplateRegistry registry;
-global Map fld2var;
-global PMML4Wrapper utils;
+global java.util.Map fld2var;
+global org.drools.pmml_4_0.PMML4Wrapper utils;
 
 
 

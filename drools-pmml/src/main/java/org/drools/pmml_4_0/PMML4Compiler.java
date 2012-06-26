@@ -23,12 +23,13 @@ import org.drools.builder.*;
 import org.drools.compiler.PackageRegistry;
 import org.drools.conf.EventProcessingOption;
 import org.drools.io.ResourceFactory;
-import org.drools.pmml_4_0.descr.PMML;
+import org.drools.pmml_4_0.descr.*;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
+import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,16 +45,21 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     public static final String BASE_PACK = PMML4Compiler.class.getPackage().getName().replace('.','/');
 
 
-    public static final String[] PMML_VISIT_RULES = new String[] {
-            (BASE_PACK+"/pmml_visitor.drl"),
-            (BASE_PACK+"/pmml_compiler.drl"),
-            (BASE_PACK+"/pmml_informer.drl")
-    };
+    
+    
+    public static final String VISITOR_RULES  = BASE_PACK + "/pmml_visitor.drl";
+    public static boolean visitorRules = false;
+    
+    public static final String COMPILER_RULES = BASE_PACK + "/pmml_compiler.drl";
+    public static boolean compilerRules = false;
+    
+    public static final String INFORMER_RULES = BASE_PACK + "/pmml_informer.drl";
+    public static boolean informerRules = false;
 
+    
 
-
-    protected static final String[] NAMED_TEMPLATES = new String[] {
-
+    protected static boolean globalLoaded = false;
+    protected static final String[] GLOBAL_TEMPLATES = new String[] {
             "global/pmml_header.drlt",
             "global/modelMark.drlt",
 
@@ -72,7 +78,10 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "global/validation/valuesOnDomainRestriction.drlt",
             "global/validation/valuesOnDomainRestrictionMissing.drlt",
             "global/validation/valuesOnDomainRestrictionInvalid.drlt",
-
+    };
+            
+    protected static boolean transformationLoaded = false;
+    protected static final String[] TRANSFORMATION_TEMPLATES = new String[] {
             "transformations/normContinuous/boundedLowerOutliers.drlt",
             "transformations/normContinuous/boundedUpperOutliers.drlt",
             "transformations/normContinuous/normContOutliersAsMissing.drlt",
@@ -80,15 +89,11 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "transformations/normContinuous/lowerExtrapolateLinearTractNormalization.drlt",
             "transformations/normContinuous/upperExtrapolateLinearTractNormalization.drlt",
 
-
             "transformations/aggregate/aggregate.drlt",
             "transformations/aggregate/collect.drlt",
 
-
             "transformations/simple/constantField.drlt",
             "transformations/simple/aliasedField.drlt",
-
-
 
             "transformations/normDiscrete/indicatorFieldYes.drlt",
             "transformations/normDiscrete/indicatorFieldNo.drlt",
@@ -98,13 +103,14 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "transformations/discretize/outOfBinningDefault.drlt",
             "transformations/discretize/outOfBinningMissing.drlt",
 
-
             "transformations/mapping/mapping.drlt",
 
-
             "transformations/functions/apply.drlt",
-            "transformations/functions/function.drlt",
-
+            "transformations/functions/function.drlt"
+    };
+    
+    protected static boolean miningLoaded = false;
+    protected static final String[] MINING_TEMPLATES = new String[] {
             "models/common/mining/miningField.drlt",
             "models/common/mining/miningFieldInvalid.drlt",
             "models/common/mining/miningFieldMissing.drlt",
@@ -114,8 +120,11 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
             "models/common/target/targetReshape.drlt",
             "models/common/target/aliasedOutput.drlt",
-            "models/common/target/addOutputFeature.drlt",
-
+            "models/common/target/addOutputFeature.drlt"
+    };
+    
+    protected static boolean neuralLoaded = false; 
+    protected static final String[] NEURAL_TEMPLATES = new String[] {
             "models/neural/neuralBeans.drlt",
             "models/neural/neuralWireInput.drlt",
             "models/neural/neuralBuildSynapses.drlt",
@@ -126,8 +135,11 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/neural/neuralOutputQuery.drlt",
             "models/neural/neuralOutputQueryPredicate.drlt",
             "models/neural/neuralOutputField.drlt",
-            "models/neural/neuralClean.drlt",
+            "models/neural/neuralClean.drlt"
+    };
 
+    protected static boolean svmLoaded = false;
+    protected static final String[] SVM_TEMPLATES = new String[] {
             "models/svm/svmParams.drlt",
             "models/svm/svmDeclare.drlt",
             "models/svm/svmFunctions.drlt",
@@ -139,8 +151,10 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/svm/svmOutputVoteDeclare.drlt",
             "models/svm/svmOutputVote1vN.drlt",
             "models/svm/svmOutputVote1v1.drlt",
+    };
 
-
+    protected static boolean simpleRegLoaded = false;
+    protected static final String[] SIMPLEREG_TEMPLATES = new String[] {
             "models/regression/regDeclare.drlt",
             "models/regression/regCommon.drlt",
             "models/regression/regParams.drlt",
@@ -149,13 +163,19 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/regression/regNormalization.drlt",
             "models/regression/regDecumulation.drlt",
 
-
+    };
+            
+    protected static boolean clusteringLoaded = false;
+    protected static final String[] CLUSTERING_TEMPLATES = new String[] {
             "models/clustering/clusteringDeclare.drlt",
             "models/clustering/clusteringInit.drlt",
             "models/clustering/clusteringEvalDistance.drlt",
             "models/clustering/clusteringEvalSimilarity.drlt",
-            "models/clustering/clusteringMatrixCompare.drlt",
+            "models/clustering/clusteringMatrixCompare.drlt"
+    };
 
+    protected static boolean treeLoaded = false;
+    protected static final String[] TREE_TEMPLATES = new String[] {
             "models/tree/treeDeclare.drlt",
             "models/tree/treeCommon.drlt",
             "models/tree/treeInputDeclare.drlt",
@@ -168,9 +188,11 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/tree/treeMissHandleWeighted.drlt",
             "models/tree/treeMissHandleLast.drlt",
             "models/tree/treeMissHandleNull.drlt",
-            "models/tree/treeMissHandleNone.drlt",
-
-
+            "models/tree/treeMissHandleNone.drlt"
+    };
+            
+    protected static boolean informerLoaded = false;
+    protected static final String[] INFORMER_TEMPLATES = new String[] {        
             "informer/modelQuestionnaire.drlt",
             "informer/modelAddQuestionsToQuestionnaire.drlt",
             "informer/modelQuestion.drlt",
@@ -181,7 +203,6 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "informer/modelInvalidAnswer.drlt",
             "informer/modelOutputBinding.drlt",
             "informer/modelRevalidate.drlt"
-
     };
 
 
@@ -189,119 +210,187 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     protected static final String RESOURCE_PATH = BASE_PACK;
     protected static final String TEMPLATE_PATH = "/" + RESOURCE_PATH + "/templates/";
 
+
+
     private static TemplateRegistry registry;
+    private static KnowledgeBuilder kBuilder;
     private static KnowledgeBase visitor;
-    private StatefulKnowledgeSession visitorSession;
 
-//    private StatefulKnowledgeSession kSession;
-//    private KnowledgeBase kbase;
-
-
-    private PMML4Wrapper context;
-
-    static {
-        try {
-            List<InputStream> theories = new LinkedList<InputStream>();
-            for (String t : PMML_VISIT_RULES)
-                theories.add(ResourceFactory.newClassPathResource(t,PMML4Compiler.class).getInputStream());
-            visitor = readKnowledgeBase( theories );
-            registry = new SimpleTemplateRegistry();
-                buildRegistry(registry);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
+    private PMML4Wrapper helper;
 
 
     public PMML4Compiler() {
         super();
-        context = new PMML4Wrapper();
-            context.setPack("org.drools.pmml_4_0.test");
+        helper = new PMML4Wrapper();
+            helper.setPack( "org.drools.pmml_4_0.test" );
     }
 
 
-     protected StatefulKnowledgeSession getSession(String theory) {
-        KnowledgeBase kbase = readKnowledgeBase(new ByteArrayInputStream(theory.getBytes()));
-        return kbase != null ? kbase.newStatefulKnowledgeSession() : null;
-     }
 
-
-    private static KnowledgeBase readKnowledgeBase(InputStream theory) {
-        return readKnowledgeBase(Arrays.asList(theory));
-    }
-
-    private static KnowledgeBase readKnowledgeBase(List<InputStream> theory) {
-		KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-		for (InputStream is : theory)
-            kbuilder.add(ResourceFactory.newInputStreamResource(is), ResourceType.DRL);
-		KnowledgeBuilderErrors errors = kbuilder.getErrors();
-		if (errors.size() > 0) {
-			for (KnowledgeBuilderError error: errors) {
-				System.err.println(error);
-			}
-			throw new IllegalArgumentException("Could not parse knowledge.");
-		}
+    private static void initVisitor() {
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
-            conf.setEventProcessingMode(EventProcessingOption.STREAM);
+            conf.setEventProcessingMode( EventProcessingOption.STREAM );
             //conf.setConflictResolver(LifoConflictResolver.getInstance());
-		KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase(conf);
-		kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
-		return kbase;
-	}
+		visitor = KnowledgeBaseFactory.newKnowledgeBase( conf );
 
+        // TODO before rules can be structured, I need to double-check the incremental rule base assembly
+        kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(  );
+        if ( visitorRules == false ) {
+            kBuilder.add( ResourceFactory.newClassPathResource( VISITOR_RULES ), ResourceType.DRL );
+            visitorRules = true;
+        }
+        if ( compilerRules == false ) {
+            kBuilder.add( ResourceFactory.newClassPathResource( COMPILER_RULES ), ResourceType.DRL );
+            compilerRules = true;
+        }
+        if ( informerRules == false ) {
+            kBuilder.add( ResourceFactory.newClassPathResource( INFORMER_RULES ), ResourceType.DRL );
+            informerRules = true;
+        }
 
-
-	public String generateTheory( PMML pmml ) {
-        StringBuilder sb = new StringBuilder();
-
-
-
-        visitorSession = visitor.newStatefulKnowledgeSession();
-//        for (Object o : visitorSession.getObjects()) {
-//            System.err.println(o);
-//        }
-
-        visitorSession.setGlobal( "registry", registry );
-            visitorSession.setGlobal( "fld2var", new HashMap() );
-            visitorSession.setGlobal( "utils", context );
-
-        visitorSession.setGlobal( "theory", sb );
-
-
-        FactHandle pmh = visitorSession.insert( pmml );
-            visitorSession.fireAllRules();
-
-
-        String ans = sb.toString();
-
-//        visitorSession.retract(pmh);
-//        visitorSession.fireAllRules();
-        visitorSession.dispose();
-
-//        System.out.println(ans);
-        return ans;
-	}
-
-
-
-    private static void buildRegistry(TemplateRegistry registry) {
-        for (String ntempl : NAMED_TEMPLATES) {
-            try {
-                String path = TEMPLATE_PATH+ntempl;
-                InputStream stream = ResourceFactory.newClassPathResource(path, PMML4Compiler.class).getInputStream();
-
-                registry.addNamedTemplate( path.substring(path.lastIndexOf('/') + 1),
-                                           TemplateCompiler.compileTemplate(stream));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if ( kBuilder.hasErrors() ) {
+            throw new IllegalStateException( "Unable to add rules to knowledge base " + kBuilder.getErrors().toString() );
+        } else {
+            visitor.addKnowledgePackages( kBuilder.getKnowledgePackages() );
         }
     }
 
 
+    public String generateTheory( PMML pmml ) {
+        StringBuilder sb = new StringBuilder();
+
+        checkBuildingResources( pmml );
+
+        StatefulKnowledgeSession visitorSession = visitor.newStatefulKnowledgeSession();
+
+        visitorSession.setGlobal( "registry", registry );
+            visitorSession.setGlobal( "fld2var", new HashMap() );
+            visitorSession.setGlobal( "utils", helper );
+
+        visitorSession.setGlobal( "theory", sb );
+
+        visitorSession.insert( pmml );
+            visitorSession.fireAllRules();
+
+        String ans = sb.toString();
+
+        visitorSession.dispose();
+
+        return ans;
+	}
+
+
+    
+    private static void initRegistry() {
+        if ( registry == null ) {
+            registry = new SimpleTemplateRegistry();
+        }
+
+        if ( ! globalLoaded ) {
+            for ( String ntempl : GLOBAL_TEMPLATES ) {
+                prepareTemplate( ntempl );
+            }
+            globalLoaded = true;
+        }
+
+        if ( ! transformationLoaded ) {
+            for ( String ntempl : TRANSFORMATION_TEMPLATES ) {
+                prepareTemplate( ntempl );
+            }
+            transformationLoaded = true;
+        }
+
+        if ( ! miningLoaded ) {
+            for ( String ntempl : MINING_TEMPLATES ) {
+                prepareTemplate( ntempl );
+            }
+            miningLoaded = true;
+        }
+    }
+
+    private static void checkBuildingResources( PMML pmml ) {
+
+        if ( registry == null ) {
+            initRegistry();
+        }
+        if ( visitor == null ) {
+            initVisitor();
+        }
+
+        for ( Object o : pmml.getAssociationModelsAndClusteringModelsAndGeneralRegressionModels() ) {
+
+
+            if ( ! neuralLoaded && o instanceof NeuralNetwork ) {
+                for ( String ntempl : NEURAL_TEMPLATES ) {
+                    prepareTemplate( ntempl );
+                }
+                neuralLoaded = true;
+            }
+
+            if ( ! clusteringLoaded && o instanceof ClusteringModel ) {
+                for ( String ntempl : CLUSTERING_TEMPLATES ) {
+                    prepareTemplate( ntempl );
+                }
+                clusteringLoaded = true;
+            }
+
+            if ( ! svmLoaded && o instanceof SupportVectorMachineModel ) {
+                for ( String ntempl : SVM_TEMPLATES ) {
+                    prepareTemplate( ntempl );
+                }
+                svmLoaded = true;
+            }
+
+            if ( ! treeLoaded && o instanceof TreeModel ) {
+                for ( String ntempl : TREE_TEMPLATES ) {
+                    prepareTemplate( ntempl );
+                }
+                treeLoaded = true;
+            }
+
+            if ( ! simpleRegLoaded && o instanceof RegressionModel ) {
+                for ( String ntempl : SIMPLEREG_TEMPLATES ) {
+                    prepareTemplate( ntempl );
+                }
+                simpleRegLoaded = true;
+            }
+        }
+
+
+        for ( Extension x : pmml.getExtensions() ) {
+            for ( Object c : x.getContent() ) {
+                if ( ! informerLoaded && c instanceof Element && ((Element) c).getTagName().equals( "Surveyable" ) ) {
+                    for ( String ntempl : INFORMER_TEMPLATES ) {
+                        prepareTemplate( ntempl );
+                    }
+                    informerLoaded = true;
+
+                }
+            }
+        }
+
+        
+        
+        
+    }
+
+
+
+    private static void prepareTemplate( String ntempl ) {
+        try {
+            String path = TEMPLATE_PATH + ntempl;
+            InputStream stream = ResourceFactory.newClassPathResource(path, PMML4Compiler.class).getInputStream();
+
+            registry.addNamedTemplate( path.substring(path.lastIndexOf('/') + 1),
+                    TemplateCompiler.compileTemplate(stream));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public String compile(String fileName, Map<String,PackageRegistry> registries) {
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(RESOURCE_PATH+"/"+fileName);
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream( RESOURCE_PATH + "/" + fileName );
         return compile(stream,registries);
     }
 
@@ -309,10 +398,10 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     public String compile(InputStream source, Map<String,PackageRegistry> registries) {
         PMML pmml = loadModel( PMML, source );
         if ( registries != null ) {
-            if ( registries.containsKey( context.getPack() ) ) {
-                context.setResolver( registries.get( context.getPack() ).getTypeResolver() );
+            if ( registries.containsKey( helper.getPack() ) ) {
+                helper.setResolver( registries.get( helper.getPack() ).getTypeResolver() );
             } else {
-                context.setResolver( null );
+                helper.setResolver( null );
             }
 
         }
