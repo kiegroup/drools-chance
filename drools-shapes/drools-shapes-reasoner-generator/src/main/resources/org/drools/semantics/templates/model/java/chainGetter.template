@@ -21,7 +21,7 @@
 @declare{'chainGetter'}
 
 
-    @Transient
+    @@javax.persistence.Transient
     public
     @if{ max == null || max > 1 } java.util.List<@{ type }> @else{} @{ type } @end{}
 

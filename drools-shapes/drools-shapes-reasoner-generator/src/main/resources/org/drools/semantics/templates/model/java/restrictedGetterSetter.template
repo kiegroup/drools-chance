@@ -21,12 +21,12 @@
 @declare{'restrictedGetterSetter'}
 
 
-    @Transient
+    @@javax.persistence.Transient
     public void set@{ compactUpperCase( name ) }(
         @if{ max == null || max > 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
         x
     ) {
-        List<@{map( type, true )}> removals = new ArrayList<@{map( type, true )}>();
+        List<@{map( type, true )}> removals = new java.util.ArrayList<@{map( type, true )}>();
         for ( Object o : @{ getter( base, type ) }() ) {
             if ( o instanceof @{map( type, true )} ) {
                 removals.add( (@{map( type, true )}) o );
@@ -56,7 +56,7 @@
 
 
 
-     @Transient
+     @@javax.persistence.Transient
      public
         @if{ max > 1 || max == null } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
 
