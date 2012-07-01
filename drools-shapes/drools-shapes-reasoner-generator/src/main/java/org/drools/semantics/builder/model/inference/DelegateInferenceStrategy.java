@@ -294,9 +294,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     continue;
                 }
 
-
                 processSuperClass( sup, con, hierarchicalModel );
             }
+
 
 //            for ( PropertyRelation prop : con.getProperties().values() ) {
 //                if ( prop.isRestricted() && ( prop.getMaxCard() == null || prop.getMaxCard() > 1 ) ) {
@@ -307,7 +307,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
     }
 
-    private void processSuperClass(OWLClassExpression sup, Concept con, OntoModel hierarchicalModel ) {
+    private void processSuperClass( OWLClassExpression sup, Concept con, OntoModel hierarchicalModel ) {
         String propIri;
         PropertyRelation rel;
         Concept tgt;
@@ -319,6 +319,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLDataAllValuesFrom forall = (OWLDataAllValuesFrom) sup;
                 propIri = forall.getProperty().asOWLDataProperty().getIRI().toQuotedString();
                 tgt = primitives.get( forall.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
+                if ( tgt.equals( "xsd:anySimpleType" ) ) {
+                    break;
+                }
                 rel = extractProperty( con, propIri, tgt, null, null, true );
                 if ( rel != null ) {
 //                    hierarchicalModel.addProperty( rel );
@@ -382,6 +385,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     break;
                 }
                 tgt = conceptCache.get( filterAliases( forallO.getFiller() ).asOWLClass().getIRI().toQuotedString() );
+                if ( tgt.equals( "<http://www.w3.org/2002/07/owl#Thing>" ) ) {
+                    break;
+                }
                 rel = extractProperty( con, propIri, tgt, null, null, true );
                 if ( rel != null ) {
                 } else {
@@ -487,12 +493,15 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
         if ( rel != null ) {
-            if ( restrictTarget && ! rel.getTarget().equals( target ) ) {
+            boolean tgtRestrictionApplied = restrictTarget && ! rel.getTarget().equals( target );
+            if ( tgtRestrictionApplied ) {
                 rel.restrictTargetTo( target );
             }
 
             boolean dirty = false;
-            if ( target.getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" ) || target.getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>") ) {
+            if ( rel.getTarget().getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" )
+                    || rel.getTarget().getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>")
+               ) {
                 target = rel.getTarget();
                 restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
                 restrictedPropIri = propIri.replace (">", restrictedSuffix + ">" );
@@ -500,9 +509,13 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             }
             if ( ! rel.getTarget().equals( target ) && ! restrictTarget ) {
                 //TODO FIXME : check that target is really restrictive!
-                rel.setTarget( target );
-                rel.setObject( target.getIri() );
-                dirty = true;
+                if ( ! target.getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" )
+                        && ! target.getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>")
+                        ) {
+                    rel.setTarget( target );
+                    rel.setObject( target.getIri() );
+                    dirty = true;
+                }
             }
             if ( min != null && min > rel.getMinCard() ) {
                 rel.setMinCard( min );
@@ -541,15 +554,16 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             
             boolean inherited = false;
             for ( Concept sup : con.getSuperConcepts() ) {
-                if ( sup.getProperties().containsKey( rel.getProperty() ) ) {
+                if ( sup.getEffectiveProperties().contains( rel ) ) {
                     inherited = true;
                     rel.setInherited( inherited );
                     break;
                 }
             }
 
-
-            con.addProperty( rel.getProperty(), rel.getName(), rel );
+            if ( ! rel.mirrors( rel.getBaseProperty() ) ) {
+                con.addProperty( rel.getProperty(), rel.getName(), rel );
+            }
 
             return rel;
 

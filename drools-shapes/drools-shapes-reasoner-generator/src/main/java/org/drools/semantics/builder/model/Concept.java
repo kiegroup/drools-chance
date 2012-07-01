@@ -229,6 +229,10 @@ public class Concept {
         }
     }
     
+    public PropertyRelation lookupProperty( String key ) {
+        return lookupProperty( this, key );
+    }
+    
     protected PropertyRelation lookupProperty( Concept con, String key ) {
         PropertyRelation rel = con.getProperties().get(key);
         if ( rel != null ) {
@@ -268,6 +272,7 @@ public class Concept {
         for ( PropertyRelation prop : eff ) {
             ans.add( prop.getBaseProperty() );
         }
+
         return ans;
     }
 

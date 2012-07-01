@@ -78,7 +78,7 @@
 
         <meta:type name="@{concept.name}">
         @foreach{ prop : concept.effectiveBaseProperties }
-            <meta:property name="@{prop.name}" type="@{prop.target.name}" simple="@{ concept.getProperty(prop.property).simple }">
+            <meta:property name="@{prop.name}" type="@{prop.target.name}" simple="@{ concept.lookupProperty(prop.property).simple }">
                 @foreach{ subProp : concept.properties.values }
                 @if{ subProp.restricted && subProp.baseProperty == prop }
                     <meta:restriction name="@{subProp.name}" type="@{subProp.target.name}" single="@{subProp.maxCard == 1}"/>

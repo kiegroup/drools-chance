@@ -192,6 +192,18 @@ public class PropertyRelation extends Relation {
     }
 
 
+    public boolean mirrors( PropertyRelation that ) {
+        if ( this == that) return true;
+
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (object != null ? !object.equals(that.object) : that.object != null) return false;
+        if (property != null ? !property.equals(that.property) : that.property != null) return false;
+        if (minCard != null ? !minCard.equals(that.minCard) : that.minCard != null) return false;
+        if (maxCard != null ? !maxCard.equals(that.maxCard) : that.maxCard != null) return false;
+
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
