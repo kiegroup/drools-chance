@@ -38,6 +38,7 @@
     <module>drools-shapes-reasoner-generator</module>
     <module>drools-shapes-generator-plugin</module>
     <module>drools-shapes-examples</module>
+    <module>drools-shapes-utilities</module>
   </modules>
 
 <repositories>

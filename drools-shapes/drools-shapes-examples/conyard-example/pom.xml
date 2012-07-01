@@ -47,6 +47,11 @@
             <artifactId>drools-shapes-reasoner-generator</artifactId>
             <version>${drools.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-shapes-utilities</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.drools</groupId>

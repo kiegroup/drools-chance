@@ -1,4 +1,4 @@
-package http.www.semanticweb.org.ontologies._2012._1.rule.merged.owl;
+package org.drools.semantics;
 
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -18,8 +18,8 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
     }
 
     public Collection getObjects() {
-        return cache.values();
-    }
+            return cache.values();
+        }
 
     @Override
     public Thing unmarshal(UIdAble v) throws Exception {
@@ -27,7 +27,7 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
             return (Thing) ( cache.get( v.getDyEntryId() ) );
         } else {
             UIdAble reborn = v;
-            String baseType = this.getClass().getPackage().getName() + "." + v.getDyEntryType();
+            String baseType = v.getClass().getPackage().getName() + "." + v.getDyEntryType();
             String actualClass = baseType + "Impl";
             if ( ! v.getClass().getName().equals( actualClass ) ) {
 

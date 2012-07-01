@@ -1,9 +1,11 @@
-package http.org.drools.conyard.owl;
+package org.drools.semantics;
 
 
 import com.clarkparsia.empire.SupportsRdfId;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.util.UUID;
 

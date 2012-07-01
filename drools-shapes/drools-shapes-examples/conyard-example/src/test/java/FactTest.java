@@ -227,13 +227,22 @@ public class FactTest {
 
 
     private Object refreshOnJaxb( Object o ) throws JAXBException {
-        StringWriter writer = new StringWriter();
+        StringWriter writer;
 
+        writer = new StringWriter();
         marshaller.marshal( o, writer );
         System.err.println( writer.toString() );
 
+        System.err.println( "------------------------------------------" );
 
-        return unmarshaller.unmarshal( new StringReader( writer.toString() ) );
+
+        Object ret = unmarshaller.unmarshal( new StringReader( writer.toString() ) );
+
+        writer = new StringWriter();
+        marshaller.marshal( ret, writer );
+        System.err.println( writer.toString() );
+
+        return ret;
     }
 
 

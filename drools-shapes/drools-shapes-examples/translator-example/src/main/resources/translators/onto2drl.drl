@@ -3,6 +3,7 @@ package org.drools.trnaslators;
 import http.www.semanticweb.org.ontologies._2012._1.rule.merged.owl.*;
 import org.drools.lang.api.*;
 import org.drools.lang.descr.*;
+import org.drools.semantics.UIdAble;
 
 
 global PackageDescr pack;
