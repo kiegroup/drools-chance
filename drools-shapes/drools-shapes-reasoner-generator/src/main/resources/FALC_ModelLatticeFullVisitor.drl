@@ -72,7 +72,7 @@ when
     $type : OWLClass( $iri : IRI )
 then
     Concept con = new Concept( $iri.toQuotedString(),
-                               DLUtils.getInstance().buildNameFromIri( $iri ),
+                               NameUtils.getInstance().buildNameFromIri( $iri.getStart(), $iri.getFragment() ),
                                new java.util.HashSet(),
                                new java.util.HashMap(),
                                new java.util.HashSet()
@@ -388,7 +388,7 @@ rule "Set Package"
 when
     $onto    : OWLOntology( anonymous == false, $pack : ontologyID )
 then
-    latticeModel.setPackage( DLUtils.getInstance().iriToPackage( $pack.toString() ) );
+    latticeModel.setPackage( NameUtils.getInstance().iriToPackage( $pack.toString() ) );
 end
 
 

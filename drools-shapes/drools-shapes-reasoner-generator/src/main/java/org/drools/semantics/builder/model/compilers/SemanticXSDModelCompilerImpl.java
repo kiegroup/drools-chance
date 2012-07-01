@@ -18,7 +18,7 @@ package org.drools.semantics.builder.model.compilers;
 
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLTemplateManager;
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.*;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRegistry;
@@ -110,7 +110,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     public void setModel(OntoModel model) {
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.XSDX, model );
 
-        ((XSDModel) getModel()).setNamespace( "tns", DLUtils.reverse( model.getPackage() ) );
+        ((XSDModel) getModel()).setNamespace( "tns", NameUtils.reverse( model.getPackage() ) );
     }
 
     private String createBindings( SemanticXSDModel sxsdModel ) {
@@ -127,7 +127,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             vars.put( "properties", propCache );
             vars.put( "modelName", getModel().getName() );
             vars.put( "extra_code", prepareCodeExtensions( sxsdModel ) );
-            String bindings = TemplateRuntime.eval( template, DLUtils.getInstance(), vars ).toString();
+            String bindings = TemplateRuntime.eval( template, NameUtils.getInstance(), vars ).toString();
 
 
 //            System.out.println( vars.get("extra_code") );
@@ -175,11 +175,11 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
                     vars.put( "restrictions", restrs != null ? restrs : Collections.emptySet() );
 
 
-//                    String getProperty = TemplateRuntime.execute( getGetterTemplate(), DLUtils.getInstance(), vars ).toString();
+//                    String getProperty = TemplateRuntime.execute( getGetterTemplate(), NameUtils.getInstance(), vars ).toString();
 //
 //                    sb.append( getProperty );
 //
-//                    String setProperty = TemplateRuntime.execute( getSetterTemplate(), DLUtils.getInstance(), vars ).toString();
+//                    String setProperty = TemplateRuntime.execute( getSetterTemplate(), NameUtils.getInstance(), vars ).toString();
 //
 //                    sb.append( setProperty );
 
@@ -196,7 +196,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
                         vars.put( "chains", prop.getChains() );
 
-//                        String getChain = TemplateRuntime.execute( getChainTemplate(), DLUtils.getInstance(), vars ).toString();
+//                        String getChain = TemplateRuntime.execute( getChainTemplate(), NameUtils.getInstance(), vars ).toString();
 //
 //                        sb.append( getChain );
                     }
@@ -268,7 +268,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     public static String getTemplatedCode( String template, Map<String, Object> vars, ModelFactory.CompileTarget target ) {
         return TemplateRuntime.execute (
                 DLTemplateManager.getDataModelRegistry( target  ).getNamedTemplate( template + ".template" ),
-                DLUtils.getInstance(),
+                NameUtils.getInstance(),
                 vars ).toString();
 
     }

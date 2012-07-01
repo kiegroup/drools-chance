@@ -18,7 +18,7 @@
 
 import org.semanticweb.owlapi.model.*;
 import org.drools.semantics.builder.model.*;
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 
 
 

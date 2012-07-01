@@ -1,13 +1,13 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix : <http://org.drools.conyard.owl#> .
+@prefix : <http://owl.drools.org/conyard#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@base <http://org.drools.conyard.owl> .
+@base <http://owl.drools.org/conyard> .
 
-<http://org.drools.conyard.owl> rdf:type owl:Ontology .
+<http://owl.drools.org/conyard> rdf:type owl:Ontology .
 
 
 #################################################################
@@ -89,7 +89,7 @@ xsd:string rdf:type rdfs:Datatype .
 #################################################################
 
 
-###  http://org.drools.conyard.owl#endangersWith
+###  http://owl.drools.org/conyard#endangersWith
 
 :endangersWith rdf:type owl:ObjectProperty ;
                
@@ -99,7 +99,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#hasSite
+###  http://owl.drools.org/conyard#hasSite
 
 :hasSite rdf:type owl:AsymmetricProperty ,
                   owl:IrreflexiveProperty ,
@@ -113,7 +113,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#involves
+###  http://owl.drools.org/conyard#involves
 
 :involves rdf:type owl:AsymmetricProperty ,
                    owl:IrreflexiveProperty ,
@@ -127,7 +127,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#isDenotedBy
+###  http://owl.drools.org/conyard#isDenotedBy
 
 :isDenotedBy rdf:type owl:ObjectProperty ;
              
@@ -137,7 +137,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#locatedAt
+###  http://owl.drools.org/conyard#locatedAt
 
 :locatedAt rdf:type owl:ObjectProperty ;
            
@@ -147,7 +147,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#makesUseOf
+###  http://owl.drools.org/conyard#makesUseOf
 
 :makesUseOf rdf:type owl:ObjectProperty ;
             
@@ -161,7 +161,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#participatesIn
+###  http://owl.drools.org/conyard#participatesIn
 
 :participatesIn rdf:type owl:AsymmetricProperty ,
                          owl:IrreflexiveProperty ,
@@ -173,7 +173,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#protectsAgainst
+###  http://owl.drools.org/conyard#protectsAgainst
 
 :protectsAgainst rdf:type owl:ObjectProperty ;
                  
@@ -183,7 +183,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#requires
+###  http://owl.drools.org/conyard#requires
 
 :requires rdf:type owl:AsymmetricProperty ,
                    owl:IrreflexiveProperty ,
@@ -195,7 +195,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#requiresAlso
+###  http://owl.drools.org/conyard#requiresAlso
 
 :requiresAlso rdf:type owl:ObjectProperty ;
               
@@ -205,7 +205,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#storedIn
+###  http://owl.drools.org/conyard#storedIn
 
 :storedIn rdf:type owl:AsymmetricProperty ,
                    owl:IrreflexiveProperty ,
@@ -226,7 +226,7 @@ xsd:string rdf:type rdfs:Datatype .
 #################################################################
 
 
-###  http://org.drools.conyard.owl#centerX
+###  http://owl.drools.org/conyard#centerX
 
 :centerX rdf:type owl:DatatypeProperty ;
          
@@ -236,7 +236,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#centerY
+###  http://owl.drools.org/conyard#centerY
 
 :centerY rdf:type owl:DatatypeProperty ;
          
@@ -246,7 +246,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#endsOn
+###  http://owl.drools.org/conyard#endsOn
 
 :endsOn rdf:type owl:DatatypeProperty ;
         
@@ -256,7 +256,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#hasCode
+###  http://owl.drools.org/conyard#hasCode
 
 :hasCode rdf:type owl:DatatypeProperty ;
          
@@ -266,7 +266,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#hasComment
+###  http://owl.drools.org/conyard#hasComment
 
 :hasComment rdf:type owl:DatatypeProperty ;
             
@@ -276,7 +276,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#hasLabel
+###  http://owl.drools.org/conyard#hasLabel
 
 :hasLabel rdf:type owl:DatatypeProperty ;
           
@@ -286,7 +286,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#hasVocabulary
+###  http://owl.drools.org/conyard#hasVocabulary
 
 :hasVocabulary rdf:type owl:DatatypeProperty ;
                
@@ -296,7 +296,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#oid
+###  http://owl.drools.org/conyard#oid
 
 :oid rdf:type owl:DatatypeProperty ;
      
@@ -306,7 +306,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#radius
+###  http://owl.drools.org/conyard#radius
 
 :radius rdf:type owl:DatatypeProperty ;
         
@@ -316,7 +316,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#stairLength
+###  http://owl.drools.org/conyard#stairLength
 
 :stairLength rdf:type owl:DatatypeProperty ;
              
@@ -326,7 +326,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#startsOn
+###  http://owl.drools.org/conyard#startsOn
 
 :startsOn rdf:type owl:DatatypeProperty ;
           
@@ -345,11 +345,16 @@ xsd:string rdf:type rdfs:Datatype .
 #################################################################
 
 
-###  http://org.drools.conyard.owl#Activity
+###  http://owl.drools.org/conyard#Activity
 
 :Activity rdf:type owl:Class ;
           
-          rdfs:subClassOf [ rdf:type owl:Class ;
+          rdfs:subClassOf [ rdf:type owl:Restriction ;
+                            owl:onProperty :hasComment ;
+                            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                            owl:onDataRange xsd:string
+                          ] ,
+                          [ rdf:type owl:Class ;
                             owl:intersectionOf ( :Entity
                                                  [ rdf:type owl:Restriction ;
                                                    owl:onProperty :involves ;
@@ -372,11 +377,6 @@ xsd:string rdf:type rdfs:Datatype .
                                                    owl:onDataRange xsd:dateTime
                                                  ]
                                                )
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :hasComment ;
-                            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                            owl:onDataRange xsd:string
                           ] ;
           
           owl:hasKey ( :hasComment
@@ -384,7 +384,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#AnotherBurning
+###  http://owl.drools.org/conyard#AnotherBurning
 
 :AnotherBurning rdf:type owl:Class ;
                 
@@ -407,7 +407,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#AnotherExplosion
+###  http://owl.drools.org/conyard#AnotherExplosion
 
 :AnotherExplosion rdf:type owl:Class ;
                   
@@ -434,7 +434,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#AnotherFall
+###  http://owl.drools.org/conyard#AnotherFall
 
 :AnotherFall rdf:type owl:Class ;
              
@@ -461,7 +461,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#AnotherFire
+###  http://owl.drools.org/conyard#AnotherFire
 
 :AnotherFire rdf:type owl:Class ;
              
@@ -473,7 +473,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#AnotherFrost
+###  http://owl.drools.org/conyard#AnotherFrost
 
 :AnotherFrost rdf:type owl:Class ;
               
@@ -500,7 +500,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#AnotherHeat
+###  http://owl.drools.org/conyard#AnotherHeat
 
 :AnotherHeat rdf:type owl:Class ;
              
@@ -523,7 +523,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#AnotherVocabulary
+###  http://owl.drools.org/conyard#AnotherVocabulary
 
 :AnotherVocabulary rdf:type owl:Class ;
                    
@@ -531,7 +531,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Belt
+###  http://owl.drools.org/conyard#Belt
 
 :Belt rdf:type owl:Class ;
       
@@ -539,7 +539,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#BeltBrandX
+###  http://owl.drools.org/conyard#BeltBrandX
 
 :BeltBrandX rdf:type owl:Class ;
             
@@ -568,7 +568,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Bricks
+###  http://owl.drools.org/conyard#Bricks
 
 :Bricks rdf:type owl:Class ;
         
@@ -576,7 +576,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#ChemPaintY
+###  http://owl.drools.org/conyard#ChemPaintY
 
 :ChemPaintY rdf:type owl:Class ;
             
@@ -606,7 +606,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#CodedConcept
+###  http://owl.drools.org/conyard#CodedConcept
 
 :CodedConcept rdf:type owl:Class ;
               
@@ -622,7 +622,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Cold
+###  http://owl.drools.org/conyard#Cold
 
 :Cold rdf:type owl:Class ;
       
@@ -637,7 +637,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Concrete
+###  http://owl.drools.org/conyard#Concrete
 
 :Concrete rdf:type owl:Class ;
           
@@ -645,7 +645,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#ConstructionIronBarsZ
+###  http://owl.drools.org/conyard#ConstructionIronBarsZ
 
 :ConstructionIronBarsZ rdf:type owl:Class ;
                        
@@ -675,7 +675,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#ConstructionYard
+###  http://owl.drools.org/conyard#ConstructionYard
 
 :ConstructionYard rdf:type owl:Class ;
                   
@@ -691,7 +691,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Crane
+###  http://owl.drools.org/conyard#Crane
 
 :Crane rdf:type owl:Class ;
        
@@ -703,7 +703,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#DPI
+###  http://owl.drools.org/conyard#DPI
 
 :DPI rdf:type owl:Class ;
      
@@ -711,7 +711,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Danger
+###  http://owl.drools.org/conyard#Danger
 
 :Danger rdf:type owl:Class ;
         
@@ -719,7 +719,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Dangerous
+###  http://owl.drools.org/conyard#Dangerous
 
 :Dangerous rdf:type owl:Class ;
            
@@ -727,7 +727,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Device
+###  http://owl.drools.org/conyard#Device
 
 :Device rdf:type owl:Class ;
         
@@ -735,7 +735,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Entity
+###  http://owl.drools.org/conyard#Entity
 
 :Entity rdf:type owl:Class ;
         
@@ -751,7 +751,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Equipment
+###  http://owl.drools.org/conyard#Equipment
 
 :Equipment rdf:type owl:Class ;
            
@@ -767,7 +767,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Explosion
+###  http://owl.drools.org/conyard#Explosion
 
 :Explosion rdf:type owl:Class ;
            
@@ -775,7 +775,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Explosive
+###  http://owl.drools.org/conyard#Explosive
 
 :Explosive rdf:type owl:Class ;
            
@@ -790,7 +790,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Expression
+###  http://owl.drools.org/conyard#Expression
 
 :Expression rdf:type owl:Class ;
             
@@ -816,7 +816,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Fall
+###  http://owl.drools.org/conyard#Fall
 
 :Fall rdf:type owl:Class ;
       
@@ -824,7 +824,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#FallProtection
+###  http://owl.drools.org/conyard#FallProtection
 
 :FallProtection rdf:type owl:Class ;
                 
@@ -841,7 +841,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Fiery
+###  http://owl.drools.org/conyard#Fiery
 
 :Fiery rdf:type owl:Class ;
        
@@ -856,7 +856,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Fire
+###  http://owl.drools.org/conyard#Fire
 
 :Fire rdf:type owl:Class ;
       
@@ -864,7 +864,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#FireProtection
+###  http://owl.drools.org/conyard#FireProtection
 
 :FireProtection rdf:type owl:Class ;
                 
@@ -881,7 +881,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Frost
+###  http://owl.drools.org/conyard#Frost
 
 :Frost rdf:type owl:Class ;
        
@@ -889,7 +889,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#FrostProtection
+###  http://owl.drools.org/conyard#FrostProtection
 
 :FrostProtection rdf:type owl:Class ;
                  
@@ -902,7 +902,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Gloves
+###  http://owl.drools.org/conyard#Gloves
 
 :Gloves rdf:type owl:Class ;
         
@@ -914,7 +914,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#GlovesBrandX
+###  http://owl.drools.org/conyard#GlovesBrandX
 
 :GlovesBrandX rdf:type owl:Class ;
               
@@ -943,7 +943,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Grinder
+###  http://owl.drools.org/conyard#Grinder
 
 :Grinder rdf:type owl:Class ;
          
@@ -951,7 +951,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#GrinderBrandX
+###  http://owl.drools.org/conyard#GrinderBrandX
 
 :GrinderBrandX rdf:type owl:Class ;
                
@@ -981,7 +981,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Guest
+###  http://owl.drools.org/conyard#Guest
 
 :Guest rdf:type owl:Class ;
        
@@ -989,7 +989,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Hammer
+###  http://owl.drools.org/conyard#Hammer
 
 :Hammer rdf:type owl:Class ;
         
@@ -997,7 +997,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#HammerBrandX
+###  http://owl.drools.org/conyard#HammerBrandX
 
 :HammerBrandX rdf:type owl:Class ;
               
@@ -1005,7 +1005,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#High
+###  http://owl.drools.org/conyard#High
 
 :High rdf:type owl:Class ;
       
@@ -1020,25 +1020,25 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Inspection
+###  http://owl.drools.org/conyard#Inspection
 
 :Inspection rdf:type owl:Class ;
             
             rdfs:subClassOf :Activity ,
                             [ rdf:type owl:Restriction ;
-                              owl:onProperty :involves ;
-                              owl:onClass :Person ;
-                              owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger
-                            ] ,
-                            [ rdf:type owl:Restriction ;
                               owl:onProperty :requires ;
                               owl:onClass :Equipment ;
                               owl:maxQualifiedCardinality "3"^^xsd:nonNegativeInteger
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :involves ;
+                              owl:onClass :Person ;
+                              owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger
                             ] .
 
 
 
-###  http://org.drools.conyard.owl#Intruder
+###  http://owl.drools.org/conyard#Intruder
 
 :Intruder rdf:type owl:Class ;
           
@@ -1046,7 +1046,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#IronBar
+###  http://owl.drools.org/conyard#IronBar
 
 :IronBar rdf:type owl:Class ;
          
@@ -1054,7 +1054,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#IronInstallation
+###  http://owl.drools.org/conyard#IronInstallation
 
 :IronInstallation rdf:type owl:Class ;
                   
@@ -1102,7 +1102,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Labourer
+###  http://owl.drools.org/conyard#Labourer
 
 :Labourer rdf:type owl:Class ;
           
@@ -1110,7 +1110,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Manager
+###  http://owl.drools.org/conyard#Manager
 
 :Manager rdf:type owl:Class ;
          
@@ -1118,7 +1118,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Mason
+###  http://owl.drools.org/conyard#Mason
 
 :Mason rdf:type owl:Class ;
        
@@ -1126,7 +1126,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Material
+###  http://owl.drools.org/conyard#Material
 
 :Material rdf:type owl:Class ;
           
@@ -1134,13 +1134,13 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Meta
+###  http://owl.drools.org/conyard#Meta
 
 :Meta rdf:type owl:Class .
 
 
 
-###  http://org.drools.conyard.owl#Paint
+###  http://owl.drools.org/conyard#Paint
 
 :Paint rdf:type owl:Class ;
        
@@ -1148,7 +1148,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Painting
+###  http://owl.drools.org/conyard#Painting
 
 :Painting rdf:type owl:Class ;
           
@@ -1170,14 +1170,14 @@ xsd:string rdf:type rdfs:Datatype .
                                                )
                           ] ;
           
-          owl:hasKey ( :hasComment
+          owl:hasKey ( :oid
                      ) ,
-                     ( :oid
+                     ( :hasComment
                      ) .
 
 
 
-###  http://org.drools.conyard.owl#Person
+###  http://owl.drools.org/conyard#Person
 
 :Person rdf:type owl:Class ;
         
@@ -1185,7 +1185,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Pipes
+###  http://owl.drools.org/conyard#Pipes
 
 :Pipes rdf:type owl:Class ;
        
@@ -1193,7 +1193,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Site
+###  http://owl.drools.org/conyard#Site
 
 :Site rdf:type owl:Class ;
       
@@ -1219,7 +1219,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Smith
+###  http://owl.drools.org/conyard#Smith
 
 :Smith rdf:type owl:Class ;
        
@@ -1227,7 +1227,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#SpecialInspection
+###  http://owl.drools.org/conyard#SpecialInspection
 
 :SpecialInspection rdf:type owl:Class ;
                    
@@ -1240,7 +1240,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Stair
+###  http://owl.drools.org/conyard#Stair
 
 :Stair rdf:type owl:Class ;
        
@@ -1253,7 +1253,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#StairBrandX
+###  http://owl.drools.org/conyard#StairBrandX
 
 :StairBrandX rdf:type owl:Class ;
              
@@ -1283,7 +1283,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Supervisor
+###  http://owl.drools.org/conyard#Supervisor
 
 :Supervisor rdf:type owl:Class ;
             
@@ -1291,7 +1291,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#TestExplosion
+###  http://owl.drools.org/conyard#TestExplosion
 
 :TestExplosion rdf:type owl:Class ;
                
@@ -1318,7 +1318,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#TestFall
+###  http://owl.drools.org/conyard#TestFall
 
 :TestFall rdf:type owl:Class ;
           
@@ -1345,7 +1345,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#TestFire
+###  http://owl.drools.org/conyard#TestFire
 
 :TestFire rdf:type owl:Class ;
           
@@ -1372,7 +1372,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#TestFrost
+###  http://owl.drools.org/conyard#TestFrost
 
 :TestFrost rdf:type owl:Class ;
            
@@ -1399,7 +1399,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#TestVocabulary
+###  http://owl.drools.org/conyard#TestVocabulary
 
 :TestVocabulary rdf:type owl:Class ;
                 
@@ -1407,7 +1407,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Tool
+###  http://owl.drools.org/conyard#Tool
 
 :Tool rdf:type owl:Class ;
       
@@ -1415,7 +1415,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Truck
+###  http://owl.drools.org/conyard#Truck
 
 :Truck rdf:type owl:Class ;
        
@@ -1423,7 +1423,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Vehicle
+###  http://owl.drools.org/conyard#Vehicle
 
 :Vehicle rdf:type owl:Class ;
          
@@ -1431,14 +1431,19 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#WallRaising
+###  http://owl.drools.org/conyard#WallRaising
 
 :WallRaising rdf:type owl:Class ;
              
              rdfs:subClassOf :Activity ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :involves ;
-                               owl:allValuesFrom :Mason
+                               owl:onProperty :requires ;
+                               owl:onClass :Bricks ;
+                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :requires ;
+                               owl:allValuesFrom :Bricks
                              ] ,
                              [ rdf:type owl:Restriction ;
                                owl:onProperty :involves ;
@@ -1446,18 +1451,13 @@ xsd:string rdf:type rdfs:Datatype .
                                owl:minQualifiedCardinality "3"^^xsd:nonNegativeInteger
                              ] ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :requires ;
-                               owl:allValuesFrom :Bricks
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :requires ;
-                               owl:onClass :Bricks ;
-                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                               owl:onProperty :involves ;
+                               owl:allValuesFrom :Mason
                              ] .
 
 
 
-###  http://org.drools.conyard.owl#WeldingTorch
+###  http://owl.drools.org/conyard#WeldingTorch
 
 :WeldingTorch rdf:type owl:Class ;
               
@@ -1465,7 +1465,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#WeldingTorchBrandX
+###  http://owl.drools.org/conyard#WeldingTorchBrandX
 
 :WeldingTorchBrandX rdf:type owl:Class ;
                     
@@ -1495,7 +1495,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
-###  http://org.drools.conyard.owl#Worker
+###  http://owl.drools.org/conyard#Worker
 
 :Worker rdf:type owl:Class ;
         
@@ -1518,14 +1518,14 @@ owl:Thing rdf:type owl:Class .
 #################################################################
 
 
-###  http://org.drools.conyard.owl#explosion
+###  http://owl.drools.org/conyard#explosion
 
 :explosion rdf:type :Explosion ,
                     owl:NamedIndividual .
 
 
 
-###  http://org.drools.conyard.owl#explosionXP
+###  http://owl.drools.org/conyard#explosionXP
 
 :explosionXP rdf:type :Expression ,
                       owl:NamedIndividual ;
@@ -1538,14 +1538,14 @@ owl:Thing rdf:type owl:Class .
 
 
 
-###  http://org.drools.conyard.owl#fall
+###  http://owl.drools.org/conyard#fall
 
 :fall rdf:type :Fall ,
                owl:NamedIndividual .
 
 
 
-###  http://org.drools.conyard.owl#fallXP
+###  http://owl.drools.org/conyard#fallXP
 
 :fallXP rdf:type :Expression ,
                  owl:NamedIndividual ;
@@ -1558,7 +1558,7 @@ owl:Thing rdf:type owl:Class .
 
 
 
-###  http://org.drools.conyard.owl#fireXP
+###  http://owl.drools.org/conyard#fireXP
 
 :fireXP rdf:type :Expression ,
                  owl:NamedIndividual ;
@@ -1571,21 +1571,21 @@ owl:Thing rdf:type owl:Class .
 
 
 
-###  http://org.drools.conyard.owl#flame
+###  http://owl.drools.org/conyard#flame
 
 :flame rdf:type :Fire ,
                 owl:NamedIndividual .
 
 
 
-###  http://org.drools.conyard.owl#frost
+###  http://owl.drools.org/conyard#frost
 
 :frost rdf:type :Frost ,
                 owl:NamedIndividual .
 
 
 
-###  http://org.drools.conyard.owl#frostXP
+###  http://owl.drools.org/conyard#frostXP
 
 :frostXP rdf:type :Expression ,
                   owl:NamedIndividual ;
@@ -1598,7 +1598,7 @@ owl:Thing rdf:type owl:Class .
 
 
 
-###  http://org.drools.conyard.owl#test
+###  http://owl.drools.org/conyard#test
 
 :test rdf:type :Danger ,
                owl:NamedIndividual ;

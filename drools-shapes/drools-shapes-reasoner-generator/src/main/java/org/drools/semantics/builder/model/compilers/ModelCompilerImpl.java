@@ -16,7 +16,7 @@
 
 package org.drools.semantics.builder.model.compilers;
 
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.CompiledOntoModel;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
@@ -43,7 +43,7 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
 
         if ( getModel() != null ) {
             for ( Concept con : getModel().getConcepts() ) {
-                String name = DLUtils.compactUpperCase( con.getName() );
+                String name = NameUtils.compactUpperCase( con.getName() );
                 Map map = new HashMap();
                 map.put( "package", getModel().getPackage() );
                 map.put( "iri", con.getIri() );
@@ -60,7 +60,7 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
                 }
                 map.put( "keys", con.getKeys() );
                 map.put( "shadowed", con.isShadowed() );
-                compile( con, DLUtils.getInstance(), map );
+                compile( con, NameUtils.getInstance(), map );
             }
         }
         return getModel();

@@ -18,7 +18,7 @@
 
 import org.semanticweb.owlapi.model.*;
 
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 
 import java.util.List;
 import java.io.InputStream;
@@ -190,7 +190,7 @@ then
 	HashMap map = new HashMap();
 	    map.put( "id", $neg );
 	    map.put( "children", $childz );
-	applyTemplate( "nand.drlt", DLUtils.getInstance(), registry, map, out );
+	applyTemplate( "nand.drlt", NameUtils.getInstance(), registry, map, out );
 end
 
 rule "Nand Args"
@@ -250,7 +250,7 @@ then
 	HashMap map = new HashMap();
 	    map.put( "id", $neg );
 	    map.put( "children", $childz );
-	applyTemplate( "nor.drlt", DLUtils.getInstance(), registry, map, out );
+	applyTemplate( "nor.drlt", NameUtils.getInstance(), registry, map, out );
 end
 
 rule "Nor Args"
@@ -457,8 +457,8 @@ when
     $domx : OWLClassExpression( classExpressionLiteral == false ) from $prop.getDomains( $onto )
 then
     OWLDataFactory factory = $onto.getOWLOntologyManager().getOWLDataFactory();
-    DLUtils utils = DLUtils.getInstance();
-        OWLClass domClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( $prop.toString() ) + "Domain" ) );
+    NameUtils utils = NameUtils.getInstance();
+        OWLClass domClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( "", $prop.toString() ) + "Domain" ) );
 
     insert( domClass );
 
@@ -475,8 +475,8 @@ when
     $ranx : OWLClassExpression( classExpressionLiteral == false ) from $prop.getRanges( $onto )
 then
     OWLDataFactory factory = $onto.getOWLOntologyManager().getOWLDataFactory();
-    DLUtils utils = DLUtils.getInstance();
-        OWLClass ranClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( $prop.toString() ) + "Range" ) );
+    NameUtils utils = NameUtils.getInstance();
+        OWLClass ranClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( "", $prop.toString() ) + "Range" ) );
 
     insert( ranClass );
 

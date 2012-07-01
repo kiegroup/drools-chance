@@ -18,7 +18,7 @@ package org.drools.semantics.builder.model.compilers;
 
 
 import org.drools.factmodel.BuildUtils;
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.*;
 import org.mvel2.asm.*;
 
@@ -130,7 +130,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
             boolean isBoolean = target.equalsIgnoreCase("xsd:boolean");
             if ( target.startsWith("xsd:") ) {
-                target = DLUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 );
+                target = NameUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 );
             } else {
                 target = pack + target;
             }
@@ -148,7 +148,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
             {
                 mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                        DLUtils.getter( rel.getName(), rel.getTarget().getName(), rel.getMaxCard() ),
+                        NameUtils.getter( rel.getName(), rel.getTarget().getName(), rel.getMaxCard() ),
                         "()" + propType,
                         genericGetType,
                         null);
@@ -175,7 +175,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             {
                 if ( ! rel.isReadOnly() ) {
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            DLUtils.setter( rel.getName() ),
+                            NameUtils.setter( rel.getName() ),
                             "(" + propType + ")V",
                             genericSetType,
                             null);
@@ -185,7 +185,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             {
                 if ( ! rel.isRestricted() && ! rel.getTarget().isPrimitive() && ! rel.isTransient() ) {
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            "add" + DLUtils.compactUpperCase( rel.getName() ),
+                            "add" + NameUtils.compactUpperCase( rel.getName() ),
                             "(Ljava/lang/Object;)V",
                             null,
                             null);
@@ -200,9 +200,9 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             {
                 if ( rel.isSimple() || ( ( rel.getMaxCard() == null || rel.getMaxCard() > 1 ) && ! rel.isTransient() ) ) {
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            "add" + DLUtils.compactUpperCase( rel.getName() ),
+                            "add" + NameUtils.compactUpperCase( rel.getName() ),
                             "(" + BuildUtils.getTypeDescriptor( ( rel.getTarget().isPrimitive() ? "" : pack )
-                                    + DLUtils.map( rel.getTarget().getName(), true ) ) + ")V",
+                                    + NameUtils.map( rel.getTarget().getName(), true ) ) + ")V",
                             null,
                             null );
                     {
@@ -211,7 +211,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                     }
                     mv.visitEnd();
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            "remove" + DLUtils.compactUpperCase( rel.getName() ),
+                            "remove" + NameUtils.compactUpperCase( rel.getName() ),
                             "(Ljava/lang/Object;)V",
                             null,
                             null );
@@ -307,7 +307,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             String target = rel.getTarget().getName();
             boolean isBoolean = target.equalsIgnoreCase("xsd:boolean");
             if ( target.startsWith("xsd:") ) {
-                target = DLUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 ).replace(".","/");
+                target = NameUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 ).replace(".","/");
             } else {
                 target = pack + target;
             }
@@ -325,7 +325,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
             if ( ! rel.isRestricted() && ! rel.isTransient() ) {
                 mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                        DLUtils.getter( rel.getName(), rel.getTarget().getName(), rel.getMaxCard() ),
+                        NameUtils.getter( rel.getName(), rel.getTarget().getName(), rel.getMaxCard() ),
                         "()" + propType,
                         genericGetType,
                         null);
@@ -347,7 +347,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                     }
 
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            DLUtils.setter( rel.getName() ),
+                            NameUtils.setter( rel.getName() ),
                             "(" + propType + ")V",
                             genericSetType,
                             null);
@@ -392,7 +392,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 //                    String target = rel.getTarget().getName();
 //                    boolean isBoolean = target.equalsIgnoreCase("xsd:boolean");
 //                        if ( target.startsWith("xsd:") ) {
-//                            target = DLUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 ).replace(".","/");
+//                            target = NameUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 ).replace(".","/");
 //                        } else {
 //                            target = pack + target;
 //                        }

@@ -16,7 +16,7 @@
 
 package org.drools.semantics.builder.model;
 
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -54,7 +54,7 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         Element root = new Element("schema", getNamespace("xsd") );
 
         root.setAttribute( "elementFormDefault", "qualified" );
-        root.setAttribute( "targetNamespace", DLUtils.reverse( this.getPackage() ) );
+        root.setAttribute( "targetNamespace", NameUtils.reverse( this.getPackage() ) );
 
 
         schema.addContent(root);

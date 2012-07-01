@@ -16,7 +16,7 @@
 
 package org.drools.semantics.builder.model.compilers;
 
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.*;
 import org.jdom.Element;
 
@@ -64,7 +64,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     public void setModel( OntoModel model ) {
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.XSD, model );
 
-        ((XSDModel) getModel()).setNamespace( "tns", DLUtils.reverse( model.getPackage() ) );
+        ((XSDModel) getModel()).setNamespace( "tns", NameUtils.reverse( model.getPackage() ) );
     }
 
 

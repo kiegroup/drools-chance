@@ -96,7 +96,7 @@ when
     $type : OWLClass( $iri : IRI )
 then
     Concept con = new Concept( $iri.toQuotedString(),
-                               DLUtils.getInstance().buildNameFromIri( $iri ),
+                               NameUtils.getInstance().buildNameFromIri( $iri ),
                                new java.util.HashSet(),
                                new java.util.HashMap()
                                );
@@ -285,7 +285,7 @@ when
     $tgt  : Concept( iri == $iri )
 then
     retract ( $prop );
-    DLUtils utils = DLUtils.getInstance();
+    NameUtils utils = NameUtils.getInstance();
     PropertyRelation rel = new PropertyRelation( $domIri.toString(),
                                                  $iri.toQuotedString(),
                                                  $ranIri.toString(),
@@ -326,8 +326,8 @@ when
     $domx : OWLClassExpression( classExpressionLiteral == false ) from $prop.getDomains( $onto )
 then
     OWLDataFactory factory = $onto.getOWLOntologyManager().getOWLDataFactory();
-    DLUtils utils = DLUtils.getInstance();
-        OWLClass domClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( $prop.toString() ) + "Domain" ) );
+    NameUtils utils = NameUtils.getInstance();
+        OWLClass domClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( "", $prop.toString() ) + "Domain" ) );
 
     Domain dom = new Domain( domClass.toString(), $iri );
     System.err.println( "DOMAIN C: "  + dom );
@@ -378,8 +378,8 @@ when
     $ranx : OWLClassExpression( classExpressionLiteral == false ) from $prop.getRanges( $onto )
 then
     OWLDataFactory factory = $onto.getOWLOntologyManager().getOWLDataFactory();
-    DLUtils utils = DLUtils.getInstance();
-        OWLClass ranClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( $prop.toString() ) + "Range" ) );
+    NameUtils utils = NameUtils.getInstance();
+        OWLClass ranClass = factory.getOWLClass( IRI.create( utils.buildNameFromIri( "", $prop.toString() ) + "Range" ) );
 
     Range ran = new Range( ranClass.toString(), $iri );
     System.err.println( "RANGE C: "  + ran );
@@ -525,7 +525,7 @@ rule "Set Package"
 when
     $onto    : OWLOntology( anonymous == false, $pack : ontologyID )
 then
-    out.setPackage( DLUtils.getInstance().iriToPackage( $pack.toString() ) );
+    out.setPackage( NameUtils.getInstance().iriToPackage( $pack.toString() ) );
 end
 
 

@@ -37,9 +37,9 @@
       <serializable/>
       <xjc:simple/>
 
-      <javaType name= "java.util.Date" xmlType="xsd:date" printMethod="org.drools.semantics.builder.DLUtils.marshalDate" parseMethod="org.drools.semantics.builder.DLUtils.unmarshalDate"/>
-      <javaType name= "java.util.Date" xmlType="xsd:dateTime" printMethod="org.drools.semantics.builder.DLUtils.marshalDate" parseMethod="org.drools.semantics.builder.DLUtils.unmarshalDate"/>
-      <javaType name= "java.util.Date" xmlType="xsd:time" printMethod="org.drools.semantics.builder.DLUtils.marshalDate" parseMethod="org.drools.semantics.builder.DLUtils.unmarshalDate"/>
+      <javaType name= "java.util.Date" xmlType="xsd:date" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate"/>
+      <javaType name= "java.util.Date" xmlType="xsd:dateTime" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate"/>
+      <javaType name= "java.util.Date" xmlType="xsd:time" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate"/>
     </globalBindings>
 
     @code{ targetElement = ''; if (flat) targetElement='complexType'; else targetElement='complexType'; }

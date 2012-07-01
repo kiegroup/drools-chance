@@ -22,19 +22,13 @@ import com.sun.tools.xjc.Plugin;
 import com.sun.tools.xjc.model.CPluginCustomization;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
-import org.drools.io.ResourceFactory;
-import org.drools.semantics.builder.DLUtils;
 import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompilerImpl;
-import org.mvel2.templates.CompiledTemplate;
-import org.mvel2.templates.TemplateCompiler;
-import org.mvel2.templates.TemplateRuntime;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
-import java.io.InputStream;
 import java.util.*;
 
 public class AccessorPlugin extends Plugin {

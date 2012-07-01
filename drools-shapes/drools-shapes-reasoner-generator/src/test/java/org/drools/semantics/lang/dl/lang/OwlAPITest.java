@@ -33,70 +33,69 @@ import static org.junit.Assert.fail;
 
 public class OwlAPITest {
 
-private static Logger log;
+    private static Logger log;
 
-	private boolean visual = false;
-	public boolean isVisual() {	return visual; }
-	public void setVisual(boolean visual) {	this.visual = visual; }
-
-
-
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		log = Logger.getAnonymousLogger();
-		log.setLevel(Level.INFO);
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-
-	}
-
-	@Before
-	public void setUp() throws Exception {
-
-	}
-
-	@After
-	public void tearDown() throws Exception {
-
-	}
+    private boolean visual = false;
+    public boolean isVisual() {	return visual; }
+    public void setVisual(boolean visual) {	this.visual = visual; }
 
 
 
-    @Test
-	public void kmr2_ontology() {
-		test_ontology("kmr2/kmr2_mini.owl");
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        log = Logger.getAnonymousLogger();
+        log.setLevel(Level.INFO);
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+
+    }
+
+    @Before
+    public void setUp() throws Exception {
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+
+    }
+
+
 
     @Test
-	public void test_test() {
-		test_ontology("DLex01.manchester");
+    public void kmr2_ontology() {
+        test_ontology("kmr2/kmr2_mini.owl");
+    }
+
+    @Test
+    public void test_test() {
+        test_ontology("DLex01.manchester");
         test_ontology("DLex02.manchester");
         test_ontology("DLex03.manchester");
-	}
+    }
 
 
     @Test
-	public void test_ontolog5() {
-		test_ontology("DLex5.manchester");
-	}
+    public void test_ontolog5() {
+        test_ontology("DLex5.manchester");
+    }
 
     @Test
-	public void test_ontology6() {
-		test_ontology("DLex6.manchester");
-	}
+    public void test_ontology6() {
+        test_ontology("DLex6.manchester");
+    }
 
 
-
-	public void test_ontology(String ontoName) {
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+    public void test_ontology(String ontoName) {
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
         try {
             ClassPathResource res = new ClassPathResource( ontoName );
             OWLOntology onto = manager.loadOntologyFromOntologyDocument( res.getInputStream() );
             assertNotNull( onto );
-                      IRI i;
+            IRI i;
 
             for (OWLAxiom ax : onto.getAxioms(AxiomType.DECLARATION)) {
                 OWLDeclarationAxiom dx = (OWLDeclarationAxiom) ax;
@@ -131,7 +130,7 @@ private static Logger log;
 
 
 
-	private void check(String rule, String[] drl) {
+    private void check(String rule, String[] drl) {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         try {
             manager.loadOntologyFromOntologyDocument(new ByteArrayInputStream(drl[0].getBytes()));

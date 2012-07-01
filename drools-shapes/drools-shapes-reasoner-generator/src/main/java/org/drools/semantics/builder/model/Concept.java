@@ -17,7 +17,7 @@
 package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 
 import java.util.*;
 
@@ -48,7 +48,7 @@ public class Concept {
 
     public Concept( String iri, String name, boolean primitive ) {
         this.iri = iri;
-        this.name = primitive ? name : DLUtils.compactUpperCase( name );
+        this.name = primitive ? name : NameUtils.compactUpperCase( name );
         this.superConcepts = new HashSet();
         this.subConcepts = new HashSet();
         this.properties = new HashMap();
@@ -60,7 +60,7 @@ public class Concept {
 
     public Concept( String iri, String name, Set superConcepts, Map properties, Set equivalentConcepts, Set subConcepts, Map shadowProperties, boolean primitive ) {
         this.iri = iri;
-        this.name = primitive ? name : DLUtils.compactUpperCase( name );
+        this.name = primitive ? name : NameUtils.compactUpperCase( name );
         this.superConcepts = superConcepts != null ? superConcepts : new HashSet<Concept>();
         this.properties = properties != null ? properties : new HashMap<String, PropertyRelation>();
         this.shadowProperties = shadowProperties != null ? shadowProperties : new HashMap<String, PropertyRelation>();

@@ -17,7 +17,7 @@
 package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -167,16 +167,16 @@ public class PropertyRelation extends Relation {
     }
 
     public String getTypeName() {
-        return DLUtils.map( getTarget().getName(), true );
+        return NameUtils.map( getTarget().getName(), true );
     }
 
     public String getGetter() {
         String prefix = ( isSimpleBoolean() && ! isCollection() ) ? "is" : "get";
-        return prefix + DLUtils.compactUpperCase( getName() );
+        return prefix + NameUtils.compactUpperCase( getName() );
     }
 
     public String getSetter() {
-        return "set" + DLUtils.compactUpperCase( getName() );
+        return "set" + NameUtils.compactUpperCase( getName() );
     }
 
 

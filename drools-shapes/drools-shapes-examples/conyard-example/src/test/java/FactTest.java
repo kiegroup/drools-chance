@@ -3,7 +3,6 @@ import com.clarkparsia.empire.EmpireOptions;
 import com.clarkparsia.empire.config.ConfigKeys;
 import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
 import com.clarkparsia.empire.sesametwo.RepositoryDataSourceFactory;
-import http.org.drools.conyard.owl.*;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -17,6 +16,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
+import org.drools.owl.conyard.*;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

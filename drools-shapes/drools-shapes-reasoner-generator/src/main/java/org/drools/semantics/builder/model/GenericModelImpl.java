@@ -2,7 +2,7 @@
 package org.drools.semantics.builder.model;
 
 
-import org.drools.semantics.builder.DLUtils;
+import org.drools.semantics.utils.NameUtils;
 
 import java.util.*;
 
@@ -45,7 +45,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     }
 
     public void setPackage(String pack) {
-        this.pack = DLUtils.iriToPackage( pack );
+        this.pack = NameUtils.namespaceURIToPackage( pack );
     }
 
     public String getPack() {
@@ -300,7 +300,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     public void resolve( ) {
         for ( Concept con : getConcepts() ) {
             if ( con.getIri().startsWith("<java://") ) {
-                String fullName = DLUtils.buildFQNameFromIri(con.getIri());
+                String fullName = NameUtils.buildFQNameFromIri( con.getIri() );
                 System.out.println( "Looking for " + con.getName() + " as " + fullName );
                 try {
                     Class existingKlass = Class.forName( fullName );

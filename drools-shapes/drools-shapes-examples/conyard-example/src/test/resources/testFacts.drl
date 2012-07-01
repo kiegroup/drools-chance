@@ -1,6 +1,6 @@
 package test; 
 
-import http.org.drools.conyard.owl.*;
+import org.drools.owl.conyard.*;
 
 global java.util.List ans;
                 
