@@ -25,6 +25,7 @@ import org.drools.chance.degree.DegreeType;
 import org.drools.chance.distribution.ImpKind;
 import org.drools.chance.distribution.ImpType;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
+import org.drools.core.util.TripleFactory;
 import org.drools.core.util.TripleStore;
 import org.drools.factmodel.traits.TraitProxy;
 import org.drools.factmodel.traits.TripleBasedStruct;
@@ -49,10 +50,11 @@ public class ImpBeanLegacyWrapper extends TripleBasedStruct {
 
 
 
-    public ImpBeanLegacyWrapper( LegacyBean core, TripleStore store ) {
+    public ImpBeanLegacyWrapper( LegacyBean core, TripleStore store, TripleFactory tf ) {
         super();
         this.object = core;
         this.store = store;
+        setTripleFactory( tf );
 
         initSoftFields();
 

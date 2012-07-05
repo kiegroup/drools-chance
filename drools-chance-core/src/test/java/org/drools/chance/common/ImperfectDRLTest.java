@@ -21,6 +21,7 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.chance.Chance;
 import org.drools.chance.factmodel.ChanceBeanBuilderImpl;
 import org.drools.chance.factmodel.ChanceTraitBuilderImpl;
 import org.drools.chance.factmodel.ChanceTriplePropertyWrapperClassBuilderImpl;
@@ -48,16 +49,6 @@ public class ImperfectDRLTest {
     protected StatefulKnowledgeSession kSession;
     protected List<String> list = new ArrayList<String>();
 
-    @BeforeClass
-    public static void setFactories() {
-        ChanceStrategyFactory.initDefaults();
-        ClassBuilderFactory.setBeanClassBuilderService(new ChanceBeanBuilderImpl() );
-        ClassBuilderFactory.setTraitBuilderService( new ChanceTraitBuilderImpl() );
-        ClassBuilderFactory.setTraitProxyBuilderService( new ChanceTripleProxyBuilderImpl() );
-        ClassBuilderFactory.setPropertyWrapperBuilderService( new ChanceTriplePropertyWrapperClassBuilderImpl() );
-
-    }
-
     @Before
     public void setUp() throws Exception {
         TraitFactory.reset();
@@ -67,12 +58,14 @@ public class ImperfectDRLTest {
 
     private void initObjects() throws Exception {
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        Chance.initialize();
+
+        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder( Chance.getChanceKBuilderConfiguration() );
         kBuilder.add( new ClassPathResource( "org/drools/chance/factmodel/testImperfectRules.drl" ), ResourceType.DRL );
         if ( kBuilder.hasErrors() ) {
             fail( kBuilder.getErrors().toString() );
         }
-        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
+        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase( Chance.getChanceKnowledgeBaseConfiguration() );
         kBase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
         kSession = kBase.newStatefulKnowledgeSession();
         kSession.setGlobal( "list", list );

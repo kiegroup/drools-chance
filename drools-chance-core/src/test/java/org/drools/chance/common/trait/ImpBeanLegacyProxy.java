@@ -23,6 +23,8 @@ import org.drools.chance.common.fact.Weight;
 import org.drools.chance.distribution.Distribution;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
 import org.drools.core.util.Triple;
+import org.drools.core.util.TripleFactory;
+import org.drools.core.util.TripleFactoryImpl;
 import org.drools.core.util.TripleStore;
 import org.drools.factmodel.traits.TraitProxy;
 import org.drools.factmodel.traits.TripleBasedBean;
@@ -34,19 +36,18 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
     private LegacyBean object;
 
     private TripleStore store;
+    
 
-
-
-    public ImpBeanLegacyProxy( LegacyBean x, TripleStore y ) {
+    public ImpBeanLegacyProxy( LegacyBean x, TripleStore y, TripleFactory tf ) {
         object = x;
         store = y;
 
+        setTripleFactory( tf );
+        setFields( new ImpBeanLegacyWrapper( x, y, tf ) );
+        
+        x.setDynamicProperties( new TripleBasedBean( x, y, tf ) );
 
-        setFields( new ImpBeanLegacyWrapper( x, y ) );
-
-        x.setDynamicProperties( new TripleBasedBean( x,y ) );
-
-        x.setTraitMap( new TripleBasedTypes( x, y ) );
+        x.setTraitMap( new TripleBasedTypes( x, y, tf ) );
 
         synchFields();
 

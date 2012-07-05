@@ -31,7 +31,7 @@ public class ChancePatternBuilder extends PatternBuilder {
                 if ( constraint instanceof OperatorConstraint) {
                     OperatorConstraint opc = (OperatorConstraint) constraint;
                     context.setObjectSource( (ObjectSource) utils.attachNode( context,
-                                                ((ChanceNodeFactory) ReteooComponentFactory.getNodeFactoryService()).buildLogicalAlphaOperatorNode(
+                                                ((ChanceNodeFactory) context.getComponentFactory().getNodeFactoryService()).buildLogicalAlphaOperatorNode(
                                                         context.getNextId(),
                                                         opc.getLabel(),
                                                         opc.getConnective(),
@@ -39,7 +39,7 @@ public class ChancePatternBuilder extends PatternBuilder {
                                                         context.getObjectSource(),
                                                         context) ) );
                 } else {
-                    ChanceAlphaNode alpha = (ChanceAlphaNode) ReteooComponentFactory.getNodeFactoryService().buildAlphaNode(
+                    ChanceAlphaNode alpha = (ChanceAlphaNode) context.getComponentFactory().getNodeFactoryService().buildAlphaNode(
                                                         context.getNextId(),
                                                         (AlphaNodeFieldConstraint) constraint,
                                                         context.getObjectSource(),
@@ -51,7 +51,7 @@ public class ChancePatternBuilder extends PatternBuilder {
                 }
             } else {
                 context.setObjectSource( (ObjectSource) utils.attachNode( context,
-                        ((ChanceNodeFactory) ReteooComponentFactory.getNodeFactoryService()).buildDelayedEvaluationNode(
+                        ((ChanceNodeFactory) context.getComponentFactory().getNodeFactoryService()).buildDelayedEvaluationNode(
                                 context.getNextId(),
                                 constraint,
                                 context.getObjectSource(),

@@ -64,7 +64,7 @@ public class ChanceGroupElementBuilder extends GroupElementBuilder {
 
 
             context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
-                    ( (ChanceNodeFactory ) ReteooComponentFactory.getNodeFactoryService() ).
+                    ( (ChanceNodeFactory ) context.getComponentFactory().getNodeFactoryService() ).
                             buildLogicalBetaOperatorNode(
                                     context.getNextId(),
                                     label,
@@ -109,7 +109,7 @@ public class ChanceGroupElementBuilder extends GroupElementBuilder {
 
 
             context.setTupleSource( (LeftTupleSource) utils.attachNode( context,
-                    ( (ChanceNodeFactory ) ReteooComponentFactory.getNodeFactoryService() ).
+                    ( (ChanceNodeFactory ) context.getComponentFactory().getNodeFactoryService() ).
                             buildLogicalBetaOperatorNode(
                                     context.getNextId(),
                                     label,

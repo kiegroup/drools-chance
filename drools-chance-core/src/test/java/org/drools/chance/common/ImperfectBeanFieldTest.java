@@ -22,6 +22,8 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.chance.Chance;
+import org.drools.chance.core.util.ImperfectTripleFactory;
 import org.drools.chance.factmodel.ChanceBeanBuilderImpl;
 import org.drools.chance.factmodel.ChanceTraitBuilderImpl;
 import org.drools.chance.factmodel.ChanceTriplePropertyWrapperClassBuilderImpl;
@@ -40,6 +42,7 @@ import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
 import org.drools.chance.factmodel.ChanceTripleProxyBuilderImpl;
 import org.drools.common.AbstractRuleBase;
 import org.drools.core.util.Triple;
+import org.drools.core.util.TripleFactoryImpl;
 import org.drools.core.util.TripleStore;
 import org.drools.definition.type.FactType;
 import org.drools.factmodel.ClassBuilderFactory;
@@ -80,18 +83,7 @@ public class ImperfectBeanFieldTest {
     private FactType drlCheese = null;
     private Object drlCheddar = null;
 
-
-
-    @BeforeClass
-    public static void setFactories() {
-        ChanceStrategyFactory.initDefaults();
-        ClassBuilderFactory.setBeanClassBuilderService(new ChanceBeanBuilderImpl() );
-        ClassBuilderFactory.setTraitBuilderService( new ChanceTraitBuilderImpl() );
-        ClassBuilderFactory.setTraitProxyBuilderService( new ChanceTripleProxyBuilderImpl() );
-        ClassBuilderFactory.setPropertyWrapperBuilderService( new ChanceTriplePropertyWrapperClassBuilderImpl() );
-
-    }
-
+  
     @Before
     public void setUp() throws Exception {
         TraitFactory.reset();
@@ -101,15 +93,15 @@ public class ImperfectBeanFieldTest {
 
 
     private void initObjects() throws Exception {
+                
+        Chance.initialize();
         
-        
-
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder( Chance.getChanceKBuilderConfiguration() );
         kBuilder.add( new ClassPathResource( "org/drools/chance/factmodel/testImperfectFacts.drl" ), ResourceType.DRL );
         if ( kBuilder.hasErrors() ) {
             fail( kBuilder.getErrors().toString() );
         }
-        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
+        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase( Chance.getChanceKnowledgeBaseConfiguration() );
         kBase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
         StatefulKnowledgeSession kSession = kBase.newStatefulKnowledgeSession();
         kSession.fireAllRules();
@@ -119,7 +111,7 @@ public class ImperfectBeanFieldTest {
         
         beanHand = new BeanImp( );
         
-        traitHand = new ImpBeanLegacyProxy( new LegacyBean( "joe", 65.0 ), store );
+        traitHand = new ImpBeanLegacyProxy( new LegacyBean( "joe", 65.0 ), store, new ImperfectTripleFactory() );
         
         
 //        logStore( store );
@@ -154,7 +146,7 @@ public class ImperfectBeanFieldTest {
     }
 
     private void logStore(TripleStore store) {
-        Collection c = store.getAll( ReteooComponentFactory.getTripleFactory().newTriple(Variable.v, Variable.v, Variable.v) );
+        Collection c = store.getAll( new TripleFactoryImpl().newTriple(Variable.v, Variable.v, Variable.v) );
         for ( Object t : c ) {
             Triple tri = (Triple) t;
 

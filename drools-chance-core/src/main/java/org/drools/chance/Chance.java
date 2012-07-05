@@ -6,6 +6,7 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.RuleBaseConfiguration;
 import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.chance.common.ChanceStrategyFactory;
+import org.drools.chance.rule.ChanceLogicTransformerFactory;
 import org.drools.chance.rule.builder.ChanceConstraintBuilderFactory;
 import org.drools.chance.rule.builder.ChanceMVELDumper;
 import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.mvl.ManyValuedConnectiveFactory;
@@ -60,27 +61,7 @@ public class Chance {
                 } );
 
 
-        ClassBuilderFactory.setBeanClassBuilderService(new ChanceBeanBuilderImpl());
-        ClassBuilderFactory.setTraitBuilderService( new ChanceTraitBuilderImpl() );
-        ClassBuilderFactory.setTraitProxyBuilderService( new ChanceTripleProxyBuilderImpl() );
-        ClassBuilderFactory.setPropertyWrapperBuilderService( new ChanceTriplePropertyWrapperClassBuilderImpl() );
-        ClassBuilderFactory.setEnumClassBuilderService( new ChanceEnumBuilderImpl() );
-
-        DroolsCompilerComponentFactory.setConstraintBuilderFactoryProvider( new ChanceConstraintBuilderFactory() );
-        DroolsCompilerComponentFactory.setExpressionProcessor( new ChanceMVELDumper() );
-
-        ReteooComponentFactory.setHandleFactoryProvider( new ChanceFactHandleFactory() );
-        ReteooComponentFactory.setNodeFactoryProvider( new ChanceNodeFactory() );
-        ReteooComponentFactory.setRuleBuilderProvider( new ChanceRuleBuilderFactory() );
-        ReteooComponentFactory.setAgendaFactory( new ChanceAgendaFactory() );
-        ReteooComponentFactory.setFieldDataFactory( new ChanceFieldFactory() );
-        ReteooComponentFactory.setTripleFactory( new ImperfectTripleFactory() );
-        ReteooComponentFactory.setKnowledgeHelperFactory( new ChanceKnowledgeHelperFactory() );
-        ReteooComponentFactory.setLogicTransformer( new ChanceLogicTransformer() );
-
         ChanceStrategyFactory.setDefaultFactory( new ManyValuedConnectiveFactory() );
-
-        TraitFactory.proxyBaseClass = ImperfectTraitProxy.class;
 
     }
 
@@ -99,27 +80,6 @@ public class Chance {
 
         JavaRuleBuilderHelper.setConsequenceTemplate( "javaRule.mvel" );
 
-
-        ClassBuilderFactory.setDefaultBeanClassBuilderService();
-        ClassBuilderFactory.setDefaultTraitBuilderService();
-        ClassBuilderFactory.setDefaultTraitProxyBuilderService();
-        ClassBuilderFactory.setDefaultPropertyWrapperBuilderService();
-        ClassBuilderFactory.setDefaultEnumClassBuilderService();
-
-        DroolsCompilerComponentFactory.setDefaultConstraintBuilderFactoryProvider();
-        DroolsCompilerComponentFactory.setDefaultExpressionProcessor();
-
-        ReteooComponentFactory.setDefaultHandleFactoryProvider();
-        ReteooComponentFactory.setDefaultNodeFactoryProvider();
-        ReteooComponentFactory.setDefaultRuleBuilderProvider();
-        ReteooComponentFactory.setDefaultAgendaFactory();
-        ReteooComponentFactory.setDefaultFieldFactory();
-        ReteooComponentFactory.setDefaultTripleFactory();
-        ReteooComponentFactory.setDefaultKnowledgeHelperFactory();
-        ReteooComponentFactory.setDefaultLogicTransformer();
-
-        TraitFactory.proxyBaseClass = TraitProxy.class;
-
     }
 
 
@@ -135,6 +95,22 @@ public class Chance {
         pbc.getEvaluatorRegistry().addEvaluatorDefinition( new HoldsEvaluatorDefinition() );
         pbc.getEvaluatorRegistry().addEvaluatorDefinition( new ImperfectBaseEvaluatorDefinition() );
 
+        DroolsCompilerComponentFactory dcf = new DroolsCompilerComponentFactory();
+        dcf.setConstraintBuilderFactoryProvider( new ChanceConstraintBuilderFactory() );
+        dcf.setExpressionProcessor( new ChanceMVELDumper() );
+        dcf.setFieldDataFactory( new ChanceFieldFactory() );
+
+        ClassBuilderFactory cbf = new ClassBuilderFactory();
+        cbf.setBeanClassBuilder( new ChanceBeanBuilderImpl() );
+        cbf.setTraitBuilder( new ChanceTraitBuilderImpl() );
+        cbf.setTraitProxyBuilder( new ChanceTripleProxyBuilderImpl() );
+        cbf.setPropertyWrapperBuilder( new ChanceTriplePropertyWrapperClassBuilderImpl() );
+        cbf.setEnumClassBuilder( new ChanceEnumBuilderImpl() );
+
+        pbc.setClassBuilderFactory( cbf );
+
+        pbc.setComponentFactory( dcf );
+
         return pbc;
     }
 
@@ -142,6 +118,29 @@ public class Chance {
     public static KnowledgeBaseConfiguration getChanceKnowledgeBaseConfiguration( KnowledgeBaseConfiguration baseConf ) {
         RuleBaseConfiguration rbc = (RuleBaseConfiguration) baseConf;
         rbc.addActivationListener( "query", new ChanceQueryActivationListenerFactory() );
+
+        ReteooComponentFactory rcf = new ReteooComponentFactory();
+        rcf.setHandleFactoryProvider( new ChanceFactHandleFactory() );
+        rcf.setNodeFactoryProvider( new ChanceNodeFactory() );
+        rcf.setRuleBuilderProvider( new ChanceRuleBuilderFactory() );
+        rcf.setAgendaFactory( new ChanceAgendaFactory() );
+        rcf.setFieldDataFactory( new ChanceFieldFactory() );
+        rcf.setTripleFactory( new ImperfectTripleFactory() );
+        rcf.setKnowledgeHelperFactory( new ChanceKnowledgeHelperFactory() );
+        rcf.setLogicTransformerFactory( new ChanceLogicTransformerFactory() );
+        rcf.setBaseTraitProxyClass( ImperfectTraitProxy.class );
+
+        ClassBuilderFactory cbf = new ClassBuilderFactory();
+        cbf.setBeanClassBuilder( new ChanceBeanBuilderImpl() );
+        cbf.setTraitBuilder( new ChanceTraitBuilderImpl() );
+        cbf.setTraitProxyBuilder( new ChanceTripleProxyBuilderImpl() );
+        cbf.setPropertyWrapperBuilder( new ChanceTriplePropertyWrapperClassBuilderImpl() );
+        cbf.setEnumClassBuilder( new ChanceEnumBuilderImpl() );
+
+        rcf.setClassBuilderFactory( cbf );
+
+        rbc.setComponentFactory( rcf );
+
         return rbc;
     }
 
