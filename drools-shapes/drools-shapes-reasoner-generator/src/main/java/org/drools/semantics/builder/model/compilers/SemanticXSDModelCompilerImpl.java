@@ -110,7 +110,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     public void setModel(OntoModel model) {
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.XSDX, model );
 
-        ((XSDModel) getModel()).setNamespace( "tns", NameUtils.reverse( model.getPackage() ) );
+        ((XSDModel) getModel()).setNamespace( "tns", model.getNamespace() );
     }
 
     private String createBindings( SemanticXSDModel sxsdModel ) {
@@ -122,6 +122,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             String template = readFile( "bindings.xjb.template" );
             Map<String,Object> vars = new HashMap<String,Object>();
             vars.put( "package", getModel().getPackage() );
+            vars.put( "namespace", getModel().getNamespace() );
             vars.put( "concepts", getModel().getConcepts() );
             vars.put( "flat", this.getCurrentMode().equals( Mode.FLAT ) || this.getCurrentMode().equals( Mode.LEVELLED ) );
             vars.put( "properties", propCache );

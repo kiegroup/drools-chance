@@ -17,11 +17,14 @@
 package org.drools.semantics.builder.model;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Map;
 
 public interface JarModel extends JavaInterfaceModel {
 
 
     public byte[] getCompiledTrait( String name );
+    
+    public Map<String, Holder> getCompiledTraits();
 
     public void addCompiledTrait( String name, Holder compiled );
 

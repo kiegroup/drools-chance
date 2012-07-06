@@ -17,12 +17,22 @@
 package org.drools.semantics.builder.model.compilers;
 
 
+import com.clarkparsia.empire.SupportsRdfId;
+import com.clarkparsia.empire.annotation.Namespaces;
+import com.clarkparsia.empire.annotation.RdfProperty;
+import com.clarkparsia.empire.annotation.RdfsClass;
 import org.drools.factmodel.BuildUtils;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.*;
 import org.mvel2.asm.*;
 
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlID;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,15 +73,15 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         AnnotationVisitor av0;
 
 
-        String pack = ((String)params.get("package")).replace(".","/") + "/";
+        String pack = ( (String) params.get( "package" ) ).replace( ".", "/" ) + "/";
 
-        Set<Concept> sup = ((Set<Concept>) params.get( "superConcepts" ) );
+        Set<Concept> sup = ( (Set<Concept>) params.get( "superConcepts" ) );
         String implInterface = (String) params.get( "implInterface" );
         int N = sup.size()
                 + 1
                 + ( implInterface != null ? 1 : 0 );
         String[] superTypes = new String[ N ];
-        superTypes[0] = "com/clarkparsia/empire/SupportsRdfId";
+        superTypes[0] = Type.getInternalName( SupportsRdfId.class );
 
         int j = 1;
         if ( implInterface != null ) {
@@ -87,20 +97,22 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         cw.visit(V1_5, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
                 pack +  trait,
                 null,
-                "java/lang/Object",
+                Type.getInternalName( Object.class ),
                 superTypes);
 
         {
-            av0 = cw.visitAnnotation("Lcom/clarkparsia/empire/annotation/RdfsClass;", true);
-            av0.visit("value", "tns:" + trait );
+            av0 = cw.visitAnnotation( Type.getDescriptor( RdfsClass.class ), true);
+            av0.visit( "value", "tns:" + trait );
             av0.visitEnd();
         }
         {
-            av0 = cw.visitAnnotation("Lcom/clarkparsia/empire/annotation/Namespaces;", true);
+            av0 = cw.visitAnnotation( Type.getDescriptor( Namespaces.class ), true);
             {
-                AnnotationVisitor av1 = av0.visitArray("value");
-                av1.visit(null, "tns");
-                av1.visit(null, "http://" + pack + "#");
+                //TODO : This does not work!! 
+                AnnotationVisitor av1 = av0.visitArray( "value" );
+                av1.visit( null, "tns" );
+//                av1.visit( null, "http://" + pack + "#" );
+                av1.visit( null, getModel().getNamespace() );
                 av1.visitEnd();
             }
             av0.visitEnd();
@@ -108,15 +120,15 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
 
         {
-            mv = cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "getDyEntryId", "()Ljava/lang/String;", null, null);
+            mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT, "getDyEntryId", "()" + Type.getDescriptor( String.class ), null, null );
             {
-                av0 = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlID;", true);
+                av0 = mv.visitAnnotation( Type.getDescriptor( XmlID.class ), true );
                 av0.visitEnd();
             }
             mv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "setDyEntryId", "(Ljava/lang/String;)V", null, null);
+            mv = cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "setDyEntryId", "(" + Type.getDescriptor( String.class ) + ")V", null, null );
             mv.visitEnd();
         }
 
@@ -125,11 +137,11 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         for ( String propKey : props.keySet() ) {
             PropertyRelation rel = props.get( propKey );
             String propName = rel.getName();
-            propName = propName.substring(0,1).toUpperCase() + propName.substring(1);
+            propName = propName.substring( 0, 1 ).toUpperCase() + propName.substring( 1 );
             String target = rel.getTarget().getName();
 
-            boolean isBoolean = target.equalsIgnoreCase("xsd:boolean");
-            if ( target.startsWith("xsd:") ) {
+            boolean isBoolean = target.equalsIgnoreCase( "xsd:boolean" );
+            if ( target.startsWith( "xsd:" ) ) {
                 target = NameUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 );
             } else {
                 target = pack + target;
@@ -141,7 +153,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             if ( rel.getMaxCard() == null || rel.getMaxCard() != 1  ) {
                 genericGetType = "()Ljava/util/List<" + propType + ">;";
                 genericSetType = "(Ljava/util/List<" + propType + ">;)V";
-                propType = "Ljava/util/List;";
+                propType = Type.getDescriptor( List.class );
                 isBoolean = false;
             }
 
@@ -153,17 +165,17 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                         genericGetType,
                         null);
                 if ( ! rel.isRestricted() && ! rel.isTransient() ) {
-                    av0 = mv.visitAnnotation("Lcom/clarkparsia/empire/annotation/RdfProperty;", true);
-                    av0.visit("value", "tns:hasCollectionPoint");
+                    av0 = mv.visitAnnotation( Type.getDescriptor( RdfProperty.class ), true );
+                    av0.visit( "value", "tns:hasCollectionPoint" );
                     av0.visitEnd();
                     if ( rel.isSimple() ) {
-                        av0 = mv.visitAnnotation("Ljavax/persistence/Basic;", true);
+                        av0 = mv.visitAnnotation( Type.getDescriptor( Basic.class ), true );
                         av0.visitEnd();
                     } else {
-                        av0 = mv.visitAnnotation("Ljavax/persistence/OneToMany;", true);
+                        av0 = mv.visitAnnotation( Type.getDescriptor( OneToMany.class ), true );
                         {
-                            AnnotationVisitor av1 = av0.visitArray("cascade");
-                            av1.visitEnum(null, "Ljavax/persistence/CascadeType;", "PERSIST");
+                            AnnotationVisitor av1 = av0.visitArray( "cascade" );
+                            av1.visitEnum( null, Type.getDescriptor( CascadeType.class ), "PERSIST" );
                             av1.visitEnd();
                         }
                         av0.visitEnd();
@@ -186,11 +198,11 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                 if ( ! rel.isRestricted() && ! rel.getTarget().isPrimitive() && ! rel.isTransient() ) {
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
                             "add" + NameUtils.compactUpperCase( rel.getName() ),
-                            "(Ljava/lang/Object;)V",
+                            "(" + Type.getDescriptor( Object.class ) + ")V",
                             null,
-                            null);
+                            null );
                     {
-                        av0 = mv.visitAnnotation("Ljavax/persistence/Transient;", true);
+                        av0 = mv.visitAnnotation( Type.getDescriptor( Transient.class ), true );
                         av0.visitEnd();
                     }
                     mv.visitEnd();
@@ -206,17 +218,17 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                             null,
                             null );
                     {
-                        av0 = mv.visitAnnotation("Ljavax/persistence/Transient;", true);
+                        av0 = mv.visitAnnotation( Type.getDescriptor( Transient.class ), true );
                         av0.visitEnd();
                     }
                     mv.visitEnd();
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
                             "remove" + NameUtils.compactUpperCase( rel.getName() ),
-                            "(Ljava/lang/Object;)V",
+                            "(" + Type.getDescriptor( Object.class ) + ")V",
                             null,
                             null );
                     {
-                        av0 = mv.visitAnnotation("Ljavax/persistence/Transient;", true);
+                        av0 = mv.visitAnnotation( Type.getDescriptor( Transient.class ), true );
                         av0.visitEnd();
                     }
                     mv.visitEnd();
@@ -244,12 +256,12 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         AnnotationVisitor av0;
 
 
-        String pack = ((String)params.get("package")).replace(".","/") + "/";
+        String pack = ( (String) params.get( "package" ) ).replace( ".", "/" ) + "/";
 
-        Set<Concept> sup =  ((Set<Concept>) params.get("subConcepts"));
+        Set<Concept> sup =  ((Set<Concept>) params.get( "subConcepts" ) );
 
         String[] superTypes = new String[ sup.size() +1 ];
-        superTypes[0] = "com/clarkparsia/empire/SupportsRdfId";
+        superTypes[0] = Type.getInternalName( SupportsRdfId.class );
         int j = 1;
         for ( Iterator<Concept> iter = sup.iterator(); iter.hasNext(); ) {
             superTypes[j++] = pack + iter.next().getName() + "$$Shadow";
@@ -257,42 +269,43 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
 
         Map<String, PropertyRelation> props =  (Map<String, PropertyRelation>) params.get( "shadowProperties" );
-
+                                                                                         
 
 
 
         cw.visit(V1_5, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
                 pack +  trait,
                 null,
-                "java/lang/Object",
+                Type.getInternalName( Object.class ),
                 superTypes);
 
         {
-            av0 = cw.visitAnnotation("Lcom/clarkparsia/empire/annotation/RdfsClass;", true);
-            av0.visit("value", "tns:" + params.get( "name" ) );
+            av0 = cw.visitAnnotation( Type.getDescriptor( RdfsClass.class ), true );
+            av0.visit( "value", "tns:" + params.get( "name" ) );
             av0.visitEnd();
         }
         {
-            av0 = cw.visitAnnotation("Lcom/clarkparsia/empire/annotation/Namespaces;", true);
+            av0 = cw.visitAnnotation( Type.getDescriptor( Namespaces.class ), true);
             {
-                AnnotationVisitor av1 = av0.visitArray("value");
-                av1.visit(null, "tns");
-                av1.visit(null, "http://" + pack + "#");
+                AnnotationVisitor av1 = av0.visitArray( "value" );
+                av1.visit( null, "tns" );
+//                av1.visit( null, "http://" + pack + "#" );
+                av1.visit( null, getModel().getNamespace() );
                 av1.visitEnd();
             }
             av0.visitEnd();
         }
 
         {
-            mv = cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "getDyEntryId", "()Ljava/lang/String;", null, null);
+            mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT, "getDyEntryId", "()" + Type.getDescriptor( String.class ), null, null );
             {
-                av0 = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlID;", true);
+                av0 = mv.visitAnnotation( Type.getDescriptor( XmlID.class ), true );
                 av0.visitEnd();
             }
             mv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "setDyEntryId", "(Ljava/lang/String;)V", null, null);
+            mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT, "setDyEntryId", "(" + Type.getDescriptor( String.class ) + ")V", null, null );
             mv.visitEnd();
         }
 
@@ -302,12 +315,12 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         for ( String propKey : props.keySet() ) {
             PropertyRelation rel = props.get( propKey );
             String propName = rel.getName();
-            propName = propName.substring(0,1).toUpperCase() + propName.substring(1);
+            propName = propName.substring( 0, 1 ).toUpperCase() + propName.substring( 1 );
             //String target =  pack + props.get( rel ).getName();
             String target = rel.getTarget().getName();
-            boolean isBoolean = target.equalsIgnoreCase("xsd:boolean");
+            boolean isBoolean = target.equalsIgnoreCase( "xsd:boolean" );
             if ( target.startsWith("xsd:") ) {
-                target = NameUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 ).replace(".","/");
+                target = NameUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 ).replace( ".", "/" );
             } else {
                 target = pack + target;
             }
@@ -318,7 +331,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             if ( rel.getMaxCard() == null || rel.getMaxCard() != 1  ) {
                 genericGetType = "()Ljava/util/List<" + propType + ">;";
                 genericSetType = "(Ljava/util/List<" + propType + ">;)V";
-                propType = "Ljava/util/List;";
+                propType = Type.getDescriptor( List.class );
                 isBoolean = false;
             }
 
@@ -330,17 +343,17 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                         genericGetType,
                         null);
                 if ( ! rel.isRestricted() && ! rel.isTransient() ) {
-                    av0 = mv.visitAnnotation("Lcom/clarkparsia/empire/annotation/RdfProperty;", true);
-                    av0.visit("value", "tns:hasCollectionPoint");
+                    av0 = mv.visitAnnotation( Type.getDescriptor( RdfProperty.class ), true );
+                    av0.visit( "value", "tns:hasCollectionPoint" );
                     av0.visitEnd();
                     if ( rel.isSimple() ) {
-                        av0 = mv.visitAnnotation("Ljavax/persistence/Basic;", true);
+                        av0 = mv.visitAnnotation( Type.getDescriptor( Basic.class ), true);
                         av0.visitEnd();
                     } else {
-                        av0 = mv.visitAnnotation("Ljavax/persistence/OneToMany;", true);
+                        av0 = mv.visitAnnotation( Type.getDescriptor( OneToMany.class ), true);
                         {
-                            AnnotationVisitor av1 = av0.visitArray("cascade");
-                            av1.visitEnum(null, "Ljavax/persistence/CascadeType;", "PERSIST");
+                            AnnotationVisitor av1 = av0.visitArray( "cascade" );
+                            av1.visitEnum( null,  Type.getDescriptor( CascadeType.class ), "PERSIST" );
                             av1.visitEnd();
                         }
                         av0.visitEnd();

@@ -32,7 +32,7 @@ import javax.persistence.Basic;
 // @{iri}
 
 @RdfsClass( value="tns:@{name}" )
-@Namespaces({ "tns", "http://@{package}#" })
+@Namespaces({ "tns", "@{namespace}" })
 public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface != null} , @{ implInterface } @end{}
                                  @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{ compactUpperCase( sup.name ) } @end{','} @end{}
 {

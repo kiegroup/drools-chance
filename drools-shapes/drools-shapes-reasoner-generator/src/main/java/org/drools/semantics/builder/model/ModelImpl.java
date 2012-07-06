@@ -50,6 +50,14 @@ public abstract class ModelImpl implements OntoModel {
     }
 
 
+    public String getNamespace() {
+        return innerModel.getNamespace();
+    }
+
+    public void setNamespace( String namespace ) {
+        innerModel.setNamespace( namespace );
+    }
+
 
     public Set<Individual> getIndividuals() {
         return innerModel.getIndividuals();

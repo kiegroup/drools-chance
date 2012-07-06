@@ -11,6 +11,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private String pack;
 
+    private String namespace;
+
     private String name;
 
     private boolean flat = false;
@@ -44,8 +46,16 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         return pack;
     }
 
-    public void setPackage(String pack) {
+    public void setPackage( String pack ) {
         this.pack = NameUtils.namespaceURIToPackage( pack );
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public String getPack() {

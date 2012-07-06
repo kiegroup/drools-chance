@@ -54,7 +54,7 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         Element root = new Element("schema", getNamespace("xsd") );
 
         root.setAttribute( "elementFormDefault", "qualified" );
-        root.setAttribute( "targetNamespace", NameUtils.reverse( this.getPackage() ) );
+        root.setAttribute( "targetNamespace", this.getNamespace() );
 
 
         schema.addContent(root);

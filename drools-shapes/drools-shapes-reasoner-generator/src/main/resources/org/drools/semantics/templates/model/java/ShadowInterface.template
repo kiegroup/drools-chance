@@ -28,7 +28,7 @@ import com.clarkparsia.empire.annotation.RdfProperty;
 // @{iri}
 
 @RdfsClass( value="tns:@{name}" )
-@Namespaces({ "tns", "http://@{package}#" })
+@Namespaces({ "tns", "@{namespace}" })
 public interface @{name + "$$Shadow"} extends com.clarkparsia.empire.SupportsRdfId
                                  @if{ shadowed }
                                     @if{ subConcepts.size > 0 } , @foreach{ sup : subConcepts } @{ compactUpperCase( sup.name ) + "$$Shadow" } @end{','}  @end{}

@@ -65,7 +65,7 @@
 
         <annox:annotate>
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfsClass" value="tns:@{concept.name}" />
-          <annox:annotate annox:class="com.clarkparsia.empire.annotation.Namespaces" value="tns http://@{package}#" />
+          <annox:annotate annox:class="com.clarkparsia.empire.annotation.Namespaces" value="tns @{namespace}" />
           <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="@{concept.name}Impl"/>
           <!--annox:annotate annox:class="javax.jdo.annotations.PersistenceCapable" detachable="false" identityType="javax.jdo.annotations.IdentityType.DATASTORE" /-->
         </annox:annotate>

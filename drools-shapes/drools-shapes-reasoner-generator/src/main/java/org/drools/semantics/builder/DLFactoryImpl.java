@@ -196,6 +196,7 @@ public class DLFactoryImpl implements DLFactory {
                                                             kSession );
 
         results.setPackage( ontoDescr.getOntologyID().getOntologyIRI().toString()  );
+        results.setNamespace( ontoDescr.getOntologyID().getOntologyIRI().toString() +"#" );
 
         return results;
     }

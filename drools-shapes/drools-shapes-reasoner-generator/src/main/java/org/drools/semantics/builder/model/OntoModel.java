@@ -28,6 +28,10 @@ public interface OntoModel extends Cloneable {
     public String getName();
         
     public void setName( String name );
+
+    public String getNamespace();
+
+    public void setNamespace( String ns );
     
     
 

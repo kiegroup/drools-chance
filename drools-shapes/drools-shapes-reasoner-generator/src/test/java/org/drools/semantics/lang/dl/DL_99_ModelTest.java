@@ -16,6 +16,9 @@
 
 package org.drools.semantics.lang.dl;
 
+import com.clarkparsia.empire.SupportsRdfId;
+import com.clarkparsia.empire.annotation.RdfsClass;
+import org.antlr.runtime.*;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -24,7 +27,10 @@ import org.drools.builder.ResourceType;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ByteArrayResource;
-import org.drools.io.impl.InputStreamResource;
+import org.drools.lang.DRLLexer;
+import org.drools.lang.DRLParser;
+import org.drools.rule.builder.dialect.java.parser.JavaLexer;
+import org.drools.rule.builder.dialect.java.parser.JavaParser;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
@@ -33,16 +39,17 @@ import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.drools.semantics.util.SemanticWorkingSetConfigData;
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
-
 
 import static org.junit.Assert.*;
 
@@ -217,6 +224,66 @@ public class DL_99_ModelTest {
 
         xsdModel.stream( System.out );
 
+    }
+
+
+    @Test
+    public void testJarModelGeneration() {
+        String source = "kmr2" + File.separator + "kmr2_mini.owl";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "kmr2mini", res );
+
+
+        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
+        JarModel jarModel = (JarModel) compiler.compile( results );
+        String src = (String) jarModel.getTrait( "AllergyFactType" );
+        System.out.println( src );
+
+        JavaLexer lexer = new JavaLexer( new ANTLRStringStream( src ) );
+        JavaParser parser = new JavaParser( new CommonTokenStream( lexer ) );
+
+        try {
+            parser.compilationUnit();
+        } catch ( MismatchedTokenException e ) {
+            fail( e.getMessage() );
+        } catch ( RecognitionException e ) {
+            fail( e.getMessage() );
+        }
+
+        try {
+            ClassLoader cl = new ItemClassLoader( jarModel.getPackage(), jarModel.getCompiledTraits(), Thread.currentThread().getContextClassLoader() );
+            Class fact = cl.loadClass( "org.kmr.ontology.ClinicalFactType" );
+            Class thin = cl.loadClass( "org.kmr.ontology.Thing" );
+            assertTrue( thin.isAssignableFrom( fact ) );
+            assertTrue( fact.getAnnotation( RdfsClass.class ) != null );
+        } catch ( ClassNotFoundException e ) {
+            fail( e.getMessage() );
+        }
+
+
+    }
+
+    private class ItemClassLoader extends ClassLoader {
+
+        private String pack;
+        private Map<String, JarModel.Holder> itemClasses;
+
+        public ItemClassLoader( String pack, Map<String, JarModel.Holder> itemClasses, ClassLoader parent ) {
+            super( parent );
+            this.pack = pack;
+            this.itemClasses = itemClasses;
+        }
+
+        protected Class<?> findClass( String name ) throws ClassNotFoundException {
+            String simpleName = name.replace( pack + ".", "" );
+            JarModel.Holder holder = itemClasses.get( simpleName );
+            if ( holder == null ) {
+                return super.findClass( name );
+            }
+            byte[] data = holder.getBytes();
+            return defineClass( name, data, 0, data.length );
+        }
     }
 
 

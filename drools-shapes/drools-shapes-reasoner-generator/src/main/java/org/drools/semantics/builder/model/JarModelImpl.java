@@ -40,6 +40,10 @@ public class JarModelImpl extends JavaInterfaceModelImpl implements JarModel {
                 : null;
     }
 
+    public Map<String, Holder> getCompiledTraits() {
+        return compiledTraits;
+    }
+
     public void addCompiledTrait( String name, Holder compiled ) {
         compiledTraits.put( name, compiled );
     }
