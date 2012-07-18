@@ -8,7 +8,7 @@
     <artifactId>drools-shapes-utilities</artifactId>
     <version>5.5.0-SNAPSHOT</version>
 
-    <name>Drools Shapes :: Utilities</name>
+    <name>Drools :: Shapes Utilities</name>
 
     <dependencies>
         <dependency>

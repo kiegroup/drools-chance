@@ -28,9 +28,11 @@ import java.io.InputStream;
 
 public class DLTemplateManager {
 
+    private static final String SEP = File.separator;
+    
     public static final String BASE_PACK = "org.drools.semantics";
-    protected static final String RESOURCE_PATH = BASE_PACK.replace(".","/");
-    protected static final String TEMPLATE_PATH = "/" + RESOURCE_PATH + "/templates/";
+    protected static final String RESOURCE_PATH = BASE_PACK.replace( ".", SEP );
+    protected static final String TEMPLATE_PATH = SEP + RESOURCE_PATH + SEP + "templates" + SEP;
 
 
     public enum DLFamilies {
@@ -114,10 +116,10 @@ public class DLTemplateManager {
     private static void buildRegistry(TemplateRegistry registry, String[] traits) {
         for (String ntempl : traits) {
             try {
-                String path = TEMPLATE_PATH + ntempl;
+                String path = TEMPLATE_PATH + ntempl.replace( "/", SEP );
                 InputStream stream = ResourceFactory.newClassPathResource(path, DLTemplateManager.class).getInputStream();
 
-                registry.addNamedTemplate( path.substring(path.lastIndexOf( File.separator ) + 1),
+                registry.addNamedTemplate( path.substring( path.lastIndexOf( File.separator ) + 1 ),
                         TemplateCompiler.compileTemplate(stream));
             } catch (IOException e) {
                 e.printStackTrace();
