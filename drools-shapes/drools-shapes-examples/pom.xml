@@ -18,43 +18,43 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-shapes</artifactId>
-        <version>5.5.0-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>org.drools</groupId>
+    <artifactId>drools-shapes</artifactId>
+    <version>5.5.0-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>drools-shapes-examples</artifactId>
-    <packaging>pom</packaging>
-
-
-    <name>Drools :: Shapes Examples </name>
-    <description> Examples </description>
+  <artifactId>drools-shapes-examples</artifactId>
+  <packaging>pom</packaging>
 
 
-    <modules>
-        <module>conyard-example</module>
-        <module>translator-example</module>
-    </modules>
+  <name>Drools :: Shapes Examples </name>
+  <description> Examples </description>
 
-    <repositories>
-        <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
-        <repository>
-            <id>berkeleybop</id>
-            <name>Berkeleybop</name>
-            <url>http://code.berkeleybop.org/maven/repository</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
+
+  <modules>
+    <module>conyard-example</module>
+    <module>translator-example</module>
+  </modules>
+
+  <repositories>
+    <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
+    <repository>
+      <id>berkeleybop</id>
+      <name>Berkeleybop</name>
+      <url>http://code.berkeleybop.org/maven/repository</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
 
 
 </project>

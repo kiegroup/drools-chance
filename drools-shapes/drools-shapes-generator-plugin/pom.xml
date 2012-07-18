@@ -16,49 +16,49 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-shapes</artifactId>
-        <version>5.5.0-SNAPSHOT</version>
-    </parent>
-
+  <parent>
     <groupId>org.drools</groupId>
-    <artifactId>drools-shapes-generator-plugin</artifactId>
-    <packaging>maven-plugin</packaging>
+    <artifactId>drools-shapes</artifactId>
+    <version>5.5.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.drools</groupId>
+  <artifactId>drools-shapes-generator-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
 
 
 
-    <name>Drools :: Shapes Generator Plugin</name>
-    <url>http://maven.apache.org</url>
+  <name>Drools :: Shapes Generator Plugin</name>
+  <url>http://maven.apache.org</url>
 
-    <dependencies>
+  <dependencies>
 
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-shapes-reasoner-generator</artifactId>
-            <version>${drools.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-shapes-reasoner-generator</artifactId>
+      <version>${drools.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <version>3.0.3</version>
-        </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>3.0.3</version>
+    </dependency>
 
-        <dependency>
-            <groupId>com.sun.tools.xjc.maven2</groupId>
-            <artifactId>maven-jaxb-plugin</artifactId>
-            <version>1.1.1</version>
-        </dependency>
+    <dependency>
+      <groupId>com.sun.tools.xjc.maven2</groupId>
+      <artifactId>maven-jaxb-plugin</artifactId>
+      <version>1.1.1</version>
+    </dependency>
 
-           <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
 
-    </dependencies>
+  </dependencies>
 </project>

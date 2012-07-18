@@ -18,497 +18,497 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <!--parent>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-shapes-examples</artifactId>
-        <version>5.4.0-SNAPSHOT</version>
-    </parent-->
-
-    <name>Drools :: Shapes Construction Yard Example</name>
-
+  <parent>
     <groupId>org.drools</groupId>
-    <artifactId>conyard-example</artifactId>
-    <version>5.5.0-SNAPSHOT</version>
-    <properties>
-        <drools.version>5.5.0-SNAPSHOT</drools.version>
-        <jpa.provider>hibernate</jpa.provider>
-        <!--jpa.provider>datanucleus</jpa.provider-->
-    </properties>
+    <artifactId>drools-shapes-examples</artifactId>
+    <version>5.4.0-SNAPSHOT</version>
+  </parent>
+
+  <name>Drools :: Shapes Construction Yard Example</name>
+
+  <groupId>org.drools</groupId>
+  <artifactId>conyard-example</artifactId>
+  <version>5.5.0-SNAPSHOT</version>
+  <properties>
+    <drools.version>5.5.0-SNAPSHOT</drools.version>
+    <jpa.provider>hibernate</jpa.provider>
+    <!--jpa.provider>datanucleus</jpa.provider-->
+  </properties>
 
 
-    <dependencies>
+  <dependencies>
 
 
 
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-shapes-reasoner-generator</artifactId>
-            <version>${drools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-shapes-utilities</artifactId>
-            <version>${drools.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-shapes-reasoner-generator</artifactId>
+      <version>${drools.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-shapes-utilities</artifactId>
+      <version>${drools.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-chance-core</artifactId>
-            <version>${drools.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-chance-core</artifactId>
+      <version>${drools.version}</version>
+    </dependency>
 
 
-        <dependency>
-            <groupId>org.jvnet.hyperjaxb3</groupId>
-            <artifactId>hyperjaxb3</artifactId>
-            <version>0.5.6</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.hyperjaxb3</groupId>
-            <artifactId>maven-hyperjaxb3-plugin</artifactId>
-            <version>0.5.6</version>
-        </dependency>
+    <dependency>
+      <groupId>org.jvnet.hyperjaxb3</groupId>
+      <artifactId>hyperjaxb3</artifactId>
+      <version>0.5.6</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.jvnet.hyperjaxb3</groupId>
+      <artifactId>maven-hyperjaxb3-plugin</artifactId>
+      <version>0.5.6</version>
+    </dependency>
 
-        <!-- Empire can be found here: https://github.com/mhgrove/Empire -->
-        <dependency>
+    <!-- Empire can be found here: https://github.com/mhgrove/Empire -->
+    <dependency>
+      <groupId>com.clarkparsia</groupId>
+      <artifactId>Empire-core</artifactId>
+      <version>0.7</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>com.clarkparsia</groupId>
+      <artifactId>Empire-sesame2</artifactId>
+      <version>0.7</version>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>2.2.6</version>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <version>1.0.1.Final</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>3.0</version>
+    </dependency>
+
+    <!--
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>3.5.6-Final</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-annotations</artifactId>
+        <version>3.5.6-Final</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-commons-annotations</artifactId>
+        <version>3.2.0.Final</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>3.5.6-Final</version>
+    </dependency>
+    -->
+
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.18</version>
+    </dependency>
+
+
+
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>10.0</version>
+    </dependency>
+
+    <!--
+    <dependency>
+        <groupId>javax.jdo</groupId>
+        <artifactId>jdo-api</artifactId>
+        <version>3.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jpa_2.0_spec</artifactId>
+        <version>1.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.datanucleus</groupId>
+        <artifactId>datanucleus-core</artifactId>
+        <version>3.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.datanucleus</groupId>
+        <artifactId>datanucleus-api-jpa</artifactId>
+        <version>3.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.datanucleus</groupId>
+        <artifactId>datanucleus-api-jdo</artifactId>
+        <version>3.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.datanucleus</groupId>
+        <artifactId>datanucleus-rdbms</artifactId>
+        <version>3.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.datanucleus</groupId>
+        <artifactId>datanucleus-jdo-query</artifactId>
+        <version>3.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.datanucleus</groupId>
+        <artifactId>datanucleus-enhancer</artifactId>
+        <version>3.0.1</version>
+    </dependency>
+    -->
+
+  </dependencies>
+
+
+  <repositories>
+    <repository>
+      <id>repo1</id>
+      <name>Maven2 Repo 1</name>
+      <url>http://repo1.maven.org/maven2/</url>
+    </repository>
+
+    <repository>
+      <id>aduna</id>
+      <name>Aduna Software</name>
+      <url>http://repo.aduna-software.org/maven2/releases/</url>
+    </repository>
+
+    <repository>
+      <id>jboss</id>
+      <name>JBoss repository</name>
+      <url>http://repository.jboss.org/maven2</url>
+    </repository>
+
+    <repository>
+      <id>DataNucleus_Repos2</id>
+      <name>DataNucleus Repository</name>
+      <url>http://www.datanucleus.org/downloads/maven2</url>
+      <releases>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
+
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>DataNucleus_2</id>
+      <url>http://www.datanucleus.org/downloads/maven2/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+
+  <build>
+
+    <resources>
+      <resource>
+        <directory>${pom.basedir}/src/main/resources</directory>
+        <includes>
+          <include>**/*.*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${pom.basedir}/src/test/resources</directory>
+        <includes>
+          <include>**/*.*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${pom.basedir}/target/generated-sources/META-INF</directory>
+        <includes>
+          <include>**/*.*</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>include-generated-sources</id>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${pom.basedir}/target/generated-sources/xjc</source>
+                <source>${pom.basedir}/target/generated-sources/META-INF</source>
+                <source>${pom.basedir}/target/generated-sources/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-shapes-generator-plugin</artifactId>
+        <version>${drools.version}</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>cast</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <outputDirectory>${pom.basedir}/target</outputDirectory>
+          <ontology>${pom.basedir}/src/main/resources/conyard.ttl</ontology>
+          <!--
+       <ontology>${pom.basedir}/src/main/resources/mini.ttl</ontology>
+          -->
+          <modelName>conyard</modelName>
+          <delegateInference>true</delegateInference>
+          <generateInterfaces>true</generateInterfaces>
+          <generateInterfaceJar>true</generateInterfaceJar>
+          <generateTraitDRL>true</generateTraitDRL>
+          <generateDefaultImplClasses>true</generateDefaultImplClasses>
+          <preserveInheritanceInImpl>false</preserveInheritanceInImpl>
+          <buildSpecXSDs>true</buildSpecXSDs>
+        </configuration>
+      </plugin>
+
+
+
+
+      <plugin>
+        <groupId>org.jvnet.hyperjaxb3</groupId>
+        <artifactId>maven-hyperjaxb3-plugin</artifactId>
+        <version>0.5.6</version>
+        <configuration>
+          <variant>jpa2</variant>
+          <extension>true</extension>
+          <args>
+            <arg>-extension</arg>
+            <arg>-Xjaxbindex</arg>
+            <arg>-Xannotate</arg>
+            <arg>-Xinheritance</arg>
+            <!--arg>-XtoString</arg-->
+            <arg>-Xcopyable</arg>
+            <arg>-Xmergeable</arg>
+            <arg>-Xvalue-constructor</arg>
+            <arg>-Xfluent-api</arg>
+            <arg>-Xinject-code</arg>
+            <arg>-Xkey-equality</arg>
+            <arg>-Xsem-accessors</arg>
+            <arg>-Xdefault-constructor</arg>
+            <arg>-Xmetadata</arg>
+          </args>
+          <removeOldOutput>false</removeOldOutput>
+
+          <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
+
+          <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
+          <schemaExcludes>
+            <exclude>**/*_$full.xsd</exclude>
+            <exclude>**/*_$spec.xsd</exclude>
+            <exclude>**/*_$impl.xsd</exclude>
+          </schemaExcludes>
+
+          <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
+
+          <generateEquals>false</generateEquals>
+          <generateHashCode>false</generateHashCode>
+
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
             <groupId>com.clarkparsia</groupId>
             <artifactId>Empire-core</artifactId>
             <version>0.7</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.clarkparsia</groupId>
-            <artifactId>Empire-sesame2</artifactId>
-            <version>0.7</version>
-            <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <version>2.2.6</version>
-            <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-            <version>1.0.1.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
+          </dependency>
+          <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb2-value-constructor</artifactId>
             <version>3.0</version>
-        </dependency>
-
-        <!--
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>3.5.6-Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-annotations</artifactId>
-            <version>3.5.6-Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-commons-annotations</artifactId>
-            <version>3.2.0.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>3.5.6-Final</version>
-        </dependency>
-        -->
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.18</version>
-        </dependency>
-
-
-
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>10.0</version>
-        </dependency>
-
-        <!--
-        <dependency>
+          </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-shapes-generator-plugin</artifactId>
+            <version>${drools.version}</version>
+          </dependency>
+          <dependency>
             <groupId>javax.jdo</groupId>
             <artifactId>jdo-api</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.0_spec</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.datanucleus</groupId>
-            <artifactId>datanucleus-core</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.datanucleus</groupId>
-            <artifactId>datanucleus-api-jpa</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.datanucleus</groupId>
-            <artifactId>datanucleus-api-jdo</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.datanucleus</groupId>
-            <artifactId>datanucleus-rdbms</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.datanucleus</groupId>
-            <artifactId>datanucleus-jdo-query</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.datanucleus</groupId>
-            <artifactId>datanucleus-enhancer</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        -->
-
-    </dependencies>
+            <version>3.0</version>
+          </dependency>
 
 
-    <repositories>
-        <repository>
-            <id>repo1</id>
-            <name>Maven2 Repo 1</name>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
+          <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb2-fluent-api</artifactId>
+            <version>3.0</version>
+          </dependency>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.6.4</version>
+          </dependency>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.4</version>
+          </dependency>
+        </dependencies>
+      </plugin>
 
-        <repository>
-            <id>aduna</id>
-            <name>Aduna Software</name>
-            <url>http://repo.aduna-software.org/maven2/releases/</url>
-        </repository>
+      <!--plugin>
+          <groupId>org.datanucleus</groupId>
+          <artifactId>maven-datanucleus-plugin</artifactId>
+          <version>3.0.1</version>
+          <configuration>
+              <api>JPA</api>
+              <verbose>true</verbose>
+              <enhancerName>ASM</enhancerName>
+              <persistenceUnitName>http.org.drools.conyard.owl</persistenceUnitName>
+          </configuration>
+          <executions>
+              <execution>
+                  <phase>compile</phase>
+                  <goals>
+                      <goal>enhance</goal>
+                  </goals>
+              </execution>
+          </executions>
+          <dependencies>
+              <dependency>
+                  <groupId>org.datanucleus</groupId>
+                  <artifactId>datanucleus-core</artifactId>
+                  <version>3.0.1</version>
+              </dependency>
+          </dependencies>
+      </plugin-->
 
-        <repository>
-            <id>jboss</id>
-            <name>JBoss repository</name>
-            <url>http://repository.jboss.org/maven2</url>
-        </repository>
-
-        <repository>
-            <id>DataNucleus_Repos2</id>
-            <name>DataNucleus Repository</name>
-            <url>http://www.datanucleus.org/downloads/maven2</url>
-            <releases>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>DataNucleus_2</id>
-            <url>http://www.datanucleus.org/downloads/maven2/</url>
-        </pluginRepository>
-    </pluginRepositories>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
 
 
-    <build>
-
-        <resources>
-            <resource>
-                <directory>${pom.basedir}/src/main/resources</directory>
-                <includes>
-                    <include>**/*.*</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>${pom.basedir}/src/test/resources</directory>
-                <includes>
-                    <include>**/*.*</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>${pom.basedir}/target/generated-sources/META-INF</directory>
-                <includes>
-                    <include>**/*.*</include>
-                </includes>
-            </resource>
-        </resources>
-
+    <!--pluginManagement>
         <plugins>
-
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>include-generated-sources</id>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${pom.basedir}/target/generated-sources/xjc</source>
-                                <source>${pom.basedir}/target/generated-sources/META-INF</source>
-                                <source>${pom.basedir}/target/generated-sources/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-shapes-generator-plugin</artifactId>
-                <version>${drools.version}</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>cast</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+                <version>1.0.0</version>
                 <configuration>
-                    <outputDirectory>${pom.basedir}/target</outputDirectory>
-                    <ontology>${pom.basedir}/src/main/resources/conyard.ttl</ontology>
-                    <!--
-                 <ontology>${pom.basedir}/src/main/resources/mini.ttl</ontology>
-                    -->
-                    <modelName>conyard</modelName>
-                    <delegateInference>true</delegateInference>
-                    <generateInterfaces>true</generateInterfaces>
-                    <generateInterfaceJar>true</generateInterfaceJar>
-                    <generateTraitDRL>true</generateTraitDRL>
-                    <generateDefaultImplClasses>true</generateDefaultImplClasses>
-                    <preserveInheritanceInImpl>false</preserveInheritanceInImpl>
-                    <buildSpecXSDs>true</buildSpecXSDs>
+                    <lifecycleMappingMetadata>
+                        <pluginExecutions>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.apache.maven.plugins</groupId>
+                                    <artifactId>maven-dependency-plugin</artifactId>
+                                    <versionRange>[2.4,)</versionRange>
+                                    <goals>
+                                        <goal>copy-dependencies</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <ignore />
+                                </action>
+                            </pluginExecution>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.jvnet.hyperjaxb3</groupId>
+                                    <artifactId>maven-hyperjaxb3-plugin</artifactId>
+                                    <versionRange>[0.5.6,)</versionRange>
+                                    <goals>
+                                        <goal>generate</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <ignore />
+                                </action>
+                            </pluginExecution>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.drools</groupId>
+                                    <artifactId>drools-shapes-generator-plugin</artifactId>
+                                    <versionRange>[5.5.0-SNAPSHOT,)</versionRange>
+                                    <goals>
+                                        <goal>cast</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <ignore />
+                                </action>
+                            </pluginExecution>
+                        </pluginExecutions>
+                    </lifecycleMappingMetadata>
                 </configuration>
-            </plugin>
-
-
-
-
-            <plugin>
-                <groupId>org.jvnet.hyperjaxb3</groupId>
-                <artifactId>maven-hyperjaxb3-plugin</artifactId>
-                <version>0.5.6</version>
-                <configuration>
-                    <variant>jpa2</variant>
-                    <extension>true</extension>
-                    <args>
-                        <arg>-extension</arg>
-                        <arg>-Xjaxbindex</arg>
-                        <arg>-Xannotate</arg>
-                        <arg>-Xinheritance</arg>
-                        <!--arg>-XtoString</arg-->
-                        <arg>-Xcopyable</arg>
-                        <arg>-Xmergeable</arg>
-                        <arg>-Xvalue-constructor</arg>
-                        <arg>-Xfluent-api</arg>
-                        <arg>-Xinject-code</arg>
-                        <arg>-Xkey-equality</arg>
-                        <arg>-Xsem-accessors</arg>
-                        <arg>-Xdefault-constructor</arg>
-                        <arg>-Xmetadata</arg>
-                    </args>
-                    <removeOldOutput>false</removeOldOutput>
-
-                    <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
-
-                    <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
-                    <schemaExcludes>
-                        <exclude>**/*_$full.xsd</exclude>
-                        <exclude>**/*_$spec.xsd</exclude>
-                        <exclude>**/*_$impl.xsd</exclude>
-                    </schemaExcludes>
-
-                    <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
-
-                    <generateEquals>false</generateEquals>
-                    <generateHashCode>false</generateHashCode>
-
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.clarkparsia</groupId>
-                        <artifactId>Empire-core</artifactId>
-                        <version>0.7</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jvnet.jaxb2_commons</groupId>
-                        <artifactId>jaxb2-value-constructor</artifactId>
-                        <version>3.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.drools</groupId>
-                        <artifactId>drools-shapes-generator-plugin</artifactId>
-                        <version>${drools.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>javax.jdo</groupId>
-                        <artifactId>jdo-api</artifactId>
-                        <version>3.0</version>
-                    </dependency>
-
-
-                    <dependency>
-                        <groupId>org.jvnet.jaxb2_commons</groupId>
-                        <artifactId>jaxb2-fluent-api</artifactId>
-                        <version>3.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-jdk14</artifactId>
-                        <version>1.6.4</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                        <version>1.6.4</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
-            <!--plugin>
-                <groupId>org.datanucleus</groupId>
-                <artifactId>maven-datanucleus-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <api>JPA</api>
-                    <verbose>true</verbose>
-                    <enhancerName>ASM</enhancerName>
-                    <persistenceUnitName>http.org.drools.conyard.owl</persistenceUnitName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>enhance</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.datanucleus</groupId>
-                        <artifactId>datanucleus-core</artifactId>
-                        <version>3.0.1</version>
-                    </dependency>
-                </dependencies>
-            </plugin-->
-
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
-
-
-        <!--pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <artifactId>maven-dependency-plugin</artifactId>
-                                        <versionRange>[2.4,)</versionRange>
-                                        <goals>
-                                            <goal>copy-dependencies</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.jvnet.hyperjaxb3</groupId>
-                                        <artifactId>maven-hyperjaxb3-plugin</artifactId>
-                                        <versionRange>[0.5.6,)</versionRange>
-                                        <goals>
-                                            <goal>generate</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.drools</groupId>
-                                        <artifactId>drools-shapes-generator-plugin</artifactId>
-                                        <versionRange>[5.5.0-SNAPSHOT,)</versionRange>
-                                        <goals>
-                                            <goal>cast</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore />
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement-->
-    </build>
+    </pluginManagement-->
+  </build>
 
 
 </project>

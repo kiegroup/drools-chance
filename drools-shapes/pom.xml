@@ -41,7 +41,7 @@
     <module>drools-shapes-utilities</module>
   </modules>
 
-<repositories>
+  <repositories>
     <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
     <repository>
       <id>berkeleybop</id>
@@ -56,7 +56,22 @@
         <updatePolicy>never</updatePolicy>
       </snapshots>
     </repository>
-</repositories>
+
+    <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
+    <repository>
+      <id>ontocat</id>
+      <name>OntoCat</name>
+      <url>http://ontocat.sourceforge.net/maven/repo</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
 
 
 </project>
