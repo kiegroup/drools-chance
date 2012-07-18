@@ -247,8 +247,8 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     }
 
     private static String readFile(String name) throws IOException {
-        String fullPath = SemanticXSDModelCompiler.class.getPackage().getName().replace(".",File.separator)
-                + File.separatorChar
+        String fullPath = SemanticXSDModelCompiler.class.getPackage().getName().replace( ".", "/" )
+                + "/"
                 + name;
 
         InputStream stream = ResourceFactory.newClassPathResource( fullPath ).getInputStream();

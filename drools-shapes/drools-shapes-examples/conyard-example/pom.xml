@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-shapes-examples</artifactId>
-    <version>5.4.0-SNAPSHOT</version>
+    <version>5.5.0-SNAPSHOT</version>
   </parent>
 
   <name>Drools :: Shapes Construction Yard Example</name>
