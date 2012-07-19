@@ -48,6 +48,7 @@
     <module>drools-informer</module>
     <module>drools-chance-core</module>
     <module>drools-shapes</module>
+    <module>drools-scorecards</module>
   </modules>
 
 
