@@ -1,8 +1,6 @@
 package org.drools.scorecards;
 
-import java.io.Serializable;
 import java.io.StringWriter;
-import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
@@ -10,7 +8,6 @@ import junit.framework.Assert;
 import org.dmg.pmml_4_1.Attribute;
 import org.dmg.pmml_4_1.Characteristics;
 import org.dmg.pmml_4_1.DataDictionary;
-import org.dmg.pmml_4_1.Extension;
 import org.dmg.pmml_4_1.Header;
 import org.dmg.pmml_4_1.MiningSchema;
 import org.dmg.pmml_4_1.Output;
@@ -70,7 +67,7 @@ public class PMMLDocumentTest {
 
     @Test
     public void testMiningSchema() throws Exception {
-        for (Serializable serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
+        for (Object serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
             if (serializable instanceof Scorecard){
                 for (Object obj :((Scorecard)serializable) .getExtensionsAndCharacteristicsAndMiningSchemas()){
                     if (obj instanceof MiningSchema){
@@ -89,7 +86,7 @@ public class PMMLDocumentTest {
 
     @Test
     public void testCharacteristicsAndAttributes() throws Exception {
-        for (Serializable serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
+        for (Object serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
             if (serializable instanceof Scorecard){
                 for (Object obj :((Scorecard)serializable) .getExtensionsAndCharacteristicsAndMiningSchemas()){
                     if (obj instanceof Characteristics){
@@ -113,7 +110,7 @@ public class PMMLDocumentTest {
 
     @Test
     public void testAgeScoreCharacteristic() throws Exception {
-        for (Serializable serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
+        for (Object serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
             if (serializable instanceof Scorecard){
                 for (Object obj :((Scorecard)serializable) .getExtensionsAndCharacteristicsAndMiningSchemas()){
                     if (obj instanceof Characteristics){
@@ -150,7 +147,7 @@ public class PMMLDocumentTest {
 
     @Test
     public void testOccupationScoreCharacteristic() throws Exception {
-        for (Serializable serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
+        for (Object serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
             if (serializable instanceof Scorecard){
                 for (Object obj :((Scorecard)serializable) .getExtensionsAndCharacteristicsAndMiningSchemas()){
                     if (obj instanceof Characteristics){
@@ -183,7 +180,7 @@ public class PMMLDocumentTest {
 
     @Test
     public void testResidenceStateScoreCharacteristic() throws Exception {
-        for (Serializable serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
+        for (Object serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
             if (serializable instanceof Scorecard){
                 for (Object obj :((Scorecard)serializable) .getExtensionsAndCharacteristicsAndMiningSchemas()){
                     if (obj instanceof Characteristics){
@@ -214,7 +211,7 @@ public class PMMLDocumentTest {
 
     @Test
     public void testScorecardWithExtensions() throws Exception {
-        for (Serializable serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
+        for (Object serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
             if (serializable instanceof Scorecard){
                 Scorecard scorecard = (Scorecard)serializable;
                 assertEquals("Sample Score",scorecard.getModelName());
@@ -228,7 +225,7 @@ public class PMMLDocumentTest {
 
     @Test
     public void testOutput() throws Exception {
-        for (Serializable serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
+        for (Object serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
             if (serializable instanceof Scorecard){
                 Scorecard scorecard = (Scorecard)serializable;
                 for (Object obj :scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()){
