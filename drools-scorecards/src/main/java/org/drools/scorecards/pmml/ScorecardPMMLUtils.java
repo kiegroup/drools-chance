@@ -24,7 +24,7 @@ public class ScorecardPMMLUtils {
 
     public static String getDataType(org.dmg.pmml_4_1.Characteristic c) {
         for (Extension extension : c.getExtensions()) {
-            if ("dataType".equalsIgnoreCase(extension.getName())) {
+            if (PMMLExtensionNames.CHARACTERTISTIC_DATATYPE.equalsIgnoreCase(extension.getName())) {
                 return extension.getValue();
             }
         }
@@ -42,4 +42,17 @@ public class ScorecardPMMLUtils {
         }
         return null;
     }
+
+    public static Extension getExtension(List extensions, String extensionName) {
+        for (Object obj : extensions) {
+            if (obj instanceof Extension) {
+                Extension extension = (Extension) obj;
+                if (extensionName.equalsIgnoreCase(extension.getName())) {
+                    return extension;
+                }
+            }
+        }
+        return null;
+    }
+
 }
