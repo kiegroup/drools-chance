@@ -96,7 +96,7 @@ public class ScorecardDRLEmitter {
         String objectClass = ScorecardPMMLUtils.getExtensionValue(scorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_OBJECT_CLASS);
         stringBuilder.append(var).append(" : ").append(objectClass).append("(");
 
-        String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), "dataType");
+        String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
         if ("Text".equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 SimplePredicate predicate = scoreAttribute.getSimplePredicate();

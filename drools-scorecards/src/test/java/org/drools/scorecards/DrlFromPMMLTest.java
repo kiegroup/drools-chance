@@ -35,7 +35,7 @@ public class DrlFromPMMLTest {
     public void testDrlNoNull() throws Exception {
         assertNotNull(drl);
         assertTrue(drl.length() > 0);
-        //System.out.println(drl);
+        System.out.println(drl);
     }
 
     @Test

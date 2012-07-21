@@ -49,6 +49,10 @@ public class ScorecardCompiler {
         return compile(stream, ScorecardFormat.XLS, DEFAULT_SHEET_NAME);
     }
 
+    public boolean compileFromExcel(final InputStream stream, final String worksheetName) {
+        return compile(stream, ScorecardFormat.XLS, worksheetName);
+    }
+
     public boolean compile(final String classPathResource, ScorecardFormat format) {
         return compile(classPathResource, format, DEFAULT_SHEET_NAME);
     }

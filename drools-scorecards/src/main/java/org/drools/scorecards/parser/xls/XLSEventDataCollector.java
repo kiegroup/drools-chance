@@ -27,6 +27,10 @@ import org.dmg.pmml_4_1.Characteristic;
 import org.dmg.pmml_4_1.Characteristics;
 import org.dmg.pmml_4_1.DATATYPE;
 import org.dmg.pmml_4_1.Extension;
+import org.dmg.pmml_4_1.FIELDUSAGETYPE;
+import org.dmg.pmml_4_1.INVALIDVALUETREATMENTMETHOD;
+import org.dmg.pmml_4_1.MiningField;
+import org.dmg.pmml_4_1.MiningSchema;
 import org.dmg.pmml_4_1.Output;
 import org.dmg.pmml_4_1.OutputField;
 import org.dmg.pmml_4_1.RESULTFEATURE;
@@ -47,6 +51,7 @@ public class XLSEventDataCollector implements EventDataCollector {
     private Characteristic _characteristic; //stateMachine variables
     private Output output;
     private List<ScorecardError> parseErrors;
+    private MiningSchema miningSchema;
 
     public XLSEventDataCollector() {
         parseErrors = new ArrayList<ScorecardError>();
@@ -72,7 +77,7 @@ public class XLSEventDataCollector implements EventDataCollector {
                     Method method = getSuitableMethod(expectedClass, dataExpectation, setter);
                     if ( method == null ) {
                         if (cellValue != null && !StringUtils.isEmpty(cellValue.toString())) {
-                            parseErrors.add(new ScorecardError(cellRef.formatAsString(), "Unable to parse data!"));
+                            parseErrors.add(new ScorecardError(cellRef.formatAsString(), "Unexpected Value! Wrong Datatype?"));
                         }
                         return;
                     }
@@ -106,6 +111,7 @@ public class XLSEventDataCollector implements EventDataCollector {
     private void setAdditionalExpectation(int currentRowCtr, int currentColCtr, String stringCellValue) {
         if (XLSKeywords.SCORECARD_NAME.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr, currentColCtr + 1, "modelName", scorecard, "Model Name is missing!");
+
         } else if (XLSKeywords.SCORECARD_TYPE.equalsIgnoreCase(stringCellValue)) {
 //            Extension extension = new Extension();
 //            extension.setName("scorecardType");
@@ -116,13 +122,16 @@ public class XLSEventDataCollector implements EventDataCollector {
             extension.setName(PMMLExtensionNames.SCORECARD_OBJECT_CLASS);
             scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
             addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, "Rules Object Class Name is missing!");
+
         } else if (XLSKeywords.SCORECARD_BOUND_VARIABLE.equalsIgnoreCase(stringCellValue)) {
             Extension extension = new Extension();
             extension.setName(PMMLExtensionNames.SCORECARD_BOUND_VAR_NAME);
             scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
             addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, null);
+
         } else if (XLSKeywords.SCORECARD_BASE_SCORE.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr, currentColCtr + 1, "initialScore", scorecard, null);
+
         } else if (XLSKeywords.SCORECARD_SCORE_VAR.equalsIgnoreCase(stringCellValue)) {
             OutputField outputField = new OutputField();
             outputField.setDataType(DATATYPE.DOUBLE);
@@ -136,11 +145,13 @@ public class XLSEventDataCollector implements EventDataCollector {
             extension.setName(PMMLExtensionNames.SCORECARD_IMPORTS);
             scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
             addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, null);
+
         } else if (XLSKeywords.SCORECARD_PACKAGE.equalsIgnoreCase(stringCellValue)) {
             Extension extension = new Extension();
             extension.setName(PMMLExtensionNames.SCORECARD_PACKAGE);
             scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
             addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, "Scorecard Package is missing");
+
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_NAME.equalsIgnoreCase(stringCellValue)) {
             _characteristic = new Characteristic();
             characteristics.getCharacteristics().add(_characteristic);
@@ -153,16 +164,19 @@ public class XLSEventDataCollector implements EventDataCollector {
 
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_DATATYPE.equalsIgnoreCase(stringCellValue)) {
             Extension extension = new Extension();
-            extension.setName("dataType");
+            extension.setName(PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
             _characteristic.getExtensions().add(extension);
             addExpectation(currentRowCtr + 1, currentColCtr, "value", extension, "Characteristic (Property) Data Type is missing.");
+
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_INITIALSCORE.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr + 1, currentColCtr, "baselineScore", _characteristic, null);
+
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_WEIGHT.equalsIgnoreCase(stringCellValue)) {
 //            Extension extension = new Extension();
 //            extension.setName("weight");
 //            _characteristic.getExtensions().add(extension);
 //            addExpectation(currentRowCtr + 1, currentColCtr, "value", extension);
+
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_BIN_ATTRIBUTE.equalsIgnoreCase(stringCellValue)) {
             MergedCellRange cellRange = getMergedRegionForCell(currentRowCtr + 1, currentColCtr);
             if (cellRange != null) {
@@ -177,7 +191,7 @@ public class XLSEventDataCollector implements EventDataCollector {
                     addExpectation(r, currentColCtr + 3, "value", extension, null);
 
                     extension = new Extension();
-                    extension.setName("field");
+                    extension.setName(PMMLExtensionNames.CHARACTERTISTIC_FIELD);
                     attribute.getExtensions().add(extension);
                     addExpectation(currentRowCtr + 1, currentColCtr, "value", extension, "Characteristic (Property) Name is missing.");
 
@@ -191,7 +205,13 @@ public class XLSEventDataCollector implements EventDataCollector {
                     addExpectation(r, currentColCtr + 1, "value", extension, null);
                     attribute.getExtensions().add(extension);
                 }
+                MiningField dataField = new MiningField();
+                dataField.setInvalidValueTreatment(INVALIDVALUETREATMENTMETHOD.AS_MISSING);
+                dataField.setUsageType(FIELDUSAGETYPE.ACTIVE);
+                miningSchema.getMiningFields().add(dataField);
+                addExpectation(currentRowCtr + 1, currentColCtr, "name", dataField, null);
             }
+
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_BIN_INITIALSCORE.equalsIgnoreCase(stringCellValue)) {
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_BIN_LABEL.equalsIgnoreCase(stringCellValue)) {
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_BIN_DESC.equalsIgnoreCase(stringCellValue)) {
@@ -231,8 +251,7 @@ public class XLSEventDataCollector implements EventDataCollector {
 
     public void sheetComplete() {
         //verify the data
-        //new ScorecardVerifier().verifyScorecard(droolsScorecard);
-        //to massage the data for any internal purposes
+        ExcelScorecardValidator.runAdditionalValidations(scorecard, parseErrors);
     }
 
     @SuppressWarnings("unused")
@@ -248,6 +267,9 @@ public class XLSEventDataCollector implements EventDataCollector {
         scorecard = new Scorecard();
         output = new Output();
         characteristics = new Characteristics();
+        miningSchema = new MiningSchema();
+
+        scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(miningSchema);
         scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(output);
         scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(characteristics);
 
