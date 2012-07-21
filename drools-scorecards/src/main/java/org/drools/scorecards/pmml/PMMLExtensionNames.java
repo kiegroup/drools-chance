@@ -22,4 +22,7 @@ public class PMMLExtensionNames {
     public static final String SCORECARD_OBJECT_CLASS = "objectClass";
     public static final String SCORECARD_BOUND_VAR_NAME = "boundVariableName";
     public static final String SCORECARD_IMPORTS = "importsFromDelimitedString";
+
+    public static final String CHARACTERTISTIC_FIELD = "field";
+    public static final String CHARACTERTISTIC_DATATYPE = "dataType";
 }

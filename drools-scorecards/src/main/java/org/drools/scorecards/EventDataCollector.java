@@ -16,8 +16,6 @@
 
 package org.drools.scorecards;
 
-import java.util.List;
-
 import org.dmg.pmml_4_1.Scorecard;
 
 public interface EventDataCollector {
