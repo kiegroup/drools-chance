@@ -27,9 +27,11 @@ public class ScorecardParseErrorsTest {
             System.out.println("testWrongData :"+error.getErrorLocation()+"->"+error.getErrorMessage());
         }
         Assert.assertFalse(compileResult);
-        Assert.assertEquals(2, scorecardCompiler.getScorecardParseErrors().size());
+        Assert.assertEquals(4, scorecardCompiler.getScorecardParseErrors().size());
         Assert.assertEquals("$D$13", scorecardCompiler.getScorecardParseErrors().get(0).getErrorLocation());
         Assert.assertEquals("$D$22", scorecardCompiler.getScorecardParseErrors().get(1).getErrorLocation());
+        Assert.assertEquals("$C$11", scorecardCompiler.getScorecardParseErrors().get(2).getErrorLocation());
+        Assert.assertEquals("$C$31", scorecardCompiler.getScorecardParseErrors().get(3).getErrorLocation());
 
     }
 
@@ -37,13 +39,13 @@ public class ScorecardParseErrorsTest {
     public void testMissingDataType() throws Exception {
         ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
         boolean compileResult = scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_errors.xls"), "missingDataType");
+        for(ScorecardError error : scorecardCompiler.getScorecardParseErrors()){
+            System.out.println("testMissingDataType :"+error.getErrorLocation()+"->"+error.getErrorMessage());
+        }
         Assert.assertFalse(compileResult);
         Assert.assertEquals(2, scorecardCompiler.getScorecardParseErrors().size());
         Assert.assertEquals("$C$11", scorecardCompiler.getScorecardParseErrors().get(0).getErrorLocation());
         Assert.assertEquals("$C$19", scorecardCompiler.getScorecardParseErrors().get(1).getErrorLocation());
-        for(ScorecardError error : scorecardCompiler.getScorecardParseErrors()){
-            System.out.println("testMissingDataType :"+error.getErrorLocation()+"->"+error.getErrorMessage());
-        }
     }
 
     @Test

@@ -25,6 +25,22 @@ import org.drools.core.util.StringUtils;
 
 public class StringUtil {
 
+
+    public static boolean isNumericWithOperators(CharSequence cs) {
+        if (cs == null) {
+            return false;
+        }
+        String allowedCharsInNumeric="<>=- ";
+        int sz = cs.length();
+        for (int i = 0; i < sz; i++) {
+            char ch = cs.charAt(i);
+            if (!(Character.isDigit(ch) || allowedCharsInNumeric.indexOf(ch) > -1)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static String unescapeXML(final String xml) {
         Pattern xmlEntityRegex = Pattern.compile("&(#?)([^;]+);");
         //Unfortunately, Matcher requires a StringBuffer instead of a StringBuilder

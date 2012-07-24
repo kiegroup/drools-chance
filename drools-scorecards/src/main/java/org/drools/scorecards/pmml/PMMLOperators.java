@@ -16,13 +16,6 @@
 
 package org.drools.scorecards.pmml;
 
-/**
- * Created with IntelliJ IDEA.
- * User: vinod
- * Date: 19/7/12
- * Time: 5:16 PM
- * To change this template use File | Settings | File Templates.
- */
 public class PMMLOperators {
 
     public static final String LESS_THAN = "lessThan";
