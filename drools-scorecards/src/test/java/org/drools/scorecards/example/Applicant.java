@@ -12,6 +12,15 @@ public class Applicant {
     String occupation;
     String  residenceState;
     double totalScore;
+    boolean validLicense;
+
+    public boolean isValidLicense() {
+        return validLicense;
+    }
+
+    public void setValidLicense(boolean validLicense) {
+        this.validLicense = validLicense;
+    }
 
     public Applicant() {
     }

@@ -18,11 +18,13 @@ package org.drools.scorecards.parser.xls;
 
 import java.util.List;
 
+import org.dmg.pmml_4_1.Attribute;
 import org.dmg.pmml_4_1.Characteristic;
 import org.dmg.pmml_4_1.Characteristics;
 import org.dmg.pmml_4_1.Scorecard;
 import org.drools.core.util.StringUtils;
 import org.drools.scorecards.ScorecardError;
+import org.drools.scorecards.StringUtil;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 
@@ -52,8 +54,25 @@ public class ExcelScorecardValidator {
                     String newCellRef = createDataTypeCellRef(ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), "cellRef"));
                     if ( dataType == null || StringUtils.isEmpty(dataType)) {
                         parseErrors.add(new ScorecardError(newCellRef, "Missing Data Type!"));
-                    }  else  if ( !"Text".equalsIgnoreCase(dataType) && !"Number".equalsIgnoreCase(dataType)){
+                    }  else  if ( !"Text".equalsIgnoreCase(dataType) && !"Number".equalsIgnoreCase(dataType)  && !"Boolean".equalsIgnoreCase(dataType)){
                         parseErrors.add(new ScorecardError(newCellRef, "Invalid Data Type!"));
+                    }
+
+                    if ("Boolean".equalsIgnoreCase(dataType)){
+                        for (Attribute attribute : characteristic.getAttributes()){
+                            String value = ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "predicateResolver");
+                            if (!"TRUE".equalsIgnoreCase(value) && !"FALSE".equalsIgnoreCase(value)){
+                                parseErrors.add(new ScorecardError(newCellRef, "Characteristic '"+characteristic.getName()+"' is Boolean and can support TRUE|FALSE only"));
+                                break;
+                            }
+                        }
+                    } else if ("Number".equalsIgnoreCase(dataType)){
+                        for (Attribute attribute : characteristic.getAttributes()){
+                            String value = ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "predicateResolver");
+                            if (!StringUtil.isNumericWithOperators(value)){
+                                parseErrors.add(new ScorecardError(newCellRef, "Characteristic '"+characteristic.getName()+"' is Number and can support numerics only"));
+                            }
+                        }
                     }
                 }
             }

@@ -40,6 +40,7 @@ import org.drools.scorecards.EventDataCollector;
 import org.drools.scorecards.ScorecardError;
 import org.drools.scorecards.parser.ScorecardParseException;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
+import org.mvel2.MVEL;
 
 public class XLSEventDataCollector implements EventDataCollector {
 
@@ -81,6 +82,7 @@ public class XLSEventDataCollector implements EventDataCollector {
                         }
                         return;
                     }
+
                     method.invoke(dataExpectation.object, cellValue);
                     if (dataExpectation.object instanceof Extension && ("cellRef".equals(((Extension) dataExpectation.object).getName()))) {
                         ((Extension) dataExpectation.object).setValue(cellRef.formatAsString());

@@ -88,7 +88,7 @@ class PMMLGenerator {
                         Extension fieldExtension = ScorecardPMMLUtils.getExtension(attribute.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_FIELD);
                         if ( fieldExtension != null ) {
                             attribute.getExtensions().remove(fieldExtension);
-                            break;
+                            //break;
                         }
                     }
                 }
@@ -114,6 +114,9 @@ class PMMLGenerator {
                         dataField.setOptype(OPTYPE.CONTINUOUS);
                     } else if ("Text".equalsIgnoreCase(dataType)) {
                         dataField.setDataType(DATATYPE.STRING);
+                        dataField.setOptype(OPTYPE.CATEGORICAL);
+                    } else if ("Boolean".equalsIgnoreCase(dataType)) {
+                        dataField.setDataType(DATATYPE.BOOLEAN);
                         dataField.setOptype(OPTYPE.CATEGORICAL);
                     }
                     String field = "";
@@ -168,7 +171,21 @@ class PMMLGenerator {
             setNumericPredicate(pmmlAttribute, field, predicateAsString);
         } else if ("Text".equalsIgnoreCase(dataType)) {
             setTextPredicate(pmmlAttribute, field, predicateAsString);
+        } else if ("Boolean".equalsIgnoreCase(dataType)) {
+            setBooleanPredicate(pmmlAttribute, field, predicateAsString);
         }
+    }
+
+    private void setBooleanPredicate(Attribute pmmlAttribute, String field, String predicateAsString) {
+        SimplePredicate simplePredicate = new SimplePredicate();
+        simplePredicate.setField(field);
+        simplePredicate.setOperator(PMMLOperators.EQUAL);
+        if ("TRUE".equalsIgnoreCase(predicateAsString)){
+            simplePredicate.setValue("TRUE");
+        } else if ("FALSE".equalsIgnoreCase(predicateAsString)){
+            simplePredicate.setValue("FALSE");
+        }
+        pmmlAttribute.setSimplePredicate(simplePredicate);
     }
 
     private void setTextPredicate(Attribute pmmlAttribute, String field, String predicateAsString) {
