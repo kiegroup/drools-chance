@@ -87,7 +87,8 @@ public class XLSScorecardParser extends AbstractScorecardParser {
                         }
                         break;
                     case Cell.CELL_TYPE_BOOLEAN:
-                        excelDataCollector.newCell(currentRowCtr, currentColCtr, cell.getBooleanCellValue());
+                        //System.out.println(currentColCtr+" "+currentRowCtr+" "+Boolean.valueOf(cell.getBooleanCellValue()).toString());
+                        excelDataCollector.newCell(currentRowCtr, currentColCtr, Boolean.valueOf(cell.getBooleanCellValue()).toString());
                         break;
                     case Cell.CELL_TYPE_FORMULA:
                         break;

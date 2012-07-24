@@ -16,8 +16,14 @@
 
 package org.drools.scorecards.drl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.dmg.pmml_4_1.Array;
 import org.dmg.pmml_4_1.Attribute;
@@ -31,6 +37,8 @@ import org.dmg.pmml_4_1.RESULTFEATURE;
 import org.dmg.pmml_4_1.Scorecard;
 import org.dmg.pmml_4_1.SimplePredicate;
 import org.dmg.pmml_4_1.SimpleSetPredicate;
+import org.dmg.pmml_4_1.Timestamp;
+import org.drools.io.ResourceFactory;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.PMMLOperators;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
@@ -39,8 +47,15 @@ import org.drools.template.model.Consequence;
 import org.drools.template.model.DRLOutput;
 import org.drools.template.model.Import;
 import org.drools.template.model.Rule;
+import org.mvel2.MVEL;
+import org.mvel2.templates.CompiledTemplate;
+import org.mvel2.templates.SimpleTemplateRegistry;
+import org.mvel2.templates.TemplateCompiler;
+import org.mvel2.templates.TemplateRegistry;
+import org.mvel2.templates.TemplateRuntime;
 
 public class ScorecardDRLEmitter {
+
 
     public String emitDRL(PMML pmml) {
         List<Rule> ruleList = createRuleList(pmml);
@@ -117,6 +132,20 @@ public class ScorecardDRLEmitter {
 
                 stringBuilder.append(simpleSetPredicate.getField()).append(" in ( \"").append(content).append("\" )");
             }
+        } else if ("Boolean".equalsIgnoreCase(dataType)) {
+            if (scoreAttribute.getSimplePredicate() != null) {
+                SimplePredicate predicate = scoreAttribute.getSimplePredicate();
+                String operator = predicate.getOperator();
+                if (PMMLOperators.EQUAL.equalsIgnoreCase(operator)) {
+                    stringBuilder.append(predicate.getField());
+                    stringBuilder.append(" == ");
+                    stringBuilder.append(predicate.getValue().toLowerCase());
+                } else if (PMMLOperators.NOT_EQUAL.equalsIgnoreCase(operator)) {
+                    stringBuilder.append(predicate.getField());
+                    stringBuilder.append(" != ");
+                    stringBuilder.append(predicate.getValue().toLowerCase());
+                }
+            }
         } else if ("Number".equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 SimplePredicate predicate = scoreAttribute.getSimplePredicate();
@@ -188,7 +217,7 @@ public class ScorecardDRLEmitter {
                     }
                 }
             }
-        } else if ("Text".equalsIgnoreCase(dataType)) {
+        } else if ("Text".equalsIgnoreCase(dataType) || "Boolean".equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 sb.append(scoreAttribute.getSimplePredicate().getOperator()).append("_").append(scoreAttribute.getSimplePredicate().getValue());
             } else if (scoreAttribute.getSimpleSetPredicate() != null) {

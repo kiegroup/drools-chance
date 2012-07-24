@@ -35,7 +35,7 @@ public class DrlFromPMMLTest {
     public void testDrlNoNull() throws Exception {
         assertNotNull(drl);
         assertTrue(drl.length() > 0);
-        System.out.println(drl);
+        //System.out.println(drl);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class DrlFromPMMLTest {
 
     @Test
     public void testRuleCount() throws Exception {
-        assertEquals(10, StringUtil.countMatches(drl, "rule \""));
+        assertEquals(12, StringUtil.countMatches(drl, "rule \""));
     }
 
     @Test
@@ -76,8 +76,8 @@ public class DrlFromPMMLTest {
         session.insert( applicant );
         session.fireAllRules();
         session.dispose();
-        //occupation = 5, age = 25
-        assertTrue(30 == applicant.getTotalScore());
+        //occupation = 5, age = 25, validLicence -1
+        assertTrue(29 == applicant.getTotalScore());
 
         session = kbase.newStatefulKnowledgeSession();
         //ASSERT AND FIRE
@@ -87,8 +87,8 @@ public class DrlFromPMMLTest {
         session.insert( applicant );
         session.fireAllRules();
         session.dispose();
-        //occupation = -10, age = +10
-        assertTrue(0 == applicant.getTotalScore());
+        //occupation = -10, age = +10, validLicense = -1;
+        assertTrue(-1 == applicant.getTotalScore());
 
         session = kbase.newStatefulKnowledgeSession();
         //ASSERT AND FIRE
@@ -96,11 +96,12 @@ public class DrlFromPMMLTest {
         applicant.setAge(20);
         applicant.setOccupation("TEACHER");
         applicant.setResidenceState("AP");
+        applicant.setValidLicense(true);
         session.insert( applicant );
         session.fireAllRules();
         session.dispose();
-        //occupation = +10, age = +40, state = -10
-        assertTrue(40 == applicant.getTotalScore());
+        //occupation = +10, age = +40, state = -10, validLicense = 1
+        assertEquals(41,(int)applicant.getTotalScore());
     }
 
 
