@@ -24,4 +24,6 @@ public class PMMLOperators {
     public static final String EQUAL = "equal";
     public static final String GREATER_OR_EQUAL = "greaterOrEqual";
     public static final String LESS_OR_EQUAL = "lessOrEqual";
+    public static final String IS_NOT_IN = "isNotIn";
+    public static final String IS_IN = "isIn";
 }

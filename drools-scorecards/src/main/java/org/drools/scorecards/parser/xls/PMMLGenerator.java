@@ -109,13 +109,13 @@ class PMMLGenerator {
                     String dataType = ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
 
                     DataField dataField = new DataField();
-                    if ("Number".equalsIgnoreCase(dataType)) {
+                    if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)) {
                         dataField.setDataType(DATATYPE.DOUBLE);
                         dataField.setOptype(OPTYPE.CONTINUOUS);
-                    } else if ("Text".equalsIgnoreCase(dataType)) {
+                    } else if (XLSKeywords.DATATYPE_TEXT.equalsIgnoreCase(dataType)) {
                         dataField.setDataType(DATATYPE.STRING);
                         dataField.setOptype(OPTYPE.CATEGORICAL);
-                    } else if ("Boolean".equalsIgnoreCase(dataType)) {
+                    } else if (XLSKeywords.DATATYPE_BOOLEAN.equalsIgnoreCase(dataType)) {
                         dataField.setDataType(DATATYPE.BOOLEAN);
                         dataField.setOptype(OPTYPE.CATEGORICAL);
                     }
@@ -167,11 +167,11 @@ class PMMLGenerator {
 
     private void setPredicatesForAttribute(Attribute pmmlAttribute, String dataType, String field, String predicateAsString) {
         predicateAsString = StringUtil.unescapeXML(predicateAsString);
-        if ("Number".equalsIgnoreCase(dataType)) {
+        if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)) {
             setNumericPredicate(pmmlAttribute, field, predicateAsString);
-        } else if ("Text".equalsIgnoreCase(dataType)) {
+        } else if (XLSKeywords.DATATYPE_TEXT.equalsIgnoreCase(dataType)) {
             setTextPredicate(pmmlAttribute, field, predicateAsString);
-        } else if ("Boolean".equalsIgnoreCase(dataType)) {
+        } else if (XLSKeywords.DATATYPE_BOOLEAN.equalsIgnoreCase(dataType)) {
             setBooleanPredicate(pmmlAttribute, field, predicateAsString);
         }
     }
@@ -200,9 +200,9 @@ class PMMLGenerator {
         if (predicateAsString.contains(",")) {
             SimpleSetPredicate simpleSetPredicate = new SimpleSetPredicate();
             if ("!=".equalsIgnoreCase(operator)) {
-                simpleSetPredicate.setBooleanOperator("isNotIn");
+                simpleSetPredicate.setBooleanOperator(PMMLOperators.IS_NOT_IN);
             } else {
-                simpleSetPredicate.setBooleanOperator("isIn");
+                simpleSetPredicate.setBooleanOperator(PMMLOperators.IS_IN);
             }
             simpleSetPredicate.setField(field);
             Array array = new Array();

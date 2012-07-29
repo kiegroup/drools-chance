@@ -26,6 +26,9 @@ public class XLSKeywords {
     public static final String SCORECARD_BASE_SCORE = "Baseline Score";
     public static final String SCORECARD_IMPORTS = "imports";
     public static final String SCORECARD_PACKAGE = "package";
+    public static final String SCORECARD_USE_REASONCODES = "Use Reason Codes";
+    public static final String SCORECARD_REASONCODE = "Reason Code";
+    public static final String SCORECARD_GROUP_REASONCODE = "Group Reason Code";
 
     public static final String SCORECARD_CHARACTERISTIC_NAME = "Name";
     public static final String SCORECARD_CHARACTERISTIC_DATATYPE = "Data Type";
@@ -37,4 +40,7 @@ public class XLSKeywords {
     public static final String SCORECARD_CHARACTERISTIC_BIN_LABEL = "Value";
     public static final String SCORECARD_CHARACTERISTIC_BIN_INITIALSCORE = "Partial Score";
     public static final String SCORECARD_CHARACTERISTIC_BIN_DESC = "Description";
+    public static final String DATATYPE_NUMBER = "Number";
+    public static final String DATATYPE_TEXT = "Text";
+    public static final String DATATYPE_BOOLEAN = "Boolean";
 }
