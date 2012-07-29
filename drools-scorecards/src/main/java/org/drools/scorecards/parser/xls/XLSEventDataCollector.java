@@ -75,14 +75,16 @@ public class XLSEventDataCollector implements EventDataCollector {
                         }
                     }
                     String setter = "set" + Character.toUpperCase(dataExpectation.property.charAt(0)) + dataExpectation.property.substring(1);
-                    Method method = getSuitableMethod(expectedClass, dataExpectation, setter);
+                    Method method = getSuitableMethod(cellValue, expectedClass, dataExpectation, setter);
                     if ( method == null ) {
                         if (cellValue != null && !StringUtils.isEmpty(cellValue.toString())) {
                             parseErrors.add(new ScorecardError(cellRef.formatAsString(), "Unexpected Value! Wrong Datatype?"));
                         }
                         return;
                     }
-
+                    if (method.getParameterTypes()[0] == Boolean.class) {
+                        cellValue = Boolean.valueOf(cellValue.toString());
+                    }
                     method.invoke(dataExpectation.object, cellValue);
                     if (dataExpectation.object instanceof Extension && ("cellRef".equals(((Extension) dataExpectation.object).getName()))) {
                         ((Extension) dataExpectation.object).setValue(cellRef.formatAsString());
@@ -95,19 +97,30 @@ public class XLSEventDataCollector implements EventDataCollector {
         }
     }
 
-    private Method getSuitableMethod(Class expectedClass, DataExpectation dataExpectation, String setter) {
+    private Method getSuitableMethod(Object cellValue, Class expectedClass, DataExpectation dataExpectation, String setter) {
         Method method;
         try {
             method = dataExpectation.object.getClass().getMethod(setter, expectedClass);
             return method;
         } catch (NoSuchMethodException e) {
-            try {
-                method = dataExpectation.object.getClass().getMethod(setter, String.class);
-                return method;
-            } catch (NoSuchMethodException e1) {
-                return null;
+            if ( expectedClass != String.class) {
+                try {
+                    method = dataExpectation.object.getClass().getMethod(setter, String.class);
+                    return method;
+                } catch (NoSuchMethodException e1) {
+                    return null;
+                }
+            }
+            if ("TRUE".equalsIgnoreCase(cellValue.toString()) || "FALSE".equalsIgnoreCase(cellValue.toString())){
+                try {
+                    method = dataExpectation.object.getClass().getMethod(setter, Boolean.class);
+                    return method;
+                } catch (NoSuchMethodException e1) {
+                    return null;
+                }
             }
         }
+        return null;
     }
 
     private void setAdditionalExpectation(int currentRowCtr, int currentColCtr, String stringCellValue) {
@@ -124,6 +137,9 @@ public class XLSEventDataCollector implements EventDataCollector {
             extension.setName(PMMLExtensionNames.SCORECARD_OBJECT_CLASS);
             scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
             addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, "Rules Object Class Name is missing!");
+
+        } else if (XLSKeywords.SCORECARD_USE_REASONCODES.equalsIgnoreCase(stringCellValue)) {
+            addExpectation(currentRowCtr, currentColCtr + 1, "useReasonCodes", scorecard, null);
 
         } else if (XLSKeywords.SCORECARD_BOUND_VARIABLE.equalsIgnoreCase(stringCellValue)) {
             Extension extension = new Extension();
@@ -173,6 +189,9 @@ public class XLSEventDataCollector implements EventDataCollector {
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_INITIALSCORE.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr + 1, currentColCtr, "baselineScore", _characteristic, null);
 
+        } else if (XLSKeywords.SCORECARD_GROUP_REASONCODE.equalsIgnoreCase(stringCellValue)) {
+            addExpectation(currentRowCtr + 1, currentColCtr, "reasonCode", _characteristic, null);
+
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_WEIGHT.equalsIgnoreCase(stringCellValue)) {
 //            Extension extension = new Extension();
 //            extension.setName("weight");
@@ -206,6 +225,7 @@ public class XLSEventDataCollector implements EventDataCollector {
                     extension.setName("cellRef");
                     addExpectation(r, currentColCtr + 1, "value", extension, null);
                     attribute.getExtensions().add(extension);
+                    addExpectation(r, currentColCtr+4, "reasonCode", attribute,null);
                 }
                 MiningField dataField = new MiningField();
                 dataField.setInvalidValueTreatment(INVALIDVALUETREATMENTMETHOD.AS_MISSING);
@@ -236,6 +256,7 @@ public class XLSEventDataCollector implements EventDataCollector {
 
     public void newCell(int currentRowCtr, int currentColCtr, String stringCellValue) throws ScorecardParseException {
         setAdditionalExpectation(currentRowCtr, currentColCtr, stringCellValue);
+        //System.out.println(currentRowCtr+", "+currentColCtr+" : "+stringCellValue);
         fulfillExpectation(currentRowCtr, currentColCtr, stringCellValue, String.class);
     }
 
@@ -267,6 +288,8 @@ public class XLSEventDataCollector implements EventDataCollector {
         cellRangeList = null;
         _characteristic = null;
         scorecard = new Scorecard();
+        //default false, until the spreadsheet enables explicitly.
+        scorecard.setUseReasonCodes(Boolean.FALSE);
         output = new Output();
         characteristics = new Characteristics();
         miningSchema = new MiningSchema();
