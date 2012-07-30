@@ -43,6 +43,29 @@ public class ExcelScorecardValidator {
         ExcelScorecardValidator validator = new ExcelScorecardValidator(scorecard, parseErrors);
         validator.checkForInvalidDataTypes();
         validator.checkForMissingAttributes();
+        if (scorecard.isUseReasonCodes()){
+            validator.validateReasonCodes();
+        }
+    }
+
+    private void validateReasonCodes() {
+        for (Object obj :scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()){
+            if (obj instanceof Characteristics){
+                Characteristics characteristics = (Characteristics)obj;
+                for (Characteristic characteristic : characteristics.getCharacteristics()){
+                    String charReasonCode = characteristic.getReasonCode();
+                    if (charReasonCode == null || StringUtils.isEmpty(charReasonCode)){
+                        for (Attribute attribute : characteristic.getAttributes()){
+                            String newCellRef = createDataTypeCellRef(ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"),3);
+                            String attrReasonCode = attribute.getReasonCode();
+                            if ( attrReasonCode == null || StringUtils.isEmpty(attrReasonCode)){
+                                parseErrors.add(new ScorecardError(newCellRef, "Attribute is missing Reason Code"));
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void checkForInvalidDataTypes() {
@@ -51,14 +74,14 @@ public class ExcelScorecardValidator {
                 Characteristics characteristics = (Characteristics)obj;
                 for (Characteristic characteristic : characteristics.getCharacteristics()){
                     String dataType = ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
-                    String newCellRef = createDataTypeCellRef(ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), "cellRef"));
+                    String newCellRef = createDataTypeCellRef(ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), "cellRef"),1);
                     if ( dataType == null || StringUtils.isEmpty(dataType)) {
                         parseErrors.add(new ScorecardError(newCellRef, "Missing Data Type!"));
-                    }  else  if ( !"Text".equalsIgnoreCase(dataType) && !"Number".equalsIgnoreCase(dataType)  && !"Boolean".equalsIgnoreCase(dataType)){
+                    }  else  if ( !XLSKeywords.DATATYPE_TEXT.equalsIgnoreCase(dataType) && !XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)  && !XLSKeywords.DATATYPE_BOOLEAN.equalsIgnoreCase(dataType)){
                         parseErrors.add(new ScorecardError(newCellRef, "Invalid Data Type!"));
                     }
 
-                    if ("Boolean".equalsIgnoreCase(dataType)){
+                    if (XLSKeywords.DATATYPE_BOOLEAN.equalsIgnoreCase(dataType)){
                         for (Attribute attribute : characteristic.getAttributes()){
                             String value = ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "predicateResolver");
                             if (!"TRUE".equalsIgnoreCase(value) && !"FALSE".equalsIgnoreCase(value)){
@@ -66,7 +89,7 @@ public class ExcelScorecardValidator {
                                 break;
                             }
                         }
-                    } else if ("Number".equalsIgnoreCase(dataType)){
+                    } else if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)){
                         for (Attribute attribute : characteristic.getAttributes()){
                             String value = ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "predicateResolver");
                             if (!StringUtil.isNumericWithOperators(value)){
@@ -93,8 +116,8 @@ public class ExcelScorecardValidator {
         }
     }
 
-    private String createDataTypeCellRef(String cellRef) {
-        int col = ((int)(cellRef.charAt(1)))+1;
+    private String createDataTypeCellRef(String cellRef, int n) {
+        int col = ((int)(cellRef.charAt(1)))+n;
         return "$"+((char)col)+cellRef.substring(cellRef.indexOf('$',1));
     }
 }

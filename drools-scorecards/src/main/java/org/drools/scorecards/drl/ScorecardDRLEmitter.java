@@ -16,14 +16,8 @@
 
 package org.drools.scorecards.drl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.dmg.pmml_4_1.Array;
 import org.dmg.pmml_4_1.Attribute;
@@ -37,22 +31,17 @@ import org.dmg.pmml_4_1.RESULTFEATURE;
 import org.dmg.pmml_4_1.Scorecard;
 import org.dmg.pmml_4_1.SimplePredicate;
 import org.dmg.pmml_4_1.SimpleSetPredicate;
-import org.dmg.pmml_4_1.Timestamp;
-import org.drools.io.ResourceFactory;
+import org.drools.core.util.StringUtils;
+import org.drools.scorecards.parser.xls.XLSKeywords;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.PMMLOperators;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.Condition;
 import org.drools.template.model.Consequence;
 import org.drools.template.model.DRLOutput;
+import org.drools.template.model.Global;
 import org.drools.template.model.Import;
 import org.drools.template.model.Rule;
-import org.mvel2.MVEL;
-import org.mvel2.templates.CompiledTemplate;
-import org.mvel2.templates.SimpleTemplateRegistry;
-import org.mvel2.templates.TemplateCompiler;
-import org.mvel2.templates.TemplateRegistry;
-import org.mvel2.templates.TemplateRuntime;
 
 public class ScorecardDRLEmitter {
 
@@ -72,10 +61,25 @@ public class ScorecardDRLEmitter {
             imp.setClassName(importStatement);
             aPackage.addImport(imp);
         }
-
+        addGlobals(pmml, aPackage);
         aPackage.renderDRL(drlOutput);
         String drl = drlOutput.getDRL();
         return drl;
+    }
+
+    private void addGlobals(PMML pmml, org.drools.template.model.Package aPackage) {
+
+        for (Object obj : pmml.getAssociationModelsAndBaselineModelsAndClusteringModels()) {
+            if (obj instanceof Scorecard) {
+                Scorecard scorecard = (Scorecard) obj;
+                if ( scorecard.isUseReasonCodes()){
+                    Global global = new Global();
+                    global.setClassName("java.util.List");
+                    global.setIdentifier("$reasonCodeList");
+                    aPackage.addVariable(global);
+                }
+            }
+        }
     }
 
     private List<Rule> createRuleList(PMML pmmlDocument) {
@@ -112,7 +116,7 @@ public class ScorecardDRLEmitter {
         stringBuilder.append(var).append(" : ").append(objectClass).append("(");
 
         String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
-        if ("Text".equalsIgnoreCase(dataType)) {
+        if (XLSKeywords.DATATYPE_TEXT.equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 SimplePredicate predicate = scoreAttribute.getSimplePredicate();
                 String operator = predicate.getOperator();
@@ -132,7 +136,7 @@ public class ScorecardDRLEmitter {
 
                 stringBuilder.append(simpleSetPredicate.getField()).append(" in ( \"").append(content).append("\" )");
             }
-        } else if ("Boolean".equalsIgnoreCase(dataType)) {
+        } else if (XLSKeywords.DATATYPE_BOOLEAN.equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 SimplePredicate predicate = scoreAttribute.getSimplePredicate();
                 String operator = predicate.getOperator();
@@ -146,7 +150,7 @@ public class ScorecardDRLEmitter {
                     stringBuilder.append(predicate.getValue().toLowerCase());
                 }
             }
-        } else if ("Number".equalsIgnoreCase(dataType)) {
+        } else if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 SimplePredicate predicate = scoreAttribute.getSimplePredicate();
                 String operator = predicate.getOperator();
@@ -206,7 +210,7 @@ public class ScorecardDRLEmitter {
         StringBuffer sb = new StringBuffer();
         sb.append(c.getName()).append("_");
         String dataType = ScorecardPMMLUtils.getDataType(c);
-        if ("Number".equalsIgnoreCase(dataType)) {
+        if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 sb.append(scoreAttribute.getSimplePredicate().getOperator()).append("_").append(scoreAttribute.getSimplePredicate().getValue());
             } else if (scoreAttribute.getCompoundPredicate() != null) {
@@ -217,7 +221,7 @@ public class ScorecardDRLEmitter {
                     }
                 }
             }
-        } else if ("Text".equalsIgnoreCase(dataType) || "Boolean".equalsIgnoreCase(dataType)) {
+        } else if (XLSKeywords.DATATYPE_TEXT.equalsIgnoreCase(dataType) || XLSKeywords.DATATYPE_BOOLEAN.equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 sb.append(scoreAttribute.getSimplePredicate().getOperator()).append("_").append(scoreAttribute.getSimplePredicate().getValue());
             } else if (scoreAttribute.getSimpleSetPredicate() != null) {
@@ -259,6 +263,13 @@ public class ScorecardDRLEmitter {
         String setter = "set" + Character.toUpperCase(scoreVariable.charAt(0)) + scoreVariable.substring(1);
         String getter = "get" + Character.toUpperCase(scoreVariable.charAt(0)) + scoreVariable.substring(1) + "()";
         stringBuilder.append(var).append(".").append(setter).append("( ").append(var).append(".").append(getter).append(" + ").append(scoreAttribute.getPartialScore()).append(");");
+        if (scorecard.isUseReasonCodes()){
+            String reasonCode = scoreAttribute.getReasonCode();
+            if (reasonCode == null || StringUtils.isEmpty(reasonCode)) {
+                reasonCode = c.getReasonCode();
+            }
+            stringBuilder.append("\n\t\t$reasonCodeList.add(\"").append(reasonCode).append("\");");
+        }
         consequence.setSnippet(stringBuilder.toString());
         rule.addConsequence(consequence);
     }
@@ -269,4 +280,6 @@ public class ScorecardDRLEmitter {
         }
         return str.replaceAll(",", "-");
     }
+
+
 }
