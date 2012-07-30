@@ -144,13 +144,11 @@ public class ChanceFromNode extends FromNode {
             }            
         }
 
-        LinkedList constraintList = this.betaConstraints.getConstraints();
-        Iterator iter = constraintList.iterator();
-        Object con;
-        int j = 0;
-        while ( ( con = iter.next() ) != null ) {
+        BetaNodeFieldConstraint[] constraintList = this.betaConstraints.getConstraints();
+
+        for ( int j = 0; j < constraintList.length; j++ ) {
             Degree degree;
-            con = ( (LinkedListEntry) con ).getObject();
+            BetaNodeFieldConstraint con = constraintList[j];
 
             if ( con instanceof ImperfectBetaConstraint) {
                 if ( con instanceof OperatorConstraint ) {
