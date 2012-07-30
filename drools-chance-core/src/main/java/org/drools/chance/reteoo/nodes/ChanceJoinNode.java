@@ -99,13 +99,12 @@ public class ChanceJoinNode extends JoinNode {
     protected void propagateFromRight(RightTuple rightTuple, LeftTuple leftTuple, BetaMemory memory, PropagationContext context, InternalWorkingMemory workingMemory) {
 
 
-        LinkedList constraintList = this.constraints.getConstraints();
-        Iterator iter = constraintList.iterator();
-        Object con;
-        int j = 0;
-        while ( ( con = iter.next() ) != null ) {
+        BetaNodeFieldConstraint[] constraintList = this.constraints.getConstraints();
+        for ( int j = 0; j < constraintList.length; j++ ) {
             Degree degree;
-            con = ( (LinkedListEntry) con ).getObject();
+            BetaNodeFieldConstraint con = constraintList[j];
+
+
 
             if ( con instanceof ImperfectBetaConstraint ) {
                 ImperfectBetaConstraint ibc = (ImperfectBetaConstraint) con;
@@ -113,13 +112,12 @@ public class ChanceJoinNode extends JoinNode {
                 Evaluation eval = new SimpleEvaluationImpl( ibc.getNodeId(), con.toString(), degree, ibc.getLabel() );
                 ((ImperfectRightTuple) rightTuple).addEvaluation( eval );
             } else {
-                boolean allowed = ((BetaNodeFieldConstraint) con).isAllowedCachedRight( leftTuple, memory.getContext()[j] );
+                boolean allowed = con.isAllowedCachedRight( leftTuple, memory.getContext()[j] );
                 if ( ! allowed ) {
-//                    System.err.println( "Crisp beta cnstraint blocked propagation on ChanceJoinNode propagateFromRight ");
+//                    System.err.println( "Crisp beta constraint blocked propagation on ChanceJoinNode propagateFromRight ");
                     return;
                 }
             }
-            j++;
         }
 
         this.sink.propagateAssertLeftTuple( leftTuple,
@@ -134,18 +132,11 @@ public class ChanceJoinNode extends JoinNode {
 
     protected LeftTuple propagateOrModifyFromRight( RightTuple rightTuple, LeftTuple leftTuple, LeftTuple childLeftTuple, BetaMemory memory, PropagationContext context, InternalWorkingMemory workingMemory ) {
 
-        if ( rightTuple.getFactHandle().getObject().getClass().getName().endsWith("MVII")) {
-            System.out.println( "POMFR "+ rightTuple.getFactHandle().getObject());
-        }
-
-        LinkedList constraintList = this.constraints.getConstraints();
-        Iterator iter = constraintList.iterator();
-        Object con;
-        int j = 0;
+        BetaNodeFieldConstraint[] constraintList = this.constraints.getConstraints();
         boolean allowed = true;
-        while ( ( con = iter.next() ) != null ) {
+        for ( int j = 0; j < constraintList.length; j++ ) {
             Degree degree;
-            con = ( (LinkedListEntry) con ).getObject();
+            BetaNodeFieldConstraint con = constraintList[j];
 
             if ( con instanceof ImperfectBetaConstraint ) {
                 ImperfectBetaConstraint ibc = (ImperfectBetaConstraint) con;
@@ -155,7 +146,6 @@ public class ChanceJoinNode extends JoinNode {
             } else {
                 allowed = ((BetaNodeFieldConstraint) con).isAllowedCachedRight( leftTuple, memory.getContext()[j] );
             }
-            j++;
         }
 
 
@@ -187,13 +177,12 @@ public class ChanceJoinNode extends JoinNode {
     @Override
     protected void propagateFromLeft(RightTuple rightTuple, LeftTuple leftTuple, ContextEntry[] contextEntry, boolean useLeftMemory, PropagationContext context, InternalWorkingMemory workingMemory) {
 
-        LinkedList constraintList = this.constraints.getConstraints();
-        Iterator iter = constraintList.iterator();
-        Object con;
-        int j = 0;
-        while ( ( con = iter.next() ) != null ) {
+        BetaNodeFieldConstraint[] constraintList = this.constraints.getConstraints();
+        for ( int j = 0; j < constraintList.length; j++ ) {
             Degree degree;
-            con = ( (LinkedListEntry) con ).getObject();
+            BetaNodeFieldConstraint con = constraintList[j];
+
+
 
             if ( con instanceof ImperfectBetaConstraint ) {
                 ImperfectBetaConstraint ibc = (ImperfectBetaConstraint) con;
@@ -203,11 +192,10 @@ public class ChanceJoinNode extends JoinNode {
             } else {
                 boolean allowed = ((BetaNodeFieldConstraint) con).isAllowedCachedLeft( contextEntry[j], rightTuple.getFactHandle() );
                 if ( ! allowed ) {
-//                    System.err.println( "Crisp beta cnstraint blocked propagation on ChanceJoinNode propagateFromLeft ");
+//                    System.err.println( "Crisp beta constraint blocked propagation on ChanceJoinNode propagateFromLeft ");
                     return;
                 }
             }
-            j++;
         }
 
         this.sink.propagateAssertLeftTuple( leftTuple,
@@ -222,18 +210,12 @@ public class ChanceJoinNode extends JoinNode {
 
     @Override
     protected LeftTuple propagateOrModifyFromLeft(RightTuple rightTuple, LeftTuple leftTuple, LeftTuple childLeftTuple, ContextEntry[] contextEntry, PropagationContext context, InternalWorkingMemory workingMemory) {
-        if ( rightTuple.getFactHandle().getObject().getClass().getName().endsWith("MVII")) {
-                    System.out.println( "POMFLLLLLL "+ rightTuple.getFactHandle().getObject());
-                }
 
-        LinkedList constraintList = this.constraints.getConstraints();
-        Iterator iter = constraintList.iterator();
-        Object con;
-        int j = 0;
+        BetaNodeFieldConstraint[] constraintList = this.constraints.getConstraints();
         boolean allowed = true;
-        while ( ( con = iter.next() ) != null ) {
+        for ( int j = 0; j < constraintList.length; j++ ) {
             Degree degree;
-            con = ( (LinkedListEntry) con ).getObject();
+            BetaNodeFieldConstraint con = constraintList[j];
 
             if ( con instanceof ImperfectBetaConstraint ) {
                 ImperfectBetaConstraint ibc = (ImperfectBetaConstraint) con;
@@ -243,13 +225,7 @@ public class ChanceJoinNode extends JoinNode {
             } else {
                 allowed = ((BetaNodeFieldConstraint) con).isAllowedCachedRight( leftTuple, contextEntry[j] );
             }
-            j++;
         }
-
-        if ( rightTuple.getFactHandle().getObject().getClass().getName().endsWith("MVII")) {
-                            System.out.println( "POMFLLLLLL "+ allowed);
-                        }
-
 
         if ( allowed ) {
             if ( childLeftTuple == null || childLeftTuple.getLeftParent() != leftTuple || childLeftTuple.getFirstChild() == null ) {

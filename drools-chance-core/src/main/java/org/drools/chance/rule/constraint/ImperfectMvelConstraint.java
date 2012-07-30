@@ -7,6 +7,7 @@ import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
+import org.drools.core.util.index.IndexUtil;
 import org.drools.reteoo.LeftTuple;
 import org.drools.rule.ContextEntry;
 import org.drools.rule.Declaration;
@@ -39,16 +40,16 @@ public class ImperfectMvelConstraint extends MvelConstraint implements Imperfect
     public ImperfectMvelConstraint() {
     }
 
-    public ImperfectMvelConstraint(String packageName, String expression, MVELCompilationUnit compilationUnit, boolean isIndexable, FieldValue fieldValue, InternalReadAccessor extractor) {
-        super(packageName, expression, compilationUnit, isIndexable, fieldValue, extractor);
+    public ImperfectMvelConstraint(String packageName, String expression, MVELCompilationUnit compilationUnit, IndexUtil.ConstraintType constraintType, FieldValue fieldValue, InternalReadAccessor extractor) {
+        super(packageName, expression, compilationUnit, constraintType, fieldValue, extractor);
     }
 
     public ImperfectMvelConstraint(String packageName, String expression, Declaration[] declarations, MVELCompilationUnit compilationUnit, boolean isDynamic) {
         super(packageName, expression, declarations, compilationUnit, isDynamic);
     }
 
-    public ImperfectMvelConstraint(String packageName, String expression, Declaration[] declarations, MVELCompilationUnit compilationUnit, boolean isIndexable, Declaration indexingDeclaration, InternalReadAccessor extractor, boolean isUnification) {
-        super(packageName, expression, declarations, compilationUnit, isIndexable, indexingDeclaration, extractor, isUnification);
+    public ImperfectMvelConstraint(String packageName, String expression, Declaration[] declarations, MVELCompilationUnit compilationUnit, IndexUtil.ConstraintType constraintType, Declaration indexingDeclaration, InternalReadAccessor extractor, boolean isUnification) {
+        super(packageName, expression, declarations, compilationUnit, constraintType, indexingDeclaration, extractor, isUnification);
     }
 
 
@@ -90,13 +91,13 @@ public class ImperfectMvelConstraint extends MvelConstraint implements Imperfect
                     ((CompiledExpression)statement).getParserContext() :
                     new ParserContext(data.getParserConfiguration());
             if ( statement.getKnownEgressType().isAssignableFrom( Degree.class ) ) {
-                conditionEvaluator = new ImperfectMvelConditionEvaluator( compilationUnit, context, statement, declarations );
+                conditionEvaluator = new ImperfectMvelConditionEvaluator( compilationUnit, context, statement, getDeclarations() );
             } else {
-                conditionEvaluator = new MvelConditionEvaluator( compilationUnit, context, statement, declarations );
+                conditionEvaluator = new MvelConditionEvaluator( compilationUnit, context, statement, getDeclarations() );
                 wrapsPerfectConstraint = true;
             }
         } else {
-            conditionEvaluator = new ImperfectMvelConditionEvaluator( getParserConfiguration(workingMemory), expression, declarations );
+            conditionEvaluator = new ImperfectMvelConditionEvaluator( getParserConfiguration(workingMemory), expression, getDeclarations() );
         }
     }
 

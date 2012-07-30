@@ -25,6 +25,7 @@ import org.drools.chance.rule.constraint.core.evaluators.ImperfectEvaluatorWrapp
 import org.drools.chance.rule.constraint.core.evaluators.ImperfectMvelEvaluator;
 import org.drools.compiler.AnalysisResult;
 import org.drools.compiler.DescrBuildError;
+import org.drools.core.util.index.IndexUtil;
 import org.drools.lang.descr.*;
 import org.drools.rule.*;
 import org.drools.rule.builder.MVELConstraintBuilder;
@@ -164,10 +165,10 @@ public class ChanceMVELConstraintBuilder extends MVELConstraintBuilder {
 
 
                     String mvelExpr = normalizeMVELLiteralExpression(vtype, field, expression, leftValue, operator, rightValue, restrictionDescr);
-                    boolean isIndexable = operator.equals( "==" );
+                    IndexUtil.ConstraintType constraintType = IndexUtil.ConstraintType.decode(operator);
                     MVELCompilationUnit compilationUnit = buildCompilationUnit( context, pattern, mvelExpr );
 
-                    return new MvelConstraint( context.getPkg().getName(), mvelExpr, compilationUnit, isIndexable, field, extractor );
+                    return new MvelConstraint( context.getPkg().getName(), mvelExpr, compilationUnit, constraintType, field, extractor );
 
                 }
             }
@@ -195,21 +196,21 @@ public class ChanceMVELConstraintBuilder extends MVELConstraintBuilder {
                                               String expression,
                                               Declaration[] declarations,
                                               String leftValue,
-                                              OperatorDescr operator,
+                                              OperatorDescr operatorDescr,
                                               String rightValue,
                                               InternalReadAccessor extractor,
                                               Declaration requiredDeclaration,
                                               RelationalExprDescr relDescr ) {
 
-        boolean isImperfect = ChanceOperators.isImperfect( operator.getOperator() );
+        boolean isImperfect = ChanceOperators.isImperfect( operatorDescr.getOperator() );
 
-        if ( ! isMvelOperator( operator.getOperator() ) ) {
+        if ( ! isMvelOperator( operatorDescr.getOperator() ) ) {
             EvaluatorDefinition.Target right = getRightTarget( extractor );
             EvaluatorDefinition.Target left = (requiredDeclaration.isPatternDeclaration() && !(Date.class.isAssignableFrom( requiredDeclaration.getExtractor().getExtractToClass() ) || Number.class.isAssignableFrom( requiredDeclaration.getExtractor().getExtractToClass() ))) ? EvaluatorDefinition.Target.HANDLE : EvaluatorDefinition.Target.FACT;
             final Evaluator evaluator = getEvaluator( context,
                                                       relDescr,
                                                       extractor.getValueType(),
-                                                      operator.getOperator(),
+                    operatorDescr.getOperator(),
                                                       relDescr.isNegated(),
                                                       relDescr.getParametersText(),
                                                       left,
@@ -217,7 +218,7 @@ public class ChanceMVELConstraintBuilder extends MVELConstraintBuilder {
             if ( isImperfect ) {
                 if ( evaluator instanceof ImperfectEvaluator) {
                     ImperfectEvaluatorConstraint iec = new ImperfectEvaluatorConstraint( new Declaration[] { requiredDeclaration }, evaluator, extractor );
-                    iec.setLabel( extractConstraintLabel( operator.getParameters()) );
+                    iec.setLabel( extractConstraintLabel( operatorDescr.getParameters()) );
                     return iec;
                 } else {
                     return new EvaluatorConstraint( new Declaration[] { requiredDeclaration }, evaluator, extractor );
@@ -233,25 +234,26 @@ public class ChanceMVELConstraintBuilder extends MVELConstraintBuilder {
                 final Evaluator evaluator = getEvaluator( context,
                                                           relDescr,
                                                           extractor.getValueType(),
-                                                          operator.getOperator(),
+                                                          operatorDescr.getOperator(),
                                                           relDescr.isNegated(),
                                                           relDescr.getParametersText(),
                                                           left,
                                                           right );
 
                 ImperfectEvaluatorConstraint iec = new ImperfectEvaluatorConstraint( new Declaration[] { requiredDeclaration }, evaluator, extractor );
-                iec.setLabel( extractConstraintLabel( operator.getParameters()) );
+                iec.setLabel( extractConstraintLabel( operatorDescr.getParameters()) );
                 return iec;
 
             } else {
 
-                boolean isUnification = requiredDeclaration != null && requiredDeclaration.getPattern().getObjectType().equals( new ClassObjectType( DroolsQuery.class ) ) && Operator.EQUAL.getOperatorString().equals( operator.getOperator() );
+                boolean isUnification = requiredDeclaration != null && requiredDeclaration.getPattern().getObjectType().equals( new ClassObjectType( DroolsQuery.class ) ) && Operator.EQUAL.getOperatorString().equals( operatorDescr.getOperator() );
                 if (isUnification) {
                     expression = resolveUnificationAmbiguity(expression, declarations, leftValue, rightValue);
                 }
-                boolean isIndexable = operator.getOperator().equals("==");
+                IndexUtil.ConstraintType constraintType = IndexUtil.ConstraintType.decode(operatorDescr.getOperator());
                 MVELCompilationUnit compilationUnit = isUnification ? null : buildCompilationUnit(context, pattern, expression);
-                return new MvelConstraint(context.getPkg().getName(), expression, declarations, compilationUnit, isIndexable, requiredDeclaration, extractor, isUnification);
+                return new MvelConstraint(context.getPkg().getName(), expression, declarations, compilationUnit, constraintType, requiredDeclaration, extractor, isUnification);
+
             }
         }
 
@@ -320,15 +322,6 @@ public class ChanceMVELConstraintBuilder extends MVELConstraintBuilder {
             imc.setLabel( extractConstraintLabel( base.getParameters() ) );
         return imc;
     }
-
-    public Constraint buildMvelConstraint(String packageName, String expression, MVELCompilationUnit compilationUnit, boolean isIndexable, FieldValue fieldValue, InternalReadAccessor extractor) {
-        return new ImperfectMvelConstraint( packageName, expression, compilationUnit, isIndexable, fieldValue, extractor );
-    }
-
-    public Constraint buildMvelConstraint(String packageName, String expression, Declaration[] declarations, MVELCompilationUnit compilationUnit, boolean isIndexable, Declaration indexingDeclaration, InternalReadAccessor extractor, boolean isUnification) {
-        return new ImperfectMvelConstraint( packageName, expression, declarations, compilationUnit, isIndexable, indexingDeclaration, extractor, isUnification );
-    }
-
 
     public EvaluatorWrapper wrapEvaluator(Evaluator evaluator, Declaration left, Declaration right) {
         return new ImperfectEvaluatorWrapper( evaluator, left, right );
