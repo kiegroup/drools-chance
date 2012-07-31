@@ -91,13 +91,13 @@ public class ImperfectMvelConstraint extends MvelConstraint implements Imperfect
                     ((CompiledExpression)statement).getParserContext() :
                     new ParserContext(data.getParserConfiguration());
             if ( statement.getKnownEgressType().isAssignableFrom( Degree.class ) ) {
-                conditionEvaluator = new ImperfectMvelConditionEvaluator( compilationUnit, context, statement, getDeclarations() );
+                conditionEvaluator = new ImperfectMvelConditionEvaluator( compilationUnit, context, statement, getRequiredDeclarations() );
             } else {
-                conditionEvaluator = new MvelConditionEvaluator( compilationUnit, context, statement, getDeclarations() );
+                conditionEvaluator = new MvelConditionEvaluator( compilationUnit, context, statement, getRequiredDeclarations() );
                 wrapsPerfectConstraint = true;
             }
         } else {
-            conditionEvaluator = new ImperfectMvelConditionEvaluator( getParserConfiguration(workingMemory), expression, getDeclarations() );
+            conditionEvaluator = new ImperfectMvelConditionEvaluator( getParserConfiguration(workingMemory), expression, getRequiredDeclarations() );
         }
     }
 
