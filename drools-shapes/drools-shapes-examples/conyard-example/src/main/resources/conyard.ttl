@@ -17,15 +17,15 @@
 #################################################################
 
 
-rdfs:comment rdf:type owl:AnnotationProperty .
-
-
-
 :abstract rdf:type owl:AnnotationProperty ;
           
           rdfs:range xsd:boolean ;
           
           rdfs:domain owl:Thing .
+
+
+
+rdfs:comment rdf:type owl:AnnotationProperty .
 
 
 
@@ -286,6 +286,16 @@ xsd:string rdf:type rdfs:Datatype .
 
 
 
+###  http://owl.drools.org/conyard#hasNote
+
+:hasNote rdf:type owl:DatatypeProperty ;
+         
+         rdfs:domain :Site ;
+         
+         rdfs:range xsd:string .
+
+
+
 ###  http://owl.drools.org/conyard#hasVocabulary
 
 :hasVocabulary rdf:type owl:DatatypeProperty ;
@@ -349,12 +359,7 @@ xsd:string rdf:type rdfs:Datatype .
 
 :Activity rdf:type owl:Class ;
           
-          rdfs:subClassOf [ rdf:type owl:Restriction ;
-                            owl:onProperty :hasComment ;
-                            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                            owl:onDataRange xsd:string
-                          ] ,
-                          [ rdf:type owl:Class ;
+          rdfs:subClassOf [ rdf:type owl:Class ;
                             owl:intersectionOf ( :Entity
                                                  [ rdf:type owl:Restriction ;
                                                    owl:onProperty :involves ;
@@ -377,6 +382,11 @@ xsd:string rdf:type rdfs:Datatype .
                                                    owl:onDataRange xsd:dateTime
                                                  ]
                                                )
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :hasComment ;
+                            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                            owl:onDataRange xsd:string
                           ] ;
           
           owl:hasKey ( :hasComment
@@ -1170,9 +1180,9 @@ xsd:string rdf:type rdfs:Datatype .
                                                )
                           ] ;
           
-          owl:hasKey ( :oid
+          owl:hasKey ( :hasComment
                      ) ,
-                     ( :hasComment
+                     ( :oid
                      ) .
 
 
@@ -1437,15 +1447,6 @@ xsd:string rdf:type rdfs:Datatype .
              
              rdfs:subClassOf :Activity ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :requires ;
-                               owl:onClass :Bricks ;
-                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :requires ;
-                               owl:allValuesFrom :Bricks
-                             ] ,
-                             [ rdf:type owl:Restriction ;
                                owl:onProperty :involves ;
                                owl:onClass :Mason ;
                                owl:minQualifiedCardinality "3"^^xsd:nonNegativeInteger
@@ -1453,6 +1454,15 @@ xsd:string rdf:type rdfs:Datatype .
                              [ rdf:type owl:Restriction ;
                                owl:onProperty :involves ;
                                owl:allValuesFrom :Mason
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :requires ;
+                               owl:allValuesFrom :Bricks
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :requires ;
+                               owl:onClass :Bricks ;
+                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
                              ] .
 
 

@@ -133,7 +133,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                 : new Element( "sequence", xmodel.getNamespace( "xsd" ) );
 
 
-        if ( isUseImplementation() ) {
+        if ( name.equals( "Thing" ) || isUseImplementation() ) {
             Element prop;
 
             prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
@@ -144,7 +144,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             seq.addContent( prop );
         }
 
-        if ( isUseImplementation() ) {
+        if ( name.equals( "Thing" ) || isUseImplementation() ) {
             Element prop;
 
             prop = new Element( "element", xmodel.getNamespace( "xsd" ) );

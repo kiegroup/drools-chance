@@ -30,7 +30,6 @@ import java.util.*;
 
 public final class NameUtils {
 
-
     public enum IdentifierType {
         CLASS,
         INTERFACE,
@@ -182,6 +181,10 @@ public final class NameUtils {
     public static String buildNameFromIri( String iriStart, String iriFragment ) {
         String iri = iriFragment != null ? iriFragment : iriStart;
         return nameToIdentifier( iri, IdentifierType.CLASS );
+    }
+
+    public static String separatingName( String name ) {
+        return name.endsWith( "/" ) || name.endsWith( "#" ) ? name : ( name + "/" );
     }
 
 

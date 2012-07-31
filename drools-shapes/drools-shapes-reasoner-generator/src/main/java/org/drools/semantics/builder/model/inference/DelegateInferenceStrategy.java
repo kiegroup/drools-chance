@@ -452,7 +452,6 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             System.err.println( "WARNING : Null target for property " + propIri );
         }
 
-        
         String restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
         String restrictedPropIri = propIri.replace(">", restrictedSuffix + ">");
 
@@ -499,8 +498,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             }
 
             boolean dirty = false;
-            if ( rel.getTarget().getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" )
-                    || rel.getTarget().getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>")
+            if ( target.getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" )
+                    || target.getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>")
                ) {
                 target = rel.getTarget();
                 restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
@@ -866,7 +865,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             for ( OWLClassExpression dom : op.getDomains( ontoDescr ) ) {
                 if ( dom.isAnonymous() ) {
                     OWLClass domain = factory.getOWLClass( IRI.create(
-                            ontoDescr.getOntologyID().getOntologyIRI().getStart() +
+                            NameUtils.separatingName( ontoDescr.getOntologyID().getOntologyIRI().getStart() ) +
                             NameUtils.capitalize( typeName ) +
                             "Domain" ) );
                     OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
@@ -914,7 +913,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             for ( OWLClassExpression dom : dp.getDomains( ontoDescr ) ) {
                 if ( dom.isAnonymous() ) {
                     OWLClass domain = factory.getOWLClass( IRI.create(
-                            ontoDescr.getOntologyID().getOntologyIRI().getStart() +
+                            NameUtils.separatingName( ontoDescr.getOntologyID().getOntologyIRI().getStart() ) +
                             NameUtils.capitalize( typeName ) +
                             "Domain" ) );
                     OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
@@ -963,7 +962,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             for ( OWLClassExpression ran : op.getRanges(ontoDescr) ) {
                 if ( ran.isAnonymous() ) {
                     OWLClass range = factory.getOWLClass( IRI.create(
-                            ontoDescr.getOntologyID().getOntologyIRI().getStart() +
+                            NameUtils.separatingName( ontoDescr.getOntologyID().getOntologyIRI().getStart() ) +
                             NameUtils.capitalize( typeName ) +
                             "Range" ) );
                     OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
@@ -1112,7 +1111,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         OWLClass filler = fillerCache.get( fil );
 
                         if ( filler == null ) {
-                            String fillerName = ontoDescr.getOntologyID().getOntologyIRI().getStart() +
+                            String fillerName =
+                                    NameUtils.separatingName( ontoDescr.getOntologyID().getOntologyIRI().getStart() ) +
                                     NameUtils.capitalize( inKlass.getIRI().getFragment() ) +
                                     NameUtils.capitalize( prop.getIRI().getFragment() ) +
                                     "Filler" +
@@ -1533,7 +1533,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     }
                 }
 
-                if ( concept.getName().endsWith( "Range" ) || concept.getName().endsWith( "Domain" ) || concept.getName().endsWith( "Filler" ) ) {
+                if ( concept.getName().endsWith( "Range" ) || concept.getName().endsWith( "Domain" ) || concept.getName().matches( "\\S*Filler\\d+" ) ) {
                     concept.setAnonymous( true );
                 }
 

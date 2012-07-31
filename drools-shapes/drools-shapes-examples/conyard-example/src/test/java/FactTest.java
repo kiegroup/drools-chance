@@ -15,6 +15,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.drools.owl.conyard.*;
 
@@ -27,11 +30,18 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
@@ -380,10 +390,14 @@ public class FactTest {
         assertTrue( p2 instanceof PaintingImpl );
         assertEquals(  new Integer(10), p2.getRequiresStair().getStairLength() );
 
+        assertEquals( painting, p2 );
+        assertEquals( p2, painting );
+
         p2.setHasComment(" Change my mind ");
         p2.getRequiresStair().setStairLength(6);
 
-        assertEquals(p2, painting);
+        // hasComment is key --> equality will fail now
+        assertFalse( painting.equals( p2 ) );
         assertNotSame( painting, p2 );
 
         PaintingImpl p3 = new PaintingImpl();
@@ -554,6 +568,43 @@ public class FactTest {
 
 
         em.close();
+    }
+
+
+    @Test
+    public void testXMLNamespaces() {
+        StringWriter writer;
+
+        writer = new StringWriter();
+        try {
+            marshaller.marshal( painting, writer );
+        } catch (JAXBException e) {
+            fail( e.getMessage() );
+        }
+
+        try {
+            Document dox = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new ByteArrayInputStream( writer.toString().getBytes() ) );
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xPath = xPathFactory.newXPath();
+            XPathExpression xPathExpression = xPath.compile("//namespace::*" );
+            NodeList nodeList = (NodeList) xPathExpression.evaluate( dox, XPathConstants.NODESET );
+            for ( int j = 0; j < nodeList.getLength(); j++ ) {
+                Node n = nodeList.item( j );
+                if ( n.getNodeName().equals( "xmlns" ) ) {
+                    assertEquals( "http://owl.drools.org/conyard#", n.getNodeValue() );
+                } else if ( n.getNodeName().equals( "xmlns:xml" ) ) {
+                    assertEquals( "http://www.w3.org/XML/1998/namespace", n.getNodeValue() );
+                } else if ( n.getNodeName().equals( "xmlns:xsi" ) ) {
+                    assertEquals( "http://www.w3.org/2001/XMLSchema-instance", n.getNodeValue() );
+                } else {
+                    fail( "Unexpected namespace " + n.getNodeName() + " :: " + n.getNodeValue() );
+                }
+            }
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
     }
 
 }
