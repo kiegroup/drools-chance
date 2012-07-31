@@ -42,6 +42,15 @@ public interface @{name + "$$Shadow"} extends com.clarkparsia.empire.SupportsRdf
 
     public void setDyEntryId( String id );
 
+    public String getDyEntryType();
+
+    public void setDyEntryType(String dyEntryType);
+
+    public boolean isDyReference();
+
+    public void setDyReference(boolean dyReference);
+
+
 
 
     @if{ shadowProperties.size > 0 }    @foreach{ propKey : shadowProperties.keySet }

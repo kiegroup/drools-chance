@@ -132,6 +132,22 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             mv.visitEnd();
         }
 
+        {
+            mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT, "getDyEntryType", "()" + Type.getDescriptor( String.class ), null, null );
+            mv.visitEnd();
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "setDyEntryType", "(" + Type.getDescriptor( String.class ) + ")V", null, null );
+            mv.visitEnd();
+        }
+        {
+            mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT, "isDyReference", "()" + Type.getDescriptor( boolean.class ), null, null );
+            mv.visitEnd();
+        }
+        {
+            mv = cw.visitMethod(ACC_PUBLIC + ACC_ABSTRACT, "setDyReference", "(" + Type.getDescriptor( boolean.class ) + ")V", null, null );
+            mv.visitEnd();
+        }
 
 
         for ( String propKey : props.keySet() ) {

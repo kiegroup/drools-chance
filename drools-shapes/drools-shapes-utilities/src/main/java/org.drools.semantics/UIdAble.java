@@ -41,21 +41,13 @@ public abstract class UIdAble implements SupportsRdfId {
         setDyEntryId( "http://" + UUID.randomUUID().toString() );
     }
 
-    public String getDyEntryType() {
-        return dyEntryType;
-    }
+    @XmlTransient
+    public abstract String getDyEntryType();
+    public abstract void setDyEntryType(String dyEntryType);
 
-    public void setDyEntryType(String dyEntryType) {
-        this.dyEntryType = dyEntryType;
-    }
-
-    public boolean isDyReference() {
-        return dyReference;
-    }
-
-    public void setDyReference(boolean dyReference) {
-        this.dyReference = dyReference;
-    }
+    @XmlTransient
+    public abstract boolean isDyReference();
+    public abstract void setDyReference(boolean dyReference);
 
     @Override
     public boolean equals(Object o) {
