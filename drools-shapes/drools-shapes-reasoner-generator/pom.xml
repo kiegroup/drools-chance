@@ -71,7 +71,12 @@
     <dependency>
       <groupId>org.prefuse</groupId>
       <artifactId>prefuse</artifactId>
-      <version>beta-20060220</version>
+      <version>beta-20071021</version>
+    </dependency>
+    <dependency>
+      <groupId>jgraph</groupId>
+      <artifactId>jgraph</artifactId>
+      <version>5.13.0.0</version>
     </dependency>
 
 

@@ -178,7 +178,7 @@ public class DL_99_ModelTest {
 
         try {
 //            while (true) {
-                Thread.sleep( 5000 );
+            Thread.sleep( 5000 );
 //            }
         } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

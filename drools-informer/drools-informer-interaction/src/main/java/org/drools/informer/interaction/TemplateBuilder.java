@@ -38,10 +38,10 @@ public class TemplateBuilder {
     public static void addTemplate( String path ) {
             try {
                 InputStream stream = ResourceFactory.newClassPathResource( path, TemplateBuilder.class ).getInputStream();
-    
+
                 getRegistry().addNamedTemplate( path.substring( path.lastIndexOf('/') + 1 ),
                                                TemplateCompiler.compileTemplate(stream) );
-                
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
