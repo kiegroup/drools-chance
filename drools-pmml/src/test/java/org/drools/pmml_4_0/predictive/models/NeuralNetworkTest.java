@@ -31,12 +31,14 @@ import org.drools.informer.Answer;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.pmml_4_0.DroolsAbstractPMMLTest;
+import org.drools.pmml_4_0.ModelMarker;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.Variable;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
@@ -184,6 +186,8 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         System.err.println(reportWMObjects(getKSession()));
 
         Assert.assertEquals( 0.2802, queryDoubleField("PTSD", "MockPTSD" ) );
+
+        assertEquals( 1, getKSession().getObjects( new ClassObjectFilter( ModelMarker.class) ).size() );
 
     }
 

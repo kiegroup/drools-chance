@@ -179,7 +179,7 @@ import org.jbpm.task.service.ContentData;
 
         owner               : String
                 @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Actor ", required = false )
-                @AllowedAnswers( values = { } )
+                @AllowedAnswers( values = { "Default" } )
 
         transition          : String
                 @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Transition ", required = false )

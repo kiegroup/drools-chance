@@ -1,9 +1,18 @@
 package org.drools.semantics;
 
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +23,54 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
 
     public ReferenceAdapter() {
         cache = new HashMap<String, UIdAble>();
+    }
 
+    public static Collection fromXMLResource( String sourceURL, String namespace ) {
+        try {
+            return fromXMLResource( new URL( sourceURL ), namespace );
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public static Collection fromXMLResource( URL source, String namespace ) {
+        try {
+            Unmarshaller unmarshal = JAXBContext.newInstance( namespace ).createUnmarshaller();
+            unmarshal.unmarshal( source.openStream() );
+            ReferenceAdapter loader = unmarshal.getAdapter( ReferenceAdapter.class );
+            return loader.getObjects();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public static Collection fromXMLStream( InputStream source, String namespace ) {
+        try {
+            Unmarshaller unmarshal = JAXBContext.newInstance( namespace ).createUnmarshaller();
+            unmarshal.unmarshal( source );
+            ReferenceAdapter loader = unmarshal.getAdapter( ReferenceAdapter.class );
+            return loader.getObjects();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public static Collection fromXMLString( String data, String namespace ) {
+        try {
+            Unmarshaller unmarshal = JAXBContext.newInstance( namespace ).createUnmarshaller();
+            unmarshal.unmarshal( new ByteArrayInputStream( data.getBytes() ) );
+            ReferenceAdapter loader = unmarshal.getAdapter( ReferenceAdapter.class );
+            return loader.getObjects();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     public Collection getObjects() {
