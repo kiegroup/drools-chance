@@ -39,8 +39,8 @@ import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.Condition;
 import org.drools.template.model.Consequence;
 import org.drools.template.model.DRLOutput;
-import org.drools.template.model.Global;
 import org.drools.template.model.Import;
+import org.drools.template.model.Package;
 import org.drools.template.model.Rule;
 
 public class ScorecardDRLEmitter {
@@ -55,31 +55,68 @@ public class ScorecardDRLEmitter {
         for (Rule rule : ruleList) {
             aPackage.addRule(rule);
         }
+
+        addDeclaredTypes(pmml, aPackage);
+
         String importsFromDelimitedString = ScorecardPMMLUtils.getExtensionValue(pmml.getHeader().getExtensions(), PMMLExtensionNames.SCORECARD_IMPORTS);
         for (String importStatement : importsFromDelimitedString.split(",")) {
             Import imp = new Import();
             imp.setClassName(importStatement);
             aPackage.addImport(imp);
         }
+
         addGlobals(pmml, aPackage);
         aPackage.renderDRL(drlOutput);
         String drl = drlOutput.getDRL();
         return drl;
     }
 
-    private void addGlobals(PMML pmml, org.drools.template.model.Package aPackage) {
+    private void addDeclaredTypes(PMML pmml, Package aPackage) {
+        Import defaultScorecardImport = new Import();
+        defaultScorecardImport.setClassName("org.drools.scorecards.DroolsScorecard");
+        aPackage.addImport(defaultScorecardImport);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("\ndeclare DroolsScorecard\nend\n\n");
 
         for (Object obj : pmml.getAssociationModelsAndBaselineModelsAndClusteringModels()) {
             if (obj instanceof Scorecard) {
                 Scorecard scorecard = (Scorecard) obj;
-                if ( scorecard.isUseReasonCodes()){
-                    Global global = new Global();
-                    global.setClassName("java.util.List");
-                    global.setIdentifier("$reasonCodeList");
-                    aPackage.addVariable(global);
+                stringBuilder.append("declare ").append(scorecard.getModelName().replaceAll(" ","")).append(" extends DroolsScorecard\n");
+                Characteristics characteristics = getCharacteristicsFromScorecard(scorecard);
+                for (org.dmg.pmml_4_1.Characteristic c : characteristics.getCharacteristics()) {
+                    String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
+                    if (XLSKeywords.DATATYPE_TEXT.equalsIgnoreCase(dataType)) {
+                        dataType = "String";
+                    } else if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)) {
+                        dataType = "int";
+                    } else if (XLSKeywords.DATATYPE_BOOLEAN.equalsIgnoreCase(dataType)) {
+                        dataType = "boolean";
+                    }
+                    String field = "";
+                    Attribute scoreAttribute = c.getAttributes().get(0);
+                    if (scoreAttribute.getSimplePredicate() != null) {
+                        field = scoreAttribute.getSimplePredicate().getField();
+                    } else if (scoreAttribute.getSimpleSetPredicate() != null) {
+                        field = scoreAttribute.getSimpleSetPredicate().getField();
+                    } else if (scoreAttribute.getCompoundPredicate() != null) {
+                        Object predicate = scoreAttribute.getCompoundPredicate().getSimplePredicatesAndCompoundPredicatesAndSimpleSetPredicates().get(0);
+                        if (predicate instanceof SimplePredicate){
+                            field = ((SimplePredicate)predicate).getField();
+                        } else if (predicate instanceof SimpleSetPredicate){
+                            field = ((SimpleSetPredicate)predicate).getField();
+                        }
+                    }
+                    stringBuilder.append("\t").append(field).append(" : ").append(dataType).append("\n");
                 }
+                stringBuilder.append("end\n");
             }
         }
+        aPackage.addDeclaredType(stringBuilder.toString());
+    }
+
+    private void addGlobals(PMML pmml, org.drools.template.model.Package aPackage) {
+
     }
 
     private List<Rule> createRuleList(PMML pmmlDocument) {
@@ -90,7 +127,7 @@ public class ScorecardDRLEmitter {
                 Characteristics characteristics = getCharacteristicsFromScorecard(scorecard);
                 for (org.dmg.pmml_4_1.Characteristic c : characteristics.getCharacteristics()) {
                     for (org.dmg.pmml_4_1.Attribute scoreAttribute : c.getAttributes()) {
-                        String name = formRuleName(c, scoreAttribute);
+                        String name = formRuleName(scorecard.getModelName().replaceAll(" ",""), c, scoreAttribute);
                         Rule rule = new Rule(name, 1, 1);
                         String desc = ScorecardPMMLUtils.getExtensionValue(scoreAttribute.getExtensions(), "description");
                         if (desc != null) {
@@ -109,10 +146,9 @@ public class ScorecardDRLEmitter {
     private void populateLHS(Rule rule, PMML pmmlDocument, Scorecard scorecard, Characteristic c, Attribute scoreAttribute) {
         Condition condition = new Condition();
         StringBuilder stringBuilder = new StringBuilder();
-        String boundVariable = ScorecardPMMLUtils.getExtensionValue(scorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_BOUND_VAR_NAME);
-        String var = (boundVariable == null) ? "$var" : boundVariable;
+        String var = "$sc";
 
-        String objectClass = ScorecardPMMLUtils.getExtensionValue(scorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_OBJECT_CLASS);
+        String objectClass = scorecard.getModelName().replaceAll(" ", "");
         stringBuilder.append(var).append(" : ").append(objectClass).append("(");
 
         String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
@@ -206,9 +242,9 @@ public class ScorecardDRLEmitter {
         rule.addCondition(condition);
     }
 
-    private String formRuleName(org.dmg.pmml_4_1.Characteristic c, org.dmg.pmml_4_1.Attribute scoreAttribute) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(c.getName()).append("_");
+    private String formRuleName(String modelName, Characteristic c, Attribute scoreAttribute) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(modelName).append("_").append(c.getName()).append("_");
         String dataType = ScorecardPMMLUtils.getDataType(c);
         if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
@@ -246,29 +282,16 @@ public class ScorecardDRLEmitter {
     private void populateRHS(Rule rule, PMML pmmlDocument, Scorecard scorecard, Characteristic c, Attribute scoreAttribute) {
         Consequence consequence = new Consequence();
         StringBuilder stringBuilder = new StringBuilder();
-        String boundVariable = ScorecardPMMLUtils.getExtensionValue(scorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_BOUND_VAR_NAME);
-        String var = (boundVariable == null) ? "$var" : boundVariable;
+        String var = "$sc";
 
-        String scoreVariable = null;
-        for (Object obj : scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
-            if (obj instanceof Output) {
-                Output output = (Output) obj;
-                for (OutputField outputField : output.getOutputFields()) {
-                    if (outputField.getFeature() == RESULTFEATURE.PREDICTED_VALUE) {
-                        scoreVariable = outputField.getName();
-                    }
-                }
-            }
-        }
-        String setter = "set" + Character.toUpperCase(scoreVariable.charAt(0)) + scoreVariable.substring(1);
-        String getter = "get" + Character.toUpperCase(scoreVariable.charAt(0)) + scoreVariable.substring(1) + "()";
-        stringBuilder.append(var).append(".").append(setter).append("( ").append(var).append(".").append(getter).append(" + ").append(scoreAttribute.getPartialScore()).append(");");
+        String setter = "addPartialScore";
+        stringBuilder.append(var).append(".").append(setter).append("( ").append(scoreAttribute.getPartialScore()).append(" );");
         if (scorecard.isUseReasonCodes()){
             String reasonCode = scoreAttribute.getReasonCode();
             if (reasonCode == null || StringUtils.isEmpty(reasonCode)) {
                 reasonCode = c.getReasonCode();
             }
-            stringBuilder.append("\n\t\t$reasonCodeList.add(\"").append(reasonCode).append("\");");
+            stringBuilder.append("\n\t\t$sc.addReasonCode(\"").append(reasonCode).append("\");");
         }
         consequence.setSnippet(stringBuilder.toString());
         rule.addConsequence(consequence);

@@ -7,9 +7,9 @@ import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderError;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.definition.type.FactType;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.scorecards.example.Applicant;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,7 +50,7 @@ public class DrlFromPMMLTest {
 
     @Test
     public void testImports() throws Exception {
-        assertEquals(1, StringUtil.countMatches(drl, "import "));
+        assertEquals(2, StringUtil.countMatches(drl, "import "));
     }
 
     @Test
@@ -69,39 +69,37 @@ public class DrlFromPMMLTest {
 
         //NEW WORKING MEMORY
         StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
+        FactType scorecardType = kbase.getFactType( "org.drools.scorecards.example","SampleScore" );
 
-        //ASSERT AND FIRE
-        Applicant applicant = new Applicant();
-        applicant.setAge(10);
-        session.insert( applicant );
+        DroolsScorecard scorecard = (DroolsScorecard) scorecardType.newInstance();
+        scorecardType.set(scorecard, "age", 10);
+        session.insert( scorecard );
         session.fireAllRules();
         session.dispose();
         //occupation = 5, age = 25, validLicence -1
-        assertTrue(29 == applicant.getTotalScore());
+        assertTrue(29 == scorecard.getCalculatedScore());
 
         session = kbase.newStatefulKnowledgeSession();
-        //ASSERT AND FIRE
-        applicant = new Applicant();
-        applicant.setAge(0);
-        applicant.setOccupation("SKYDIVER");
-        session.insert( applicant );
+        scorecard = (DroolsScorecard) scorecardType.newInstance();
+        scorecardType.set(scorecard, "occupation", "SKYDIVER");
+        scorecardType.set(scorecard, "age", 0);
+        session.insert( scorecard );
         session.fireAllRules();
         session.dispose();
         //occupation = -10, age = +10, validLicense = -1;
-        assertTrue(-1 == applicant.getTotalScore());
+        assertTrue(-1 == scorecard.getCalculatedScore());
 
         session = kbase.newStatefulKnowledgeSession();
-        //ASSERT AND FIRE
-        applicant = new Applicant();
-        applicant.setAge(20);
-        applicant.setOccupation("TEACHER");
-        applicant.setResidenceState("AP");
-        applicant.setValidLicense(true);
-        session.insert( applicant );
+        scorecard = (DroolsScorecard) scorecardType.newInstance();
+        scorecardType.set(scorecard, "residenceState", "AP");
+        scorecardType.set(scorecard, "occupation", "TEACHER");
+        scorecardType.set(scorecard, "age", 20);
+        scorecardType.set(scorecard, "validLicense", true);
+        session.insert( scorecard );
         session.fireAllRules();
         session.dispose();
         //occupation = +10, age = +40, state = -10, validLicense = 1
-        assertEquals(41,(int)applicant.getTotalScore());
+        assertEquals(41,scorecard.getCalculatedScore());
     }
 
 
