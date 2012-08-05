@@ -50,7 +50,7 @@ end
 
 
 rule "return from navigation branch"
-salience 5 # before : activate top-level item (if Questionnaire.activeItem is used)
+salience 5 // before : activate top-level item (if Questionnaire.activeItem is used)
 when
 	$questionnaire : Questionnaire( activeItem == "#return" )
 then
@@ -60,7 +60,7 @@ end
 
 rule "activate top-level item (if Questionnaire.activeItem is used)"
 no-loop
-salience 4 # before: "activate/deactivate lower-level items (if Questionnaire.activeItem is used)"
+salience 4 // before: "activate/deactivate lower-level items (if Questionnaire.activeItem is used)"
 when
 	$questionnaire : Questionnaire( activeItem != null )
 	$item : Item( id memberOf $questionnaire.itemList,
@@ -74,7 +74,7 @@ end
 
 rule "deactivate top-level items (if Questionnaire.activeItem is used)"
 no-loop
-salience 4 # before: "activate/deactivate lower-level items (if Questionnaire.activeItem is used)"
+salience 4 // before: "activate/deactivate lower-level items (if Questionnaire.activeItem is used)"
 when
 	$questionnaire : Questionnaire( activeItem != null )
 	$item : Item( id memberOf $questionnaire.itemList,
@@ -90,7 +90,7 @@ end
 
 rule "activate lower-level items (if Questionnaire.activeItem is used)"
 no-loop
-salience 3 # before: "activate/deactivate InvalidAnswers"
+salience 3 // before: "activate/deactivate InvalidAnswers"
 when
 	$questionnaire : Questionnaire(activeItem != null )
 	$item : Item( id != $questionnaire.id,
@@ -106,7 +106,7 @@ end
 
 rule "deactivate lower-level items (if Questionnaire.activeItem is used)"
 no-loop
-salience 3 # before: "activate/deactivate InvalidAnswers"
+salience 3 // before: "activate/deactivate InvalidAnswers"
 when
 	$questionnaire : Questionnaire(activeItem != null )
 	$item : Item( id != $questionnaire.id,
@@ -130,7 +130,7 @@ end
 
 
 rule "activate everything (if Questionnaire.activeItem is not used)"
-salience 3 # before: "activate/deactivate InvalidAnswers"
+salience 3 // before: "activate/deactivate InvalidAnswers"
 when
 	$questionnaire : Questionnaire(activeItem == null )
 	$item : Item( id != $questionnaire.id, active == false )
@@ -141,7 +141,7 @@ then
 end
 
 rule "activate/deactivate InvalidAnswers"
-salience 2 # before: "propagate readonly from group to questions or subgroups"
+salience 2 // before: "propagate readonly from group to questions or subgroups"
 when
 	$question : Question()
 	$invalidAnswer : InvalidAnswer( questionId == $question.id, active != $question.active );
@@ -152,7 +152,7 @@ then
 end
 
 rule "retract invalid answers for inactive questions"
-salience -1000 # ensure this is the last rule in the Agenda Group to fire
+salience -1000 // ensure this is the last rule in the Agenda Group to fire
 when
     $invalidAnswer : InvalidAnswer();
     $question : Question( $id : id == $invalidAnswer.questionId, active == false )
@@ -162,7 +162,7 @@ then
 end
 
 rule "deactivate orphan InvalidAnswers"
-salience 2 # before: "propagate readonly from group to questions or subgroups"
+salience 2 // before: "propagate readonly from group to questions or subgroups"
 when
 	$invalidAnswer : InvalidAnswer( active == true )
 	not ( exists Question( id == $invalidAnswer.questionId ) )
