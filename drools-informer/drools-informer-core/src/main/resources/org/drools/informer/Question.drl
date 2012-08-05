@@ -37,7 +37,7 @@ end
 
 
 rule "retract all prior validation errors when a new answer is given"
-salience 4 # before: "copy new answers into the corresponding questions"
+salience 4 // before: "copy new answers into the corresponding questions"
 when
 	Answer( questionId : questionId )
 	$invalidAnswer : InvalidAnswer( questionId == questionId )
@@ -60,7 +60,7 @@ end
 
 
 rule "Unanswer questions"
-salience 30 # before: "discard invalid multiple choice answers"
+salience 30 // before: "discard invalid multiple choice answers"
 when
 	$answer     : Answer( questionId : questionId, answerValue : value == null );
 	$question   : Question( id == questionId, finalAnswer == false, $basicAnswerType : basicAnswerType  )
@@ -76,7 +76,7 @@ end
 
 
 rule "copy new answers into the corresponding questions"
-salience 30 # before: "discard invalid multiple choice answers"
+salience 30 // before: "discard invalid multiple choice answers"
 when
 	answer      : Answer( questionId : questionId, answerValue : value != null );
 	$question   : Question( id == questionId, basicAnswerType : basicAnswerType,
@@ -101,7 +101,7 @@ then
 end
 
 rule "discard invalid multiple choice answers"
-salience 20 # before: "copy question answers to the underlying domain model"
+salience 20 // before: "copy question answers to the underlying domain model"
 when
 	$question   : MultipleChoiceQuestion( questionId : id, answered == true, $answers : answerItems != null, $possibleAnswers : possibleAnswers )
 	$s          : String() from $answers
@@ -118,7 +118,7 @@ end
 
 
 rule "retract orphan answers"
-salience -1 # after: any rules that create questions
+salience -1 // after: any rules that create questions
 when
 	$answer     : Answer(questionId : questionId);
 	            not ( exists Question(id == questionId) );
@@ -128,7 +128,7 @@ end
 
 
 rule "required questions answered"
-salience -1 # after: any rules that create questions
+salience -1 // after: any rules that create questions
 when
 	$question   : Question( required == true, answered == false );
 then
@@ -138,7 +138,7 @@ then
 end
 
 rule "questions missing answers"
-salience -1 # after: any rules that create questions
+salience -1 // after: any rules that create questions
 when
 	$question   : Question( required == false, answered == false );
 then
@@ -159,7 +159,7 @@ end
 
 
 rule "has invalid answers"
-salience -2 # after: any rules that create invalid answers
+salience -2 // after: any rules that create invalid answers
 when
 	$quest      : Questionnaire(invalidAnswers == false)
 	            exists InvalidAnswer()
@@ -170,7 +170,7 @@ end
 
 
 rule "doesn't have invalid answers"
-salience -2 # after: any rules that create invalid answers
+salience -2 // after: any rules that create invalid answers
 when
 	$quest      : Questionnaire( invalidAnswers == true )
 	            not ( exists InvalidAnswer() )
