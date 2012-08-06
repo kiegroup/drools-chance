@@ -30,6 +30,8 @@ dialect "mvel"
 no-loop
 salience 1000
 when
+    ModelMarker( "@{model}" ; )
+    not Questionnaire( type == @{ format( "string", model + "_Questionnaire" ) } )
 then
     Questionnaire questionnaire = new Questionnaire(@{format("string",model)}+"_Questionnaire");
     questionnaire.setContext(@{format("string",model)});
@@ -37,7 +39,7 @@ then
 
 	questionnaire.setItems({  @foreach{fld : fields} @{format("string",model)}+"_"+@{format("string",compactUpperCase(fld.name))} @end{","}  });
 
-	insertLogical(questionnaire);
+	insert(questionnaire);
 end
 @end{}
 

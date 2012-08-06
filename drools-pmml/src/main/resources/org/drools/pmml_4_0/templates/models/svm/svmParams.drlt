@@ -20,12 +20,13 @@
 
 rule "Init SvmParams @{modelName}"
 when
+    ModelMarker( "@{context}" ; )
 then
-    insert( new SvmParams ( "@{modelName}",
-                            "@{kernelType}",
-                            @{gamma},
-                            @{coef0},
-                            @{degree}));
+    insertLogical( new SvmParams ( "@{modelName}",
+                                   "@{kernelType}",
+                                   @{gamma},
+                                   @{coef0},
+                                   @{degree} ) );
 end
 
 @end{}

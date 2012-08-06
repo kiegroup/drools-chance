@@ -2066,6 +2066,11 @@ when
     $tree : TreeModel( $name : modelName )
 then
     utils.context = utils.compactUpperCase( $name );
+
+    HashMap map = new HashMap( 3 );
+        map.put( "name", utils.context );
+        map.put( "type","DecisionTree" );
+    applyTemplate( "modelMark.drlt", null, registry, map, theory );
 end
 
 query treeParent( Node $n, Node $par )
@@ -2439,6 +2444,11 @@ when
     $svm : SupportVectorMachineModel( $name : modelName )
 then
     utils.context = utils.compactUpperCase( $name );
+
+    HashMap map = new HashMap( 3 );
+        map.put( "name", utils.context );
+        map.put( "type","SupportVectorMachine" );
+    applyTemplate( "modelMark.drlt", null, registry, map, theory );
 end
 
 
@@ -2707,6 +2717,11 @@ when
     $reg : RegressionModel( $name : modelName )
 then
     utils.context = utils.compactUpperCase( $name );
+
+    HashMap map = new HashMap( 3 );
+        map.put( "name", utils.context );
+        map.put( "type","SimpleRegression" );
+    applyTemplate( "modelMark.drlt", null, registry, map, theory );
 end
 
 
@@ -2878,6 +2893,11 @@ when
     $klu : ClusteringModel( $name : modelName )
 then
     utils.context = utils.compactUpperCase( $name );
+
+    HashMap map = new HashMap( 3 );
+        map.put( "name", utils.context );
+        map.put( "type","Clustering" );
+    applyTemplate( "modelMark.drlt", null, registry, map, theory );
 end
 
 

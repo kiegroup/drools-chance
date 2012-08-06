@@ -29,12 +29,14 @@ rule "Model_Question_@{model}_@{name}_@{context}"
 no-loop
 salience 99
 when
+    ModelMarker( "@{model}" ; )
+    not Question( type == @{ format( "string", model + "_" + name ) } )
 then
     Question quest = new Question(@{format("string",model)}+"_"+@{format("string",name)});
         quest.setContext(@{format("string",model)});
         quest.setAnswerType(@{mapDatatypeToQuestion(dataType)});
         quest.setPreLabel("Please insert " +  @{format("string",displayName)});
-    insertLogical(quest);
+    insert(quest);
 end
 @end{}
 

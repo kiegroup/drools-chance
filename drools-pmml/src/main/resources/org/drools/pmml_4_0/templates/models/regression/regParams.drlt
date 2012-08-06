@@ -26,6 +26,7 @@
 
 rule "Init Regression Model @{context} : @{target} - @{category}"
 when
+    ModelMarker( "@{context}" ; )
 then
     insert( new RegTable( "@{context}",
                           @if{ target != null } "@{target}" @else{} null @end{},
