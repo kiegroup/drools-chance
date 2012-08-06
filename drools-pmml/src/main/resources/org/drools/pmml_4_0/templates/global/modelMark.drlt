@@ -18,10 +18,16 @@
 @declare{'modelMarkRule'}
 
 rule "Mark_@{name}"
+salience -9999
 when
+    not ModelMarker( "@{name}" ; )
 then
     ModelMarker mark = new ModelMarker( "@{name}", "@{type}" );
     insert( mark );
+end
+
+query modelMarker( String $model, ModelMarker $mm )
+    $mm := ModelMarker( $model ; )
 end
 
 @end{}

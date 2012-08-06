@@ -26,6 +26,7 @@
 
 rule " Create tree @{context}"
 when
+    ModelMarker( "@{context}" ; )
 then
     TreeNode node;
     java.util.Map count;
@@ -47,7 +48,7 @@ then
                              confs,
                              "@{node.defaultChild}"
                              );
-        insert( node );
+        insertLogical( node );
     @end{}
 end
 

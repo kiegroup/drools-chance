@@ -37,8 +37,8 @@ declare TreeToken
 end
 
 declare TreeNode
-    context     : String
-    id          : String
+    context     : String            @key
+    id          : String            @key
     parent      : String
     children    : java.util.List
     outcome     : String

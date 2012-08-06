@@ -31,7 +31,10 @@ import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.definition.type.FactType;
+import org.drools.event.rule.DebugAgendaEventListener;
+import org.drools.event.rule.DebugWorkingMemoryEventListener;
 import org.drools.informer.Answer;
+import org.drools.informer.Questionnaire;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ChangeSetImpl;
@@ -63,7 +66,7 @@ public class MultipleModelTest extends DroolsAbstractPMMLTest {
     
     
     @Test
-    public void testKnowledgeAgentLoading() throws Exception {
+    public void testKnowledgeAgentLoadingMultipleANN() throws Exception {
 
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         KnowledgeAgentConfiguration kaConfig = KnowledgeAgentFactory.newKnowledgeAgentConfiguration();
@@ -71,40 +74,49 @@ public class MultipleModelTest extends DroolsAbstractPMMLTest {
         kaConfig.setProperty( UseKnowledgeBaseClassloaderOption.PROPERTY_NAME, "true" );
         KnowledgeAgent kagent = KnowledgeAgentFactory.newKnowledgeAgent( "testPmml", kbase, kaConfig );
 
+        StatefulKnowledgeSession kSession = kagent.getKnowledgeBase().newStatefulKnowledgeSession();
+        assertNotNull(kSession);
+
         ChangeSetHelperImpl cs;
         ClassPathResource res;
 
         cs = new ChangeSetHelperImpl();
-        res = (ClassPathResource) ResourceFactory.newClassPathResource(source1);
+        res = (ClassPathResource) ResourceFactory.newClassPathResource( source1 );
         res.setResourceType( ResourceType.PMML );
         cs.addNewResource( res );
         kagent.applyChangeSet( cs.getChangeSet() );
+        kSession.fireAllRules();
+
 
         System.out.println( " \n\n\n DONE LOADING " + source1 + " \n\n\n " );
 
         cs = new ChangeSetHelperImpl();
-        res = (ClassPathResource) ResourceFactory.newClassPathResource(source2);
+        res = (ClassPathResource) ResourceFactory.newClassPathResource( source2 );
         res.setResourceType( ResourceType.PMML );
         cs.addNewResource( res );
         kagent.applyChangeSet( cs.getChangeSet() );
+        kSession.fireAllRules();
 
         System.out.println( " \n\n\n DONE LOADING " + source2 + " \n\n\n " );
 
         cs = new ChangeSetHelperImpl();
-        res = (ClassPathResource) ResourceFactory.newClassPathResource(source3);
+        res = (ClassPathResource) ResourceFactory.newClassPathResource( source3 );
         res.setResourceType( ResourceType.PMML );
         cs.addNewResource( res );
         kagent.applyChangeSet( cs.getChangeSet() );
+        kSession.fireAllRules();
 
         System.out.println( " \n\n\n DONE LOADING " + source3 + " \n\n\n " );
 
-        StatefulKnowledgeSession kSession = kagent.getKnowledgeBase().newStatefulKnowledgeSession();
-
         kSession.fireAllRules();
 
-        assertNotNull( kSession );
-        Collection markers = kSession.getObjects(new ClassObjectFilter(ModelMarker.class));
-        assertEquals( 3, markers.size() );
+        System.err.println(reportWMObjects(kSession));
+
+        assertEquals( 3, kSession.getObjects( new ClassObjectFilter( ModelMarker.class ) ).size() );
+        assertEquals( 3, kSession.getObjects( new ClassObjectFilter( Questionnaire.class ) ).size() );
+        assertEquals( 23, kSession.getObjects( new ClassObjectFilter( kSession.getKnowledgeBase().getFactType( packageName, "Synapse" ).getFactClass() ) ).size() );
+
+
 
     }
 

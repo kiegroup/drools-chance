@@ -34,9 +34,9 @@ declare Stym
 end
 
 declare Synapse
-    context : String
-    source : String = "-1"
-    target : String = "-1"
+    context : String        @key
+    source : String = "-1"  @key
+    target : String = "-1"  @key
     weight : double
 end
 

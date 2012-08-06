@@ -27,6 +27,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ClusteringTest extends DroolsAbstractPMMLTest {
 
@@ -55,6 +56,7 @@ public class ClusteringTest extends DroolsAbstractPMMLTest {
 
         FactType mu = kSession.getKnowledgeBase().getFactType( packageName, "DistanceMembership" );
         Collection mus = kSession.getObjects( new ClassObjectFilter( mu.getFactClass()) );
+        assertTrue( mus.size() > 0 );
         for ( Object x : mus ) {
             Integer ix = (Integer) mu.get( x, "index" );
             String lab = (String) mu.get( x, "label" );

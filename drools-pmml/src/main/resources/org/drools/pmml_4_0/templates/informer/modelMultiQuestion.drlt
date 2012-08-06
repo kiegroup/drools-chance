@@ -30,6 +30,8 @@ dialect "mvel"
 no-loop
 salience 99
 when
+    ModelMarker( "@{model}" ; )
+    not Question( type == @{ format( "string", model + "_" + name ) } )
 then
     MultipleChoiceQuestion quest = new MultipleChoiceQuestion(@{format("string",model)}+"_"+@{format("string",name)});
         quest.setContext(@{format("string",model)});
@@ -53,7 +55,7 @@ then
             @end{","}
 	    });
 
-    insertLogical(quest);
+    insert(quest);
 end
 @end{}
 

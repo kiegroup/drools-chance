@@ -31,8 +31,8 @@ declare InputVector
 end
 
 declare SupportVector
-    context         : String
-    id              : String
+    context         : String        @key
+    id              : String        @key
     index           : int
     value           : double[]
 end
@@ -45,7 +45,7 @@ declare KernelEval
 end
 
 declare SvmParams
-    context         : String
+    context         : String        @key
     kt              : String
     gamma           : double
     coef0           : double
@@ -53,8 +53,8 @@ declare SvmParams
 end
 
 declare SVM
-    svmId           : String
-    context         : String
+    svmId           : String        @key
+    context         : String        @key
     target          : String
     alt             : String
     numSvs          : int
@@ -64,8 +64,8 @@ declare SVM
 end
 
 declare SVMVote
-    svmId           : String
-    context         : String
+    svmId           : String        @key
+    context         : String        @key
     target          : String
 end
 

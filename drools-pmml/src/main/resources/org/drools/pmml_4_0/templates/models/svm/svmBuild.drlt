@@ -26,8 +26,9 @@
 
 rule "Init Svm @{svmId}"
 when
+    ModelMarker( "@{context}" ; )
 then
-    insert( new SVM ( "@{svmId}",
+    insertLogical( new SVM ( "@{svmId}",
                       "@{modelName}",
                       "@{target}",
                       "@{alt}",
