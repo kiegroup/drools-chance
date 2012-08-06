@@ -5,6 +5,7 @@ import org.drools.chance.common.ImperfectField;
 import org.drools.chance.core.util.IntHashMap;
 import org.drools.chance.reteoo.nodes.ChanceObjectTypeNode;
 import org.drools.compiler.DescrBuildError;
+import org.drools.lang.MVELDumper;
 import org.drools.lang.descr.*;
 import org.drools.rule.Declaration;
 import org.drools.rule.Pattern;
@@ -28,6 +29,7 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                                                final PatternDescr patternDescr,
                                                final Pattern pattern ) {
 
+        MVELDumper.MVELDumperContext mvelCtx = new MVELDumper.MVELDumperContext().setRuleContext(context);
         List constraints = patternDescr.getConstraint().getDescrs();
         List<? extends BaseDescr> temp = new ArrayList<BaseDescr>( patternDescr.getConstraint().getDescrs() );
         List<ConstraintConnectiveDescr> rootConstraints = new ArrayList<ConstraintConnectiveDescr>();
@@ -84,6 +86,11 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                 if (! isPositional) {
                     constraints.remove( index );
                     constraints.add( index, result );
+                } else {
+                    if ( result.getDescrs().get( 0 ) instanceof BindingDescr ) {
+                        constraints.remove( index );
+                        constraints.add( index, result );
+                    }
                 }
 
                 if ( ! isPositional ) {
@@ -149,7 +156,8 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                         super.build(context,
                                 patternDescr,
                                 pattern,
-                                (ConstraintConnectiveDescr) b);
+                                (ConstraintConnectiveDescr) b,
+                                mvelCtx);
                     }
                 }
             }  else if ( isPositional ) {
@@ -162,7 +170,8 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                 buildCcdDescr( context,
                         patternDescr,
                         pattern,
-                        b );
+                        b,
+                        mvelCtx);
             }
 
             index++;
@@ -179,7 +188,7 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                                                  String leftExpression,
                                                  String rightIdentifier,
                                                  RuleBuildContext context ) {
-
+            MVELDumper.MVELDumperContext mvelCtx = new MVELDumper.MVELDumperContext().setRuleContext(context);
             if ( isUnification ) {
                 String expr = leftExpression + " == " + rightIdentifier;
                 ConstraintConnectiveDescr result = parseExpression( context,
@@ -190,7 +199,8 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                 buildCcdDescr( context,
                         patternDescr,
                         pattern,
-                        constr );
+                        constr,
+                        mvelCtx);
             } else {
                 // This declaration already exists, so throw an Exception
                 context.addError(new DescrBuildError(context.getParentDescr(),
