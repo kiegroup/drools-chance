@@ -43,6 +43,10 @@ public abstract class Surveyable implements ISurveyable {
         return surveyEnabled;
     }
 
+    public void setSurveyEnabled(boolean surveyEnabled) {
+        this.surveyEnabled = surveyEnabled;
+    }
+
     public boolean isStateful() {
         return stateful;
     }

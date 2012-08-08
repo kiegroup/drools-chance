@@ -19,10 +19,12 @@ package org.drools.informer.generator;
 
 import java.io.Serializable;
 
-public interface ISurveyable extends Serializable {
+public interface ISurveyable<K> extends Serializable {
 
 
     public String getQuestionnaireId();
+
+    public void setQuestionnaireId( String qid );
 
     public void enableSurvey();
 
@@ -30,8 +32,10 @@ public interface ISurveyable extends Serializable {
 
     public boolean isSurveyEnabled();
 
+    public void setSurveyEnabled( boolean enabled );
+
     public boolean isStateful();
 
-    public void setStateful(boolean stateful);
+    public void setStateful( boolean stateful );
 
 }
