@@ -85,8 +85,9 @@ when
     $task   : HumanTask( taskId == $qid, state != TaskStates.IN_PROGRESS )
 then
     System.out.println( "DISABLING A QUEST FOR A NOT STARTED TASK " + $qid );
-    $quest.setSurveyLocked( true );
-    update( $quest );
+    modify ( $quest ) {
+        setSurveyLocked( true );
+    }
 end
 
 rule "Enable Quest when HumanTask in Progress"
@@ -96,8 +97,9 @@ when
     $task   : HumanTask( taskId == $qid, state == TaskStates.IN_PROGRESS )
 then
     System.out.println( "ENABLING A QUEST FOR A STARTED TASK " + $qid );
-    $quest.setSurveyLocked( false );
-    update( $quest );
+    modify ( $quest ) {
+        setSurveyLocked( false );
+    }
 end
 
 

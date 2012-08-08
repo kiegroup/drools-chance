@@ -210,12 +210,13 @@ when
     not       TaskStateTransition( $tid ; )
 then
     retract( $alert );
-    $receivers.remove( 0 );
-    $channels.remove( 0 );
-    $timeouts.remove( 0 );
-    $bodies.remove( 0 );
     System.out.println( " Interaction is NOW " + $inter );
-    update( $inter );
+    modify( $inter ) {
+        getReceivers().remove( 0 ),
+        getChannels().remove( 0 ),
+        getTimeouts().remove( 0 ),
+        getBodyTemplateIds().remove( 0 );
+    }
     insert( new TaskStateTransition( $tid, TaskTransitions.DELEGATE, (String) $receivers.get( 0 ), new Date() ) );
     insert( new TaskStateTransition( $tid, TaskTransitions.START, (String) $receivers.get( 0 ), new Date() ) );
 end
@@ -233,10 +234,12 @@ when
 then
     System.out.println( $dest + " did not answer " + $alert );
     retract( $alert );
-    $receivers.remove( 0 );
-    $channels.remove( 0 );
     System.out.println( " Interaction is FAILED " + $inter );
-    update( $inter );
+
+    modify( $inter ) {
+        getReceivers().remove( 0 ),
+        getChannels().remove( 0 );
+    }
     insert( new TaskStateTransition( $tid, TaskTransitions.ERROR, null, new Date() ) );
 end
 
