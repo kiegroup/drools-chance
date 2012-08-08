@@ -185,8 +185,13 @@ when
                                  $inters : interactions,
                                  $source : source  )
     $convo  : TicketActor( $convoId, $ticketId, $actorId ; )
-    conversationAlerts( $ticketId, $actorId, $formIds, $bodies, $channels ; )
-    Integer( this > 0 ) from $channels.size()
+    accumulate (
+        Alert( $ticketId, $actorId, $formId, $body, $channel; ),
+        $formIds  : collectList( $formId ),
+        $bodies   : collectList( $body ),
+        $channels : collectList( $channel );
+        $channels.size() > 0
+    )
 then
     list.add( $actorId );
     System.out.println( "@@@@@@@ DISPATCHING to " + $actorId );
