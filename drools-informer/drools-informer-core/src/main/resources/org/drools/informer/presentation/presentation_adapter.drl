@@ -220,12 +220,21 @@ when
     $qga : QuestionGUIAdapter( itemId == $qid, $possAnswers : possibleAnswers != null )
     $pa  : MultipleChoiceQuestion.PossibleAnswer( $key : label, $val : value, this not memberOf $possAnswers ) from $poss
 then
-    $qga.setSingleAnswer(""+$single);
+    $qga.setSingleAnswer( "" + $single );
     // possibleAnswers are read-only, so let's just add them directly
-    $possAnswers.add($pa);
+    $possAnswers.add( $pa );
 end
 
-
+rule "Clear obsolete multiple options"
+when
+    $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
+    $qst : MultipleChoiceQuestion( $qid : id, $poss : possibleAnswers, $single : singleAnswer )
+           Questionnaire( id == $sid, itemList contains $qid )
+    $qga : QuestionGUIAdapter( itemId == $qid, $possAnswers : possibleAnswers != null )
+    $pa  : MultipleChoiceQuestion.PossibleAnswer( $key : label, $val : value, this not memberOf $poss ) from $possAnswers
+then
+    $possAnswers.remove( $pa );
+end
 
 
 
@@ -269,6 +278,18 @@ then
     $cga.getNewQuestions().add($qga);
 end
 
+//rule "On Some New"
+//salience -1000
+//when
+//    $cga : ChangeGUIAdapter( $sid : itemId )
+//    Questionnaire( id == $sid )
+//    $xo : Question( $qid : id, context == $sid )
+//    $sga : SurveyGUIAdapter( itemId == $sid )
+//    $qga : QuestionGUIAdapter( itemId == $qid ) from $sga.getSurveyQuestions()
+//then
+//    $cga.getNewQuestions().add( $qga );
+//end
+
 
 rule "Progress"
 when
@@ -299,7 +320,7 @@ when
     InvalidAnswer( $qid : questionId, $msg : reason, $type : type != "missing" )
 then
     System.out.println( "INVALIDATE ! " + $qid + " due to " + $type );
-    insertLogical( new QuestionInvalidate( $qid ) );
+    insert( new QuestionInvalidate( $qid ) );
 end
 
 rule "Finalizations"
@@ -307,8 +328,18 @@ when
     Question( $qid : id, finalAnswer == true, answered == true )
 then
     System.out.println( "FINALIZE ! " + $qid );
-    insertLogical( new QuestionFinalize( $qid ) );
+    insert( new QuestionFinalize( $qid ) );
 end
 
 
+
+
+rule "Late cleanup"
+salience -9999
+when
+    // if no rule is interested, expire it
+    $qu : QuestionUpdate()
+then
+    retract( $qu );
+end
 
