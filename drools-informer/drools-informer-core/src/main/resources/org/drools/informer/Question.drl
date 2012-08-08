@@ -31,8 +31,9 @@ when
     $ans        : Answer( questionId == null, $ctx : questionContext, $type : questionType )
     $quest      : Question( $qid : id, context == $ctx, type == $type )
 then
-    $ans.setQuestionId($qid);
-    update($ans);
+    modify ( $ans ) {
+	    setQuestionId( $qid );
+	}
 end
 
 
@@ -65,11 +66,10 @@ when
 	$answer     : Answer( questionId : questionId, answerValue : value == null );
 	$question   : Question( id == questionId, finalAnswer == false, $basicAnswerType : basicAnswerType  )
 then
-//    System.out.println( "UNANSWER ! " );
 	retract( $answer );
-	$question.fit( null, $basicAnswerType );
-//	System.out.println( "UNANSWER ! GAVE " + $question.isAnswered() );
-	update( $question );
+	modify ( $question ) {
+	    fit( null, $basicAnswerType );
+	}
 end
 
 
@@ -85,8 +85,9 @@ then
 	retract(answer);
 
 	try {
-	    $question.fit(answerValue,basicAnswerType);
-		update($question);
+	    modify ( $question ) {
+	        fit( answerValue,basicAnswerType );
+	    }
 	} catch (NumberFormatException e) {
 		InvalidAnswer invalidAnswer = new InvalidAnswer(questionId,
 		                                                "invalid",
@@ -107,12 +108,13 @@ when
 	$s          : String() from $answers
                 not PossibleAnswer( value == $s ) from $possibleAnswers
 then
-	$question.setAnswer(null);
 	InvalidAnswer invalidAnswer = new InvalidAnswer( questionId,
 		                                                "invalid",
 		                                                $answers + " is not a possible answer ");
 	insertLogical( invalidAnswer );
-	update($question);
+	modify ($question) {
+	    setAnswer( null );
+	}
 end
 
 
@@ -164,8 +166,9 @@ when
 	$quest      : Questionnaire(invalidAnswers == false)
 	            exists InvalidAnswer()
 then
-	$quest.setInvalidAnswers( true );
-	update( $quest );
+    modify ( $quest ) {
+	    setInvalidAnswers( true );
+	}
 end
 
 
@@ -175,8 +178,9 @@ when
 	$quest      : Questionnaire( invalidAnswers == true )
 	            not ( exists InvalidAnswer() )
 then
-	$quest.setInvalidAnswers( false );
-	update( $quest );
+    modify ( $quest ) {
+	    setInvalidAnswers( false );
+	}
 end
 
 
