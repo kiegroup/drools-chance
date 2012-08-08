@@ -78,31 +78,15 @@ query ticket( String $className, String $formId, InteractionTicket $ticket )
     $ticket := InteractionTicket( id == $formId )
 end
 
-
-query conversationAlerts( String $ticketId, String $actorId, List $formIds, List $bodies, List $channels )
-    accumulate (
-                 Alert( $ticketId, $actorId, $formId, $body, $channel; ),
-                 $formIds  : collectList( $formId ),
-                 $bodies   : collectList( $body ),
-                 $channels : collectList( $channel )
-               )
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+     //TODO : Check that it works!
+//query conversationAlerts( String $ticketId, String $actorId, List $formIds, List $bodies, List $channels )
+//    accumulate (
+//                 Alert( $ticketId, $actorId, $formId, $body, $channel; ),
+//                 $formIds  : collectList( $formId ),
+//                 $bodies   : collectList( $body ),
+//                 $channels : collectList( $channel )
+//               )
+//end
 
 rule "Open interaction"
 salience 999
@@ -301,8 +285,9 @@ when
     $task  : InteractiveTask( $taskId : taskId, args contains $inter, state == TaskStates.READY )
     $trig  : String() from $trix
 then
-    System.out.println( "Creating questionnaire of type " + $trig );
-    ISurveyable form = FormRegistry.create( $trig, java.util.UUID.randomUUID().toString() );
+    String newId = java.util.UUID.randomUUID().toString();
+    System.out.println( "Creating questionnaire of type " + $trig + " with id " + newId + " for/from itask " + $taskId );
+    ISurveyable form = FormRegistry.create( $trig, newId );
         form.setStateful( true );
     insert( form );
 
