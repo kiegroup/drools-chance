@@ -38,8 +38,9 @@ when
 	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
 	)
 then
-        $item.addPresentationStyle("readonly-inherited");
-		update($item);
+    modify ( $item ) {
+        addPresentationStyle("readonly-inherited");
+    }
 end
 
 rule "propagate readonly from group to question"
@@ -54,8 +55,9 @@ when
 	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
 	)
 then
-        $item.addPresentationStyle("readonly-inherited");
-		update($item);
+    modify ( $item ) {
+        addPresentationStyle("readonly-inherited");
+    }
 end
 
 
@@ -72,8 +74,9 @@ when
 	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
 	)
 then
-        $item.removePresentationStyle("readonly-inherited");
-		update($item);
+    modify ( $item ) {
+        removePresentationStyle("readonly-inherited");
+    }
 end
 
 rule "remove readonly from group to question"
@@ -88,13 +91,10 @@ when
 	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
 	)
 then
-        $item.removePresentationStyle("readonly-inherited");
-		update($item);
+    modify ( $item ) {
+        removePresentationStyle("readonly-inherited");
+    }
 end
-
-
-
-
 
 
 
