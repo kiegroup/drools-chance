@@ -24,7 +24,7 @@ when
     $quest : Questionnaire( id == $ctx, itemList not contains $noteId )
 then
     modify ( $quest ) {
-        addItem($noteId);
+        addItem( $noteId );
     }
 end
 
@@ -38,6 +38,6 @@ when
     not Item( id == $itemId )
 then
     modify ( $quest ) {
-        removeItem($itemId);
+        removeItem( $itemId );
     }
 end

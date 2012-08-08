@@ -64,12 +64,16 @@ declare SurveyableMarker
     id : String     @key
 end
 
+declare ISurveyable end
+
+declare trait ISurveyableTrait extends ISurveyable end
+
 
 
 rule "SurveyableMarker"
 salience 100
 when
-    ISurveyable( $id : questionnaireId, surveyEnabled == true )
+    $i : ISurveyable( $id : questionnaireId, surveyEnabled == true )
     not SurveyableMarker( id == $id )
 then
     insert( new SurveyableMarker($id) );
@@ -225,7 +229,7 @@ rule "Clean Rules"
 salience -999
 when
     $rh : ResourceHolder( $id : id, $res : res )
-    not ISurveyable( questionnaireId == $id, surveyEnabled == true  )
+    not   ISurveyable( questionnaireId == $id, surveyEnabled == true  )
     eval ( kAgent != null )
 then
     ChangeSetImpl changeSet = new ChangeSetImpl();
@@ -238,8 +242,8 @@ end
 rule "Cleanup"
 salience -100
 when
-    SurveyableMarker( $id : id )
-    not ISurveyable( questionnaireId == $id, surveyEnabled == true )
+           SurveyableMarker( $id : id )
+    not    ISurveyable( questionnaireId == $id, surveyEnabled == true )
     $obj : InformerObject( context == $id  )
 then
     retract( $obj );
@@ -249,7 +253,7 @@ rule "Cleanup_final"
 salience -110
 when
     $marker : SurveyableMarker( $id : id )
-    not ISurveyable( questionnaireId == $id, surveyEnabled == true  )
+    not       ISurveyable( questionnaireId == $id, surveyEnabled == true  )
 then
     retract( $marker );
 end

@@ -69,7 +69,7 @@ when
 	              active == false )
 then
     modify ( $item ) {
-	    setActive(true);
+	    setActive( true );
 	}
 end
 
@@ -83,7 +83,7 @@ when
 	              active == true )
 then
     modify ( $item ) {
-        setActive(false);
+        setActive( false );
 	}
 end
 
@@ -101,7 +101,7 @@ when
 	             active == true )
 then
     modify ( $item ) {
-	    setActive(true);
+	    setActive( true );
 	}
 end
 
@@ -117,7 +117,7 @@ when
 	           active == true )
 then
     modify ( $item ) {
-	    setActive(false);
+	    setActive( false );
 	}
 end
 
@@ -166,7 +166,7 @@ rule "deactivate orphan InvalidAnswers"
 salience 2 // before: "propagate readonly from group to questions or subgroups"
 when
 	$invalidAnswer : InvalidAnswer( active == true )
-	not ( exists Question( id == $invalidAnswer.questionId ) )
+	not              Question( id == $invalidAnswer.questionId )
 then
     modify ( $invalidAnswer ) {
 	    setActive( false );

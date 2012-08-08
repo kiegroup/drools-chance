@@ -33,7 +33,7 @@ when
 then
     modify ( $ans ) {
 	    setQuestionId( $qid );
-	}
+    }
 end
 
 
@@ -43,7 +43,7 @@ when
 	Answer( questionId : questionId )
 	$invalidAnswer : InvalidAnswer( questionId == questionId )
 then
-	retract($invalidAnswer);
+	retract( $invalidAnswer );
 end
 
 
@@ -68,8 +68,8 @@ when
 then
 	retract( $answer );
 	modify ( $question ) {
-	    fit( null, $basicAnswerType );
-	}
+        fit( null, $basicAnswerType );
+    }
 end
 
 
@@ -78,7 +78,7 @@ end
 rule "copy new answers into the corresponding questions"
 salience 30 // before: "discard invalid multiple choice answers"
 when
-	answer      : Answer( questionId : questionId, answerValue : value != null );
+    answer      : Answer( questionId : questionId, answerValue : value != null )
 	$question   : Question( id == questionId, basicAnswerType : basicAnswerType,
 	                    finalAnswer == false || lastAnswer == null )
 then
@@ -86,8 +86,8 @@ then
 
 	try {
 	    modify ( $question ) {
-	        fit( answerValue,basicAnswerType );
-	    }
+            fit( answerValue, basicAnswerType );
+        }
 	} catch (NumberFormatException e) {
 		InvalidAnswer invalidAnswer = new InvalidAnswer(questionId,
 		                                                "invalid",
@@ -106,13 +106,13 @@ salience 20 // before: "copy question answers to the underlying domain model"
 when
 	$question   : MultipleChoiceQuestion( questionId : id, answered == true, $answers : answerItems != null, $possibleAnswers : possibleAnswers )
 	$s          : String() from $answers
-                not PossibleAnswer( value == $s ) from $possibleAnswers
+    not           PossibleAnswer( value == $s ) from $possibleAnswers
 then
 	InvalidAnswer invalidAnswer = new InvalidAnswer( questionId,
-		                                                "invalid",
-		                                                $answers + " is not a possible answer ");
+		                                             "invalid",
+		                                             $answers + " is not a possible answer " );
 	insertLogical( invalidAnswer );
-	modify ($question) {
+	modify ( $question ) {
 	    setAnswer( null );
 	}
 end
@@ -122,8 +122,8 @@ end
 rule "retract orphan answers"
 salience -1 // after: any rules that create questions
 when
-	$answer     : Answer(questionId : questionId);
-	            not ( exists Question(id == questionId) );
+	$answer     : Answer( questionId : questionId );
+	not           Question( id == questionId )
 then
 	retract($answer);
 end
@@ -132,7 +132,7 @@ end
 rule "required questions answered"
 salience -1 // after: any rules that create questions
 when
-	$question   : Question( required == true, answered == false );
+	$question   : Question( required == true, answered == false )
 then
 	InvalidAnswer invalidAnswer = new InvalidAnswer($question.getId(), "You must answer this question");
 	invalidAnswer.setType("invalid");
@@ -142,7 +142,7 @@ end
 rule "questions missing answers"
 salience -1 // after: any rules that create questions
 when
-	$question   : Question( required == false, answered == false );
+	$question   : Question( required == false, answered == false )
 then
 	InvalidAnswer invalidAnswer = new InvalidAnswer($question.getId(), "You must answer this question");
 	invalidAnswer.setType("missing");
@@ -163,12 +163,12 @@ end
 rule "has invalid answers"
 salience -2 // after: any rules that create invalid answers
 when
-	$quest      : Questionnaire(invalidAnswers == false)
-	            exists InvalidAnswer()
+	$quest      : Questionnaire( invalidAnswers == false )
+    exists        InvalidAnswer()
 then
     modify ( $quest ) {
-	    setInvalidAnswers( true );
-	}
+        setInvalidAnswers( true );
+    }
 end
 
 
@@ -176,7 +176,7 @@ rule "doesn't have invalid answers"
 salience -2 // after: any rules that create invalid answers
 when
 	$quest      : Questionnaire( invalidAnswers == true )
-	            not ( exists InvalidAnswer() )
+	not           InvalidAnswer()
 then
     modify ( $quest ) {
 	    setInvalidAnswers( false );
