@@ -23,8 +23,9 @@ when
     $n : Note( $ctx : context, $noteId : id )
     $quest : Questionnaire( id == $ctx, itemList not contains $noteId )
 then
-    $quest.addItem($noteId);
-    update($quest);
+    modify ( $quest ) {
+        addItem($noteId);
+    }
 end
 
 
@@ -36,6 +37,7 @@ when
     $itemId : String() from $itemz;
     not Item( id == $itemId )
 then
-    $quest.removeItem($itemId);
-    update($quest);
+    modify ( $quest ) {
+        removeItem($itemId);
+    }
 end

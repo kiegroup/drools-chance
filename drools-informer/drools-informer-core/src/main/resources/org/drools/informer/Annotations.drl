@@ -158,8 +158,9 @@ then
         mcq.setPreLabel($lab);
         mcq.setPossibleAnswersByValue( $ansValues );
 
-        $qst.addItem(mcq.id);
-            update($qst);
+    modify ($qst) {
+        addItem( mcq.getId() );
+    }
     insert(mcq);
 
     DomainModelAssociation dma = new DomainModelAssociation( );
