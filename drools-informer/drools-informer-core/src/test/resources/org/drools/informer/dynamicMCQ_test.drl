@@ -1,0 +1,43 @@
+package org.drools.informer.presentation.test;
+
+import org.drools.informer.*;
+
+import org.drools.informer.generator.Surveyable;
+import org.drools.informer.xml.ChangeCollector;
+import org.drools.informer.generator.annotations.*;
+
+
+
+declare Surveyable end
+
+declare QuestBean extends Surveyable
+    @Questionable( label = "Manage Task Transition", language = "EN" )
+
+    questionnaireId     : String  @key
+
+    kwestion            : String
+        @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Please answer ", required = false )
+        @AllowedAnswers( values = { "OldValue" } )
+end
+
+
+rule "Init"
+when
+then
+    insert( new QuestBean( "id1" ) );
+end
+
+rule "Change"
+when
+    String( this == "change" )
+    ?getItem( "kwestion", "id1", $mcq ; )
+then
+    insert( new ChangeCollector() );
+    MultipleChoiceQuestion mcq = (MultipleChoiceQuestion) $mcq;
+
+    modify ( mcq ) {
+        setPossibleAnswersByValue( java.util.Arrays.asList( "NewValue1", "NewValue2" ) );
+    }
+end
+
+
