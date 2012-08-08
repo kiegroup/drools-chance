@@ -48,7 +48,6 @@ then
     modify ( $question ) {
         setAnswer( $answer );
     }
-
 end
 
 
@@ -63,8 +62,6 @@ then
     retract( $object );
 	Object propertyValue = DomainModelSupport.answerToObject( $question.getBasicAnswerType(), $answer, PropertyUtils.getPropertyType( $object, $property ) );
 	PropertyUtils.setProperty( $object, $property, propertyValue );
-
-
 
     modify ( $association ) {
         setLastAnswer( $answer );
@@ -83,5 +80,5 @@ when
      not Object( this == $obj )
     )
 then
-    retract($assoc);
+    retract( $assoc );
 end
