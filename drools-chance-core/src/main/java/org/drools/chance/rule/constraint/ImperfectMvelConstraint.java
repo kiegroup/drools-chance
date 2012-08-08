@@ -16,6 +16,7 @@ import org.drools.rule.constraint.MvelConditionEvaluator;
 import org.drools.rule.constraint.MvelConstraint;
 import org.drools.spi.FieldValue;
 import org.drools.spi.InternalReadAccessor;
+import org.mvel2.ParserConfiguration;
 import org.mvel2.ParserContext;
 import org.mvel2.compiler.CompiledExpression;
 import org.mvel2.compiler.ExecutableStatement;
@@ -87,13 +88,13 @@ public class ImperfectMvelConstraint extends MvelConstraint implements Imperfect
         if (compilationUnit != null) {
             MVELDialectRuntimeData data = getMVELDialectRuntimeData(workingMemory);
             ExecutableStatement statement = (ExecutableStatement) compilationUnit.getCompiledExpression( data );
-            ParserContext context = statement instanceof CompiledExpression ?
-                    ((CompiledExpression)statement).getParserContext() :
-                    new ParserContext(data.getParserConfiguration());
+            ParserConfiguration configuration = statement instanceof CompiledExpression ?
+                                ((CompiledExpression)statement).getParserConfiguration() :
+                                data.getParserConfiguration();
             if ( statement.getKnownEgressType().isAssignableFrom( Degree.class ) ) {
-                conditionEvaluator = new ImperfectMvelConditionEvaluator( compilationUnit, context, statement, getRequiredDeclarations() );
+                conditionEvaluator = new ImperfectMvelConditionEvaluator( compilationUnit, configuration, statement, getRequiredDeclarations() );
             } else {
-                conditionEvaluator = new MvelConditionEvaluator( compilationUnit, context, statement, getRequiredDeclarations() );
+                conditionEvaluator = new MvelConditionEvaluator( compilationUnit, configuration, statement, getRequiredDeclarations() );
                 wrapsPerfectConstraint = true;
             }
         } else {

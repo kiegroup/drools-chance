@@ -24,8 +24,8 @@ public class ImperfectMvelConditionEvaluator extends MvelConditionEvaluator {
         super(configuration, expression, declarations);
     }
 
-    public ImperfectMvelConditionEvaluator(MVELCompilationUnit compilationUnit, ParserContext parserContext, ExecutableStatement executableStatement, Declaration[] declarations) {
-        super(compilationUnit, parserContext, executableStatement, declarations);
+    public ImperfectMvelConditionEvaluator(MVELCompilationUnit compilationUnit, ParserConfiguration parserConfiguration, ExecutableStatement executableStatement, Declaration[] declarations) {
+        super(compilationUnit, parserConfiguration, executableStatement, declarations);
     }
     
     public Degree match(Object object, InternalWorkingMemory workingMemory, LeftTuple leftTuple) {
