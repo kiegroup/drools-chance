@@ -491,10 +491,10 @@ then
         holder.setTaskId( $tid );
         holder.setOwner( $t.getOwner() );
     System.out.println( "Create interactive task transition Quest' >>>>>>>>>>>" +  holder + " for " + $t + " with owner " + $t.getOwner() );
-    modify ( $t ) {
-      setControlQuestId( holder.getQuestionnaireId() );
-    }
     insert( holder );
+    modify ( $t ) {
+        setControlQuestId( holder.getQuestionnaireId() );
+    }
 end
 
 rule "Clear Tx Qs"

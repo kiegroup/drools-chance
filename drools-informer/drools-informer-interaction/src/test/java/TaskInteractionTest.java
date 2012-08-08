@@ -21,8 +21,6 @@ import org.drools.builder.ResourceType;
 import org.drools.conf.AssertBehaviorOption;
 import org.drools.conf.EventProcessingOption;
 import org.drools.definition.type.FactType;
-import org.drools.event.rule.DebugAgendaEventListener;
-import org.drools.event.rule.DebugWorkingMemoryEventListener;
 import org.drools.informer.Answer;
 import org.drools.informer.MultipleChoiceQuestion;
 import org.drools.io.impl.ClassPathResource;
@@ -171,7 +169,7 @@ public class TaskInteractionTest {
 
 
         try {
-            Thread.sleep( 2000 );
+            Thread.sleep( 3000 );
         } catch (InterruptedException e) {
             fail();
         }
@@ -337,7 +335,7 @@ public class TaskInteractionTest {
         System.err.println( kSession.getGlobal( "list" ) );
         System.err.println( kSession.getGlobal( "taskLog" ) );
 
-        assertEquals(Arrays.asList("actor1", "main1", "actor2", "alien2", "actor3"), kSession.getGlobal("list"));
+        assertTrue( ((List)kSession.getGlobal("list")).containsAll( Arrays.asList("actor1", "main1", "actor2", "alien2", "actor3") ) );
         assertEquals( 14, ((List) kSession.getGlobal( "taskLog" )).size() );
 
         kSession.dispose();
