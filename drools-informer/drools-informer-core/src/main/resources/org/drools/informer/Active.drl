@@ -54,8 +54,9 @@ salience 5 // before : activate top-level item (if Questionnaire.activeItem is u
 when
 	$questionnaire : Questionnaire( activeItem == "#return" )
 then
-	$questionnaire.navigationReturn();
-	update( $questionnaire );
+    modify ( $questionnaire ) {
+        navigationReturn();
+    }
 end
 
 rule "activate top-level item (if Questionnaire.activeItem is used)"
