@@ -33,10 +33,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -581,6 +580,7 @@ public class TaskInteractionTest {
     @Test
     public void testTaskStateSimpleTransitionByQuestionnaire() {
 
+
         kSession.insert( "simpleTask" );
         kSession.fireAllRules();
 
@@ -602,7 +602,7 @@ public class TaskInteractionTest {
 
         assertEquals( "RESERVED", taskClass.get( iTask, "state" ).toString()  );
         assertEquals( "davide", taskClass.get( iTask, "owner" ) );
-        assertEquals( null, taskClass.get( iTask, "potentialOwners" ) );
+        assertEquals(Collections.emptyList(), taskClass.get( iTask, "potentialOwners" ) );
         assertEquals( true, taskClass.get( iTask, "surveyableTx" ) );
         assertEquals( false, taskClass.get( iTask, "surveyableState" ) );
         assertEquals( 0, owners.getNumOfPossibleAnswers() );
