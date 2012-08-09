@@ -20,9 +20,9 @@ public class XLSKeywords {
 
     public static final String SCORECARD_NAME = "Scorecard Name";
     public static final String SCORECARD_TYPE = "Scorecard Type";
-    public static final String SCORECARD_OBJECT = "Object";
-    public static final String SCORECARD_BOUND_VARIABLE = "Bound Variable";
-    public static final String SCORECARD_SCORE_VAR = "Score Var";
+    //public static final String SCORECARD_OBJECT = "Object";
+    //public static final String SCORECARD_BOUND_VARIABLE = "Bound Variable";
+    //public static final String SCORECARD_SCORE_VAR = "Score Var";
     public static final String SCORECARD_BASE_SCORE = "Baseline Score";
     public static final String SCORECARD_IMPORTS = "imports";
     public static final String SCORECARD_PACKAGE = "package";
@@ -33,7 +33,7 @@ public class XLSKeywords {
     public static final String SCORECARD_CHARACTERISTIC_NAME = "Name";
     public static final String SCORECARD_CHARACTERISTIC_DATATYPE = "Data Type";
     public static final String SCORECARD_CHARACTERISTIC_INITIALSCORE = "Baseline Score";
-    public static final String SCORECARD_CHARACTERISTIC_WEIGHT = "Weight";
+    //public static final String SCORECARD_CHARACTERISTIC_WEIGHT = "Weight";
 
     public static final String SCORECARD_CHARACTERISTIC_BIN_ATTRIBUTE = "Characteristic";
     public static final String SCORECARD_CHARACTERISTIC_BIN_OPERATOR = "Operator";

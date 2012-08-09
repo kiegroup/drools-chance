@@ -44,7 +44,7 @@ public class PMMLDocumentTest {
         StringWriter stringWriter = new StringWriter();
         marshaller.marshal(pmmlDocument, stringWriter);
         assertTrue(stringWriter.toString().length() > 0);
-        System.out.println(stringWriter.toString());
+        //System.out.println(stringWriter.toString());
     }
 
     @Test
@@ -95,16 +95,16 @@ public class PMMLDocumentTest {
                         Characteristics characteristics = (Characteristics)obj;
                         assertEquals(4, characteristics.getCharacteristics().size());
                         assertEquals("AgeScore", characteristics.getCharacteristics().get(0).getName());
-                        assertEquals("$B$11", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(0).getExtensions(), "cellRef"));
+                        assertEquals("$B$8", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(0).getExtensions(), "cellRef"));
 
                         assertEquals("OccupationScore",characteristics.getCharacteristics().get(1).getName());
-                        assertEquals("$B$19", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(1).getExtensions(), "cellRef"));
+                        assertEquals("$B$16", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(1).getExtensions(), "cellRef"));
 
                         assertEquals("ResidenceStateScore",characteristics.getCharacteristics().get(2).getName());
-                        assertEquals("$B$25", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(2).getExtensions(), "cellRef"));
+                        assertEquals("$B$22", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(2).getExtensions(), "cellRef"));
 
                         assertEquals("ValidLicenseScore",characteristics.getCharacteristics().get(3).getName());
-                        assertEquals("$B$31", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(3).getExtensions(), "cellRef"));
+                        assertEquals("$B$28", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(3).getExtensions(), "cellRef"));
                         return;
                     }
                 }
@@ -122,25 +122,25 @@ public class PMMLDocumentTest {
                         Characteristics characteristics = (Characteristics)obj;
                         assertEquals(4, characteristics.getCharacteristics().size());
                         assertEquals("AgeScore", characteristics.getCharacteristics().get(0).getName());
-                        assertEquals("$B$11", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(0).getExtensions(), "cellRef"));
+                        assertEquals("$B$8", ScorecardPMMLUtils.getExtensionValue(characteristics.getCharacteristics().get(0).getExtensions(), "cellRef"));
 
                         assertNotNull(characteristics.getCharacteristics().get(0).getAttributes());
                         assertEquals(4, characteristics.getCharacteristics().get(0).getAttributes().size());
 
                         Attribute attribute = characteristics.getCharacteristics().get(0).getAttributes().get(0);
-                        assertEquals("$C$13", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$10", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getSimplePredicate());
 
                         attribute = characteristics.getCharacteristics().get(0).getAttributes().get(1);
-                        assertEquals("$C$14", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$11", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getCompoundPredicate());
 
                         attribute = characteristics.getCharacteristics().get(0).getAttributes().get(2);
-                        assertEquals("$C$15", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$12", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getCompoundPredicate());
 
                         attribute = characteristics.getCharacteristics().get(0).getAttributes().get(3);
-                        assertEquals("$C$16", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$13", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getSimplePredicate());
                         return;
                     }
@@ -163,17 +163,17 @@ public class PMMLDocumentTest {
                         assertEquals(3, characteristics.getCharacteristics().get(1).getAttributes().size());
 
                         Attribute attribute = characteristics.getCharacteristics().get(1).getAttributes().get(0);
-                        assertEquals("$C$21", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$18", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "description"));
                         assertEquals("skydiving is a risky occupation", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "description"));
                         assertNotNull(attribute.getSimplePredicate());
 
                         attribute = characteristics.getCharacteristics().get(1).getAttributes().get(1);
-                        assertEquals("$C$22", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$19", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getSimpleSetPredicate());
 
                         attribute = characteristics.getCharacteristics().get(1).getAttributes().get(2);
-                        assertEquals("$C$23", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$20", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getSimplePredicate());
                         return;
                     }
@@ -196,15 +196,15 @@ public class PMMLDocumentTest {
                         assertEquals(3, characteristics.getCharacteristics().get(2).getAttributes().size());
 
                         Attribute attribute = characteristics.getCharacteristics().get(2).getAttributes().get(0);
-                        assertEquals("$C$27", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$24", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getSimplePredicate());
 
                         attribute = characteristics.getCharacteristics().get(2).getAttributes().get(1);
-                        assertEquals("$C$28", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$25", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getSimplePredicate());
 
                         attribute = characteristics.getCharacteristics().get(2).getAttributes().get(2);
-                        assertEquals("$C$29", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$26", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getSimplePredicate());
                         return;
                     }
@@ -227,11 +227,11 @@ public class PMMLDocumentTest {
                         assertEquals(2, characteristics.getCharacteristics().get(3).getAttributes().size());
 
                         Attribute attribute = characteristics.getCharacteristics().get(3).getAttributes().get(0);
-                        assertEquals("$C$33", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$30", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getSimplePredicate());
 
                         attribute = characteristics.getCharacteristics().get(3).getAttributes().get(1);
-                        assertEquals("$C$34", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
+                        assertEquals("$C$31", ScorecardPMMLUtils.getExtensionValue(attribute.getExtensions(), "cellRef"));
                         assertNotNull(attribute.getSimplePredicate());
                         return;
                     }
@@ -246,8 +246,8 @@ public class PMMLDocumentTest {
             if (serializable instanceof Scorecard){
                 Scorecard scorecard = (Scorecard)serializable;
                 assertEquals("Sample Score",scorecard.getModelName());
-                assertNotNull(ScorecardPMMLUtils.getExtension(scorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_OBJECT_CLASS));
-                assertNotNull(ScorecardPMMLUtils.getExtension(scorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_BOUND_VAR_NAME));
+//                assertNotNull(ScorecardPMMLUtils.getExtension(scorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_OBJECT_CLASS));
+//                assertNotNull(ScorecardPMMLUtils.getExtension(scorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_BOUND_VAR_NAME));
                 return;
             }
         }
@@ -264,7 +264,7 @@ public class PMMLDocumentTest {
                         Output output = (Output)obj;
                         assertEquals(1, output.getOutputFields().size());
                         assertNotNull(output.getOutputFields().get(0));
-                        assertEquals("totalScore", output.getOutputFields().get(0).getName());
+                        assertEquals("calculatedScore", output.getOutputFields().get(0).getName());
                         assertEquals("Final Score", output.getOutputFields().get(0).getDisplayName());
                         assertEquals("double", output.getOutputFields().get(0).getDataType().value());
                         assertEquals("predictedValue", output.getOutputFields().get(0).getFeature().value());

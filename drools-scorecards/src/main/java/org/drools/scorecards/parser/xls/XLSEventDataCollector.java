@@ -25,22 +25,18 @@ import org.apache.poi.hssf.util.CellReference;
 import org.dmg.pmml_4_1.Attribute;
 import org.dmg.pmml_4_1.Characteristic;
 import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.DATATYPE;
 import org.dmg.pmml_4_1.Extension;
 import org.dmg.pmml_4_1.FIELDUSAGETYPE;
 import org.dmg.pmml_4_1.INVALIDVALUETREATMENTMETHOD;
 import org.dmg.pmml_4_1.MiningField;
 import org.dmg.pmml_4_1.MiningSchema;
 import org.dmg.pmml_4_1.Output;
-import org.dmg.pmml_4_1.OutputField;
-import org.dmg.pmml_4_1.RESULTFEATURE;
 import org.dmg.pmml_4_1.Scorecard;
 import org.drools.core.util.StringUtils;
 import org.drools.scorecards.EventDataCollector;
 import org.drools.scorecards.ScorecardError;
 import org.drools.scorecards.parser.ScorecardParseException;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
-import org.mvel2.MVEL;
 
 public class XLSEventDataCollector implements EventDataCollector {
 
@@ -128,35 +124,20 @@ public class XLSEventDataCollector implements EventDataCollector {
             addExpectation(currentRowCtr, currentColCtr + 1, "modelName", scorecard, "Model Name is missing!");
 
         } else if (XLSKeywords.SCORECARD_TYPE.equalsIgnoreCase(stringCellValue)) {
-//            Extension extension = new Extension();
-//            extension.setName("scorecardType");
-//            scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
-//            addExpectation(currentRowCtr, currentColCtr + 1, "value", extension);
-        } else if (XLSKeywords.SCORECARD_OBJECT.equalsIgnoreCase(stringCellValue)) {
-            Extension extension = new Extension();
-            extension.setName(PMMLExtensionNames.SCORECARD_OBJECT_CLASS);
-            scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
-            addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, "Rules Object Class Name is missing!");
 
         } else if (XLSKeywords.SCORECARD_USE_REASONCODES.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr, currentColCtr + 1, "useReasonCodes", scorecard, null);
 
-        } else if (XLSKeywords.SCORECARD_BOUND_VARIABLE.equalsIgnoreCase(stringCellValue)) {
-            Extension extension = new Extension();
-            extension.setName(PMMLExtensionNames.SCORECARD_BOUND_VAR_NAME);
-            scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
-            addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, null);
-
         } else if (XLSKeywords.SCORECARD_BASE_SCORE.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr, currentColCtr + 1, "initialScore", scorecard, null);
 
-        } else if (XLSKeywords.SCORECARD_SCORE_VAR.equalsIgnoreCase(stringCellValue)) {
-            OutputField outputField = new OutputField();
-            outputField.setDataType(DATATYPE.DOUBLE);
-            outputField.setDisplayName("Final Score");
-            output.getOutputFields().add(outputField);
-            outputField.setFeature(RESULTFEATURE.PREDICTED_VALUE);
-            addExpectation(currentRowCtr, currentColCtr + 1, "name", outputField, "Final Score Variable is missing!");
+//        } else if (XLSKeywords.SCORECARD_SCORE_VAR.equalsIgnoreCase(stringCellValue)) {
+//            OutputField outputField = new OutputField();
+//            outputField.setDataType(DATATYPE.DOUBLE);
+//            outputField.setDisplayName("Final Score");
+//            output.getOutputFields().add(outputField);
+//            outputField.setFeature(RESULTFEATURE.PREDICTED_VALUE);
+//            addExpectation(currentRowCtr, currentColCtr + 1, "name", outputField, "Final Score Variable is missing!");
 
         } else if (XLSKeywords.SCORECARD_IMPORTS.equalsIgnoreCase(stringCellValue)) {
             Extension extension = new Extension();
@@ -191,12 +172,6 @@ public class XLSEventDataCollector implements EventDataCollector {
 
         } else if (XLSKeywords.SCORECARD_GROUP_REASONCODE.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr + 1, currentColCtr, "reasonCode", _characteristic, null);
-
-        } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_WEIGHT.equalsIgnoreCase(stringCellValue)) {
-//            Extension extension = new Extension();
-//            extension.setName("weight");
-//            _characteristic.getExtensions().add(extension);
-//            addExpectation(currentRowCtr + 1, currentColCtr, "value", extension);
 
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_BIN_ATTRIBUTE.equalsIgnoreCase(stringCellValue)) {
             MergedCellRange cellRange = getMergedRegionForCell(currentRowCtr + 1, currentColCtr);
