@@ -32,10 +32,10 @@ salience 5
 when
 	$item : Group( itemStyles : stylesList,
 	              stylesList not contains "readonly-inherited"
-	           && stylesList not contains "readonly" )
+	           && stylesList not contains "readonly" ) 
 	exists (
 	    Group( itemList contains $item.id, active == true,
-	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
+	           stylesList contains "readonly" || stylesList contains "readonly-inherited" ) 
 	)
 then
     modify ( $item ) {
@@ -44,15 +44,14 @@ then
 end
 
 rule "propagate readonly from group to question"
-no-loop
 salience 4
 when
 	$item : Question( itemStyles : stylesList,
 	              stylesList not contains "readonly-inherited"
-	           && stylesList not contains "readonly" )
+	           && stylesList not contains "readonly" ) @watch( presentationStyles )
 	exists (
 	    Group( itemList contains $item.id, active == true,
-	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
+	           stylesList contains "readonly" || stylesList contains "readonly-inherited" ) 
 	)
 then
     modify ( $item ) {
@@ -71,7 +70,7 @@ when
 	           || stylesList contains "readonly" )
 	not (
 	    Group( itemList contains $item.id, active == true,
-	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
+	           stylesList contains "readonly" || stylesList contains "readonly-inherited" ) 
 	)
 then
     modify ( $item ) {
@@ -80,22 +79,20 @@ then
 end
 
 rule "remove readonly from group to question"
-no-loop
 salience 1
 when
 	$item : Question( itemStyles : stylesList,
 	              stylesList contains "readonly-inherited"
-	           || stylesList contains "readonly" )
+	           || stylesList contains "readonly"
+	           ) @watch( presentationStyles )
 	not (
 	    Group( itemList contains $item.id, active == true,
-	           stylesList contains "readonly" || stylesList contains "readonly-inherited" )
+	           stylesList contains "readonly" || stylesList contains "readonly-inherited" ) 
 	)
 then
     modify ( $item ) {
         removePresentationStyle("readonly-inherited");
     }
 end
-
-
 
 

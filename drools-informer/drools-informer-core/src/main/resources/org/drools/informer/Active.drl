@@ -147,7 +147,7 @@ rule "retract invalid answers for inactive questions"
 salience -1000 // ensure this is the last rule in the Agenda Group to fire
 when
     $invalidAnswer : InvalidAnswer();
-    $question : Question( $id : id == $invalidAnswer.questionId, active == false )
+    $question : Question( $id : id == $invalidAnswer.questionId, active == false ) @watch(*)
     $questionnaire : Questionnaire( enableActionValidation == true, itemList contains $id ) @watch( items )
 then
     retract( $invalidAnswer );
@@ -157,7 +157,7 @@ rule "deactivate orphan InvalidAnswers"
 salience 2 // before: "propagate readonly from group to questions or subgroups"
 when
 	$invalidAnswer : InvalidAnswer( active == true )
-	not              Question( id == $invalidAnswer.questionId )
+	not              Question( id == $invalidAnswer.questionId ) @watch(*)
 then
     modify ( $invalidAnswer ) {
 	    setActive( false );

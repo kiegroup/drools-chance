@@ -45,7 +45,7 @@ rule "onAnswer"
 when
     Question( type == "Question 1",
               answer == "xyz",
-              $ctx: context )
+              $ctx: context ) @watch( * )
 then
     list.add($ctx);
 end

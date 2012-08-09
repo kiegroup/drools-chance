@@ -98,15 +98,20 @@ public class ReadOnlyTest {
 
 			assertEquals(true, isReadOnlyInherited(question1));
 
+            System.out.println( "-------------------------------------------" );
+
 			questionnaire.setActiveItem(group1.getId());
 			knowledgeSession.update(handleQuestionnaire, questionnaire);
 			knowledgeSession.fireAllRules();
+
 			assertEquals(true, isReadOnlyInherited(question1));
+
+            System.out.println( "-------------------------------------------" );
 
 			questionnaire.setActiveItem(group2.getId());
 			knowledgeSession.update(handleQuestionnaire, questionnaire);
 			knowledgeSession.fireAllRules();
-			assertEquals(false, isReadOnlyInherited(question1));
+            assertEquals(false, isReadOnlyInherited(question1));
 
 			questionnaire.setActiveItem(group3.getId());
 			knowledgeSession.update(handleQuestionnaire, questionnaire);
