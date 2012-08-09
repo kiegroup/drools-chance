@@ -1,8 +1,6 @@
 package org.drools.scorecards;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
@@ -18,9 +16,9 @@ import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderError;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.definition.type.FactType;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.scorecards.example.Applicant;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -101,8 +99,8 @@ public class ScorecardReasonCodeTest {
         ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
         scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_reasoncodes.xls"), "scorecards_reason_error");
         assertEquals(2, scorecardCompiler.getScorecardParseErrors().size());
-        assertEquals("$F$15", scorecardCompiler.getScorecardParseErrors().get(0).getErrorLocation());
-        assertEquals("$F$24", scorecardCompiler.getScorecardParseErrors().get(1).getErrorLocation());
+        assertEquals("$F$12", scorecardCompiler.getScorecardParseErrors().get(0).getErrorLocation());
+        assertEquals("$F$21", scorecardCompiler.getScorecardParseErrors().get(1).getErrorLocation());
     }
 
     @Test
@@ -127,67 +125,52 @@ public class ScorecardReasonCodeTest {
 
         //NEW WORKING MEMORY
         StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
+        FactType scorecardType = kbase.getFactType( "org.drools.scorecards.example","SampleScore" );
 
-        List<String> reasonCodeList = new ArrayList<String>();
-        //ASSERT AND FIRE
-        Applicant applicant = new Applicant();
-        applicant.setAge(10);
-        session.insert(applicant);
-        session.setGlobal("$reasonCodeList",reasonCodeList);
+        DroolsScorecard scorecard = (DroolsScorecard) scorecardType.newInstance();
+        scorecardType.set(scorecard, "age", 10);
+        session.insert(scorecard);
         session.fireAllRules();
         session.dispose();
         //age = 30, validLicence -1
-        assertTrue(29 == applicant.getTotalScore());
+        assertTrue(29 == scorecard.getCalculatedScore());
         //age-reasoncode=AGE02, license-reasoncode=VL002
-        assertEquals(2, reasonCodeList.size());
-        assertTrue(reasonCodeList.contains("AGE02"));
-        assertTrue(reasonCodeList.contains("VL099"));
+        assertEquals(2, scorecard.getReasonCodes().size());
+        assertTrue(scorecard.getReasonCodes().contains("AGE02"));
+        assertTrue(scorecard.getReasonCodes().contains("VL099"));
 
         session = kbase.newStatefulKnowledgeSession();
-        //ASSERT AND FIRE
-        applicant = new Applicant();
-        applicant.setAge(0);
-        applicant.setOccupation("SKYDIVER");
-        session.insert(applicant);
-        reasonCodeList = new ArrayList<String>();
-        session.setGlobal("$reasonCodeList",reasonCodeList);
+        scorecard = (DroolsScorecard) scorecardType.newInstance();
+        scorecardType.set(scorecard, "age", 0);
+        scorecardType.set(scorecard, "occupation", "SKYDIVER");
+        session.insert(scorecard);
         session.fireAllRules();
         session.dispose();
         //occupation = -10, age = +10, validLicense = -1;
-        assertTrue(-1 == applicant.getTotalScore());
-        assertEquals(3, reasonCodeList.size());
+        assertTrue(-1 == scorecard.getCalculatedScore());
+        assertEquals(3, scorecard.getReasonCodes().size());
         //[AGE01, VL002, OCC01]
-        assertTrue(reasonCodeList.contains("AGE01"));
-        assertTrue(reasonCodeList.contains("VL099"));
-        assertTrue(reasonCodeList.contains("OCC99"));
+        assertTrue(scorecard.getReasonCodes().contains("AGE01"));
+        assertTrue(scorecard.getReasonCodes().contains("VL099"));
+        assertTrue(scorecard.getReasonCodes().contains("OCC99"));
 
         session = kbase.newStatefulKnowledgeSession();
-        reasonCodeList = new ArrayList<String>();
-        session.setGlobal("$reasonCodeList",reasonCodeList);
-        //ASSERT AND FIRE
-        applicant = new Applicant();
-        applicant.setAge(20);
-        applicant.setOccupation("TEACHER");
-        applicant.setResidenceState("AP");
-        applicant.setValidLicense(true);
-        session.insert( applicant );
+        scorecard = (DroolsScorecard) scorecardType.newInstance();
+        scorecardType.set(scorecard, "age", 20);
+        scorecardType.set(scorecard, "occupation", "TEACHER");
+        scorecardType.set(scorecard, "residenceState", "AP");
+        scorecardType.set(scorecard, "validLicense", true);
+        session.insert( scorecard );
         session.fireAllRules();
         session.dispose();
         //occupation = +10, age = +40, state = -10, validLicense = 1
-        assertEquals(41,(int)applicant.getTotalScore());
+        assertEquals(41,scorecard.getCalculatedScore());
         //[OCC02, AGE03, VL001, RS001]
-        assertEquals(4, reasonCodeList.size());
-        assertTrue(reasonCodeList.contains("OCC99"));
-        assertTrue(reasonCodeList.contains("AGE03"));
-        assertTrue(reasonCodeList.contains("VL001"));
-        assertTrue(reasonCodeList.contains("RS001"));
-    }
-
-    @Test
-    public void testGlobalInDrl() throws Exception {
-        assertNotNull(drl);
-        assertEquals(1, StringUtil.countMatches(drl, "global "));
-        //System.out.println(drl);
+        assertEquals(4, scorecard.getReasonCodes().size());
+        assertTrue(scorecard.getReasonCodes().contains("OCC99"));
+        assertTrue(scorecard.getReasonCodes().contains("AGE03"));
+        assertTrue(scorecard.getReasonCodes().contains("VL001"));
+        assertTrue(scorecard.getReasonCodes().contains("RS001"));
     }
 
     @Test
@@ -198,7 +181,7 @@ public class ScorecardReasonCodeTest {
         for (KnowledgeBuilderError error : kbuilder.getErrors()){
             System.out.println(error.getMessage());
         }
-        assertFalse( kbuilder.hasErrors() );
+        assertFalse(kbuilder.hasErrors());
 
         //BUILD RULEBASE
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
@@ -206,60 +189,53 @@ public class ScorecardReasonCodeTest {
 
         //NEW WORKING MEMORY
         StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
+        FactType scorecardType = kbase.getFactType( "org.drools.scorecards.example","SampleScore" );
 
-        List<String> reasonCodeList = new ArrayList<String>();
-        //ASSERT AND FIRE
-        Applicant applicant = new Applicant();
-        applicant.setAge(10);
-        session.insert(applicant);
-        session.setGlobal("$reasonCodeList",reasonCodeList);
+        DroolsScorecard scorecard = (DroolsScorecard) scorecardType.newInstance();
+        scorecardType.set(scorecard, "age", 10);
+        session.insert(scorecard);
         session.fireAllRules();
         session.dispose();
         //age = 30, validLicence -1
-        assertTrue(29 == applicant.getTotalScore());
+        assertTrue(29 == scorecard.getCalculatedScore());
         //age-reasoncode=AGE02, license-reasoncode=VL002
-        assertEquals(2, reasonCodeList.size());
-        assertTrue(reasonCodeList.contains("AGE02"));
-        assertTrue(reasonCodeList.contains("VL002"));
+        assertEquals(2, scorecard.getReasonCodes().size());
+        assertTrue(scorecard.getReasonCodes().contains("AGE02"));
+        assertTrue(scorecard.getReasonCodes().contains("VL002"));
 
         session = kbase.newStatefulKnowledgeSession();
-        //ASSERT AND FIRE
-        applicant = new Applicant();
-        applicant.setAge(0);
-        applicant.setOccupation("SKYDIVER");
-        session.insert(applicant);
-        reasonCodeList = new ArrayList<String>();
-        session.setGlobal("$reasonCodeList",reasonCodeList);
+        scorecard = (DroolsScorecard) scorecardType.newInstance();
+        scorecardType.set(scorecard, "age", 0);
+        scorecardType.set(scorecard, "occupation", "SKYDIVER");
+        session.insert(scorecard);
         session.fireAllRules();
         session.dispose();
         //occupation = -10, age = +10, validLicense = -1;
-        assertTrue(-1 == applicant.getTotalScore());
-        assertEquals(3, reasonCodeList.size());
+        assertEquals(-1, scorecard.getCalculatedScore());
+
+        assertEquals(3, scorecard.getReasonCodes().size());
         //[AGE01, VL002, OCC01]
-        assertTrue(reasonCodeList.contains("AGE01"));
-        assertTrue(reasonCodeList.contains("VL002"));
-        assertTrue(reasonCodeList.contains("OCC01"));
+        assertTrue(scorecard.getReasonCodes().contains("AGE01"));
+        assertTrue(scorecard.getReasonCodes().contains("VL002"));
+        assertTrue(scorecard.getReasonCodes().contains("OCC01"));
 
         session = kbase.newStatefulKnowledgeSession();
-        reasonCodeList = new ArrayList<String>();
-        session.setGlobal("$reasonCodeList",reasonCodeList);
-        //ASSERT AND FIRE
-        applicant = new Applicant();
-        applicant.setAge(20);
-        applicant.setOccupation("TEACHER");
-        applicant.setResidenceState("AP");
-        applicant.setValidLicense(true);
-        session.insert( applicant );
+        scorecard = (DroolsScorecard) scorecardType.newInstance();
+        scorecardType.set(scorecard, "age", 20);
+        scorecardType.set(scorecard, "occupation", "TEACHER");
+        scorecardType.set(scorecard, "residenceState", "AP");
+        scorecardType.set(scorecard, "validLicense", true);
+        session.insert( scorecard );
         session.fireAllRules();
         session.dispose();
         //occupation = +10, age = +40, state = -10, validLicense = 1
-        assertEquals(41,(int)applicant.getTotalScore());
+        assertEquals(41,scorecard.getCalculatedScore());
         //[OCC02, AGE03, VL001, RS001]
-        assertEquals(4, reasonCodeList.size());
-        assertTrue(reasonCodeList.contains("OCC02"));
-        assertTrue(reasonCodeList.contains("AGE03"));
-        assertTrue(reasonCodeList.contains("VL001"));
-        assertTrue(reasonCodeList.contains("RS001"));
+        assertEquals(4, scorecard.getReasonCodes().size());
+        assertTrue(scorecard.getReasonCodes().contains("OCC02"));
+        assertTrue(scorecard.getReasonCodes().contains("AGE03"));
+        assertTrue(scorecard.getReasonCodes().contains("VL001"));
+        assertTrue(scorecard.getReasonCodes().contains("RS001"));
     }
 
 }

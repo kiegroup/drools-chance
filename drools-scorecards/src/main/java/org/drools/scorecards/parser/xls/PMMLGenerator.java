@@ -32,7 +32,10 @@ import org.dmg.pmml_4_1.DataField;
 import org.dmg.pmml_4_1.Extension;
 import org.dmg.pmml_4_1.Header;
 import org.dmg.pmml_4_1.OPTYPE;
+import org.dmg.pmml_4_1.Output;
+import org.dmg.pmml_4_1.OutputField;
 import org.dmg.pmml_4_1.PMML;
+import org.dmg.pmml_4_1.RESULTFEATURE;
 import org.dmg.pmml_4_1.Scorecard;
 import org.dmg.pmml_4_1.SimplePredicate;
 import org.dmg.pmml_4_1.SimpleSetPredicate;
@@ -138,6 +141,18 @@ class PMMLGenerator {
     }
 
     private void createAndSetOutput(Scorecard pmmlScorecard) {
+        for (Object obj : pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
+            if (obj instanceof Output) {
+                Output output = (Output)obj;
+                OutputField outputField = new OutputField();
+                outputField.setDataType(DATATYPE.DOUBLE);
+                outputField.setDisplayName("Final Score");
+                outputField.setName("calculatedScore");
+                output.getOutputFields().add(outputField);
+                outputField.setFeature(RESULTFEATURE.PREDICTED_VALUE);
+                break;
+            }
+        }
     }
 
     private void createAndSetPredicates(Scorecard pmmlScorecard) {
