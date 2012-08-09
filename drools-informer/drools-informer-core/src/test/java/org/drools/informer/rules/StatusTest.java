@@ -24,6 +24,7 @@ import org.drools.builder.ResourceType;
 import org.drools.informer.*;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
 import org.drools.runtime.rule.Variable;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class StatusTest {
             group2.setItems(new String[]{question4.getId(), question5.getId() });
 
 
-            knowledgeSession.insert( questionnaire );
+            FactHandle qhandle = knowledgeSession.insert( questionnaire );
             knowledgeSession.insert( group1 );
             knowledgeSession.insert( group2 );
 
@@ -99,8 +100,6 @@ public class StatusTest {
             knowledgeSession.insert(new Answer(question1.getId(), "X"));
             knowledgeSession.fireAllRules();
 
-             c = knowledgeSession.getObjects();
-
             assertEquals( 20,
                           knowledgeSession.getQueryResults("progress", questionnaire.getId(), Variable.v).iterator().next().get( "$percent" ) );
 
@@ -109,6 +108,17 @@ public class StatusTest {
 
             assertEquals( 40,
                           knowledgeSession.getQueryResults("progress", questionnaire.getId(), Variable.v).iterator().next().get( "$percent" ) );
+
+            knowledgeSession.retract( qhandle );
+            knowledgeSession.fireAllRules();
+
+            c = knowledgeSession.getObjects();
+
+//            for ( Object o  : c ) System.out.println( o );
+
+            // 5 questions, 2 groups, 3 invalidanswers. All progress info should have gone retracting the Questionnaire
+            assertEquals( 5 + 2 + 3, c.size() );
+
 
         } finally {
             knowledgeSession.dispose();

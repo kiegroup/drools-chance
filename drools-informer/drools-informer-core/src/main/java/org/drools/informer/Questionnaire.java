@@ -18,6 +18,8 @@ package org.drools.informer;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
+import org.drools.definition.type.Modifies;
+import org.drools.definition.type.PropertyReactive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,7 @@ import java.util.*;
  * 
  * @author Damon Horrell
  */
+@PropertyReactive
 public class Questionnaire extends Group {
 
 	private static final String DEFAULT_CLIENT_DATE_FORMAT = "dd/mm/yyyy";
@@ -156,6 +159,7 @@ public class Questionnaire extends Group {
 	 * @param newActiveItem
 	 * @return
 	 */
+    @Modifies( { "navigationStack", "items", "activeItem", "completionAction" } )
 	public void navigationBranch(String[] newItems, String newActiveItem) {
 		navigationBranch(newItems, newActiveItem, COMPLETION_ACTION_RETURN);
 	}
@@ -169,6 +173,7 @@ public class Questionnaire extends Group {
 	 * 
 	 * @return
 	 */
+    @Modifies( { "navigationStack", "items", "activeItem", "completionAction" } )
 	public void navigationBranch(String[] newItems, String newActiveItem, String newCompletionAction) {
 		if ((newItems == null) || (newItems.length == 0)) {
 			throw new IllegalArgumentException("There are no valid new items to push onto stack.");
@@ -185,6 +190,7 @@ public class Questionnaire extends Group {
 	 * 
 	 * @return
 	 */
+    @Modifies( { "navigationStack", "items", "activeItem", "completionAction" } )
 	public void navigationReturn() {
 		if (navigationStack.size() == 0) {
 			throw new IllegalStateException();
@@ -278,6 +284,7 @@ public class Questionnaire extends Group {
 	}
 
 
+    @Modifies( "availableItems" )
     public void addAvailableItems(List<String> availableItems) {
         this.availableItems.addAll(availableItems);
 	}
@@ -324,5 +331,47 @@ public class Questionnaire extends Group {
 
     public void setDefaultLanguage(String defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
+    }
+
+
+
+    @Modifies( "items" )
+    public void addItem(String itemId) {
+        super.addItem(itemId);
+    }
+
+    @Modifies( "items" )
+    public void insertItem(String itemId, String beforeItemId) {
+        super.insertItem(itemId, beforeItemId);
+    }
+
+    @Modifies( "items" )
+    public void appendItem(String itemId, String afterItemId) {
+        super.appendItem(itemId, afterItemId);
+    }
+
+    @Modifies( "items" )
+    public int removeItem(String itemId) {
+        return super.removeItem(itemId);
+    }
+
+    @Modifies( "presentationStyles" )
+    public void setPresentationStyles(String[] presentationStyles) {
+        super.setPresentationStyles(presentationStyles);
+    }
+
+    @Modifies( "presentationStyles" )
+    public void setPresentationStyles(Object[] presentationStyles) {
+        super.setPresentationStyles(presentationStyles);
+    }
+
+    @Modifies( "presentationStyles" )
+    public void addPresentationStyle(String presentationStyle) {
+        super.addPresentationStyle(presentationStyle);
+    }
+
+    @Modifies( "presentationStyles" )
+    public void removePresentationStyle(String presentationStyle) {
+        super.removePresentationStyle(presentationStyle);
     }
 }

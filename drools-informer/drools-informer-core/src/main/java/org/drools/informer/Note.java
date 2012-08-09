@@ -71,13 +71,13 @@ public class Note extends Item {
         this.context = context;
     }
 
-    /**
-	 * For debugging purposes.
-	 */
-	@Override
-	public String toString() {
-		return super.toString() + " label=" + getLabel() + " context=" +getContext();
-	}
+    @Override
+    public String toString() {
+        return "Note{" +
+                "label='" + label + '\'' +
+                ", context='" + context + '\'' +
+                "} " + super.toString();
+    }
 
     @Override
     public boolean equals(Object o) {

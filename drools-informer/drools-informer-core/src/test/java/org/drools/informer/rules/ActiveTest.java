@@ -20,10 +20,7 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
-import org.drools.informer.Group;
-import org.drools.informer.Item;
-import org.drools.informer.Note;
-import org.drools.informer.Questionnaire;
+import org.drools.informer.*;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
@@ -34,10 +31,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -61,6 +55,7 @@ public class ActiveTest {
 		knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/Active.drl"), ResourceType.DRL);
 		knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/Queries.drl"), ResourceType.DRL);
 		logger.debug(Arrays.toString(knowledgeBuilder.getErrors().toArray()));
+        System.err.println( knowledgeBuilder.getErrors() );
 		assertFalse(knowledgeBuilder.hasErrors());
 		knowledgeBase = KnowledgeBaseFactory.newKnowledgeBase();
 		knowledgeBase.addKnowledgePackages(knowledgeBuilder.getKnowledgePackages());
@@ -248,12 +243,15 @@ public class ActiveTest {
 			assertEquals(new HashSet<String>(Arrays
 					.asList(new String[] { questionnaire.getId(), group1.getId(), group3.getId(), group4.getId(), note1.getId() })), itemIds);
 
+
 			questionnaire.setActiveItem(group2.getId());
 			knowledgeSession.update(handleQuestionnaire, questionnaire);
 			knowledgeSession.fireAllRules();
 			queryResults = knowledgeSession.getQueryResults("activeObjects");
 			itemIds = getItemIds(queryResults);
+
 			assertEquals(new HashSet<String>(Arrays.asList(new String[] { questionnaire.getId(), group2.getId(), note2.getId() })), itemIds);
+
 
 			questionnaire.setActiveItem("unknown");
 			knowledgeSession.update(handleQuestionnaire, questionnaire);
@@ -265,6 +263,7 @@ public class ActiveTest {
 			knowledgeSession.dispose();
 		}
 	}
+
 
 	@Test
 	public void testDuplicateDifferentPage() {

@@ -107,7 +107,7 @@ rule "Add_GUI_Questions"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
-    Questionnaire( id == $sid, itemList contains $qid )
+    Questionnaire( id == $sid, itemList contains $qid ) @watch( items )
     not QuestionGUIAdapter( itemId == $qid ) from $guiQuestions
 then
     QuestionGUIAdapter qga = new QuestionGUIAdapter();
@@ -129,7 +129,7 @@ rule "Valid_GUI_Questions"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type, $last : lastAnswer != null )
-    Questionnaire( id == $sid, itemList contains $qid )
+    Questionnaire( id == $sid, itemList contains $qid ) @watch( items )
     $qga : QuestionGUIAdapter( itemId == $qid )
     not InvalidAnswer( questionId == $qid )
 then
@@ -151,7 +151,7 @@ rule "InvalidOrMissing_GUI_Questions"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
-    Questionnaire( id == $sid, itemList contains $qid )
+    Questionnaire( id == $sid, itemList contains $qid ) @watch( items )
     $qga : QuestionGUIAdapter( itemId == $qid )
     InvalidAnswer( questionId == $qid, $failType : type )
 then
@@ -162,7 +162,7 @@ rule "Final_GUI_Questions"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type, $last : lastAnswer != null, finalAnswer == true )
-    Questionnaire( id == $sid, itemList contains $qid )
+    Questionnaire( id == $sid, itemList contains $qid ) @watch( items )
     $qga : QuestionGUIAdapter( itemId == $qid )
 then
     $qga.setAction( "disable" );
@@ -202,7 +202,7 @@ salience 100
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $qst : MultipleChoiceQuestion( $qid : id, $poss : possibleAnswers, $single : singleAnswer )
-           Questionnaire( id == $sid, itemList contains $qid )
+           Questionnaire( id == $sid, itemList contains $qid ) @watch( items )
     $qga : QuestionGUIAdapter( itemId == $qid, $possAnswers : possibleAnswers == null )
 then
     $qga.setPossibleAnswers(new java.util.LinkedList());
@@ -216,7 +216,7 @@ rule "Add_MultipleOptions"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $qst : MultipleChoiceQuestion( $qid : id, $poss : possibleAnswers, $single : singleAnswer )
-           Questionnaire( id == $sid, itemList contains $qid )
+           Questionnaire( id == $sid, itemList contains $qid ) @watch( items )
     $qga : QuestionGUIAdapter( itemId == $qid, $possAnswers : possibleAnswers != null )
     $pa  : MultipleChoiceQuestion.PossibleAnswer( $key : label, $val : value, this not memberOf $possAnswers ) from $poss
 then
@@ -229,7 +229,7 @@ rule "Clear obsolete multiple options"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
     $qst : MultipleChoiceQuestion( $qid : id, $poss : possibleAnswers, $single : singleAnswer )
-           Questionnaire( id == $sid, itemList contains $qid )
+           Questionnaire( id == $sid, itemList contains $qid ) @watch( items )
     $qga : QuestionGUIAdapter( itemId == $qid, $possAnswers : possibleAnswers != null )
     $pa  : MultipleChoiceQuestion.PossibleAnswer( $key : label, $val : value, this not memberOf $poss ) from $possAnswers
 then

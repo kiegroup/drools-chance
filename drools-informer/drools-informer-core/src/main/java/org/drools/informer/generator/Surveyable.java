@@ -24,12 +24,18 @@ public abstract class Surveyable implements ISurveyable {
     public abstract void setQuestionnaireId( String id );
 
 
-    protected boolean surveyEnabled = true;
+    protected boolean surveyEnabled;
 
-    protected boolean surveyLocked = false;
+    protected boolean surveyLocked;
 
-    protected boolean stateful = false;
+    protected boolean stateful;
 
+
+    public Surveyable() {
+        surveyEnabled = true;
+        surveyLocked = false;
+        stateful = false;
+    }
 
     public void enableSurvey() {
         surveyEnabled = false;
