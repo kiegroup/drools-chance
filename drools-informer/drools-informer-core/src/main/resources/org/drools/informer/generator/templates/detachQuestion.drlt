@@ -20,7 +20,7 @@ rule "Detach @{questType} in @{context}"
 no-loop
 when
     $Quest : org.drools.informer.Questionnaire( $ctx : context == "@{context}",
-                            $itemList : itemList )
+                            $itemList : itemList ) @watch( items )
     $quest : org.drools.informer.Question( type == "@{questType}", context == $ctx,
                        $id : id memberOf $itemList )
     $dom   : org.drools.informer.DomainModelAssociation( questionId == $id )
@@ -28,9 +28,10 @@ when
     not      @{klass}( questionnaireId == "@{context}", @{whenClause} )
 then
     System.err.println("Detaching question @{questType} " + $id + " as it is not longer relevant");
-    $Quest.removeItem($id);
-    retract($dom);
-    update($Quest);
+    retract( $dom );
+    modify ( $Quest ) {
+        removeItem( $id );
+    }
 end
 
 @end{}

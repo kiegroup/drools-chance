@@ -84,7 +84,7 @@ end
 rule "Questionnaire Size"
 when
     $quest : Questionnaire( $formId : id )
-             ?size( $formId, $num ; )
+             size( $formId, $num ; )
 then
     insertLogical( new Size( $formId, $num ) );
 end
@@ -130,8 +130,9 @@ when
     $pro    : Progress( $formId, $latestPerc ; )
     $state  : ProgressStatus( $formId ; percentage != $latestPerc )
 then
-    $state.setPercentage( $latestPerc );
-    update( $state );
+    modify ( $state ) {
+        setPercentage( $latestPerc );
+    }
 end
 
 rule "Override Progress"
@@ -150,10 +151,4 @@ then
     retract( $p );
 end
 
-rule "Clean status"
-when
-    $p : ProgressStatus( $id : formId )
-    not  Questionnaire( id == $id )
-then
-    retract( $p );
-end
+

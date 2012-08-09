@@ -21,7 +21,7 @@ rule "IncludeNotes"
 no-loop
 when
     $n : Note( $ctx : context, $noteId : id )
-    $quest : Questionnaire( id == $ctx, itemList not contains $noteId )
+    $quest : Questionnaire( id == $ctx, itemList not contains $noteId ) @watch( items )
 then
     modify ( $quest ) {
         addItem( $noteId );
@@ -33,7 +33,7 @@ end
 rule "RemoveUnusedNotes"
 no-loop
 when
-    $quest : Questionnaire( $itemz : itemList )
+    $quest : Questionnaire( $itemz : itemList ) @watch( items )
     $itemId : String() from $itemz;
     not Item( id == $itemId )
 then
