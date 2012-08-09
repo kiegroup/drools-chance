@@ -83,7 +83,7 @@ import org.jbpm.task.service.ContentData;
 
         owner               : String
 
-        potentialOwners     : List
+        potentialOwners     : List          = java.util.Collections.emptyList()
 
         state               : TaskStates
 
@@ -179,7 +179,7 @@ import org.jbpm.task.service.ContentData;
 
         owner               : String
                 @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Actor ", required = false )
-                @AllowedAnswers( values = { "Default" } )
+                @AllowedAnswers( )
 
         transition          : String
                 @QuestionMark( type = Question.QuestionType.TYPE_TEXT, label = " Transition ", required = false )
@@ -384,7 +384,7 @@ end
 
 rule "Nomination"
 when
-    $task   : HumanTask( $tid : taskId, state == TaskStates.CREATED, $owner : owner != null, potentialOwners == null || potentialOwners.size() == 1 )
+    $task   : HumanTask( $tid : taskId, state == TaskStates.CREATED, $owner : owner != null, potentialOwners == null || potentialOwners.size() <= 1 )
 then
 //    System.out.println( "Nomination" ) ;
     insert( new TaskStateTransition( $tid, TaskTransitions.ACTIVATE, $owner, new Date() ) );
@@ -408,27 +408,25 @@ when
     $tx     : TaskStateTransition( $tid, $tran, $owner, $time ; )
               allowedTransition( $tid, $oldState, $tran, $newState ; )
 then
-    System.out.println( "Task " + $tid  + " : Trasition detected " + $tran +" into state " + $newState + " for owner " + $owner);
+    System.out.println( "Task " + $tx  + " : Trasition detected " + $tran +" into state " + $newState + " for owner " + $owner );
 
     retract( $tx );
 
-    if ( $tx.getOwner() != null ) { $t.setOwner( $tx.getOwner() ); }
-
     modify ( $t ) {
+        setOwner( $tx.getOwner() != null ? $tx.getOwner() : $t.getOwner() ),
         setState( $newState ),
-        setLastChange( $time )
+        setLastChange( $time );
     }
 end
 
 
 
 rule "Allowed Transitions"
-no-loop
 when
     $task   : HumanTask( $tid : taskId, $curr : state != null )
               TaskTransitionHolder( $xid : questionnaireId, taskId == $tid )
     $tst    : List() from accumulate ( AllowedTransition( $tid, $s, $tx, $new ; ) collectList( $tx.name() ) )
-    $tranx:   MultipleChoiceQuestion( type == "transition", context == $xid, $prev : possibleAnswersValuesAsList != $tst )
+    $tranx:   MultipleChoiceQuestion( type == "transition", context == $xid, $prev : possibleAnswersValuesAsList != $tst ) @watch( possibleAnswers, lastAnswer )
 then
     System.out.println( "STTING TRANSITIONS " + $tst );
     modify ( $tranx ) { setPossibleAnswersByValue( $tst ); }
@@ -436,13 +434,13 @@ end
 
 
 rule "Allowed Owners"
-no-loop
 when
     $task   : HumanTask( $tid : taskId, $owner : owner, $potential : potentialOwners )
+              TaskTransitionHolder( $xid : questionnaireId, taskId == $tid, $owner := owner )
               transitionHolder( $xid, $tid, $owner ; )
     $owners : MultipleChoiceQuestion( type == "owner", context == $xid,
                                       $prev : possibleAnswersValuesAsList != $potential
-                                       )
+                                    ) @watch( possibleAnswers, lastAnswer )
 then
     System.out.println( "SETTING OWNERS " + $potential + " when prev was " + $prev ) ;
     modify ( $owners ) { setPossibleAnswersByValue( $potential ); }
@@ -466,9 +464,9 @@ end
 rule "Persist"
 salience 1
 when
-    $task   : HumanTask( $tid : taskId, $state : state != null )
+    $task   : HumanTask( $tid : taskId, $state : state != null, $owner : owner )
 then
-    System.out.println( "TODO Persist in HTS that : State changed for " + $tid + " >> " + $state );
+    System.out.println( "TODO Persist in HTS that : State changed for " + $tid + " >> " + $state + "(" + $owner + ")" );
 end
 
 
@@ -547,9 +545,10 @@ rule "Infer owner"
 when
     $holder : TaskTransitionHolder( $tid : taskId, owner == null,
                                     $tranx : transition != null )
-    ?taskInfo( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
+//    ?taskInfo( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
+    HumanTask( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
 then
-    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><Trax with INFERRED OWNER " + $owner);
+    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><Trax with INFERRED OWNER " + $owner );
     modify ( $holder ) {
         setTransition( null );
     }

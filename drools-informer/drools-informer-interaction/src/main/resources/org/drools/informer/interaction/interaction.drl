@@ -294,7 +294,7 @@ then
         form.setStateful( true );
     insert( form );
 
-    modify ($inter) {
+    modify ( $inter ) {
         getTasks().add( form.getQuestionnaireId() );
     }
 end
@@ -305,9 +305,9 @@ no-loop
 when
     $inter      : TaskInteraction( $tasks : tasks, lockdown == true )
     $master     : InteractiveTask( $taskId : taskId, args contains $inter, $owner : owner != null, $owners : potentialOwners != null )
-    $slave      : HumanTask( taskId memberOf $tasks, owner == null, potentialOwners == null )
+    $slave      : HumanTask( taskId memberOf $tasks, owner == null, potentialOwners == null || potentialOwners.size() == 0 )
 then
-    modify ($slave) {
+    modify ( $slave ) {
         setOwner( $owner ),
         setPotentialOwners( $owners );
     }

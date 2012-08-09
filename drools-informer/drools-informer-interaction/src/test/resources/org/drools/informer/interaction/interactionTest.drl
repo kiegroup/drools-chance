@@ -206,18 +206,18 @@ end
 
 
 
-
-rule "Test Survey Tasks II"
-
-when
-    $s : String( this == "surveytaskinter" )
-then
-    System.out.println( "TASK SET UP" );
-
-    Surveyable x = new SurveyBean( "testId" );
-    x.setStateful( true );
-    insert( x );
-end
+//
+//rule "Test Survey Tasks II"
+//salience -1
+//when
+//    $s : String( this == "surveytaskinter" )
+//then
+//    System.out.println( "TASK SET UP" );
+//
+//    Surveyable x = new SurveyBean( "testId" );
+//    x.setStateful( true );
+//    insert( x );
+//end
 
 
 
@@ -251,9 +251,9 @@ end
 rule "Persist Test"
 salience 1
 when
-    $task   : HumanTask( $tid : taskId, $state : state != null )
+    $task   : HumanTask( $tid : taskId, $state : state != null, $owner : owner )
 then
-    taskLog.add( $tid + ":" + $state + ":" + $task.getOwner() );
+    taskLog.add( $tid + ":" + $state + ":" + $owner );
 end
 
 
