@@ -67,8 +67,6 @@ public class QuestionStatusTest {
 
 
         Person p1 = new Person("0001",null,18);
-
-
         kSession.insert(p1);
         kSession.fireAllRules();
 

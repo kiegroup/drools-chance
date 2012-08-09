@@ -26,6 +26,6 @@ import java.lang.annotation.Target;
 @Target( value = ElementType.FIELD )
 public @interface AllowedAnswers {
 
-    String[] values();
+    String[] values() default {};
 
 }

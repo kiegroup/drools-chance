@@ -36,7 +36,7 @@ rule "copy answers from the underlying domain model to the questions"
 no-loop
 salience 6
 when
-	$question    : Question( questionId : id, answerType != null, $ans : answer, $last : lastAnswer )
+	$question    : Question( questionId : id, answerType != null, $ans : answer, $last : lastAnswer ) @watch( * )
 	$association : DomainModelAssociation( questionId == questionId, lastAnswer == $last, object : object )
 	$obj         : Object( this == object )
 	$answer      : Object( this != $ans ) from DomainModelSupport.objectToAnswer( PropertyUtils.getProperty( $association.getObject(), $association.getProperty() ),
@@ -55,7 +55,7 @@ rule "copy question answers to the underlying domain model"
 salience 7
 no-loop
 when
-	$question    : Question( questionId : id, answerType != null, $answer : answer != null )
+	$question    : Question( questionId : id, answerType != null, $answer : answer != null ) @watch( lastAnswer )
 	$association : DomainModelAssociation( questionId == questionId, $object : object, $property : property, lastAnswer != $answer )
 then
     // Must retract here, in case we're changin a @key property and using equality mode

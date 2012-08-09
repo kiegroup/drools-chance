@@ -15,6 +15,9 @@
  */
 package org.drools.informer;
 
+import org.drools.definition.type.Modifies;
+import org.drools.definition.type.PropertyReactive;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.math.BigDecimal;
@@ -68,6 +71,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * 
  * @author Damon Horrell
  */
+@PropertyReactive
 public class Question extends Item {
 
 	private static final long serialVersionUID = 1L;
@@ -268,6 +272,7 @@ public class Question extends Item {
         return lastAnswer;
     }
 
+    @Modifies( "answered" )
     public void setLastAnswer(String lastAnswer) {
         this.lastAnswer = lastAnswer;
     }
@@ -277,6 +282,7 @@ public class Question extends Item {
 		return textAnswer;
 	}
 
+    @Modifies( "answered" )
 	public void setTextAnswer(String textAnswer) {
 		checkType(QuestionType.TYPE_TEXT);
 		this.textAnswer = textAnswer;
@@ -287,6 +293,7 @@ public class Question extends Item {
 		return numberAnswer;
 	}
 
+    @Modifies( "answered" )
 	public void setNumberAnswer(Long numberAnswer) {
 		checkType(QuestionType.TYPE_NUMBER);
 		this.numberAnswer = numberAnswer;
@@ -297,6 +304,7 @@ public class Question extends Item {
 		return decimalAnswer;
 	}
 
+    @Modifies( "answered" )
 	public void setDecimalAnswer(BigDecimal decimalAnswer) {
 		checkType(QuestionType.TYPE_DECIMAL);
 		this.decimalAnswer = decimalAnswer;
@@ -307,6 +315,7 @@ public class Question extends Item {
 		return booleanAnswer;
 	}
 
+    @Modifies( "answered" )
 	public void setBooleanAnswer(Boolean booleanAnswer) {
 		checkType(QuestionType.TYPE_BOOLEAN);
 		this.booleanAnswer = booleanAnswer;
@@ -322,6 +331,7 @@ public class Question extends Item {
 		}
 	}
 
+    @Modifies( "answered" )
 	public void setDateAnswer(Date dateAnswer) {
 		checkType(QuestionType.TYPE_DATE);
 		this.dateAnswer = dateAnswer == null ? null : getDateFormatter().format(dateAnswer);
@@ -333,6 +343,7 @@ public class Question extends Item {
 	 * @param dateAnswer
 	 * @throws java.text.ParseException
 	 */
+    @Modifies( "answered" )
 	public void setDateAnswer(String dateAnswer) throws ParseException {
 		checkType(QuestionType.TYPE_DATE);
 		this.dateAnswer = dateAnswer == null ? null : getDateFormatter().format(getDateFormatter().parse(dateAnswer));
@@ -348,6 +359,7 @@ public class Question extends Item {
 		return listAnswer;
 	}
 
+    @Modifies( "answered" )
 	public void setListAnswer(String listAnswer) {
 		checkType(QuestionType.TYPE_LIST);
 		this.listAnswer = listAnswer;
@@ -361,6 +373,7 @@ public class Question extends Item {
 		return Arrays.asList(split(this.listAnswer, ","));
 	}
 
+    @Modifies( { "lastAnswer", "decimalAnswer", "numberAnswer", "textAnswer", "booleanAnswer", "listAnswer", "dateAnswer", "answered" } )
 	public void setAnswer(Object answer) {
 
 		if (answerType == null) {
@@ -395,16 +408,19 @@ public class Question extends Item {
 		}
 	}
 
+    @Modifies( { "numberAnswer", "answered" } )
     public void setAnswer(long l) {
         setNumberAnswer(l);
     }
 
+    @Modifies( { "decimalAnswer", "answered" } )
     public void setAnswer(double d) {
         setDecimalAnswer(new BigDecimal(d));
     }
 
+    @Modifies( { "booleanAnswer", "answered" } )
     public void setAnswer(boolean b) {
-         setBooleanAnswer(b);
+        setBooleanAnswer(b);
     }
 
 
@@ -439,7 +455,7 @@ public class Question extends Item {
 	}
 
 
-
+    @Modifies( { "lastAnswer", "decimalAnswer", "numberAnswer", "textAnswer", "booleanAnswer", "listAnswer", "dateAnswer", "answered" } )
     public void fit(String answerValue, QuestionType basicAnswerType) throws NumberFormatException, ParseException {
 		if (answerValue == null) {
 			setAnswer(null);
@@ -481,9 +497,22 @@ public class Question extends Item {
 		}
 	}
 
-	/**
+
+    @Modifies( { "presentationStyles", "stylesList" } )
+    public void removePresentationStyle(String presentationStyle) {
+        super.removePresentationStyle(presentationStyle);
+    }
+
+    @Modifies( { "presentationStyles", "stylesList" } )
+    public void addPresentationStyle(String presentationStyle) {
+        super.addPresentationStyle(presentationStyle);
+    }
+
+
+    /**
 	 * Clears any previous answer (which may be of a different data type).
 	 */
+    @Modifies( { "lastAnswer", "decimalAnswer", "numberAnswer", "textAnswer", "booleanAnswer", "listAnswer", "dateAnswer", "answered" } )
 	private void clearAnswer() {
 		textAnswer = null;
 		numberAnswer = null;
@@ -491,6 +520,7 @@ public class Question extends Item {
 		booleanAnswer = null;
 		dateAnswer = null;
 		listAnswer = null;
+        lastAnswer = null;
 	}
 
 	/**

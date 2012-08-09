@@ -104,7 +104,7 @@ end
 rule "discard invalid multiple choice answers"
 salience 20 // before: "copy question answers to the underlying domain model"
 when
-	$question   : MultipleChoiceQuestion( questionId : id, answered == true, $answers : answerItems != null, $possibleAnswers : possibleAnswers )
+	$question   : MultipleChoiceQuestion( questionId : id, answered == true, $answers : answerItems != null, $possibleAnswers : possibleAnswers ) @watch(*)
 	$s          : String() from $answers
     not           PossibleAnswer( value == $s ) from $possibleAnswers
 then
@@ -132,7 +132,7 @@ end
 rule "required questions answered"
 salience -1 // after: any rules that create questions
 when
-	$question   : Question( required == true, answered == false )
+	$question   : Question( required == true, answered == false ) @watch(*)
 then
 	InvalidAnswer invalidAnswer = new InvalidAnswer($question.getId(), "You must answer this question");
 	invalidAnswer.setType("invalid");
@@ -142,7 +142,7 @@ end
 rule "questions missing answers"
 salience -1 // after: any rules that create questions
 when
-	$question   : Question( required == false, answered == false )
+	$question   : Question( required == false, answered == false ) @watch(*)
 then
 	InvalidAnswer invalidAnswer = new InvalidAnswer($question.getId(), "You must answer this question");
 	invalidAnswer.setType("missing");

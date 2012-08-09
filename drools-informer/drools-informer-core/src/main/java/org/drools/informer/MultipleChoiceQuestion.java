@@ -16,6 +16,8 @@
 package org.drools.informer;
 
 
+import org.drools.definition.type.Modifies;
+import org.drools.definition.type.PropertyReactive;
 import org.mvel2.templates.util.io.StringBuilderStream;
 
 import javax.swing.text.Position;
@@ -32,6 +34,7 @@ import java.util.*;
  * 
  * @author Damon Horrell
  */
+@PropertyReactive
 public class MultipleChoiceQuestion extends Question {
 
 	private static final long serialVersionUID = 1L;
@@ -189,6 +192,7 @@ public class MultipleChoiceQuestion extends Question {
 	}
 
 
+    @Modifies( "possibleAnswers" )
     public void setPossibleAnswersByValue(Collection<String> possibleAnswers) {
 		if (possibleAnswers == null) {
 			this.possibleAnswers = null;
@@ -206,6 +210,7 @@ public class MultipleChoiceQuestion extends Question {
 	}
 
 
+    @Modifies( "possibleAnswers" )
     public void setPossibleAnswersByValue(String[] possibleAnswers) {
 		if (possibleAnswers == null) {
 			this.possibleAnswers = null;
@@ -217,6 +222,7 @@ public class MultipleChoiceQuestion extends Question {
 		}
 	}
 
+    @Modifies( "possibleAnswers" )
     private void addPossibleAnswer(String value) {
         StringTokenizer st = new StringTokenizer(value,"=");
         String val = st.nextToken().trim().replace("\"","");
@@ -235,6 +241,7 @@ public class MultipleChoiceQuestion extends Question {
 	 *
 	 * @param theValue of the possibleAnswer
 	 */
+    @Modifies( "possibleAnswers" )
 	public void removePossibleAnswer(String theValue) {
 		PossibleAnswer pos = null;
 		for (PossibleAnswer pa : possibleAnswers) {
@@ -277,6 +284,7 @@ public class MultipleChoiceQuestion extends Question {
 	 * @param possibleAnswer
 	 * @param atIndex If >= size of array then the answer is added to the end
 	 */
+    @Modifies( "possibleAnswers" )
 	public void insertPossibleAnswer(PossibleAnswer possibleAnswer, int atIndex) {
 		if (possibleAnswers == null) {
 			// Really should be discouraged from doing this! Least efficient way of building up the list.
@@ -366,6 +374,7 @@ public class MultipleChoiceQuestion extends Question {
 	 * @param possibleAnswers
 	 * @deprecated
 	 */
+    @Modifies( "possibleAnswers" )
 	public void setPossibleAnswersAsString(String possibleAnswers) {
 		if (possibleAnswers == null || possibleAnswers.equals("")) {
 			this.possibleAnswers = null;
