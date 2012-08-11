@@ -45,6 +45,7 @@ public class ExcelScorecardValidator {
         validator.checkForMissingAttributes();
         if (scorecard.isUseReasonCodes()){
             validator.validateReasonCodes();
+            validator.validateBaselineScores();
         }
     }
 
@@ -62,6 +63,23 @@ public class ExcelScorecardValidator {
                                 parseErrors.add(new ScorecardError(newCellRef, "Attribute is missing Reason Code"));
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    private void validateBaselineScores() {
+        for (Object obj :scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()){
+            Double scorecardBaseline = scorecard.getBaselineScore();
+            if (obj instanceof Characteristics){
+                Characteristics characteristics = (Characteristics)obj;
+                for (Characteristic characteristic : characteristics.getCharacteristics()){
+                    Double charBaseline = characteristic.getBaselineScore();
+                    if  ( (charBaseline == null || charBaseline.doubleValue() == 0)
+                            && ((scorecardBaseline == null || scorecardBaseline.doubleValue() == 0)) ){
+                        String newCellRef = createDataTypeCellRef(ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), "cellRef"),2);
+                        parseErrors.add(new ScorecardError(newCellRef, "Characteristic is missing Baseline Score"));
                     }
                 }
             }

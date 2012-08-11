@@ -31,9 +31,15 @@ public class ScorecardReasonCodeTest {
     @Before
     public void setUp() throws Exception {
         ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
-        scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_reasoncodes.xls"));
+        boolean compileResult = scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_reasoncodes.xls"));
+        if (!compileResult) {
+            for(ScorecardError error : scorecardCompiler.getScorecardParseErrors()){
+                System.out.println("setup :"+error.getErrorLocation()+"->"+error.getErrorMessage());
+            }
+        }
         pmmlDocument = scorecardCompiler.getPMMLDocument();
         drl = scorecardCompiler.getDRL();
+        //System.out.println(drl);
     }
 
     @Test
@@ -69,6 +75,8 @@ public class ScorecardReasonCodeTest {
         for (Object serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
             if (serializable instanceof Scorecard){
                 assertTrue(((Scorecard)serializable).isUseReasonCodes());
+                assertEquals(100.0, ((Scorecard)serializable).getInitialScore());
+                assertEquals("pointsBelow",((Scorecard)serializable).getReasonCodeAlgorithm());
             }
         }
     }
@@ -95,12 +103,41 @@ public class ScorecardReasonCodeTest {
     }
 
     @Test
+    public void testBaselineScores() throws Exception {
+        for (Object serializable : pmmlDocument.getAssociationModelsAndBaselineModelsAndClusteringModels()){
+            if (serializable instanceof Scorecard){
+                for (Object obj :((Scorecard)serializable) .getExtensionsAndCharacteristicsAndMiningSchemas()){
+                    if (obj instanceof Characteristics){
+                        Characteristics characteristics = (Characteristics)obj;
+                        assertEquals(4, characteristics.getCharacteristics().size());
+                        assertEquals(10.0, characteristics.getCharacteristics().get(0).getBaselineScore());
+                        assertEquals(99.0, characteristics.getCharacteristics().get(1).getBaselineScore());
+                        assertEquals(12.0, characteristics.getCharacteristics().get(2).getBaselineScore());
+                        assertEquals(0.0, characteristics.getCharacteristics().get(3).getBaselineScore());
+                        assertEquals(25.0, ((Scorecard)serializable).getBaselineScore());
+                        return;
+                    }
+                }
+            }
+        }
+        fail();
+    }
+
+    @Test
     public void testMissingReasonCodes() throws Exception {
         ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
         scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_reasoncodes.xls"), "scorecards_reason_error");
-        assertEquals(2, scorecardCompiler.getScorecardParseErrors().size());
-        assertEquals("$F$12", scorecardCompiler.getScorecardParseErrors().get(0).getErrorLocation());
-        assertEquals("$F$21", scorecardCompiler.getScorecardParseErrors().get(1).getErrorLocation());
+        assertEquals(3, scorecardCompiler.getScorecardParseErrors().size());
+        assertEquals("$F$13", scorecardCompiler.getScorecardParseErrors().get(0).getErrorLocation());
+        assertEquals("$F$22", scorecardCompiler.getScorecardParseErrors().get(1).getErrorLocation());
+    }
+
+    @Test
+    public void testMissingBaselineScores() throws Exception {
+        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_reasoncodes.xls"), "scorecards_reason_error");
+        assertEquals(3, scorecardCompiler.getScorecardParseErrors().size());
+        assertEquals("$D$30", scorecardCompiler.getScorecardParseErrors().get(2).getErrorLocation());
     }
 
     @Test
@@ -164,7 +201,7 @@ public class ScorecardReasonCodeTest {
         session.fireAllRules();
         session.dispose();
         //occupation = +10, age = +40, state = -10, validLicense = 1
-        assertEquals(41,scorecard.getCalculatedScore());
+        assertEquals(41.0,scorecard.getCalculatedScore());
         //[OCC02, AGE03, VL001, RS001]
         assertEquals(4, scorecard.getReasonCodes().size());
         assertTrue(scorecard.getReasonCodes().contains("OCC99"));
@@ -196,8 +233,8 @@ public class ScorecardReasonCodeTest {
         session.insert(scorecard);
         session.fireAllRules();
         session.dispose();
-        //age = 30, validLicence -1
-        assertTrue(29 == scorecard.getCalculatedScore());
+        //age = 30, validLicence -1, initialScore = 100;
+        assertTrue(129 == scorecard.getCalculatedScore());
         //age-reasoncode=AGE02, license-reasoncode=VL002
         assertEquals(2, scorecard.getReasonCodes().size());
         assertTrue(scorecard.getReasonCodes().contains("AGE02"));
@@ -210,8 +247,8 @@ public class ScorecardReasonCodeTest {
         session.insert(scorecard);
         session.fireAllRules();
         session.dispose();
-        //occupation = -10, age = +10, validLicense = -1;
-        assertEquals(-1, scorecard.getCalculatedScore());
+        //occupation = -10, age = +10, validLicense = -1, initialScore = 100;
+        assertEquals(99.0, scorecard.getCalculatedScore());
 
         assertEquals(3, scorecard.getReasonCodes().size());
         //[AGE01, VL002, OCC01]
@@ -228,8 +265,8 @@ public class ScorecardReasonCodeTest {
         session.insert( scorecard );
         session.fireAllRules();
         session.dispose();
-        //occupation = +10, age = +40, state = -10, validLicense = 1
-        assertEquals(41,scorecard.getCalculatedScore());
+        //occupation = +10, age = +40, state = -10, validLicense = 1, initialScore = 100;
+        assertEquals(141.0,scorecard.getCalculatedScore());
         //[OCC02, AGE03, VL001, RS001]
         assertEquals(4, scorecard.getReasonCodes().size());
         assertTrue(scorecard.getReasonCodes().contains("OCC02"));

@@ -45,12 +45,12 @@ public class DrlFromPMMLTest {
 
     @Test
     public void testRuleCount() throws Exception {
-        assertEquals(12, StringUtil.countMatches(drl, "rule \""));
+        assertEquals(14, StringUtil.countMatches(drl, "rule \""));
     }
 
     @Test
     public void testImports() throws Exception {
-        assertEquals(2, StringUtil.countMatches(drl, "import "));
+        assertEquals(5, StringUtil.countMatches(drl, "import "));
     }
 
     @Test
@@ -70,14 +70,13 @@ public class DrlFromPMMLTest {
         //NEW WORKING MEMORY
         StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
         FactType scorecardType = kbase.getFactType( "org.drools.scorecards.example","SampleScore" );
-
         DroolsScorecard scorecard = (DroolsScorecard) scorecardType.newInstance();
         scorecardType.set(scorecard, "age", 10);
         session.insert( scorecard );
         session.fireAllRules();
         session.dispose();
         //occupation = 5, age = 25, validLicence -1
-        assertTrue(29 == scorecard.getCalculatedScore());
+        assertEquals(29.0,scorecard.getCalculatedScore());
 
         session = kbase.newStatefulKnowledgeSession();
         scorecard = (DroolsScorecard) scorecardType.newInstance();
@@ -99,7 +98,7 @@ public class DrlFromPMMLTest {
         session.fireAllRules();
         session.dispose();
         //occupation = +10, age = +40, state = -10, validLicense = 1
-        assertEquals(41,scorecard.getCalculatedScore());
+        assertEquals(41.0,scorecard.getCalculatedScore());
     }
 
 
