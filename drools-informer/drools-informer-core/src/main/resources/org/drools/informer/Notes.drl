@@ -35,7 +35,7 @@ no-loop
 when
     $quest : Questionnaire( $itemz : itemList ) @watch( items )
     $itemId : String() from $itemz;
-    not Item( id == $itemId )
+    not Item( id == $itemId ) @watch( * )
 then
     modify ( $quest ) {
         removeItem( $itemId );

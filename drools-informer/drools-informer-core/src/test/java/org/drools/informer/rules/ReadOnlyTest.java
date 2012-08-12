@@ -51,6 +51,7 @@ public class ReadOnlyTest {
 		knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/Active.drl"), ResourceType.DRL);
 		knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/Queries.drl"), ResourceType.DRL);
 		knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/ReadOnly.drl"), ResourceType.DRL);
+        System.err.println( knowledgeBuilder.getErrors() );
 		assertFalse(knowledgeBuilder.hasErrors());
 		knowledgeBase = KnowledgeBaseFactory.newKnowledgeBase();
 		knowledgeBase.addKnowledgePackages(knowledgeBuilder.getKnowledgePackages());
@@ -95,6 +96,10 @@ public class ReadOnlyTest {
 			knowledgeSession.insert(group4b);
 			knowledgeSession.insert(question1);
 			knowledgeSession.fireAllRules();
+
+            for ( Object o : knowledgeSession.getObjects() ) {
+                System.out.println( o );
+            }
 
 			assertEquals(true, isReadOnlyInherited(question1));
 

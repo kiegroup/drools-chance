@@ -30,12 +30,12 @@ rule "propagate readonly from group to subgroups"
 no-loop
 salience 5
 when
-	$item : Group( itemStyles : stylesList,
-	              stylesList not contains "readonly-inherited"
-	           && stylesList not contains "readonly" ) 
+	$item : Group( itemStyles : presentationStyles,
+	              presentationStyles not contains "readonly-inherited"
+	           && presentationStyles not contains "readonly" ) @watch( * )
 	exists (
 	    Group( itemList contains $item.id, active == true,
-	           stylesList contains "readonly" || stylesList contains "readonly-inherited" ) 
+	           presentationStyles contains "readonly" || presentationStyles contains "readonly-inherited" )
 	)
 then
     modify ( $item ) {
@@ -46,12 +46,12 @@ end
 rule "propagate readonly from group to question"
 salience 4
 when
-	$item : Question( itemStyles : stylesList,
-	              stylesList not contains "readonly-inherited"
-	           && stylesList not contains "readonly" ) @watch( presentationStyles )
+	$item : Question( itemStyles : presentationStyles,
+	              presentationStyles not contains "readonly-inherited"
+	           && presentationStyles not contains "readonly" )
 	exists (
 	    Group( itemList contains $item.id, active == true,
-	           stylesList contains "readonly" || stylesList contains "readonly-inherited" ) 
+	           presentationStyles contains "readonly" || presentationStyles contains "readonly-inherited" )
 	)
 then
     modify ( $item ) {
@@ -65,12 +65,12 @@ rule "remove readonly from group to subgroups"
 no-loop
 salience 2
 when
-	$item : Group( itemStyles : stylesList,
-	              stylesList contains "readonly-inherited"
-	           || stylesList contains "readonly" )
+	$item : Group( itemStyles : presentationStyles,
+	              presentationStyles contains "readonly-inherited"
+	           || presentationStyles contains "readonly" ) @watch( * )
 	not (
 	    Group( itemList contains $item.id, active == true,
-	           stylesList contains "readonly" || stylesList contains "readonly-inherited" ) 
+	           presentationStyles contains "readonly" || presentationStyles contains "readonly-inherited" )
 	)
 then
     modify ( $item ) {
@@ -81,13 +81,13 @@ end
 rule "remove readonly from group to question"
 salience 1
 when
-	$item : Question( itemStyles : stylesList,
-	              stylesList contains "readonly-inherited"
-	           || stylesList contains "readonly"
-	           ) @watch( presentationStyles )
+	$item : Question( itemStyles : presentationStyles,
+	              presentationStyles contains "readonly-inherited"
+	           || presentationStyles contains "readonly"
+	           )
 	not (
 	    Group( itemList contains $item.id, active == true,
-	           stylesList contains "readonly" || stylesList contains "readonly-inherited" ) 
+	           presentationStyles contains "readonly" || presentationStyles contains "readonly-inherited" )
 	)
 then
     modify ( $item ) {

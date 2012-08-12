@@ -22,11 +22,13 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentConfiguration;
 import org.drools.agent.KnowledgeAgentFactory;
+import org.drools.agent.impl.PrintStreamSystemEventListener;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.common.InternalFactHandle;
 import org.drools.informer.generator.annotations.QuestionMark;
+import org.drools.informer.listener.DebugAgendaEventListener;
 import org.drools.io.Resource;
 import org.drools.io.impl.ChangeSetImpl;
 import org.drools.io.impl.ClassPathResource;
@@ -54,17 +56,14 @@ public class AnnotationsTest {
         KnowledgeAgentConfiguration kaConfig = KnowledgeAgentFactory.newKnowledgeAgentConfiguration();
         kaConfig.setProperty("drools.agent.newInstance","false");
         KnowledgeAgent kAgent = KnowledgeAgentFactory.newKnowledgeAgent("testAnnotationKA",kaConfig);
+//        kAgent.setSystemEventListener( new PrintStreamSystemEventListener() );
 
         ChangeSetImpl changeSet = new ChangeSetImpl();
         ClassPathResource res1 = new ClassPathResource("org/drools/informer/informer-changeset.xml");
         res1.setResourceType(ResourceType.CHANGE_SET);
-//        ClassPathResource res3 = new ClassPathResource("org/drools/informer/annotation_tests.drl");
-//        res3.setResourceType(ResourceType.DRL);
         changeSet.setResourcesAdded(Arrays.asList((Resource) res1));
 
         kAgent.applyChangeSet(changeSet);
-
-
 
 
         StatefulKnowledgeSession kSession = kAgent.getKnowledgeBase().newStatefulKnowledgeSession();
@@ -79,6 +78,11 @@ public class AnnotationsTest {
         kSession.insert(p1);
         kSession.insert(p2);
         kSession.fireAllRules();
+
+
+        for ( Object o : kSession.getObjects() ) {
+                                  System.err.println(o);
+        }
 
         assertEquals(1, kSession.getQueryResults("getQuestionnaire", p1.getQuestionnaireId(), Variable.v).size());
         assertEquals(1, kSession.getQueryResults("getQuestionnaire",p2.getQuestionnaireId(), Variable.v).size());

@@ -31,7 +31,7 @@ import java.util.Set;
 
 rule "build list of available items"
 when
-	$questionnaire : Questionnaire( $oldAvailableItems : availableItemSet, $items : itemList ) @watch( items )
+	$questionnaire : Questionnaire( $oldAvailableItems : availableItemSet, $items : itemList ) @watch( items, availableItems )
 	$newItems : Set( this != $oldAvailableItems ) from accumulate (
 	        Item( $id : id != $questionnaire.id,
 	              id memberOf $items,
@@ -61,7 +61,7 @@ end
 rule "activate top-level item (if Questionnaire.activeItem is used)"
 salience 4 // before: "activate/deactivate lower-level items (if Questionnaire.activeItem is used)"
 when
-	$questionnaire : Questionnaire( activeItem != null )
+	$questionnaire : Questionnaire( activeItem != null ) @watch( items )
 	$item : Item( id memberOf $questionnaire.itemList,
 	              id == $questionnaire.activeItem,
 	              active == false )
@@ -74,7 +74,7 @@ end
 rule "deactivate top-level items (if Questionnaire.activeItem is used)"
 salience 4 // before: "activate/deactivate lower-level items (if Questionnaire.activeItem is used)"
 when
-	$questionnaire : Questionnaire( activeItem != null )
+	$questionnaire : Questionnaire( activeItem != null ) @watch( items )
 	$item : Item( id memberOf $questionnaire.itemList,
 	              id != $questionnaire.activeItem,
 	              active == true )
@@ -89,12 +89,12 @@ end
 rule "activate lower-level items (if Questionnaire.activeItem is used)"
 salience 3 // before: "activate/deactivate InvalidAnswers"
 when
-	$questionnaire : Questionnaire( activeItem != null )
+	$questionnaire : Questionnaire( activeItem != null ) @watch( items )
 	$item : Item( id != $questionnaire.id,
 	              id not memberOf $questionnaire.itemList,
 	              active == false )
 	exists Group( id != $questionnaire.id, itemList contains $item.id,
-	             active == true )
+	             active == true ) @watch( * )
 then
     modify ( $item ) {
 	    setActive( true );
@@ -104,12 +104,12 @@ end
 rule "deactivate lower-level items (if Questionnaire.activeItem is used)"
 salience 3 // before: "activate/deactivate InvalidAnswers"
 when
-	$questionnaire : Questionnaire( activeItem != null )
+	$questionnaire : Questionnaire( activeItem != null ) @watch( items )
 	$item : Item( id != $questionnaire.id,
 	              id not memberOf $questionnaire.itemList,
 	              active == true )
 	not Group( id != $questionnaire.id, itemList contains $item.id,
-	           active == true )
+	           active == true ) @watch( * )
 then
     modify ( $item ) {
 	    setActive( false );
@@ -124,7 +124,7 @@ end
 rule "activate everything (if Questionnaire.activeItem is not used)"
 salience 3 // before: "activate/deactivate InvalidAnswers"
 when
-	$questionnaire : Questionnaire( activeItem == null )
+	$questionnaire : Questionnaire( activeItem == null ) @watch( items )
 	$item : Item( id != $questionnaire.id, active == false )
 then
     modify ( $item ) {

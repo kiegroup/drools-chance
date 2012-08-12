@@ -18,6 +18,10 @@ package org.drools.informer
 
 
 
+query "getQuestionnaireByType" ( String $type, Questionnaire $quest )
+    $quest := Questionnaire( type == $type )
+end
+
 query "getQuestionnaire" ( String $context, Questionnaire $quest )
     $quest := Questionnaire( context == $context )
 end
@@ -40,10 +44,10 @@ query "activeObjectsInContext" (String context)
 end
 
 query "getItemId"( String $type, String $context, String $id )
-    Item( $type := type, $context := context, $id := id )
+    Item( $type := type, $context := context, $id := id ) @watch(*)
 end
 
-query "getItem"( String $type, String $context, Item $item )
+query "getItem"( String $type, String $context, Item $item ) @watch(*)
     $item := Item( $type := type, $context := context )
 end
 
