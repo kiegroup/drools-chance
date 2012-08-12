@@ -280,14 +280,19 @@ public class Questionnaire extends Group {
 			logger.debug("Available Items are: " + availableItems);
 		}
         this.availableItems.clear();
-        this.availableItems.addAll(availableItems);
+        this.availableItems.addAll( availableItems );
 	}
 
 
     @Modifies( "availableItems" )
     public void addAvailableItems(List<String> availableItems) {
-        this.availableItems.addAll(availableItems);
+        this.availableItems.addAll( availableItems );
 	}
+
+    @Modifies( "availableItems" )
+    public void addAvailableItem( String availableItem ) {
+        this.availableItems.add( availableItem );
+    }
 
 
 
@@ -355,22 +360,22 @@ public class Questionnaire extends Group {
         return super.removeItem(itemId);
     }
 
-    @Modifies( "presentationStyles" )
+    @Modifies( { "presentationStyles", "stylesList" } )
     public void setPresentationStyles(String[] presentationStyles) {
         super.setPresentationStyles(presentationStyles);
     }
 
-    @Modifies( "presentationStyles" )
+    @Modifies( { "presentationStyles", "stylesList" } )
     public void setPresentationStyles(Object[] presentationStyles) {
         super.setPresentationStyles(presentationStyles);
     }
 
-    @Modifies( "presentationStyles" )
+    @Modifies( { "presentationStyles", "stylesList" } )
     public void addPresentationStyle(String presentationStyle) {
         super.addPresentationStyle(presentationStyle);
     }
 
-    @Modifies( "presentationStyles" )
+    @Modifies( { "presentationStyles", "stylesList" } )
     public void removePresentationStyle(String presentationStyle) {
         super.removePresentationStyle(presentationStyle);
     }

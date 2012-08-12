@@ -20,6 +20,7 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.event.rule.DebugAgendaEventListener;
 import org.drools.informer.*;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
@@ -64,6 +65,8 @@ public class ActiveTest {
 	@Test
 	public void testActiveObjects() {
 		StatefulKnowledgeSession knowledgeSession = knowledgeBase.newStatefulKnowledgeSession();
+//        knowledgeSession.addEventListener( new DebugAgendaEventListener( ) );
+
 		try {
 			Questionnaire questionnaire = new Questionnaire("questionnaire");
 			Group group1 = new Group("group1");
@@ -95,6 +98,8 @@ public class ActiveTest {
 			Set<String> itemIds = getItemIds(queryResults);
 			assertEquals(new HashSet<String>(Arrays.asList(new String[] { questionnaire.getId(), group1.getId(), group2.getId(), note1.getId(), note2.getId(),
 					note3.getId(), note4.getId(), note5.getId(), note6.getId() })), itemIds);
+
+            System.out.println( "------------------------------------------");
 
 			questionnaire.setActiveItem(group1.getId());
 			knowledgeSession.update(handleQuestionnaire, questionnaire);

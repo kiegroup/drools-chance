@@ -103,22 +103,20 @@ end
 
 
 rule "Question_Auto"
-dialect "mvel"
-no-loop
 salience 1
 when
     $o   : ISurveyable( $id : questionnaireId, surveyEnabled == true )
     $k1  : Class() from $o.getClass()
            Questionable( ) from $k1.getAnnotations()
     $qst : Questionnaire( $ctx : context == $id )
-    $fld : Field( $fldName : name, $fldKlass : class ) from AnnotationHelper.getFields($k1)
+    $fld : Field( $fldName : name, $fldKlass : class ) from AnnotationHelper.getFields( $k1 )
     $qm  : QuestionMark( $lab : label, $qType : type,
                          $req : required,
                          $dateFormat : dateFormat,
                          $oneShot : finalAnswer
                          ) from $fld.getAnnotations()
            not AllowedAnswers() from $fld.getAnnotations()
-           not Question( context == $id, type == $fldName )
+           not Question( context == $id, type == $fldName ) @watch( * )
 then
     Question q = new Question( $fldName, $lab );
         q.setContext( $id );
@@ -126,15 +124,19 @@ then
         q.setRequired( $req );
         q.setFinalAnswer( $oneShot );
         q.setDateFormat( $dateFormat );
-        $qst.addItem( q.id );
+
+
+    modify ( $qst ) {
+        addItem( q.getId() );
+    }
     insert( q );
 
     DomainModelAssociation dma = new DomainModelAssociation( );
-        dma.setObject((Object) $o);
-        dma.setQuestionId(q.id);
-        dma.setContext($id);
-        dma.setProperty($fldName);
-    insert(dma);
+        dma.setObject( (Object) $o );
+        dma.setQuestionId( q.getId() );
+        dma.setContext( $id );
+        dma.setProperty( $fldName );
+    insert( dma );
 end
 
 
@@ -147,11 +149,11 @@ when
     $k1  : Class() from $o.getClass()
            Questionable( ) from $k1.getAnnotations()
     $qst : Questionnaire( $ctx : context == $id, $items : itemList  )
-    $fld : Field( $fldName : name, $fldKlass : class ) from AnnotationHelper.getFields($k1)
+    $fld : Field( $fldName : name, $fldKlass : class ) from AnnotationHelper.getFields( $k1 )
     $q   : QuestionMark( $lab : label, $qType : type,
                          $req : required ) from $fld.getAnnotations()
            AllowedAnswers( $ansValues : values ) from $fld.getAnnotations()
-       not MultipleChoiceQuestion( context == $id, type == $fldName ) @watch(*)
+       not MultipleChoiceQuestion( context == $id, type == $fldName ) @watch( * )
 then
     MultipleChoiceQuestion mcq = new MultipleChoiceQuestion( $fldName, $lab );
         mcq.setContext( $id );
@@ -160,16 +162,18 @@ then
         mcq.setPreLabel( $lab );
         mcq.setPossibleAnswersByValue( $ansValues );
 
+
     modify ( $qst ) {
         addItem( mcq.getId() );
     }
+    insert( mcq );
 
     DomainModelAssociation dma = new DomainModelAssociation( );
-        dma.setObject((Object) $o);
+        dma.setObject( (Object) $o );
         dma.setQuestionId( mcq.getId() );
         dma.setContext( $id );
         dma.setProperty( $fldName );
-    insert(dma);
+    insert( dma );
 end
 
 

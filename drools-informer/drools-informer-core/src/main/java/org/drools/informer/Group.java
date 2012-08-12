@@ -15,6 +15,9 @@
  */
 package org.drools.informer;
 
+import org.drools.definition.type.Modifies;
+import org.drools.definition.type.PropertyReactive;
+
 import java.util.*;
 
 /**
@@ -34,6 +37,7 @@ import java.util.*;
  *
  * @author Damon Horrell
  */
+@PropertyReactive
 public class Group extends Item {
 
     public static final String COMMA_SEPARATOR = ",";
@@ -107,6 +111,7 @@ public class Group extends Item {
      *
      * @param items
      */
+    @Modifies( "items" )
     public void setItems(String[] items) {
         this.items.clear();
         if (items != null) {
@@ -122,6 +127,7 @@ public class Group extends Item {
      * @param itemId
      *            - cannot contain a comma
      */
+    @Modifies( "items" )
     public void addItem(String itemId) {
         if (validItemId(itemId)) {
             this.items.add(itemId);
@@ -137,6 +143,7 @@ public class Group extends Item {
      * @param beforeItemId
      *            The entry before which the new item is to be inserted
      */
+    @Modifies( "items" )
     public void insertItem(String itemId, String beforeItemId) {
         if ((beforeItemId == null) || (beforeItemId.length() == 0)) {
             addItem(itemId);
@@ -159,6 +166,7 @@ public class Group extends Item {
      * @param afterItemId
      *            The entry after which the new item is to be inserted
      */
+    @Modifies( "items" )
     public void appendItem(String itemId, String afterItemId) {
         if ((afterItemId == null) || (afterItemId.length() == 0)) {
             addItem(itemId);
@@ -179,6 +187,7 @@ public class Group extends Item {
      *            The value to remove. Ignore if null or doesn't exist
      * @return The index of the removed item, or -1 if not found
      */
+    @Modifies( "items" )
     public int removeItem(String itemId) {
         if (validItemId(itemId)) {
             int pos = items.indexOf(itemId);
@@ -200,6 +209,7 @@ public class Group extends Item {
      *
      * @param items
      */
+    @Modifies( "items" )
     public void setItems(Object[] items) {
         if (items == null) {
             this.items = null;
@@ -254,6 +264,7 @@ public class Group extends Item {
      * @param items
      * @deprecated
      */
+    @Modifies( "items" )
     public void setItemsAsString(String items) {
         this.items.clear();
         if (items != null) {
@@ -270,5 +281,16 @@ public class Group extends Item {
                 "label='" + label + '\'' +
                 ", items=" + items +
                 "} " + super.toString();
+    }
+
+
+    @Modifies( { "presentationStyles", "stylesList" } )
+    public void addPresentationStyle(String presentationStyle) {
+        super.addPresentationStyle(presentationStyle);
+    }
+
+    @Modifies( { "presentationStyles", "stylesList" } )
+    public void removePresentationStyle(String presentationStyle) {
+        super.removePresentationStyle(presentationStyle);
     }
 }

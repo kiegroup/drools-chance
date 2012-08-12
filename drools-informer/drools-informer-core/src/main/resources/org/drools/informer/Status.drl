@@ -47,14 +47,14 @@ declare Size
 end
 
 query includes( Group $master, String $qid )
-    ( $master := Group( itemList contains $qid ) )
+    ( $master := Group( itemList contains $qid ) @watch( * ) )
     or
     (
-      $master := Group( $list : itemList )
+      $master := Group( $list : itemList ) @watch( * )
       and
-      $inner  := Group( id memberOf $list )
+      $inner  := Group( id memberOf $list ) @watch( * )
       and
-                 includes( $inner, $qid ; )
+                 ?includes( $inner, $qid ; )
     )
 end
 
@@ -62,7 +62,7 @@ end
 query size( String $formId, long $num )
     $quest : Group( id == $formId )
     Set( $num := size ) from accumulate (
-                   $q : Question( $qid : id )
+                   $q : Question( $qid : id ) @watch( * )
                     and
                     ?includes( $quest, $qid ; )
                 ,
@@ -110,17 +110,18 @@ end
 rule "Questionnaire Progress"
 salience -1000 // when questionnaire is stable
 when
-    $quest : Questionnaire( $formId : id )
-             Number( $num : longValue ) from accumulate (
-                   $q : Question( $qid : id, lastAnswer != null )
+    $quest : Questionnaire( $formId : id ) @watch( * )
+             accumulate (
+                   $q : Question( $qid : id, lastAnswer != null ) @watch( * )
                     and
-                    ?includes( $quest, $qid ; )
+                    ?includes( $quest, $qid; )
                 ,
-                count ( $q )
+                $num : count ( $q )
              )
              Size( formId == $formId, $max : num > 0 )
 then
-    Progress p = new Progress( $formId, (int) Math.round( 100.0*$num/$max ) );
+    Progress p = new Progress( $formId, (int) Math.round( 100.0 * $num.doubleValue() / $max ) );
+    System.out.println( "Making progress.... " + p );
     insertLogical( p );
 end
 

@@ -16,6 +16,9 @@
 
 package org.drools.informer;
 
+import org.drools.definition.type.Modifies;
+import org.drools.definition.type.PropertyReactive;
+
 import java.util.*;
 
 /**
@@ -23,6 +26,7 @@ import java.util.*;
  * 
  * @author Damon Horrell
  */
+@PropertyReactive
 public abstract class Item extends InformerObject {
 
 	private static final long serialVersionUID = 1L;
@@ -111,6 +115,7 @@ public abstract class Item extends InformerObject {
 	 * 
 	 * @param presentationStyles
 	 */
+    @Modifies( { "presentationStyles", "stylesList" } )
 	public void setPresentationStyles(String[] presentationStyles) {
 		if (presentationStyles == null) {
 			this.presentationStyles.clear();
@@ -144,6 +149,7 @@ public abstract class Item extends InformerObject {
 	 * 
 	 * @param presentationStyles
 	 */
+    @Modifies( { "presentationStyles", "stylesList" } )
 	public void setPresentationStyles(Object[] presentationStyles) {
 		if (presentationStyles == null || presentationStyles.length == 0) {
 			this.presentationStyles = null;
@@ -157,6 +163,7 @@ public abstract class Item extends InformerObject {
 	 * 
 	 * @param presentationStyle
 	 */
+    @Modifies( { "presentationStyles", "stylesList" } )
 	public void addPresentationStyle(String presentationStyle) {
 		if (presentationStyle != null) {
 //			if (this.presentationStyles == null) {
@@ -176,6 +183,7 @@ public abstract class Item extends InformerObject {
 	 * 
 	 * @param presentationStyle
 	 */
+    @Modifies( { "presentationStyles", "stylesList" } )
 	public void removePresentationStyle(String presentationStyle) {
 //		if (presentationStyle != null) {
 //			List<String> presentationStyles = new ArrayList<String>(Arrays.asList(getPresentationStyles()));
@@ -223,6 +231,7 @@ public abstract class Item extends InformerObject {
 	 * @param presentationStyles
 	 * @deprecated
 	 */
+    @Modifies( { "presentationStyles", "stylesList" } )
 	public void setPresentationStylesAsString(String presentationStyles) {
 		this.presentationStyles.clear();
         if (presentationStyles != null && presentationStyles.length() != 0) {
@@ -276,12 +285,12 @@ public abstract class Item extends InformerObject {
 
 
     public List<String> getStylesList() {
-	List list = new ArrayList();
-	String[] styles = getPresentationStyles();
-	if (styles != null) {
-		list.addAll(Arrays.asList(styles));
-	}
-	return list;
-}
+        List list = new ArrayList();
+        String[] styles = getPresentationStyles();
+        if (styles != null) {
+            list.addAll(Arrays.asList(styles));
+        }
+        return list;
+    }
 
 }

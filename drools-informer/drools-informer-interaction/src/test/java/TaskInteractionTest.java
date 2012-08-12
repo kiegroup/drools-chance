@@ -102,6 +102,7 @@ public class TaskInteractionTest {
         kSession.insert( "surveytaskinter" );
         kSession.fireAllRules();
 
+        report( kSession, System.err );
 
         String mainTaskId = getMainTaskQuestId( kSession );
         String questionId = getTransitionQuestion( kSession, mainTaskId );
@@ -275,18 +276,21 @@ public class TaskInteractionTest {
         kSession.insert( "surveytask" );
         kSession.fireAllRules();
 
+        System.out.println( "_----------------------------------------_");
+
         kSession.insert( new Answer( "question2", "testId", "someValue" ) );
         kSession.fireAllRules();
 
+        System.out.println( "_----------------------------------------_");
 
         report( kSession, System.err );
         System.err.println( kSession.getGlobal( "list" ) );
         System.err.println( kSession.getGlobal( "taskLog" ) );
 
-        assertEquals( 15, kSession.getObjects().size() );
 
         assertEquals( 4, ((List) kSession.getGlobal( "taskLog" )).size() );
 
+        assertEquals( 15, kSession.getObjects().size() );
 
         kSession.dispose();
     }

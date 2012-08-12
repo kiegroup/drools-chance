@@ -26,8 +26,9 @@ when
     $ticket : SurveyTicket( $id : sid, questionnaire == null )
     $quest  : Questionnaire( id == $id )
 then
-    $ticket.setQuestionnaire( $quest );
-    update($ticket);
+    modify ( $ticket ) {
+        setQuestionnaire( $quest );
+    }
 end
 
 
@@ -55,7 +56,7 @@ end
 rule "Clean adapters"
 when
     $gui : GUIAdapter( $id : itemId )
-    not    Item( id == $id )
+    not    Item( id == $id ) @watch( * )
 then
     retract( $gui );
 end
@@ -118,9 +119,12 @@ then
         qga.setCurrentAnswer( $q.getLastAnswer() );
         qga.setAnswerType($type.getValue());
         qga.setValidationMessage( $q.getPostLabel() );
-    $sga.getSurveyQuestions().add(qga);
-    insert(qga);
-    update($sga);
+
+    insert( qga );
+
+    modify( $sga ) {
+        getSurveyQuestions().add(qga);
+    }
 end
 
 
@@ -178,10 +182,11 @@ when
     $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType == Question.QuestionType.TYPE_BOOLEAN )
     $qga : QuestionGUIAdapter( itemId == $qid, possibleAnswers == null)
 then
-    $qga.setPossibleAnswers( new java.util.ArrayList() );
-    $qga.getPossibleAnswers().add( new PossibleAnswer("true", "Yes") );
-    $qga.getPossibleAnswers().add( new PossibleAnswer("false", "No") );
-    update($qga);
+    modify ( $qga ) {
+        setPossibleAnswers( new java.util.ArrayList() ),
+        getPossibleAnswers().add( new PossibleAnswer("true", "Yes") ),
+        getPossibleAnswers().add( new PossibleAnswer("false", "No") );
+    }
 end
 
 

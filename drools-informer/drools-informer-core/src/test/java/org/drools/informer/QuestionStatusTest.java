@@ -20,6 +20,7 @@ package org.drools.informer;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentConfiguration;
 import org.drools.agent.KnowledgeAgentFactory;
+import org.drools.agent.impl.PrintStreamSystemEventListener;
 import org.drools.builder.ResourceType;
 import org.drools.core.util.Iterator;
 import org.drools.informer.generator.annotations.QuestionMark;
@@ -50,12 +51,13 @@ public class QuestionStatusTest {
         kaConfig.setProperty("drools.agent.newInstance","false");
         KnowledgeAgent kAgent = KnowledgeAgentFactory.newKnowledgeAgent("testAnnotationKA",kaConfig);
 
+        kAgent.setSystemEventListener( new PrintStreamSystemEventListener());
+
         ChangeSetImpl changeSet = new ChangeSetImpl();
         ClassPathResource res1 = new ClassPathResource("org/drools/informer/informer-changeset.xml");
         res1.setResourceType(ResourceType.CHANGE_SET);
-        ClassPathResource res3 = new ClassPathResource("org/drools/informer/annotation_tests.drl");
-        res3.setResourceType(ResourceType.DRL);
-        changeSet.setResourcesAdded(Arrays.asList((Resource) res1, res3));
+
+        changeSet.setResourcesAdded(Arrays.asList((Resource) res1));
 
         kAgent.applyChangeSet(changeSet);
 

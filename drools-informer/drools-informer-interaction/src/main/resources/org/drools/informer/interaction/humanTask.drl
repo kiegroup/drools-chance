@@ -426,9 +426,9 @@ when
     $task   : HumanTask( $tid : taskId, $curr : state != null )
               TaskTransitionHolder( $xid : questionnaireId, taskId == $tid )
     $tst    : List() from accumulate ( AllowedTransition( $tid, $s, $tx, $new ; ) collectList( $tx.name() ) )
-    $tranx:   MultipleChoiceQuestion( type == "transition", context == $xid, $prev : possibleAnswersValuesAsList != $tst ) @watch( possibleAnswers, lastAnswer )
+    $tranx:   MultipleChoiceQuestion( type == "transition", context == $xid, $prev : possibleAnswersValuesAsList != $tst ) @watch( * )
 then
-    System.out.println( "STTING TRANSITIONS " + $tst );
+    System.out.println( "SETTING TRANSITIONS " + $tst );
     modify ( $tranx ) { setPossibleAnswersByValue( $tst ); }
 end
 
@@ -440,7 +440,7 @@ when
               transitionHolder( $xid, $tid, $owner ; )
     $owners : MultipleChoiceQuestion( type == "owner", context == $xid,
                                       $prev : possibleAnswersValuesAsList != $potential
-                                    ) @watch( possibleAnswers, lastAnswer )
+                                    ) @watch( * )
 then
     System.out.println( "SETTING OWNERS " + $potential + " when prev was " + $prev ) ;
     modify ( $owners ) { setPossibleAnswersByValue( $potential ); }
