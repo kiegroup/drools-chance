@@ -49,6 +49,7 @@ public class XLSEventDataCollector implements EventDataCollector {
     private Output output;
     private List<ScorecardError> parseErrors;
     private MiningSchema miningSchema;
+    private XLSScorecardParser xlsScorecardParser;
 
     public XLSEventDataCollector() {
         parseErrors = new ArrayList<ScorecardError>();
@@ -78,6 +79,9 @@ public class XLSEventDataCollector implements EventDataCollector {
                         }
                         return;
                     }
+                    if (method.getParameterTypes()[0] == Double.class) {
+                        cellValue = new Double(Double.parseDouble(cellValue.toString()));
+                    }
                     if (method.getParameterTypes()[0] == Boolean.class) {
                         cellValue = Boolean.valueOf(cellValue.toString());
                     }
@@ -99,6 +103,14 @@ public class XLSEventDataCollector implements EventDataCollector {
             method = dataExpectation.object.getClass().getMethod(setter, expectedClass);
             return method;
         } catch (NoSuchMethodException e) {
+            if ( expectedClass == int.class) {
+                try{
+                    method = dataExpectation.object.getClass().getMethod(setter, Double.class);
+                    return method;
+                }catch (NoSuchMethodException e1) {
+                    //stay silent
+                }
+            }
             if ( expectedClass != String.class) {
                 try {
                     method = dataExpectation.object.getClass().getMethod(setter, String.class);
@@ -123,8 +135,8 @@ public class XLSEventDataCollector implements EventDataCollector {
         if (XLSKeywords.SCORECARD_NAME.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr, currentColCtr + 1, "modelName", scorecard, "Model Name is missing!");
 
-        } else if (XLSKeywords.SCORECARD_TYPE.equalsIgnoreCase(stringCellValue)) {
-
+        } else if (XLSKeywords.SCORECARD_REASONCODE_ALGORITHM.equalsIgnoreCase(stringCellValue)) {
+            addExpectation(currentRowCtr, currentColCtr + 1, "reasonCodeAlgorithm", scorecard, null);
         } else if (XLSKeywords.SCORECARD_USE_REASONCODES.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr, currentColCtr + 1, "useReasonCodes", scorecard, null);
 
@@ -167,11 +179,19 @@ public class XLSEventDataCollector implements EventDataCollector {
             _characteristic.getExtensions().add(extension);
             addExpectation(currentRowCtr + 1, currentColCtr, "value", extension, "Characteristic (Property) Data Type is missing.");
 
-        } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_INITIALSCORE.equalsIgnoreCase(stringCellValue)) {
-            addExpectation(currentRowCtr + 1, currentColCtr, "baselineScore", _characteristic, null);
-
-        } else if (XLSKeywords.SCORECARD_GROUP_REASONCODE.equalsIgnoreCase(stringCellValue)) {
-            addExpectation(currentRowCtr + 1, currentColCtr, "reasonCode", _characteristic, null);
+        } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_BASELINE_SCORE.equalsIgnoreCase(stringCellValue)) {
+            String value = xlsScorecardParser.peekValueAt(currentRowCtr, currentColCtr-2);
+            if ("Name".equalsIgnoreCase(value)){
+                addExpectation(currentRowCtr + 1, currentColCtr, "baselineScore", _characteristic, null);
+            } else {
+                addExpectation(currentRowCtr, currentColCtr+1, "baselineScore", scorecard, null);
+            }
+        } else if (XLSKeywords.SCORECARD_REASONCODE.equalsIgnoreCase(stringCellValue)) {
+            String value = xlsScorecardParser.peekValueAt(currentRowCtr, currentColCtr-4);
+            if ("Name".equalsIgnoreCase(value)){
+                //only for characteristics...
+                addExpectation(currentRowCtr + 1, currentColCtr, "reasonCode", _characteristic, null);
+            }
 
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_BIN_ATTRIBUTE.equalsIgnoreCase(stringCellValue)) {
             MergedCellRange cellRange = getMergedRegionForCell(currentRowCtr + 1, currentColCtr);
@@ -265,6 +285,7 @@ public class XLSEventDataCollector implements EventDataCollector {
         scorecard = new Scorecard();
         //default false, until the spreadsheet enables explicitly.
         scorecard.setUseReasonCodes(Boolean.FALSE);
+        scorecard.setIsScorable(Boolean.TRUE);
         output = new Output();
         characteristics = new Characteristics();
         miningSchema = new MiningSchema();
@@ -291,6 +312,10 @@ public class XLSEventDataCollector implements EventDataCollector {
 
     public List<ScorecardError> getParseErrors() {
         return parseErrors;
+    }
+
+    public void setParser(XLSScorecardParser xlsScorecardParser) {
+        this.xlsScorecardParser = xlsScorecardParser;
     }
 
     class DataExpectation {
