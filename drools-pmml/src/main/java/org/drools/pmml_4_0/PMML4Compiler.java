@@ -62,6 +62,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     protected static final String[] GLOBAL_TEMPLATES = new String[] {
             "global/pmml_header.drlt",
             "global/modelMark.drlt",
+            "global/commonQueries.drlt",
 
             "global/dataDefinition/common.drlt",
             "global/dataDefinition/rootDataField.drlt",
@@ -356,15 +357,49 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             }
         }
 
-
-        for ( Extension x : pmml.getExtensions() ) {
-            for ( Object c : x.getContent() ) {
-                if ( ! informerLoaded && c instanceof Element && ((Element) c).getTagName().equals( "Surveyable" ) ) {
-                    for ( String ntempl : INFORMER_TEMPLATES ) {
-                        prepareTemplate( ntempl );
+        for ( Object o : pmml.getAssociationModelsAndClusteringModelsAndGeneralRegressionModels() ) {
+            List inner;
+            if ( o instanceof NeuralNetwork ) {
+                inner = ((NeuralNetwork) o).getExtensionsAndNeuralLayersAndNeuralInputs();
+            } else if ( o instanceof MiningModel ) {
+                inner = ((MiningModel) o).getExtensionsAndMiningSchemasAndOutputs();
+            } else if ( o instanceof ClusteringModel ) {
+                inner = ((ClusteringModel) o).getExtensionsAndClustersAndComparisonMeasures();
+            } else if ( o instanceof AssociationModel ) {
+                inner = ((AssociationModel) o).getExtensionsAndMiningSchemasAndOutputs();
+            } else if ( o instanceof SupportVectorMachineModel ) {
+                inner = ((SupportVectorMachineModel) o).getExtensionsAndSupportVectorMachinesAndVectorDictionaries();
+            } else if ( o instanceof RegressionModel ) {
+                inner = ((RegressionModel) o).getExtensionsAndRegressionTablesAndMiningSchemas();
+            } else if ( o instanceof NaiveBayesModel ) {
+                inner = ((NaiveBayesModel) o).getExtensionsAndBayesOutputsAndBayesInputs();
+            } else if ( o instanceof TextModel ) {
+                inner = ((TextModel) o).getExtensionsAndDocumentTermMatrixesAndTextCorpuses();
+            } else if ( o instanceof SequenceModel ) {
+                inner = ((SequenceModel) o).getExtensionsAndSequencesAndMiningSchemas();
+            } else if ( o instanceof GeneralRegressionModel ) {
+                inner = ((GeneralRegressionModel) o).getExtensionsAndParamMatrixesAndPPMatrixes();
+            } else if ( o instanceof RuleSetModel ) {
+                inner = ((RuleSetModel) o).getExtensionsAndRuleSetsAndMiningSchemas();
+            } else if ( o instanceof TimeSeriesModel ) {
+                inner = ((TimeSeriesModel) o).getExtensionsAndMiningSchemasAndOutputs();
+            } else if ( o instanceof TreeModel ) {
+                inner = ((TreeModel) o).getExtensionsAndNodesAndMiningSchemas();
+            } else {
+                //should not happen
+                inner = Collections.emptyList();
+            }
+            for ( Object p : inner ) {
+                if ( p instanceof Extension ) {
+                    Extension x = (Extension) p;
+                    for ( Object c : x.getContent() ) {
+                        if ( ! informerLoaded && c instanceof Element && ((Element) c).getTagName().equals( "Surveyable" ) ) {
+                            for ( String ntempl : INFORMER_TEMPLATES ) {
+                                prepareTemplate( ntempl );
+                            }
+                            informerLoaded = true;
+                        }
                     }
-                    informerLoaded = true;
-
                 }
             }
         }

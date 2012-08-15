@@ -31,13 +31,13 @@ dialect "mvel"
 no-loop
 salience 99
 when
-    $bean : @{name}( $ctx : context == @{format("string",context)} , $val : value )
-    $quest : Questionnaire( context == @{format("string",context)} )
+    $bean : @{name}( $ctx : context == @{ format( "string", context ) } , $val : value )
+    $quest : Questionnaire( type == @{ format( "string", context ) } )
 then
-    Note outNote = new Note(@{noteId});
-        outNote.setContext(@{format("string",context)});
-        outNote.setLabel(" @{fullName} [@{outType}] : " + $val);
-    insertLogical(outNote);
+    Note outNote = new Note( @{noteId} );
+        outNote.setContext( @{format( "string", context ) } );
+        outNote.setLabel( "@{fullName} [@{outType}] : " + $val );
+    insertLogical( outNote );
 
 end
 @end{}

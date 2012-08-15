@@ -26,24 +26,24 @@
 
 declare RegTable
     context         : String        @key
-    target          : String        @key
+    target          : String
     category        : String
     numCoeffs       : double[]
     numExps         : double[]
     catCoeffs       : double[]
     trmCoeffs       : double[]
     intercept       : double
-    index           : int
+    index           : int           @key
 end
 
 declare RegTargetBit
     context         : String        @key
-    target          : String        @key
-    value           : String        @key
+    target          : String
+    value           : String
     weight          : double
     normalized      : boolean       = false
     cumulative      : boolean       = false
-    index           : int
+    index           : int           @key
 end
 
 declare RegNormalizationFactor

@@ -25,19 +25,21 @@
 }
 
 @declare{'modelMultiQuestionRule'}
+
 rule "Model_Multi_Question_@{model}_@{name}"
 dialect "mvel"
 no-loop
 salience 99
 when
-    ModelMarker( "@{model}" ; )
-    not Question( type == @{ format( "string", model + "_" + name ) } )
+    ModelMarker( "@{model}" ; enabled == true )
+    Questionnaire( type == "@{model}", $qid : id )
+    not MultipleChoiceQuestion( type == @{ format( "string", model + "_" + name ) } )
 then
-    MultipleChoiceQuestion quest = new MultipleChoiceQuestion(@{format("string",model)}+"_"+@{format("string",name)});
-        quest.setContext(@{format("string",model)});
-        quest.setAnswerType(@{mapDatatypeToQuestion(dataType)});
-        quest.setPreLabel("Please insert " + @{format("string",name)});
-        quest.setSingleAnswer(true);
+    MultipleChoiceQuestion quest = new MultipleChoiceQuestion( @{ format( "string", model + "_" + name ) } );
+        quest.setContext( $qid );
+        quest.setAnswerType( @{ mapDatatypeToQuestion( dataType ) } );
+        quest.setPreLabel( "Please insert " + @{ format( "string", displayName != null ? displayName : name ) } );
+        quest.setSingleAnswer( true );
 
         quest.setPossibleAnswers({
             @foreach{ val : valid }
@@ -57,7 +59,20 @@ then
 
     insert(quest);
 end
-@end{}
+
+
+//rule "Model_Multi_Question_@{model}_@{name} Clear"
+//dialect "mvel"
+//no-loop
+//salience 99
+//when
+//    $mm : ModelMarker( "@{model}" ; enabled == false )
+//    $qt : MultipleChoiceQuestion( type == @{ format( "string", model + "_" + name ) } )
+//then
+//    retract( $qt );
+//end
+//
+//@end{}
 
 
 

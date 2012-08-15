@@ -20,7 +20,7 @@
 
 rule "Init SvmParams @{modelName}"
 when
-    ModelMarker( "@{context}" ; )
+    ModelMarker( "@{context}" ; enabled == true )
 then
     insertLogical( new SvmParams ( "@{modelName}",
                                    "@{kernelType}",

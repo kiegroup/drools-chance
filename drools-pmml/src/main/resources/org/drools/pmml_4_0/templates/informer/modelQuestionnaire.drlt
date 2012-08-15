@@ -25,22 +25,42 @@
 }
 
 @declare{'modelQuestionnaireRule'}
+
+
 rule "Model_Questionnaire_@{model}"
-dialect "mvel"
-no-loop
 salience 1000
 when
-    ModelMarker( "@{model}" ; )
-    not Questionnaire( type == @{ format( "string", model + "_Questionnaire" ) } )
+    $mm : ModelMarker( "@{model}" ; enabled == true )
+    not   Questionnaire( type == @{ format( "string", model ) } )
 then
-    Questionnaire questionnaire = new Questionnaire(@{format("string",model)}+"_Questionnaire");
-    questionnaire.setContext(@{format("string",model)});
-	questionnaire.setLabel(@{format("string",model)} + " form");
+    System.out.println( "Creating questionnaire @{model}" );
+    Questionnaire questionnaire = new Questionnaire( @{ format( "string", model) } );
+    questionnaire.setContext( questionnaire.getId() );
+	questionnaire.setLabel( @{ format( "string", model ) } + " Input Form" );
 
-	questionnaire.setItems({  @foreach{fld : fields} @{format("string",model)}+"_"+@{format("string",compactUpperCase(fld.name))} @end{","}  });
+//	questionnaire.setItems( new String[] { @foreach{fld : fields} @{format("string",model)}+"_"+@{format("string",compactUpperCase(fld.name))} @end{","}  } );
 
-	insert(questionnaire);
+    insert(questionnaire);
 end
+
+//rule "Model_Questionnaire_@{model} Clear"
+
+rule "Model_Questionnaire_@{model} Trait"
+no-loop
+when
+    $mm : ModelMarker( "@{model}" ; enabled == true )
+          Questionnaire( $id : id, type == "@{model}" ) @watch( !* )
+then
+//    System.out.println( "Traiting questionnaire @{model}" );
+    org.drools.informer.ISurveyableTrait surv;
+    surv = don( $mm, org.drools.informer.ISurveyableTrait.class, true );
+    modify ( surv ) {
+        setQuestionnaireId( $id ),
+        setStateful( false ),
+        setSurveyEnabled( true );
+    }
+end
+
 @end{}
 
 

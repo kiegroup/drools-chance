@@ -177,7 +177,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        Answer ans2 = new Answer(getQId("MockPTSD","Age"),"30.2");
+        Answer ans2 = new Answer( getQId( "MockPTSD", "Age" ),"30.2" );
         getKSession().insert(ans2);
 
         getKSession().fireAllRules();
@@ -185,7 +185,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         Thread.sleep(200);
         System.err.println(reportWMObjects(getKSession()));
 
-        Assert.assertEquals( 0.2802, queryDoubleField("PTSD", "MockPTSD" ) );
+        Assert.assertEquals( 0.2802, queryDoubleField( "PTSD", "MockPTSD" ) );
 
         assertEquals( 1, getKSession().getObjects( new ClassObjectFilter( ModelMarker.class) ).size() );
 
@@ -233,8 +233,11 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
     }
 
 
-    private String getQId(String model, String field) {
-        return (String) getKSession().getQueryResults( "getItemId", model+"_"+field, model, Variable.v ).iterator().next().get("$id");
+    private String getQId( String model, String field ) {
+        // ref : getItemId( String $type, String $context, String $id )
+
+        String questId = (String) getKSession().getQueryResults( "getItemId", model, Variable.v, Variable.v ).iterator().next().get( "$id" );
+        return (String) getKSession().getQueryResults( "getItemId", model+"_"+field, questId, Variable.v ).iterator().next().get( "$id" );
 
     }
 

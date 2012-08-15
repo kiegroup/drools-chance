@@ -17,30 +17,18 @@
 
 
 @comment{
-        Inits all the incoming synapses of a neuron
+
 }
 
-@declare{'neuralBuildSynapsesRule'}
+@declare{'commonQueries'}
 
-rule "BuildSynapses_@{model}_Neuron@{index}"
-no-loop
-when
-    ModelMarker( "@{model}" ; enabled == true )
-then
-    Synapse syn;
-    @foreach{ con : links }
-           syn = new Synapse();
-           syn.setSource(@{format("string",con.from)});
-           syn.setTarget(@{format("string",index)});
-           syn.setContext(@{format("string",model)});
-           syn.setWeight(@{con.weight});
-        insertLogical(syn);
-    @end{}
+
+query modelMarker( String $model, ModelMarker $mm )
+    $mm := ModelMarker( $model ; )
 end
-
 
 
 @end{}
 
 
-@includeNamed{'neuralBuildSynapsesRule'}
+@includeNamed{'commonQueries'}

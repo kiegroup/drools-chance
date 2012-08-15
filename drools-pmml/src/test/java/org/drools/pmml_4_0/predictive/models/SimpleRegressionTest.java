@@ -78,9 +78,11 @@ public class SimpleRegressionTest extends DroolsAbstractPMMLTest {
         kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "x" );
         kSession.fireAllRules();
 
+        System.err.println( reportWMObjects( kSession ) );
+
         checkFirstDataFieldOfTypeStatus( tgt, true, false, "LinReg", "catC" );
 
-        System.err.println( reportWMObjects( kSession ) );
+
     }
 
 

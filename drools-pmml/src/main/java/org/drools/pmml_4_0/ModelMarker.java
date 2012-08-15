@@ -28,8 +28,10 @@ public class ModelMarker {
     private String modelClass;
 
     @Position(2)
-    private String modelUrl;
+    private boolean enabled         = true;
 
+    @Position(3)
+    private String modelUrl;
 
 
     public ModelMarker() { }
@@ -63,6 +65,24 @@ public class ModelMarker {
         this.modelUrl = modelUrl;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public String toString() {
+        return "ModelMarker{" +
+                "modelName='" + modelName + '\'' +
+                ", modelClass='" + modelClass + '\'' +
+                ", enabled=" + enabled +
+                ", modelUrl='" + modelUrl + '\'' +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,7 +90,6 @@ public class ModelMarker {
 
         ModelMarker that = (ModelMarker) o;
 
-        if (modelClass != null ? !modelClass.equals(that.modelClass) : that.modelClass != null) return false;
         if (modelName != null ? !modelName.equals(that.modelName) : that.modelName != null) return false;
 
         return true;
@@ -78,16 +97,7 @@ public class ModelMarker {
 
     @Override
     public int hashCode() {
-        int result = modelName != null ? modelName.hashCode() : 0;
-        result = 31 * result + (modelClass != null ? modelClass.hashCode() : 0);
-        return result;
+        return modelName != null ? modelName.hashCode() : 0;
     }
 
-    public String toString() {
-        return "ModelMarker{" +
-                ", modelName=" + modelName +
-                ", modelClass='" + modelClass + '\'' +
-                ", modelUrl='" + modelUrl + '\'' +
-                '}';
-    }
 }

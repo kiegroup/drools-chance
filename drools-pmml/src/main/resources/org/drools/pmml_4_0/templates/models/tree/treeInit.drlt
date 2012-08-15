@@ -26,7 +26,7 @@
 
 rule " Create tree @{context}"
 when
-    ModelMarker( "@{context}" ; )
+    ModelMarker( "@{context}" ; enabled == true )
 then
     TreeNode node;
     java.util.Map count;
