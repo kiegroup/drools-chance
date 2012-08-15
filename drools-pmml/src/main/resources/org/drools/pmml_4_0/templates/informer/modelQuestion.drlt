@@ -25,20 +25,33 @@
 }
 
 @declare{'modelQuestionRule'}
+
 rule "Model_Question_@{model}_@{name}_@{context}"
 no-loop
 salience 99
 when
-    ModelMarker( "@{model}" ; )
+    ModelMarker( "@{model}" ; enabled == true )
+    Questionnaire( type == "@{model}", $qid : id )
     not Question( type == @{ format( "string", model + "_" + name ) } )
 then
-    Question quest = new Question(@{format("string",model)}+"_"+@{format("string",name)});
-        quest.setContext(@{format("string",model)});
-        quest.setAnswerType(@{mapDatatypeToQuestion(dataType)});
-        quest.setPreLabel("Please insert " +  @{format("string",displayName)});
+    Question quest = new Question( @{ format( "string", model + "_" + name ) } );
+        quest.setContext( $qid );
+        quest.setAnswerType( @{ mapDatatypeToQuestion( dataType ) } );
+        quest.setPreLabel( "Please insert " +  @{ format( "string", displayName != null ? displayName : name ) } );
     insert(quest);
 end
-@end{}
+
+//rule "Model_Question_@{model}_@{name}_@{context} Clear"
+//no-loop
+//salience 99
+//when
+//    $mm : ModelMarker( "@{model}" ; enabled == false )
+//    $qt : Question( type == @{ format( "string", model + "_" + name ) } )
+//then
+//    retract( $qt );
+//end
+//
+//@end{}
 
 
 

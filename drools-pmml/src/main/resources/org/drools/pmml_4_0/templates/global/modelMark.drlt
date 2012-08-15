@@ -18,16 +18,25 @@
 @declare{'modelMarkRule'}
 
 rule "Mark_@{name}"
-salience -9999
+salience 9999
+no-loop
 when
-    not ModelMarker( "@{name}" ; )
+//    not ModelMarker( "@{name}" ; )
 then
+//    System.out.println( "Marking @{name}" );
     ModelMarker mark = new ModelMarker( "@{name}", "@{type}" );
-    insert( mark );
+    insertLogical( mark );
 end
 
-query modelMarker( String $model, ModelMarker $mm )
-    $mm := ModelMarker( $model ; )
+rule "Enable/Disable Model"
+when
+    $flag : Boolean() from entry-point "enable_@{name}"
+    $mark : ModelMarker( modelName == "@{name}", enabled != $flag )
+then
+    retract( $flag );
+    modify ( $mark ) {
+        setEnabled( $flag );
+    }
 end
 
 @end{}

@@ -19,10 +19,7 @@ package org.drools.pmml_4_0.informer;
 
 import org.drools.ClassObjectFilter;
 import org.drools.definition.type.FactType;
-import org.drools.informer.Answer;
-import org.drools.informer.DomainModelAssociation;
-import org.drools.informer.InvalidAnswer;
-import org.drools.informer.Note;
+import org.drools.informer.*;
 import org.drools.pmml_4_0.DroolsAbstractPMMLTest;
 import org.drools.runtime.rule.Variable;
 import org.junit.Test;
@@ -41,11 +38,42 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
     private static final String source = "org/drools/pmml_4_0/test_miningSchema.xml";
     private static final String source2 = "org/drools/pmml_4_0/test_ann_iris_prediction.xml";
     private static final String sourceMix = "org/drools/pmml_4_0/test_ann_mixed_inputs.xml";
+    private static final String source99 = "org/drools/pmml_4_0/test_ann_iris.xml";
 
 
     private static final String packageName = "org.drools.pmml_4_0.test";
 
 
+
+    @Test
+    public void testUnquestionable() {
+        setKSession( getModelSession( source99, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        getKSession().fireAllRules();
+
+        System.err.println( reportWMObjects( getKSession() ) );
+
+        assertEquals( 0, getKSession().getObjects( new ClassObjectFilter( Questionnaire.class ) ).size() );
+    }
+
+    @Test
+    public void testQuestionable() {
+        setKSession( getModelSession( source, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        getKSession().fireAllRules();
+
+        System.err.println( reportWMObjects( getKSession() ) );
+
+        Collection questionnaires = getKSession().getObjects( new ClassObjectFilter( Questionnaire.class ) );
+        assertEquals( 1, questionnaires.size() );
+        Questionnaire quest = (Questionnaire) questionnaires.iterator().next();
+        assertEquals( "Test_MLP", quest.getType() );
+        assertEquals( 2, quest.getNumAvailableItems() );
+        assertEquals( 2, quest.getItemList().size() );
+        assertEquals( quest.getId(), quest.getContext() );
+    }
 
 
     @Test
@@ -87,6 +115,10 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
 
         getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(2.5);
+        getKSession().fireAllRules();
+
+        System.out.println( "--------------------------------------------------------------------");
+
         getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(6);
         getKSession().fireAllRules();
 
@@ -130,7 +162,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
 
 
-        Answer ans1 = new Answer(getQId("Mixed","Gender"),"male");
+        Answer ans1 = new Answer( getQId( "Mixed", "Gender" ), "male" );
 
         getKSession().insert(ans1);
         getKSession().getWorkingMemoryEntryPoint("in_Domicile").insert("rural");
@@ -191,49 +223,50 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testGenerateInputsByAnswer() throws Exception {
-        setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKSession(getModelSession( source, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
 
         getKSession().fireAllRules();
 
+        System.err.println( reportWMObjects( getKSession() ) );
 
-        String qid1 = getQId("Test_MLP","Feat1");
-        String qid2 = getQId("Test_MLP","Feat2");
+        String qid1 = getQId( "Test_MLP", "Feat1" );
+        String qid2 = getQId( "Test_MLP", "Feat2" );
 
-        Answer ans1 = new Answer(qid1,"2.5");
-        Answer ans2 = new Answer(qid2,"5");
+        Answer ans1 = new Answer( qid1, "2.5" );
+        Answer ans2 = new Answer( qid2, "5" );
 
-        getKSession().insert(ans1);
-        getKSession().insert(ans2);
+        getKSession().insert( ans1 );
+        getKSession().insert( ans2 );
 
         getKSession().fireAllRules();
 
-        FactType feat1 = getKbase().getFactType("org.drools.pmml_4_0.test", "Feat1");
-        FactType feat2 = getKbase().getFactType("org.drools.pmml_4_0.test", "Feat2");
+        FactType feat1 = getKbase().getFactType( "org.drools.pmml_4_0.test", "Feat1" );
+        FactType feat2 = getKbase().getFactType( "org.drools.pmml_4_0.test", "Feat2" );
 
-        Collection c = getKSession().getObjects(new ClassObjectFilter(feat2.getFactClass()));
-        assertEquals(1,c.size());
+        Collection c = getKSession().getObjects( new ClassObjectFilter( feat2.getFactClass() ) );
+        assertEquals( 1, c.size() );
 
         Iterator i2 = c.iterator();
-        while (i2.hasNext()) {
+        while ( i2.hasNext() ) {
             Object o = i2.next();
-            if (feat2.get(o,"context") != null)
-                assertEquals(5, feat2.get(o,"value"));
+            if ( feat2.get( o, "context" ) != null )
+                assertEquals( 5, feat2.get( o, "value" ) );
         }
 
 
-        Collection d = getKSession().getObjects(new ClassObjectFilter(feat1.getFactClass()));
-        assertEquals(1, d.size());
+        Collection d = getKSession().getObjects(new ClassObjectFilter( feat1.getFactClass() ) );
+        assertEquals( 1, d.size( ) );
 
         Iterator i1 = d.iterator();
-        while (i1.hasNext()) {
+        while ( i1.hasNext() ) {
             Object o = i1.next();
-            if (feat1.get(o,"context") != null)
-                assertEquals(2.5, feat1.get(o,"value"));
+            if ( feat1.get( o,"context" ) != null )
+                assertEquals( 2.5, feat1.get( o, "value" ) );
         }
 
 
-        System.err.println(reportWMObjects(getKSession()));
+        System.err.println( reportWMObjects( getKSession() ) );
 
     }
 
@@ -310,32 +343,35 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testInvalidValues() throws Exception {
-        setKSession(getModelSession(new String[] {source2},VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKSession( getModelSession( new String[] { source2 }, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(5);
+        getKSession().getWorkingMemoryEntryPoint( "in_Feat2" ).insert( 5 );
 
         getKSession().fireAllRules();
 
-        System.err.println(reportWMObjects(getKSession()));
+        System.err.println( reportWMObjects( getKSession() ) );
 
 
-        FactType type = getKbase().getFactType(packageName,"Feat2");
-        checkFirstDataFieldOfTypeStatus(type,false,false,"Neuiris",5);
+        FactType type = getKbase().getFactType( packageName, "Feat2" );
+        checkFirstDataFieldOfTypeStatus( type, false, false, "Neuiris", 5 );
 
-        assertEquals(4, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
+        assertEquals( 4, getKSession().getObjects(new ClassObjectFilter( InvalidAnswer.class ) ).size() );
 
-        assertEquals(0,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
+        assertEquals( 0, getKSession().getObjects( new ClassObjectFilter( Note.class ) ).size() );
 
     }
 
 
 
 
-    private String getQId(String model, String field) {
-        return (String) getKSession().getQueryResults( "getItemId", model+"_"+field, model, Variable.v ).iterator().next().get("$id");
+    private String getQId( String model, String field ) {
+        // ref : getItemId( String $type, String $context, String $id )
+
+        String questId = (String) getKSession().getQueryResults( "getItemId", model, Variable.v, Variable.v ).iterator().next().get( "$id" );
+        return (String) getKSession().getQueryResults( "getItemId", model+"_"+field, questId, Variable.v ).iterator().next().get( "$id" );
 
     }
 
@@ -354,32 +390,32 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testMultipleModels() throws Exception {
-        setKSession(getModelSession(new String[] {source,source2},VERBOSE));
+        setKSession( getModelSession( new String[] { source, source2 }, true ) );
         setKbase(getKSession().getKnowledgeBase());
-        FactType petalNumType = getKbase().getFactType(packageName,"Feat2");
-        FactType out = getKbase().getFactType(packageName,"OutSepLen");
-        FactType sepalType = getKbase().getFactType(packageName,"SepalLen");
+        FactType petalNumType = getKbase().getFactType( packageName, "Feat2" );
+        FactType out = getKbase().getFactType( packageName, "OutSepLen" );
+        FactType sepalType = getKbase().getFactType( packageName, "SepalLen" );
 
 
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(4);
+        getKSession().getWorkingMemoryEntryPoint( "in_Feat2" ).insert( 4 );
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalWid").insert(1);
-        getKSession().getWorkingMemoryEntryPoint("in_SepalWid").insert(30);
-        getKSession().getWorkingMemoryEntryPoint("in_Species").insert("virginica");
+        getKSession().getWorkingMemoryEntryPoint( "in_PetalWid" ).insert( 1 );
+        getKSession().getWorkingMemoryEntryPoint( "in_SepalWid" ).insert( 30 );
+        getKSession().getWorkingMemoryEntryPoint( "in_Species" ).insert( "virginica" );
 
-
+        // one question for each model is not answered
         getKSession().fireAllRules();
 
-//        System.err.println(reportWMObjects(getKSession()));
+        System.err.println(reportWMObjects(getKSession()));
 
 
 
-        checkFirstDataFieldOfTypeStatus(petalNumType,false,false,"Neuiris",4);
-        assertEquals(6, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
-        assertEquals(2, getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
+        checkFirstDataFieldOfTypeStatus( petalNumType, false, false, "Neuiris", 4 );
+        assertEquals( 2, getKSession().getObjects( new ClassObjectFilter( InvalidAnswer.class ) ).size() );
+        assertEquals( 2, getKSession().getObjects( new ClassObjectFilter( Note.class ) ).size() );
 
 
 
@@ -397,8 +433,8 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neuiris",40);
 
-        assertEquals(5, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
-        assertEquals(4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
+        assertEquals( 1, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
+        assertEquals( 4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
         checkFirstDataFieldOfTypeStatus(out,true,false,"Neuris",42);
         checkFirstDataFieldOfTypeStatus(sepalType,true,false,"Neuiris",42);
@@ -420,8 +456,8 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neuiris",40);
 
-        assertEquals(6, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
-        assertEquals(4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
+        assertEquals( 2, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
+        assertEquals( 4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
         checkFirstDataFieldOfTypeStatus(out,true,false,"Neuiris",42);
         assertEquals(1, getKSession().getObjects(new ClassObjectFilter(sepalType.getFactClass())).size());
@@ -443,8 +479,8 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neuiris",101);
 
-        assertEquals(5, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
-        assertEquals(4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
+        assertEquals( 1, getKSession().getObjects(new ClassObjectFilter(InvalidAnswer.class)).size());
+        assertEquals( 4,getKSession().getObjects(new ClassObjectFilter(Note.class)).size());
 
         checkFirstDataFieldOfTypeStatus(out,true,false,"Neuiris",23);
         checkFirstDataFieldOfTypeStatus(sepalType,true,false,"Neuiris",23);
@@ -456,6 +492,96 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
     }
 
+
+
+
+    @Test
+    public void testModelProgress() throws Exception {
+
+
+        setKSession(getModelSession(new String[] {sourceMix},true));
+        setKbase(getKSession().getKnowledgeBase());
+
+        getKSession().fireAllRules();
+
+        FactType progressType = getKbase().getFactType( "org.drools.informer", "ProgressStatus" );
+
+
+        Answer ans1 = new Answer( getQId( "Mixed", "Gender" ), "male" );
+
+        getKSession().insert(ans1);
+        getKSession().fireAllRules();
+
+        Object progress = getKSession().getObjects( new ClassObjectFilter( progressType.getFactClass()) ).iterator().next();
+        Integer progressNum = (Integer) progressType.get( progress, "percentage" );
+
+        System.out.println( progressNum );
+        assertEquals( 20, progressNum.intValue() );
+
+
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        getKSession().getWorkingMemoryEntryPoint("in_Domicile").insert("rural");
+
+        getKSession().fireAllRules();
+
+
+        progress = getKSession().getObjects( new ClassObjectFilter( progressType.getFactClass()) ).iterator().next();
+        progressNum = (Integer) progressType.get( progress, "percentage" );
+
+        assertEquals( 40, progressNum.intValue() );
+
+        System.out.println("---------------------------------------------------------------------------------------");
+
+
+        Answer ans2 = new Answer(getQId("Mixed","Scrambled"),"7");
+        getKSession().insert(ans2);
+
+
+        Answer ans3 = new Answer(getQId("Mixed","NoOfClaims"),"1");
+        getKSession().insert(ans3);
+
+        getKSession().fireAllRules();
+
+
+        progress = getKSession().getObjects( new ClassObjectFilter( progressType.getFactClass()) ).iterator().next();
+        progressNum = (Integer) progressType.get( progress, "percentage" );
+
+        assertEquals( 80, progressNum.intValue() );
+
+
+        Answer ans4 = new Answer(getQId("Mixed","AgeOfCar"),"-3");
+        getKSession().insert(ans4);
+
+        getKSession().fireAllRules();
+
+
+        progress = getKSession().getObjects( new ClassObjectFilter( progressType.getFactClass()) ).iterator().next();
+        progressNum = (Integer) progressType.get( progress, "percentage" );
+
+        System.err.println(reportWMObjects(getKSession()));
+
+        assertEquals( 80, progressNum.intValue() );
+
+
+
+        Answer ans5 = new Answer(getQId("Mixed","AgeOfCar"),"4.0");
+        getKSession().insert(ans5);
+
+        getKSession().fireAllRules();
+
+
+        progress = getKSession().getObjects( new ClassObjectFilter( progressType.getFactClass()) ).iterator().next();
+        progressNum = (Integer) progressType.get( progress, "percentage" );
+
+        assertEquals( 100, progressNum.intValue() );
+
+
+        System.err.println(reportWMObjects(getKSession()));
+
+
+
+    }
 
 
 

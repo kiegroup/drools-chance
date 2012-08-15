@@ -17,15 +17,16 @@
 
 
 @declare{'modelAddQuestionsToQuestionnaireRule'}
-rule "Assignment"
-no-loop
-salience -100
+rule "Assignment - @{model}"
 when
-    $questionnaire : Questionnaire( $ctx : context == @{format("string",model)},
-                                    $items : itemList )
-    $question      : Question( $id : id not memberOf $items, context == $ctx )
+    $questionnaire : Questionnaire( $type : type == @{ format( "string", model ) },
+                                    $items : itemList,
+                                    $ctx : context
+                                    ) @watch( items )
+    $question      : Question( $id : id, id not memberOf $items, context == $ctx )
 then
     modify ( $questionnaire ) {
+        addAvailableItem( $id ),
         addItem( $id );
     }
 end

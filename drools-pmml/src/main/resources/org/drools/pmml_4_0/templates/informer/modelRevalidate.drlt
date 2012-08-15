@@ -30,22 +30,23 @@ rule "Model_Revalidate"
 no-loop
 salience 50
 when
-    question : Question(questionId : id, answerType != null, answer : answer != null )
+    question : Question(questionId : id, answerType != null, answer : answer != null ) @watch(*)
 	association : DomainModelAssociation(questionId == questionId, object : object, property : property, lastAnswer == answer )
 	$bean : DataField( this == object, valid == false )
 then
 //    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> REVAL : " + $bean + " on " + association + " sue to " + question );
-    $bean.setValid(false);
 
     Class propertyClass = PropertyUtils.getPropertyType(object, property);
 	Object propertyValue = DomainModelSupport.answerToObject(question.getBasicAnswerType(), answer, propertyClass);
 	Object oldPropertyValue = PropertyUtils.getProperty(object, property);
 	PropertyUtils.setProperty(object, property, propertyValue);
 
-	association.setLastAnswer(answer);
-
-    modify( $bean ) {}
-	modify( association ) {}
+    modify( $bean ) {
+        setValid(false);
+    }
+	modify( association ) {
+	    setLastAnswer(answer)
+	}
 
 end
 

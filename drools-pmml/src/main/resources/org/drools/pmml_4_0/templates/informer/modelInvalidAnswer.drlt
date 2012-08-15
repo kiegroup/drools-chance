@@ -29,12 +29,10 @@
 rule "Invalid_Answer_for_Question"
 no-loop
 when
-
     $bean  : DataField( valid == false, $ct : context )
     $assoc : DomainModelAssociation( $id : questionId, object == $bean )
     $quest : Question( id == $id )
 then
-    System.out.println("MOdel-driven invalid answer " + $bean);
     insertLogical( new InvalidAnswer($id, "invalid",  " Value of " + $bean.getClass().getSimpleName() + " not valid in model " + $ct + " >>> " + $bean) );
 end
 @end{}

@@ -26,17 +26,17 @@
 
 rule "Init Regression Model @{context} : @{target} - @{category}"
 when
-    ModelMarker( "@{context}" ; )
+    ModelMarker( "@{context}" ; enabled == true )
 then
-    insert( new RegTable( "@{context}",
-                          @if{ target != null } "@{target}" @else{} null @end{},
-                          @if{ category != null } "@{category}" @else{} null @end{},
-                          new double[] { @foreach{ numC : numCoeffs } @{numC} @end{','} },
-                          new double[] { @foreach{ numE : numExps } @{numE} @end{','} },
-                          new double[] { @foreach{ catC : catCoeffs } @{catC} @end{','} },
-                          new double[] { @foreach{ trmC : trmCoeffs } @{trmC} @end{','} },
-                          @{c0},
-                          @{index}
+    insertLogical( new RegTable( "@{context}",
+                                 @if{ target != null } "@{target}" @else{} null @end{},
+                                 @if{ category != null } "@{category}" @else{} null @end{},
+                                 new double[] { @foreach{ numC : numCoeffs } @{numC} @end{','} },
+                                 new double[] { @foreach{ numE : numExps } @{numE} @end{','} },
+                                 new double[] { @foreach{ catC : catCoeffs } @{catC} @end{','} },
+                                 new double[] { @foreach{ trmC : trmCoeffs } @{trmC} @end{','} },
+                                 @{c0},
+                                 @{index}
     ) );
 end
 

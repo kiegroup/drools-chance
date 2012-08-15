@@ -18,6 +18,7 @@ package org.drools.pmml_4_0.compiler;
 import org.drools.pmml_4_0.descr.*;
 import org.drools.pmml_4_0.ModelMarker;
 import org.mvel2.templates.*;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -96,10 +97,13 @@ salience 9999
 when
     $h : Header()
 then
-    HashMap map = new HashMap(7);
-        map.put("pack",utils.getPack());
-    applyTemplate("pmml_header.drlt", $h, registry, map, theory);
-    retract($h);
+    HashMap map = new HashMap( 3 );
+        map.put( "pack", utils.getPack() );
+    applyTemplate( "pmml_header.drlt", $h, registry, map, theory );
+
+    applyTemplate( "commonQueries.drlt", $h, registry, map, theory );
+
+    retract( $h );
 end
 
 
@@ -133,7 +137,7 @@ when
     eval( ! utils.isModelBeanDefined("DataField") )
 then
     utils.addModelBeanDefinition("DataField");
-    applyTemplate("rootDataField.drlt", utils, registry, new HashMap(), theory);
+    applyTemplate("rootDataField.drlt", utils, registry, Collections.emptyMap(), theory);
 end
 
 
@@ -183,7 +187,7 @@ when
         Value( property != "invalid", property != "missing" ) from $vals
     )
 then
-    HashMap map = new HashMap( 7 );
+    HashMap map = new HashMap( 11 );
         map.put( "context", utils.context );
         map.put( "fullName", $fld.displayName );
         map.put( "name", utils.compactUpperCase( $fld.name ) );

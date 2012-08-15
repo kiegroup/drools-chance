@@ -12,13 +12,16 @@ rule "Model_Question_ReBinding_@{model}_@{name}"
 dialect "mvel"
 no-loop
 when
-    $quest: Question( $id : id, $type : type == "@{model+"_"+name}", lastAnswer != null )
+    $quest: Question( $id : id, $type : type == "@{model+"_"+name}", lastAnswer != null ) @watch(*)
     $bean : @{name}( context == @{format("string",context)} )
     $assoc : DomainModelAssociation( questionId == $id, object != $bean )
 then
-    System.out.println("Rebinding " + $bean + " using " + $assoc );
-        $assoc.setObject($bean);
-    //update($assoc);
+//    System.out.println("Rebinding " + $bean + " using " + $assoc );
+
+    modify ( $assoc ) {
+        setObject( $bean );
+    }
+
 end
 @end{}
 

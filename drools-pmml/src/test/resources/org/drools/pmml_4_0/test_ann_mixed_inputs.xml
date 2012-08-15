@@ -149,10 +149,12 @@
         </DerivedField>
       </NeuralOutput>
     </NeuralOutputs>
-  </NeuralNetwork>
 
     <Extension>
-        <Surveyable/>
+      <Surveyable/>
     </Extension>
+
+  </NeuralNetwork>
+
 
 </PMML>

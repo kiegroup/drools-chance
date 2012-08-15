@@ -26,7 +26,7 @@
 
 rule "Init Clusters @{context}"
 when
-    ModelMarker( "@{context}" ; )
+    ModelMarker( "@{context}" ; enabled == true )
 then
     java.util.List clusters = new java.util.ArrayList();
     ClusterSet model = new ClusterSet(
@@ -57,7 +57,7 @@ then
         insertLogical( cluster@{j} );
     @end{}
 
-    insert( model );
+    insertLogical( model );
 end
 
 

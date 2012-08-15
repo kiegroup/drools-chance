@@ -26,9 +26,11 @@
 @code{ int ctr = 0; }
 rule "Init SupportVector @{modelName}"
 when
+    ModelMarker( "@{context}" ; enabled == true )
 then
     @foreach{ sv : vectors }
-    insert( new SupportVector (  "@{modelName}",
+    insertLogical( new SupportVector (
+                                 "@{modelName}",
                                  "@{sv.supportVector.vectorId}",
                                   @{sv.index},
                                   @if{ sv.sparse }

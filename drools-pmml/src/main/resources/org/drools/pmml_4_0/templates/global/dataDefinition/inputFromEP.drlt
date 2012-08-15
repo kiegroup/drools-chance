@@ -44,9 +44,9 @@ then
         input.setMissing(false);
         input.setValid(@{notRestricted});
         input.setContext(null);
-    System.err.println("Rule " + drools.getRule().getName() + " for input " + $in + " : will insert  " + input.toString());
-    retract($in);
-    insert(input);
+    //System.out.println("Rule " + drools.getRule().getName() + " for input " + $in + " : will insert  " + input.toString());
+    retract( $in );
+    insert( input );
 end
 
 
@@ -56,8 +56,8 @@ when
     $new: @{box(type)}() from entry-point "in_@{name}"
     $old: @{name}( value != $new )
 then
-    System.err.println(" Overriding previous values " + $old );
-    retract($old);
+    //System.out.println(" Overriding previous values " + $old + " because of " + $new );
+    retract( $old );
 end
 @end{}
 
