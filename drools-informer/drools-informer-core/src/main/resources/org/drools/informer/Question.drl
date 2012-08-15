@@ -92,12 +92,12 @@ then
 		InvalidAnswer invalidAnswer = new InvalidAnswer(questionId,
 		                                                "invalid",
 		                                                "This is not a valid number");
-		insert(invalidAnswer);
+		insert( invalidAnswer );
 	} catch (ParseException e) {
 		InvalidAnswer invalidAnswer = new InvalidAnswer(questionId,
 		                                                "invalid",
 		                                                "This is not a valid value");
-		insert(invalidAnswer);
+		insert( invalidAnswer );
 	}
 end
 
@@ -125,7 +125,7 @@ when
 	$answer     : Answer( questionId : questionId );
 	not           Question( id == questionId )
 then
-	retract($answer);
+	retract( $answer );
 end
 
 
@@ -144,9 +144,9 @@ salience -1 // after: any rules that create questions
 when
 	$question   : Question( required == false, answered == false ) @watch(*)
 then
-	InvalidAnswer invalidAnswer = new InvalidAnswer($question.getId(), "You must answer this question");
+	InvalidAnswer invalidAnswer = new InvalidAnswer( $question.getId(), "You must answer this question" );
 	invalidAnswer.setType("missing");
-	insertLogical(invalidAnswer);
+	insertLogical( invalidAnswer );
 end
 
 rule "invalid ansewer severity"
@@ -163,24 +163,23 @@ end
 rule "has invalid answers"
 salience -2 // after: any rules that create invalid answers
 when
-	$quest      : Questionnaire( invalidAnswers == false )
-    exists        InvalidAnswer()
+	$quest      : Questionnaire( invalidAnswers == false, $items : items )
+    exists        InvalidAnswer( questionId memberOf $items )
 then
     modify ( $quest ) {
         setInvalidAnswers( true );
     }
 end
 
-
-rule "doesn't have invalid answers"
+rule "has no invalid answers"
 salience -2 // after: any rules that create invalid answers
 when
-	$quest      : Questionnaire( invalidAnswers == true )
-	not           InvalidAnswer()
+	$quest      : Questionnaire( invalidAnswers == true, $items : items )
+    not        InvalidAnswer( questionId memberOf $items )
 then
     modify ( $quest ) {
-	    setInvalidAnswers( false );
-	}
+        setInvalidAnswers( false );
+    }
 end
 
 

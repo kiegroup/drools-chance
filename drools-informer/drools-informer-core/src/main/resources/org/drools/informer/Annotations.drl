@@ -127,6 +127,7 @@ then
 
 
     modify ( $qst ) {
+        addAvailableItem( q.getId() ),
         addItem( q.getId() );
     }
     insert( q );
@@ -164,6 +165,7 @@ then
 
 
     modify ( $qst ) {
+        addAvailableItem( mcq.getId() ),
         addItem( mcq.getId() );
     }
     insert( mcq );
