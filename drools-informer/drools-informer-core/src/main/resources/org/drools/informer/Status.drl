@@ -54,7 +54,7 @@ query includes( Group $master, String $qid )
       and
       $inner  := Group( id memberOf $list ) @watch( * )
       and
-                 ?includes( $inner, $qid ; )
+                 includes( $inner, $qid ; )
     )
 end
 
@@ -64,7 +64,7 @@ query size( String $formId, long $num )
     Set( $num := size ) from accumulate (
                    $q : Question( $qid : id ) @watch( * )
                     and
-                    ?includes( $quest, $qid ; )
+                    includes( $quest, $qid ; )
                 ,
                 collectSet ( $q )
              )
@@ -82,6 +82,7 @@ end
 
 
 rule "Questionnaire Size"
+salience -5
 when
     $quest : Questionnaire( $formId : id )
              size( $formId, $num ; )
@@ -114,7 +115,9 @@ when
              accumulate (
                    $q : Question( $qid : id, lastAnswer != null ) @watch( * )
                     and
-                    ?includes( $quest, $qid; )
+                    not InvalidAnswer( questionId == $qid )
+                    and
+                    includes( $quest, $qid; )
                 ,
                 $num : count ( $q )
              )
