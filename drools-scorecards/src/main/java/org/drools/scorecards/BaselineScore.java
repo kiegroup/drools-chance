@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package org.drools.scorecards.pmml;
+package org.drools.scorecards;
 
-public class PMMLExtensionNames {
+import java.io.Serializable;
 
-    public static final String SCORECARD_PACKAGE = "scorecardPackage";
-    //public static final String SCORECARD_OBJECT_CLASS = "objectClass";
-    //public static final String SCORECARD_BOUND_VAR_NAME = "boundVariableName";
-    public static final String SCORECARD_IMPORTS = "importsFromDelimitedString";
+public class BaselineScore extends InitialScore implements Serializable {
+    protected String characteristic;
 
-    public static final String CHARACTERTISTIC_FIELD = "field";
-    public static final String CHARACTERTISTIC_DATATYPE = "dataType";
+    public BaselineScore(String scorecardName, String characteristic, double score) {
+        super(scorecardName, score);
+        this.characteristic = characteristic;
+    }
+
+    public String getCharacteristic() {
+        return characteristic;
+    }
+
+    public void setCharacteristic(String characteristic) {
+        this.characteristic = characteristic;
+    }
 }
