@@ -37,6 +37,7 @@ import org.drools.scorecards.EventDataCollector;
 import org.drools.scorecards.ScorecardError;
 import org.drools.scorecards.parser.ScorecardParseException;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
+import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 
 public class XLSEventDataCollector implements EventDataCollector {
 
@@ -140,6 +141,18 @@ public class XLSEventDataCollector implements EventDataCollector {
         } else if (XLSKeywords.SCORECARD_USE_REASONCODES.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr, currentColCtr + 1, "useReasonCodes", scorecard, null);
 
+        } else if (XLSKeywords.SCORECARD_RESULTANT_SCORE_CLASS.equalsIgnoreCase(stringCellValue)) {
+            Extension extension = new Extension();
+            extension.setName(PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_CLASS);
+            scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
+            addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, null);
+
+        } else if (XLSKeywords.SCORECARD_RESULTANT_SCORE_FIELD.equalsIgnoreCase(stringCellValue)) {
+            Extension extension = new Extension();
+            extension.setName(PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_FIELD);
+            scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
+            addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, null);
+
         } else if (XLSKeywords.SCORECARD_BASE_SCORE.equalsIgnoreCase(stringCellValue)) {
             addExpectation(currentRowCtr, currentColCtr + 1, "initialScore", scorecard, null);
 
@@ -169,7 +182,13 @@ public class XLSEventDataCollector implements EventDataCollector {
             addExpectation(currentRowCtr + 1, currentColCtr, "name", _characteristic, "Characteristic (Property) Display Name is missing.");
 
             Extension extension = new Extension();
-            extension.setName("cellRef");
+            extension.setName(PMMLExtensionNames.SCORECARD_CELL_REF);
+            addExpectation(currentRowCtr + 1, currentColCtr, "value", extension, null);
+            _characteristic.getExtensions().add(extension);
+
+        } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_EXTERNAL_CLASS.equalsIgnoreCase(stringCellValue)) {
+            Extension extension = new Extension();
+            extension.setName(PMMLExtensionNames.CHARACTERTISTIC_EXTERNAL_CLASS);
             addExpectation(currentRowCtr + 1, currentColCtr, "value", extension, null);
             _characteristic.getExtensions().add(extension);
 
@@ -282,10 +301,9 @@ public class XLSEventDataCollector implements EventDataCollector {
         expectations.clear();
         cellRangeList = null;
         _characteristic = null;
-        scorecard = new Scorecard();
-        //default false, until the spreadsheet enables explicitly.
-        scorecard.setUseReasonCodes(Boolean.FALSE);
-        scorecard.setIsScorable(Boolean.TRUE);
+
+        scorecard = ScorecardPMMLUtils.createScorecard();
+
         output = new Output();
         characteristics = new Characteristics();
         miningSchema = new MiningSchema();

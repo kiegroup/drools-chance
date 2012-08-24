@@ -22,18 +22,21 @@ public class XLSKeywords {
     //public static final String SCORECARD_TYPE = "Scorecard Type";
     //public static final String SCORECARD_OBJECT = "Object";
     //public static final String SCORECARD_BOUND_VARIABLE = "Bound Variable";
-    //public static final String SCORECARD_SCORE_VAR = "Score Var";
+    public static final String SCORECARD_RESULTANT_SCORE_CLASS = "Resultant Score Class";
+    public static final String SCORECARD_RESULTANT_SCORE_FIELD = "Resultant Score Field";
+    public static final String SCORECARD_CHARACTERISTIC_EXTERNAL_CLASS = "Full Class Name";
+
     public static final String SCORECARD_BASE_SCORE = "Initial Score";
     public static final String SCORECARD_IMPORTS = "imports";
     public static final String SCORECARD_PACKAGE = "package";
     public static final String SCORECARD_USE_REASONCODES = "Use Reason Codes";
     public static final String SCORECARD_REASONCODE = "Reason Code";
     public static final String SCORECARD_REASONCODE_ALGORITHM = "Reason Code Algorithm";
-    //public static final String SCORECARD_GROUP_REASONCODE = "Reason Code";
 
     public static final String SCORECARD_CHARACTERISTIC_NAME = "Name";
     public static final String SCORECARD_CHARACTERISTIC_DATATYPE = "Data Type";
     public static final String SCORECARD_CHARACTERISTIC_BASELINE_SCORE = "Baseline Score";
+    //public static final String SCORECARD_GROUP_REASONCODE = "Reason Code";
     //public static final String SCORECARD_CHARACTERISTIC_WEIGHT = "Weight";
 
     public static final String SCORECARD_CHARACTERISTIC_BIN_ATTRIBUTE = "Characteristic";

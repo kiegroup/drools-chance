@@ -33,6 +33,7 @@ import org.drools.scorecards.EventDataCollector;
 import org.drools.scorecards.ScorecardError;
 import org.drools.scorecards.parser.AbstractScorecardParser;
 import org.drools.scorecards.parser.ScorecardParseException;
+import org.drools.scorecards.pmml.PMMLGenerator;
 
 public class XLSScorecardParser extends AbstractScorecardParser {
 
