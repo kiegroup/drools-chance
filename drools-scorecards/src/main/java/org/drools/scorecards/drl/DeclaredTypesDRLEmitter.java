@@ -27,6 +27,7 @@ import org.drools.scorecards.parser.xls.XLSKeywords;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.Condition;
+import org.drools.template.model.Consequence;
 import org.drools.template.model.Package;
 import org.drools.template.model.Rule;
 
@@ -49,7 +50,7 @@ public class DeclaredTypesDRLEmitter extends AbstractDRLEmitter{
     }
 
     @Override
-    public void internalEmitDRL(PMML pmml, List<Rule> ruleList, Package aPackage) {
+    protected void internalEmitDRL(PMML pmml, List<Rule> ruleList, Package aPackage) {
         //ignore
     }
 
@@ -68,7 +69,48 @@ public class DeclaredTypesDRLEmitter extends AbstractDRLEmitter{
         rule.addCondition(condition);
     }
 
-    @Override protected void addAdditionalSummationCondition(Rule calcTotalRule, Scorecard scorecard) {
-        //nothing additional
+    @Override
+    protected void addAdditionalReasonCodeConsequence(Rule rule, Scorecard scorecard) {
+        Consequence consequence = new Consequence();
+        consequence.setSnippet("$sc.setReasonCodes($reasons);");
+        rule.addConsequence(consequence);
+        consequence = new Consequence();
+        consequence.setSnippet("$sc.sortReasonCodes();");
+        rule.addConsequence(consequence);
+    }
+
+    @Override
+    protected void addAdditionalReasonCodeCondition(Rule rule, Scorecard scorecard) {
+        createEmptyScorecardCondition(rule, scorecard);
+    }
+
+    @Override
+    protected void addAdditionalSummationCondition(Rule calcTotalRule, Scorecard scorecard) {
+        createEmptyScorecardCondition(calcTotalRule, scorecard);
+    }
+
+    @Override
+    protected void addAdditionalSummationConsequence(Rule calcTotalRule, Scorecard scorecard) {
+
+        Consequence consequence = new Consequence();
+        if (scorecard.getInitialScore() > 0) {
+            consequence.setSnippet("$sc.setCalculatedScore(($calculatedScore+$initialScore));");
+        } else {
+            consequence.setSnippet("$sc.setCalculatedScore($calculatedScore);");
+        }
+        calcTotalRule.addConsequence(consequence);
+
+    }
+
+    protected void createEmptyScorecardCondition(Rule rule, Scorecard scorecard) {
+        String objectClass = scorecard.getModelName().replaceAll(" ", "");
+        StringBuilder stringBuilder = new StringBuilder();
+        String var = "$sc";
+
+        stringBuilder.append(var).append(" : ").append(objectClass).append("()");
+
+        Condition condition = new Condition();
+        condition.setSnippet(stringBuilder.toString());
+        rule.addCondition(condition);
     }
 }

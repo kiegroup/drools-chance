@@ -126,7 +126,9 @@ public class ScorecardCompiler {
 
     private void closeStream(final InputStream stream) {
         try {
-            stream.close();
+            if ( stream != null ) {
+                stream.close();
+            }
         } catch (final Exception e) {
             System.err.print("WARNING: Wasn't able to " + "correctly close stream for scorecard. " + e.getMessage());
         }

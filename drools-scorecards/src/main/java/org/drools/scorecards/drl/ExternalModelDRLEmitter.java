@@ -28,10 +28,9 @@ import org.dmg.pmml_4_1.Scorecard;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.Condition;
+import org.drools.template.model.Consequence;
 import org.drools.template.model.Package;
 import org.drools.template.model.Rule;
-
-import static junit.framework.Assert.*;
 
 public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
 
@@ -41,30 +40,56 @@ public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
     }
 
     @Override
-    public void internalEmitDRL(PMML pmml, List<Rule> ruleList, Package aPackage) {
+    protected void internalEmitDRL(PMML pmml, List<Rule> ruleList, Package aPackage) {
         //do nothing for now.
     }
 
     @Override
     protected void addLHSConditions(Rule rule, PMML pmmlDocument, Scorecard scorecard, Characteristic c, Attribute scoreAttribute) {
-        Condition condition = new Condition();
-        StringBuilder stringBuilder = new StringBuilder();
-        String var = "$sc";
-
-        String objectClass = scorecard.getModelName().replaceAll(" ", "");
-        stringBuilder.append(var).append(" : ").append(objectClass).append("()");
-        condition.setSnippet(stringBuilder.toString());
-        rule.addCondition(condition);
-
         Extension extension =  ScorecardPMMLUtils.getExtension(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_EXTERNAL_CLASS);
         if ( extension != null ) {
-            condition = new Condition();
-            stringBuilder = new StringBuilder("$");
+            Condition condition = new Condition();
+            StringBuilder stringBuilder = new StringBuilder("$");
             stringBuilder.append(c.getName()).append(" : ").append(extension.getValue());
             createFieldRestriction(c, scoreAttribute, stringBuilder);
             condition.setSnippet(stringBuilder.toString());
             rule.addCondition(condition);
         }
+    }
+
+    @Override
+    protected void addAdditionalReasonCodeConsequence(Rule rule, Scorecard scorecard) {
+
+    }
+
+    @Override
+    protected void addAdditionalReasonCodeCondition(Rule rule, Scorecard scorecard) {
+
+    }
+
+    @Override
+    protected void addAdditionalSummationConsequence(Rule calcTotalRule, Scorecard scorecard) {
+        String externalClassName =  null;
+        String fieldName =  null;
+        for (Object obj :scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()){
+            if ( obj instanceof Output) {
+                Output output = (Output)obj;
+                final List<OutputField> outputFields = output.getOutputFields();
+                final OutputField outputField = outputFields.get(0);
+                fieldName = outputField.getName();
+                externalClassName = ScorecardPMMLUtils.getExtension(outputField.getExtensions(), PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_CLASS).getValue();
+                break;
+            }
+        }
+        if ( fieldName != null && externalClassName != null) {
+            Consequence consequence = new Consequence();
+            StringBuilder stringBuilder = new StringBuilder("$");
+            stringBuilder.append(fieldName).append("Var").append(".set").append(Character.toUpperCase(fieldName.charAt(0))).append(fieldName.substring(1));
+            stringBuilder.append("($calculatedScore);");
+            consequence.setSnippet(stringBuilder.toString());
+            calcTotalRule.addConsequence(consequence);
+        }
+
     }
 
     @Override
@@ -76,7 +101,6 @@ public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
                 Output output = (Output)obj;
                 final List<OutputField> outputFields = output.getOutputFields();
                 final OutputField outputField = outputFields.get(0);
-                assertEquals("totalScore", outputField.getName());
                 fieldName = outputField.getName();
                 externalClassName = ScorecardPMMLUtils.getExtension(outputField.getExtensions(), PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_CLASS).getValue();
                 break;
@@ -89,5 +113,6 @@ public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
             condition.setSnippet(stringBuilder.toString());
             calcTotalRule.addCondition(condition);
         }
+
     }
 }

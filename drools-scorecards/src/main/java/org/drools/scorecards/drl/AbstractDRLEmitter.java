@@ -185,11 +185,6 @@ public abstract class AbstractDRLEmitter {
         return ruleList;
     }
 
-    protected abstract void addDeclaredTypeContents(StringBuilder stringBuilder, Scorecard scorecard);
-    public abstract void internalEmitDRL(PMML pmml, List<Rule> ruleList, Package aPackage);
-    protected abstract void addLHSConditions(Rule rule, PMML pmmlDocument, Scorecard scorecard, Characteristic c, Attribute scoreAttribute);
-
-
     protected void createInitialRule(List<Rule> ruleList, Scorecard scorecard) {
         if (scorecard.getInitialScore() > 0 || scorecard.isUseReasonCodes()){
             String objectClass = scorecard.getModelName().replaceAll(" ", "");
@@ -358,67 +353,45 @@ public abstract class AbstractDRLEmitter {
 
     protected void createSummationRules(List<Rule> ruleList, Scorecard scorecard) {
         String objectClass = scorecard.getModelName().replaceAll(" ", "");
-
         Rule calcTotalRule = new Rule(objectClass+"_calculateTotalScore",1,1);
         StringBuilder stringBuilder = new StringBuilder();
-        String var = "$sc";
-
-        stringBuilder.append(var).append(" : ").append(objectClass).append("()");
-
         Condition condition = new Condition();
-        condition.setSnippet(stringBuilder.toString());
-        calcTotalRule.addCondition(condition);
-
-        condition = new Condition();
-        stringBuilder = new StringBuilder();
         stringBuilder.append("$calculatedScore : Double() from accumulate (PartialScore(scorecardName ==\"").append(objectClass).append("\", $partialScore:score), sum($partialScore))");
         condition.setSnippet(stringBuilder.toString());
         calcTotalRule.addCondition(condition);
-
-        addAdditionalSummationCondition(calcTotalRule, scorecard);
-
-        Consequence consequence = new Consequence();
         if (scorecard.getInitialScore() > 0) {
             condition = new Condition();
             stringBuilder = new StringBuilder();
             stringBuilder.append("InitialScore(scorecardName == \"").append(objectClass).append("\", $initialScore:score)");
             condition.setSnippet(stringBuilder.toString());
             calcTotalRule.addCondition(condition);
-            consequence.setSnippet("$sc.setCalculatedScore(($calculatedScore+$initialScore));");
-        } else {
-            consequence.setSnippet("$sc.setCalculatedScore($calculatedScore);");
         }
-        calcTotalRule.addConsequence(consequence);
-
         ruleList.add(calcTotalRule);
+
         if (scorecard.isUseReasonCodes()) {
             String ruleName = objectClass+"_collectReasonCodes";
             Rule rule = new Rule(ruleName, 1, 1);
             rule.setDescription("collect and sort the reason codes as per the specified algorithm");
-
-            stringBuilder = new StringBuilder();
-            stringBuilder.append(var).append(" : ").append(objectClass).append("()");
-            condition = new Condition();
-            condition.setSnippet(stringBuilder.toString());
-            rule.addCondition(condition);
-
             condition = new Condition();
             stringBuilder = new StringBuilder();
             stringBuilder.append("$reasons : List() from accumulate ( PartialScore(scorecardName == \"").append(objectClass).append("\", $reasonCode : reasoncode ); collectList($reasonCode) )");
             condition.setSnippet(stringBuilder.toString());
             rule.addCondition(condition);
-
-            consequence = new Consequence();
-            consequence.setSnippet("$sc.setReasonCodes($reasons);");
-            rule.addConsequence(consequence);
-
-            consequence = new Consequence();
-            consequence.setSnippet("$sc.sortReasonCodes();");
-            rule.addConsequence(consequence);
-
             ruleList.add(rule);
+
+            addAdditionalReasonCodeCondition(rule, scorecard);
+            addAdditionalReasonCodeConsequence(rule, scorecard);
         }
+
+        addAdditionalSummationCondition(calcTotalRule, scorecard);
+        addAdditionalSummationConsequence(calcTotalRule, scorecard);
     }
 
-    protected abstract void addAdditionalSummationCondition(Rule calcTotalRule, Scorecard scorecard);
+    protected abstract void addDeclaredTypeContents(StringBuilder stringBuilder, Scorecard scorecard);
+    protected abstract void internalEmitDRL(PMML pmml, List<Rule> ruleList, Package aPackage);
+    protected abstract void addLHSConditions(Rule rule, PMML pmmlDocument, Scorecard scorecard, Characteristic c, Attribute scoreAttribute);
+    protected abstract void addAdditionalReasonCodeConsequence(Rule rule, Scorecard scorecard);
+    protected abstract void addAdditionalReasonCodeCondition(Rule rule, Scorecard scorecard);
+    protected abstract void addAdditionalSummationConsequence(Rule rule, Scorecard scorecard);
+    protected abstract void addAdditionalSummationCondition(Rule rule, Scorecard scorecard);
 }
