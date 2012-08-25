@@ -20,7 +20,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.dmg.pmml_4_1.PMML;
-import org.drools.scorecards.drl.ScorecardDRLEmitter;
+import org.drools.scorecards.drl.DeclaredTypesDRLEmitter;
+import org.drools.scorecards.drl.ExternalModelDRLEmitter;
 import org.drools.scorecards.parser.AbstractScorecardParser;
 import org.drools.scorecards.parser.ScorecardParseException;
 import org.drools.scorecards.parser.xls.XLSEventDataCollector;
@@ -94,7 +95,29 @@ public class ScorecardCompiler {
     }
 
     public String getDRL(){
-        return  (pmmlDocument != null)? new ScorecardDRLEmitter().emitDRL(pmmlDocument) : null;
+        return  getDRL(DrlType.INTERNAL_DECLARED_TYPES);
+    }
+
+    public String getDRL(DrlType drlType){
+        if (pmmlDocument != null) {
+            if (drlType == DrlType.INTERNAL_DECLARED_TYPES) {
+                return new DeclaredTypesDRLEmitter().emitDRL(pmmlDocument);
+            } else if (drlType == DrlType.EXTERNAL_OBJECT_MODEL) {
+                return new ExternalModelDRLEmitter().emitDRL(pmmlDocument);
+            }
+        }
+        return  null;
+    }
+
+    public static String convertToDRL(PMML pmml, DrlType drlType){
+        if (pmml != null) {
+            if (drlType == DrlType.INTERNAL_DECLARED_TYPES) {
+                return new DeclaredTypesDRLEmitter().emitDRL(pmml);
+            } else if (drlType == DrlType.EXTERNAL_OBJECT_MODEL) {
+                return new ExternalModelDRLEmitter().emitDRL(pmml);
+            }
+        }
+        return  null;
     }
 
     public List<ScorecardError> getScorecardParseErrors() {
@@ -107,5 +130,9 @@ public class ScorecardCompiler {
         } catch (final Exception e) {
             System.err.print("WARNING: Wasn't able to " + "correctly close stream for scorecard. " + e.getMessage());
         }
+    }
+
+    public static enum DrlType {
+        INTERNAL_DECLARED_TYPES, EXTERNAL_OBJECT_MODEL
     }
 }

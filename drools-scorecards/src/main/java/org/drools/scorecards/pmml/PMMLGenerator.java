@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.scorecards.parser.xls;
+package org.drools.scorecards.pmml;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -42,11 +42,9 @@ import org.dmg.pmml_4_1.SimpleSetPredicate;
 import org.dmg.pmml_4_1.Timestamp;
 import org.drools.core.util.StringUtils;
 import org.drools.scorecards.StringUtil;
-import org.drools.scorecards.pmml.PMMLExtensionNames;
-import org.drools.scorecards.pmml.PMMLOperators;
-import org.drools.scorecards.pmml.ScorecardPMMLUtils;
+import org.drools.scorecards.parser.xls.XLSKeywords;
 
-class PMMLGenerator {
+public class PMMLGenerator {
 
     public PMML generateDocument(Scorecard pmmlScorecard) {
         //first clean up the scorecard
@@ -109,9 +107,17 @@ class PMMLGenerator {
                 Characteristics characteristics = (Characteristics) obj;
                 for (org.dmg.pmml_4_1.Characteristic characteristic : characteristics.getCharacteristics()) {
 
-                    String dataType = ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
-
                     DataField dataField = new DataField();
+                    String dataType = ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
+                    String factType = ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_FACTTYPE);
+
+                    if ( factType != null ){
+                        Extension extension = new Extension();
+                        extension.setName("FactType");
+                        extension.setValue(factType);
+                        dataField.getExtensions().add(extension);
+                    }
+
                     if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)) {
                         dataField.setDataType(DATATYPE.DOUBLE);
                         dataField.setOptype(OPTYPE.CONTINUOUS);
@@ -141,13 +147,24 @@ class PMMLGenerator {
     }
 
     private void createAndSetOutput(Scorecard pmmlScorecard) {
+        Extension classExtension = ScorecardPMMLUtils.getExtension(pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_CLASS);
+        Extension fieldExtension = ScorecardPMMLUtils.getExtension(pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_FIELD);
         for (Object obj : pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
             if (obj instanceof Output) {
                 Output output = (Output)obj;
                 OutputField outputField = new OutputField();
                 outputField.setDataType(DATATYPE.DOUBLE);
                 outputField.setDisplayName("Final Score");
-                outputField.setName("calculatedScore");
+                if ( fieldExtension != null ) {
+                    pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas().remove(fieldExtension);
+                    outputField.setName(fieldExtension.getValue());
+                } else {
+                    outputField.setName("calculatedScore");
+                }
+                if ( classExtension != null ) {
+                    pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas().remove(classExtension);
+                    outputField.getExtensions().add(classExtension);
+                }
                 output.getOutputFields().add(outputField);
                 outputField.setFeature(RESULTFEATURE.PREDICTED_VALUE);
                 break;

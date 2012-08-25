@@ -19,6 +19,7 @@ package org.drools.scorecards.pmml;
 import java.util.List;
 
 import org.dmg.pmml_4_1.Extension;
+import org.dmg.pmml_4_1.Scorecard;
 
 public class ScorecardPMMLUtils {
 
@@ -53,6 +54,14 @@ public class ScorecardPMMLUtils {
             }
         }
         return null;
+    }
+
+    public static Scorecard createScorecard(){
+        Scorecard scorecard = new Scorecard();
+        //default false, until the spreadsheet enables explicitly.
+        scorecard.setUseReasonCodes(Boolean.FALSE);
+        scorecard.setIsScorable(Boolean.TRUE);
+        return scorecard;
     }
 
 }
