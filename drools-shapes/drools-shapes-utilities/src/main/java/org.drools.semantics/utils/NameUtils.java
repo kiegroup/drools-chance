@@ -30,6 +30,7 @@ import java.util.*;
 
 public final class NameUtils {
 
+
     public enum IdentifierType {
         CLASS,
         INTERFACE,
@@ -518,14 +519,6 @@ public final class NameUtils {
         }
         return cls;
     }
-
-
-
-
-
-
-
-
 
 
     public static String capitalize( String s ) {

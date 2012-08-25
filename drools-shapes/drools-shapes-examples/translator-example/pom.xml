@@ -254,7 +254,7 @@
           <generateTraitDRL>true</generateTraitDRL>
           <generateDefaultImplClasses>true</generateDefaultImplClasses>
           <preserveInheritanceInImpl>false</preserveInheritanceInImpl>
-          <buildSpecXSDs>true</buildSpecXSDs>
+          <buildSpecXSDs>false</buildSpecXSDs>
           <useExistingImplementations>true</useExistingImplementations>
           <generateIndividuals>true</generateIndividuals>
         </configuration>

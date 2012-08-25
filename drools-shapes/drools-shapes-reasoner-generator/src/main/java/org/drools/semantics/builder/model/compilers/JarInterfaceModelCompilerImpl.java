@@ -24,6 +24,7 @@ import com.clarkparsia.empire.annotation.RdfsClass;
 import org.drools.factmodel.BuildUtils;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.*;
+import org.drools.semantics.utils.NamespaceUtils;
 import org.mvel2.asm.*;
 
 import javax.persistence.Basic;
@@ -45,9 +46,13 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
     public void compile( Concept con, Object context, Map<String, Object> params ) {
 
+        if ( "Thing".equals( con.getName() ) && NamespaceUtils.compareNamespaces("http://www.w3.org/2002/07/owl", con.getNamespace()) ) {
+            return;
+        }
+
 //        if ( ! con.isResolved() ) {
         super.compile( con, context, params );
-        String name = con.getName().substring( con.getName().lastIndexOf( "." ) + 1 );
+        String name = con.getFullyQualifiedName();
 
         ((JarModel) getModel()).addCompiledTrait( name, this.compile( name, params ) );
 
@@ -73,7 +78,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         AnnotationVisitor av0;
 
 
-        String pack = ( (String) params.get( "package" ) ).replace( ".", "/" ) + "/";
+//        String pack = ( (String) params.get( "package" ) ).replace( ".", "/" ) + "/";
 
         Set<Concept> sup = ( (Set<Concept>) params.get( "superConcepts" ) );
         String implInterface = (String) params.get( "implInterface" );
@@ -85,24 +90,24 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
         int j = 1;
         if ( implInterface != null ) {
-            superTypes[ j++ ] = implInterface;
+            superTypes[ j++ ] = implInterface.replace( ".", "/" );
         }
         for ( Iterator<Concept> iter = sup.iterator(); iter.hasNext(); ) {
-            superTypes[ j++ ] = pack + iter.next().getName();
+            superTypes[ j++ ] = iter.next().getFullyQualifiedName().replace( ".", "/" );
         }
 
 
         Map<String, PropertyRelation> props = (Map<String, PropertyRelation>) params.get( "properties" );
 
         cw.visit(V1_5, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
-                pack +  trait,
+                trait.replace( ".", "/" ),
                 null,
                 Type.getInternalName( Object.class ),
                 superTypes);
 
         {
             av0 = cw.visitAnnotation( Type.getDescriptor( RdfsClass.class ), true);
-            av0.visit( "value", "tns:" + trait );
+            av0.visit( "value", "tns:" + params.get( "name" ) );
             av0.visitEnd();
         }
         {
@@ -112,7 +117,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                 AnnotationVisitor av1 = av0.visitArray( "value" );
                 av1.visit( null, "tns" );
 //                av1.visit( null, "http://" + pack + "#" );
-                av1.visit( null, getModel().getNamespace() );
+                av1.visit( null, params.get( "namespace" ) );
                 av1.visitEnd();
             }
             av0.visitEnd();
@@ -154,13 +159,13 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             PropertyRelation rel = props.get( propKey );
             String propName = rel.getName();
             propName = propName.substring( 0, 1 ).toUpperCase() + propName.substring( 1 );
-            String target = rel.getTarget().getName();
+            String target = rel.getTarget().getFullyQualifiedName();
 
             boolean isBoolean = target.equalsIgnoreCase( "xsd:boolean" );
             if ( target.startsWith( "xsd:" ) ) {
                 target = NameUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 );
             } else {
-                target = pack + target;
+                target = target.replace( ".", "/" );
             }
 
             String propType = BuildUtils.getTypeDescriptor( target );
@@ -182,7 +187,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                         null);
                 if ( ! rel.isRestricted() && ! rel.isTransient() ) {
                     av0 = mv.visitAnnotation( Type.getDescriptor( RdfProperty.class ), true );
-                    av0.visit( "value", "tns:hasCollectionPoint" );
+                    av0.visit( "value", "tns:" + propName );
                     av0.visitEnd();
                     if ( rel.isSimple() ) {
                         av0 = mv.visitAnnotation( Type.getDescriptor( Basic.class ), true );
@@ -229,8 +234,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                 if ( rel.isSimple() || ( ( rel.getMaxCard() == null || rel.getMaxCard() > 1 ) && ! rel.isTransient() ) ) {
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
                             "add" + NameUtils.compactUpperCase( rel.getName() ),
-                            "(" + BuildUtils.getTypeDescriptor( ( rel.getTarget().isPrimitive() ? "" : pack )
-                                    + NameUtils.map( rel.getTarget().getName(), true ) ) + ")V",
+                            "(L" + NameUtils.map( rel.getTarget().getFullyQualifiedName(), true ).replace( ".", "/" ) + ";)V",
                             null,
                             null );
                     {
@@ -272,7 +276,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         AnnotationVisitor av0;
 
 
-        String pack = ( (String) params.get( "package" ) ).replace( ".", "/" ) + "/";
+//        String pack = ( (String) params.get( "package" ) ).replace( ".", "/" ) + "/";
 
         Set<Concept> sup =  ((Set<Concept>) params.get( "subConcepts" ) );
 
@@ -280,7 +284,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         superTypes[0] = Type.getInternalName( SupportsRdfId.class );
         int j = 1;
         for ( Iterator<Concept> iter = sup.iterator(); iter.hasNext(); ) {
-            superTypes[j++] = pack + iter.next().getName() + "$$Shadow";
+            superTypes[j++] = iter.next().getFullyQualifiedName().replace( ".", "/" ) + "$$Shadow";
         }
 
 
@@ -290,7 +294,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
 
         cw.visit(V1_5, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
-                pack +  trait,
+                trait.replace( ".", "/" ),
                 null,
                 Type.getInternalName( Object.class ),
                 superTypes);
@@ -306,7 +310,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                 AnnotationVisitor av1 = av0.visitArray( "value" );
                 av1.visit( null, "tns" );
 //                av1.visit( null, "http://" + pack + "#" );
-                av1.visit( null, getModel().getNamespace() );
+                av1.visit( null, params.get( "namespace" ) );
                 av1.visitEnd();
             }
             av0.visitEnd();
@@ -333,12 +337,12 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             String propName = rel.getName();
             propName = propName.substring( 0, 1 ).toUpperCase() + propName.substring( 1 );
             //String target =  pack + props.get( rel ).getName();
-            String target = rel.getTarget().getName();
+            String target = rel.getTarget().getFullyQualifiedName();
             boolean isBoolean = target.equalsIgnoreCase( "xsd:boolean" );
             if ( target.startsWith("xsd:") ) {
                 target = NameUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 ).replace( ".", "/" );
             } else {
-                target = pack + target;
+                target = target.replace( ".", "/" );
             }
 
             String propType = BuildUtils.getTypeDescriptor( target );
@@ -354,13 +358,13 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
             if ( ! rel.isRestricted() && ! rel.isTransient() ) {
                 mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                        NameUtils.getter( rel.getName(), rel.getTarget().getName(), rel.getMaxCard() ),
+                        NameUtils.getter( rel.getName(), rel.getTarget().getFullyQualifiedName(), rel.getMaxCard() ),
                         "()" + propType,
                         genericGetType,
                         null);
                 if ( ! rel.isRestricted() && ! rel.isTransient() ) {
                     av0 = mv.visitAnnotation( Type.getDescriptor( RdfProperty.class ), true );
-                    av0.visit( "value", "tns:hasCollectionPoint" );
+                    av0.visit( "value", "tns:" + propName );
                     av0.visitEnd();
                     if ( rel.isSimple() ) {
                         av0 = mv.visitAnnotation( Type.getDescriptor( Basic.class ), true);

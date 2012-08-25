@@ -41,21 +41,21 @@ public abstract class ModelImpl implements OntoModel {
 
 
 
-    public String getPackage() {
-        return innerModel.getPackage();
+    public String getDefaultPackage() {
+        return innerModel.getDefaultPackage();
     }
 
-    public void setPackage(String pack) {
-        innerModel.setPackage( pack );
+    public void setDefaultPackage(String pack) {
+        innerModel.setDefaultPackage( pack );
     }
 
 
-    public String getNamespace() {
-        return innerModel.getNamespace();
+    public String getDefaultNamespace() {
+        return innerModel.getDefaultNamespace();
     }
 
-    public void setNamespace( String namespace ) {
-        innerModel.setNamespace( namespace );
+    public void setDefaultNamespace( String namespace ) {
+        innerModel.setDefaultNamespace( namespace );
     }
 
 

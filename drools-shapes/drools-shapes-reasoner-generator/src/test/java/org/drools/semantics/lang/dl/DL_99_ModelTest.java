@@ -237,7 +237,7 @@ public class DL_99_ModelTest {
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
         JarModel jarModel = (JarModel) compiler.compile( results );
-        String src = (String) jarModel.getTrait( "AllergyFactType" );
+        String src = ( (JavaInterfaceModelImpl.InterfaceHolder) jarModel.getTrait( "org.kmr.ontology.AllergyFactType" ) ).getSource();
         System.out.println( src );
 
         JavaLexer lexer = new JavaLexer( new ANTLRStringStream( src ) );
@@ -252,12 +252,13 @@ public class DL_99_ModelTest {
         }
 
         try {
-            ClassLoader cl = new ItemClassLoader( jarModel.getPackage(), jarModel.getCompiledTraits(), Thread.currentThread().getContextClassLoader() );
+            ClassLoader cl = new ItemClassLoader( jarModel.getDefaultPackage(), jarModel.getCompiledTraits(), Thread.currentThread().getContextClassLoader() );
             Class fact = cl.loadClass( "org.kmr.ontology.ClinicalFactType" );
             Class thin = cl.loadClass( "org.kmr.ontology.Thing" );
             assertTrue( thin.isAssignableFrom( fact ) );
             assertTrue( fact.getAnnotation( RdfsClass.class ) != null );
         } catch ( ClassNotFoundException e ) {
+            e.printStackTrace();
             fail( e.getMessage() );
         }
 
@@ -276,8 +277,7 @@ public class DL_99_ModelTest {
         }
 
         protected Class<?> findClass( String name ) throws ClassNotFoundException {
-            String simpleName = name.replace( pack + ".", "" );
-            JarModel.Holder holder = itemClasses.get( simpleName );
+            JarModel.Holder holder = itemClasses.get( name );
             if ( holder == null ) {
                 return super.findClass( name );
             }

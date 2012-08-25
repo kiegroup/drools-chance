@@ -25,6 +25,7 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import org.apache.commons.collections15.Transformer;
+import org.semanticweb.owlapi.model.IRI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -114,7 +115,7 @@ public class GraphModelImpl extends ModelImpl implements GraphModel {
         }
         if ( obj == null ) {
             // literal aka datatype, most probably
-            Concept k = new Concept( rel.getObject(), ((PropertyRelation) rel).getTarget().getName(), true );
+            Concept k = new Concept( IRI.create( rel.getObject() ), ((PropertyRelation) rel).getTarget().getName(), true );
             cgraph.addVertex( k );
             obj = k;
         }

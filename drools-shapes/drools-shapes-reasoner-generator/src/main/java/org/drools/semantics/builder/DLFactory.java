@@ -54,7 +54,11 @@ public interface DLFactory {
 
     public OntoModel buildModel( String name, Resource res, StatefulKnowledgeSession kSession );
 
+    public OntoModel buildModel( String name, Resource[] res, StatefulKnowledgeSession kSession );
+
     public OntoModel buildModel( String name, Resource res );
+
+    public OntoModel buildModel( String name, Resource[] res );
 
 
 }

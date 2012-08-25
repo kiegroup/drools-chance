@@ -30,6 +30,7 @@ import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import static org.junit.Assert.*;
@@ -238,7 +239,7 @@ public class DL_2_ModelGenerationTest {
         assertTrue(
                 results.getConcept( "<" + ns +"ZimpleDomain>").getProperties().get(
                         "<_zimple>"
-                ).getTarget().equals( new Concept( "<http://www.w3.org/2001/XMLSchema#int>", "java.lang.Integer", true ) )
+                ).getTarget().equals( new Concept( IRI.create( "http://www.w3.org/2001/XMLSchema#int" ), "java.lang.Integer", true ) )
         );
 
 

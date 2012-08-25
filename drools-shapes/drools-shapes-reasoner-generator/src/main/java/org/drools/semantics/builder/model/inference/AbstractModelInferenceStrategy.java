@@ -25,6 +25,7 @@ import org.drools.io.impl.ChangeSetImpl;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.utils.NameUtils;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Arrays;
@@ -41,6 +42,10 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
         addResource( kSession, theory.get( InferenceTask.COMMON ) );
 
         OntoModel baseModel = ModelFactory.newModel( name, ModelFactory.CompileTarget.BASE );
+
+        baseModel.setDefaultPackage(NameUtils.namespaceURIToPackage(ontoDescr.getOntologyID().getOntologyIRI().toString()) );
+        baseModel.setDefaultNamespace( ontoDescr.getOntologyID().getOntologyIRI().toString() );
+
         kSession.fireAllRules();
 
         kSession.insert( ontoDescr );

@@ -21,12 +21,12 @@
 @declare{'conceptDeclare'}
 
 // @{iri}
-declare trait @{name} @if{ superConcepts.size > 0 } extends @foreach{ sup : superConcepts } @{ compactUpperCase( sup.name ) } @end{','} @end{}
+declare trait @{fullyQualifiedName} @if{ superConcepts.size > 0 } extends @foreach{ sup : superConcepts } @{ sup.fullyQualifiedName } @end{','} @end{}
 
 
   @if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }
     @code{ prop = properties[ propKey ] }
-    @{ prop.name } : @if{ prop.maxCard == null || prop.maxCard > 1 } java.util.List @else{} @{ map( prop.target.name, true ) } @end{}
+    @{ prop.name } : @if{ prop.maxCard == null || prop.maxCard > 1 } java.util.List @else{} @{ map( prop.target.fullyQualifiedName, true ) } @end{}
   @end{}                        @end{}
 end
 

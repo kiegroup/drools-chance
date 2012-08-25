@@ -20,6 +20,8 @@ import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLTemplateManager;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.*;
+import org.drools.semantics.utils.NamespaceUtils;
+import org.jdom.Namespace;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;
@@ -32,26 +34,6 @@ import java.util.*;
 public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implements SemanticXSDModelCompiler {
 
 
-    private static final String defaultBindings = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<bindings xmlns=\"http://java.sun.com/xml/ns/jaxb\"\n" +
-            "          xmlns:xsi=\"http://www.w3.org/2000/10/XMLSchema-instance\"\n" +
-            "          xmlns:xjc=\"http://java.sun.com/xml/ns/jaxb/xjc\"\n" +
-            "          xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-            "          xmlns:inheritance=\"http://jaxb2-commons.dev.java.net/basic/inheritance\"\n" +
-            "          xsi:schemaLocation=\"http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd\"\n" +
-            "          version=\"2.1\"\n" +
-            "          extensionBindingPrefixes=\"xjc\" >\n" +
-            "  <bindings>\n" +
-            "    <globalBindings localScoping=\"toplevel\" >\n" +
-            "      <serializable/>\n" +
-            "      <xjc:simple/>\n" +
-            "      <xjc:treatRestrictionLikeNewType/>\n" +
-            "    </globalBindings>\n" +
-            "\n" +
-            "  </bindings>\n" +
-            "</bindings>";
-
-
     private TemplateRegistry registry = DLTemplateManager.getDataModelRegistry( ModelFactory.CompileTarget.XSDX );
 
     protected static final String semGetterTemplateName = "semGetter.drlt";
@@ -62,25 +44,36 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     private static CompiledTemplate settt;
     private static CompiledTemplate chant;
 
+
     @Override
     public CompiledOntoModel compile(OntoModel model) {
 
         SemanticXSDModel sxsdModel = (SemanticXSDModel) super.compile(model);
-        sxsdModel.setBindings( createBindings( sxsdModel ) );
+
+        for ( Namespace ns : sxsdModel.getNamespaces() ) {
+            sxsdModel.setBindings( ns.getURI(), createBindings( ns.getURI(), sxsdModel ) );
+        }
 
         sxsdModel.setIndex( createIndex( sxsdModel ) );
 
         sxsdModel.setIndividualFactory( compileIntoFactory( sxsdModel ) );
 
+        sxsdModel.setNamespaceFix( createNSFix() );
+
         return sxsdModel;
     }
 
+    private String createNSFix() {
+        HashMap map = new HashMap();
+        map.put( "namespace", getModel().getDefaultNamespace() );
+        return getTemplatedCode( "package-info.java", map, ModelFactory.CompileTarget.JAVA );
+    }
 
 
     private String compileIntoFactory(SemanticXSDModel sxsdModel) {
         try {
             Map<String,Object> vars = new HashMap<String, Object>();
-            vars.put( "package", sxsdModel.getPackage() );
+            vars.put( "package", sxsdModel.getDefaultPackage() );
             vars.put( "individuals", sxsdModel.getIndividuals() );
             String index = getTemplatedCode( "IndividualFactory", vars, ModelFactory.CompileTarget.JAVA );
             return index;
@@ -95,7 +88,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
         try {
             String template = readFile( "empire.annotation.index.template" );
             Map<String,Object> vars = new HashMap<String, Object>();
-            vars.put( "package", sxsdModel.getPackage() );
+            vars.put( "package", sxsdModel.getDefaultPackage() );
             vars.put( "klasses", sxsdModel.getConcepts() );
             String index = TemplateRuntime.eval( template, vars ).toString();
             return index;
@@ -107,26 +100,27 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     }
 
 
-    public void setModel(OntoModel model) {
-        this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.XSDX, model );
-
-        ((XSDModel) getModel()).setNamespace( "tns", model.getNamespace() );
+    public ModelFactory.CompileTarget getCompileTarget() {
+        return ModelFactory.CompileTarget.XSDX;
     }
 
-    private String createBindings( SemanticXSDModel sxsdModel ) {
+    private String createBindings( String ns, SemanticXSDModel sxsdModel ) {
 
+        if ( "http://www.w3.org/2002/07/owl".equals( ns ) ) {
+            return getGlobalBindings();
+        }
+
+        String prefix = reverseNamespaces.get( ns );
         try {
-
-
-
             String template = readFile( "bindings.xjb.template" );
             Map<String,Object> vars = new HashMap<String,Object>();
-            vars.put( "package", getModel().getPackage() );
-            vars.put( "namespace", getModel().getNamespace() );
-            vars.put( "concepts", getModel().getConcepts() );
+            vars.put( "package", NameUtils.namespaceURIToPackage( ns ) );
+            vars.put( "namespace", ns );
+            vars.put( "concepts", filterConceptsByNS( getModel().getConcepts(), ns ) );
             vars.put( "flat", this.getCurrentMode().equals( Mode.FLAT ) || this.getCurrentMode().equals( Mode.LEVELLED ) );
             vars.put( "properties", propCache );
             vars.put( "modelName", getModel().getName() );
+            vars.put( "schemaLocation", getModel().getName() + ( prefix == null ? "" : ( "_" + prefix ) ) );
             vars.put( "extra_code", prepareCodeExtensions( sxsdModel ) );
             String bindings = TemplateRuntime.eval( template, NameUtils.getInstance(), vars ).toString();
 
@@ -135,11 +129,21 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             return bindings;
         } catch ( IOException ioe ) {
             ioe.printStackTrace();
-            return defaultBindings;
+            return "";
         }
     }
 
-    private Map<String,String> prepareCodeExtensions(SemanticXSDModel sxsdModel) {
+    private Object filterConceptsByNS( List<Concept> concepts, String ns ) {
+        List<Concept> filtered = new ArrayList<Concept>();
+        for ( Concept con : concepts ) {
+            if ( NamespaceUtils.compareNamespaces(con.getNamespace(), ns) ) {
+                filtered.add( con );
+            }
+        }
+        return filtered;
+    }
+
+    private Map<String,String> prepareCodeExtensions( SemanticXSDModel sxsdModel ) {
         Map<String,String> code = new HashMap<String, String>( sxsdModel.getConcepts().size() );
 
         List<Concept> filteredConcepts = sxsdModel.getConcepts();
@@ -272,6 +276,19 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
                 NameUtils.getInstance(),
                 vars ).toString();
 
+    }
+
+    public String getGlobalBindings() {
+        InputStream bindingsIS = null;
+        try {
+            bindingsIS = ResourceFactory.newClassPathResource("org/drools/semantics/builder/model/compilers/global.xjb").getInputStream();
+            byte[] data = new byte[ bindingsIS.available() ];
+            bindingsIS.read( data );
+            return new String( data );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
 

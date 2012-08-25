@@ -64,17 +64,17 @@ public class JarModelImpl extends JavaInterfaceModelImpl implements JarModel {
 //                System.out.println("Adding " + name);
 
                 // Add archive entry
-                JarEntry jarAdd = new JarEntry( getPackage().replace(".","/") + "/" + name + ".java" );
+                JarEntry jarAdd = new JarEntry( getDefaultPackage().replace(".","/") + "/" + name + ".java" );
                 jarAdd.setTime( now.getTime() );
                 out.putNextEntry(jarAdd);
 
                 // Write file to archive
-                out.write( ((String) getTrait(name) ).getBytes() );
+                out.write( ((InterfaceHolder) getTrait( name ) ).getSource().getBytes() );
 
 
 
                 // Add archive entry
-                jarAdd = new JarEntry( getPackage().replace(".","/") + "/" + name + ".class" );
+                jarAdd = new JarEntry( getDefaultPackage().replace(".","/") + "/" + name + ".class" );
                 jarAdd.setTime( now.getTime() );
                 out.putNextEntry(jarAdd);
 

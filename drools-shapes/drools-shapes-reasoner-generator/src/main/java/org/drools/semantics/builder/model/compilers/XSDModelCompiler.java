@@ -26,4 +26,6 @@ public interface XSDModelCompiler extends ModelCompiler {
 
     public void setUseImplementation( boolean flag );
 
+    public void setSchemaMode( String mode );
+
 }

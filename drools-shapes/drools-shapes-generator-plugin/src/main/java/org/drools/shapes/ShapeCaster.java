@@ -28,6 +28,7 @@ import org.drools.semantics.builder.model.*;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
+import org.w3._2002._07.owl.Thing;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -44,6 +45,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Goal which creates various possible fact model representations from an ontology
@@ -86,6 +90,19 @@ public class ShapeCaster
 
     public void setOntology(String ontology) {
         this.ontology = ontology;
+    }
+
+    /**
+     * @parameter
+     */
+    private List<String> ontologyImports;
+
+    public List<String> getOntologyImports() {
+        return ontologyImports;
+    }
+
+    public void setOntologyImports(List<String> ontologyImports) {
+        this.ontologyImports = ontologyImports;
     }
 
 
@@ -263,7 +280,18 @@ public class ShapeCaster
         }
 
         DLFactory factory = DLFactoryBuilder.newDLFactoryInstance();
-        Resource res = ResourceFactory.newFileResource( ontology );
+        if ( ontologyImports == null ) {
+            ontologyImports = Collections.emptyList();
+        }
+
+        int n = 1 + ontologyImports.size();
+        Resource[] res = new Resource[ n ];
+        int j = 0;
+        for ( String imp : ontologyImports ) {
+            res[j++] = ResourceFactory.newFileResource( imp );
+        }
+        res[j] = ResourceFactory.newFileResource( ontology );
+
         factory.setInferenceStrategy( isDelegateInference() ? DLFactory.INFERENCE_STRATEGY.EXTERNAL : DLFactory.INFERENCE_STRATEGY.INTERNAL );
         OntoModel results = factory.buildModel( getModelName(), res );
 
@@ -316,13 +344,12 @@ public class ShapeCaster
 
             ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
             ((XSDModelCompiler) compiler).setUseImplementation( false );
+            ((XSDModelCompiler) compiler).setSchemaMode( "_$spec" );
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +"_$spec.xsd" );
+                File fos = new File( target + metainf + slash + getModelName() +"_$spec.xsd" );
                 xsdModel.stream( fos );
-                fos.flush();
-                fos.close();
             } catch (Exception e) {
                 throw new MojoExecutionException( e.getMessage() );
             }
@@ -331,13 +358,12 @@ public class ShapeCaster
 
             ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
             ((XSDModelCompiler) compiler).setUseImplementation( true );
+            ((XSDModelCompiler) compiler).setSchemaMode( "_$impl" );
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +"_$impl.xsd" );
+                File fos = new File( target + metainf + slash + getModelName() +"_$impl.xsd" );
                 xsdModel.stream( fos );
-                fos.flush();
-                fos.close();
             } catch (Exception e) {
                 throw new MojoExecutionException( e.getMessage() );
             }
@@ -345,13 +371,12 @@ public class ShapeCaster
 
             ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
             ((XSDModelCompiler) compiler).setUseImplementation( false );
+            ((XSDModelCompiler) compiler).setSchemaMode( "_$full" );
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +"_$full.xsd" );
+                File fos = new File( target + metainf + slash + getModelName() +"_$full.xsd" );
                 xsdModel.stream( fos );
-                fos.flush();
-                fos.close();
             } catch (Exception e) {
                 throw new MojoExecutionException( e.getMessage() );
             }
@@ -425,55 +450,21 @@ public class ShapeCaster
 
 
             ((XSDModelCompiler) compiler).setUseImplementation( false );
+            ((XSDModelCompiler) compiler).setSchemaMode( "" );
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + metainf + slash + getModelName() +".xsd" );
+                File fos = new File( target + metainf + slash + getModelName() +".xsd" );
                 xsdModel.stream( fos );
-                fos.flush();
-                fos.close();
             } catch (Exception e) {
                 throw new MojoExecutionException( e.getMessage() );
             }
 
 
             try {
-                FileOutputStream fos = new FileOutputStream( target + metainf + slash + "bindings.xjb" );
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                xsdModel.streamBindings( baos );
-
-                DocumentBuilderFactory doxFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = doxFactory.newDocumentBuilder();
-                InputSource is = new InputSource( new StringReader( new String( baos.toByteArray() ) ) );
-                Document dox = builder.parse( is );
-                dox.normalize();
-
-                XPathFactory xpathFactory = XPathFactory.newInstance();
-                XPathExpression xpathExp = xpathFactory.newXPath().compile(
-                        "//text()[normalize-space(.) = '']");
-                NodeList emptyTextNodes = (NodeList)
-                        xpathExp.evaluate(dox, XPathConstants.NODESET);
-
-                // Remove each empty text node from document.
-                for (int i = 0; i < emptyTextNodes.getLength(); i++) {
-                    Node emptyTextNode = emptyTextNodes.item(i);
-                    emptyTextNode.getParentNode().removeChild(emptyTextNode);
-                }
-
-
-
-                TransformerFactory tFactory = TransformerFactory.newInstance();
-                    tFactory.setAttribute( "indent-number", new Integer(2) );
-                Transformer transformer = tFactory.newTransformer();
-                    transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
-                DOMSource source = new DOMSource( dox );
-                StreamResult result = new StreamResult( new OutputStreamWriter( fos ) );
-                transformer.transform( source, result );
-
-                fos.flush();
-                fos.close();
+                File fos = new File( target + metainf + slash + "bindings.xjb" );
+                xsdModel.streamBindings( fos );
             } catch (Exception e) {
                 throw new MojoExecutionException( e.getMessage() );
             }
@@ -487,6 +478,25 @@ public class ShapeCaster
             } catch (Exception e) {
                 throw new MojoExecutionException( e.getMessage() );
             }
+
+
+            // namespace fix. For some reason, hj needs the (local) owl package to be assigned to the default namespace
+            try {
+                String classPathTemp = target + "xjc" + slash + Thing.class.getPackage().getName().replace(".", slash);
+                File f2 = new File( classPathTemp );
+                if ( ! f2.exists() ) {
+                    f2.mkdirs();
+                }
+
+                FileOutputStream fos2 = new FileOutputStream(  classPathTemp + slash + "package-info.java" );
+                xsdModel.streamNamespaceFix( fos2 );
+
+                fos2.flush();
+                fos2.close();
+            } catch (Exception e) {
+
+            }
+
 
 
 
@@ -505,7 +515,7 @@ public class ShapeCaster
             xsdModel = (SemanticXSDModel) compiler.compile( results );
 
             try {
-                String classPath = target + "xjc" + slash + xsdModel.getPackage().replace(".", slash);
+                String classPath = target + "xjc" + slash + xsdModel.getDefaultPackage().replace(".", slash);
                 File f = new File( classPath );
                 if ( ! f.exists() ) {
                     f.mkdirs();
@@ -515,13 +525,13 @@ public class ShapeCaster
                 xsdModel.streamIndividualFactory( fos );
                 fos.flush();
                 fos.close();
+
+
             } catch (Exception e) {
                 throw new MojoExecutionException( e.getMessage() );
             }
 
         }
-
-
 
 //        private boolean generateTraitDRL = true;
 

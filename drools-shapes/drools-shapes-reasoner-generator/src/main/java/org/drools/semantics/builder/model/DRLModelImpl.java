@@ -16,6 +16,8 @@
 
 package org.drools.semantics.builder.model;
 
+import org.w3._2002._07.owl.Thing;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -69,6 +71,9 @@ public class DRLModelImpl extends ModelImpl implements DRLModel {
 
     public String getDRL() {
         StringBuilder sb = new StringBuilder();
+
+        sb.append( "package " + getDefaultPackage() + ";\n");
+        sb.append( "declare " + Thing.class.getName() + " end \n" );
         for ( String key : getTraitNames() ) {
             sb.append( getTrait(key) ).append( "\n" );
         }

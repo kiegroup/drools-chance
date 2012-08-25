@@ -46,7 +46,8 @@ public class DLTemplateManager {
     protected static final String[] NAMED_TEMPLATES_JAVA = new String[] {
             "model/java/TraitInterface.template",
             "model/java/ShadowInterface.template",
-            "model/java/IndividualFactory.template"
+            "model/java/IndividualFactory.template",
+            "model/java/package-info.java.template"
 
     };
 

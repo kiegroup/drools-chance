@@ -31,31 +31,22 @@
           xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
           version="2.1"
           extensionBindingPrefixes="xjc annox inheritance ci dsk dsp hj con meta" >
-  <bindings schemaLocation="@{modelName}.xsd" node="/xsd:schema">
 
-    <globalBindings localScoping="toplevel" >
-      <serializable/>
-      <xjc:simple/>
 
-      <javaType name= "java.util.Date" xmlType="xsd:date" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate"/>
-      <javaType name= "java.util.Date" xmlType="xsd:dateTime" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate"/>
-      <javaType name= "java.util.Date" xmlType="xsd:time" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate"/>
-    </globalBindings>
+  <bindings schemaLocation="@{schemaLocation}.xsd" node="/xsd:schema">
 
     @code{ targetElement = ''; if (flat) targetElement='complexType'; else targetElement='complexType'; }
-
-
 
     @foreach{ concept : concepts }
     <bindings node="//xsd:@{targetElement}[@name='@{concept.name}']">
         <class name="@{concept.name}Impl"/>
 
-        <inheritance:implements>@{package}.@{concept.name}</inheritance:implements>
-        @if{ flat && concept.name != "Thing" } <inheritance:implements>@{package}.@{concept.name + "$$Shadow"}</inheritance:implements> @end{}
+        <inheritance:implements>@{concept.fullyQualifiedName}</inheritance:implements>
+        @if{ flat && concept.name != "org.w3._2002._07.owl.Thing" } <inheritance:implements>@{package}.@{concept.name + "$$Shadow"}</inheritance:implements> @end{}
         <inheritance:implements>com.sun.xml.bind.CycleRecoverable</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.Equals</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.HashCode</inheritance:implements>
-        @if{ concept.name == "Thing" }
+        @if{ concept.fullyQualifiedName == "org.w3._2002._07.owl.Thing" }
             <inheritance:extends>org.drools.semantics.UIdAble</inheritance:extends>
         @else{}
             <inheritance:extends>@{concept.chosenSuper + "Impl"}</inheritance:extends>
@@ -78,10 +69,10 @@
 
         <meta:type name="@{concept.name}">
         @foreach{ prop : concept.effectiveBaseProperties }
-            <meta:property name="@{prop.name}" type="@{prop.target.name}" simple="@{ concept.lookupProperty(prop.property).simple }">
+            <meta:property name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }">
                 @foreach{ subProp : concept.properties.values }
                 @if{ subProp.restricted && subProp.baseProperty == prop }
-                    <meta:restriction name="@{subProp.name}" type="@{subProp.target.name}" single="@{subProp.maxCard == 1}"/>
+                    <meta:restriction name="@{subProp.name}" type="@{subProp.target.fullyQualifiedName}" single="@{subProp.maxCard == 1}"/>
                 @end{}
                 @end{}
             </meta:property>
@@ -90,12 +81,12 @@
 
         <dsk:keyId>
             @foreach{ key : concept.keys }
-            <dsk:key type="@{key.target.name}">@{key.name}</dsk:key>
+            <dsk:key type="@{key.target.fullyQualifiedName}">@{key.name}</dsk:key>
             @end{}
         </dsk:keyId>
 
 
-        @if{ concept.name == "Thing" }
+        @if{ concept.fullyQualifiedName == "org.w3._2002._07.owl.Thing" }
         <bindings node=".//xsd:element[@name='dyEntryId']">
             <hj:id/>
         </bindings>
@@ -105,17 +96,17 @@
         @foreach{ propKey : properties[ concept.name ].keySet }
             @code{ prop = properties[ concept.name ][ propKey ] }
             @if{ prop.transient }
-                <dsp:accessor name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}"
+                <dsp:accessor name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" primitive="@{prop.target.primitive}"
                               min="@{prop.minCard}" max="@{prop.maxCard}"
-                              inherited="@{prop.isInheritedFor(concept)}" base="@{prop.baseProperty.name}" baseType="@{prop.baseProperty.target.name}" simple="@{prop.simple}">
+                              inherited="@{prop.isInheritedFor(concept)}" base="@{prop.baseProperty.name}" baseType="@{prop.baseProperty.target.fullyQualifiedName}" simple="@{prop.simple}">
                     @foreach{ chain : prop.chains }
                         <dsp:chain>
-                            @foreach{ link : chain } <dsp:link type="@{link.domain.name}">@{link.name}</dsp:link>@end{}
+                            @foreach{ link : chain } <dsp:link type="@{link.domain.fullyQualifiedName}">@{link.name}</dsp:link>@end{}
                         </dsp:chain>
                     @end{}
                 </dsp:accessor>
             @else{}
-                <dsp:property name="@{prop.name}" type="@{prop.target.name}" primitive="@{prop.target.primitive}" restr="@{prop.addableTarget}" simple="@{prop.simple}" min="@{prop.minCard}" max="@{prop.maxCard}" />
+                <dsp:property name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" primitive="@{prop.target.primitive}" restr="@{prop.addableTarget}" simple="@{prop.simple}" min="@{prop.minCard}" max="@{prop.maxCard}" />
             @end{}
         @end{}
         </dsp:accessors>
@@ -136,9 +127,9 @@
             <bindings node=".//xsd:@{nodeType}[@name='@{prop.name}']">
                 <jxb:property generateIsSetMethod="true" name="@{prop.name}">
                     @if{ "element".equals(nodeType) && ! prop.target.primitive }
-                        <jxb:baseType name="@{package}.@{prop.target.name}" />
+                        <jxb:baseType name="@{prop.target.fullyQualifiedName}" />
                     @elseif{ prop.simple }
-                        <jxb:baseType name="@{ map( prop.target.name, true ) }" />
+                        <jxb:baseType name="@{ map( prop.target.fullyQualifiedName, true ) }" />
                     @end{}
                 </jxb:property>
 

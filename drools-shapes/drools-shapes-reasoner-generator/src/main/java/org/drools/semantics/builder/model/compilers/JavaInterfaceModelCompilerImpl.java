@@ -17,10 +17,9 @@
 package org.drools.semantics.builder.model.compilers;
 
 import org.drools.semantics.builder.DLTemplateManager;
-import org.drools.semantics.builder.model.CompiledOntoModel;
-import org.drools.semantics.builder.model.Concept;
-import org.drools.semantics.builder.model.ModelFactory;
-import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.*;
+import org.drools.semantics.utils.NameUtils;
+import org.drools.semantics.utils.NamespaceUtils;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;
@@ -45,27 +44,35 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
 
     public void compile( Concept con, Object context, Map<String, Object> params ) {
 //        if ( ! con.isResolved() ) {
-            CompiledTemplate template = registry.getNamedTemplate( templateName );
-            CompiledTemplate shadowTemplate = registry.getNamedTemplate( shadowTemplateName );
+
+        if ( "Thing".equals( con.getName() ) && NamespaceUtils.compareNamespaces("http://www.w3.org/2002/07/owl", con.getNamespace()) ) {
+            return;
+        }
+        CompiledTemplate template = registry.getNamedTemplate( templateName );
+        CompiledTemplate shadowTemplate = registry.getNamedTemplate( shadowTemplateName );
 
 
-            switch ( getMode() ) {
-                case FLAT:
-                    getModel().flatten();
-                    break;
-                case HIERARCHY:
-                    getModel().elevate();
-                    break;
-                case LEVELLED:
-                    getModel().raze();
-                    break;
-            }
+        switch ( getMode() ) {
+            case FLAT:
+                getModel().flatten();
+                break;
+            case HIERARCHY:
+                getModel().elevate();
+                break;
+            case LEVELLED:
+                getModel().raze();
+                break;
+        }
 
-            String name = con.getName().substring( con.getName().lastIndexOf( "." ) + 1 );
+        String name = con.getFullyQualifiedName();
 
-            getModel().addTrait( name, TemplateRuntime.execute( template, context, params ).toString().trim() );
+        getModel().addTrait( name, new JavaInterfaceModelImpl.InterfaceHolder(
+                TemplateRuntime.execute( template, context, params ).toString().trim(),
+                con.getPackage() ) );
 
-            getModel().addTrait( name+"$$Shadow", TemplateRuntime.execute( shadowTemplate, context, params ).toString().trim());
+        getModel().addTrait( name+"$$Shadow", new JavaInterfaceModelImpl.InterfaceHolder(
+                TemplateRuntime.execute( shadowTemplate, context, params ).toString().trim(),
+                con.getPackage() ) );
 
 //        }
     }
@@ -78,4 +85,7 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
     public Mode getMode() {
         return currentMode;
     }
+
+
+
 }

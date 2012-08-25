@@ -45,10 +45,11 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
             for ( Concept con : getModel().getConcepts() ) {
                 String name = NameUtils.compactUpperCase( con.getName() );
                 Map map = new HashMap();
-                map.put( "package", getModel().getPackage() );
-                map.put( "namespace", getModel().getNamespace() );
+                map.put( "package", con.getPackage() );
+                map.put( "namespace", con.getNamespace() );
                 map.put( "iri", con.getIri() );
                 map.put( "name", con.getName().substring(con.getName().lastIndexOf(".") + 1) );
+                map.put( "fullyQualifiedName", con.getFullyQualifiedName() );
                 map.put( "superConcepts", con.getSuperConcepts() );
                 map.put( "subConcepts", con.getSubConcepts() );
                 map.put( "properties", con.getProperties() );

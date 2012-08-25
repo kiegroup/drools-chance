@@ -57,6 +57,7 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-chance-core</artifactId>
       <version>${drools.version}</version>
+      <scope>test</scope>
     </dependency>
 
 
