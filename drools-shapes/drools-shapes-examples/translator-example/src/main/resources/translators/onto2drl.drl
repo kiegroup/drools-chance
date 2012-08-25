@@ -1,6 +1,9 @@
-package org.drools.trnaslators;
+package org.drools.translators;
 
+import org.w3._2002._07.owl.Thing;
 import org.semanticweb.ontologies._2012._1.rule_merged.*;
+import org.semanticweb.ontologies._2012._1.rules.*;
+import org.semanticweb.ontologies._2012._1.rule_example.*;
 import org.drools.lang.api.*;
 import org.drools.lang.descr.*;
 import org.drools.semantics.UIdAble;
@@ -42,7 +45,7 @@ dialect "mvel"
 when
     $r : Rule( $uid : dyEntryId, $lhs : hasPremiseFormula )
     not  MetaRule ( this == $r )  //MVEL bug with instanceof... TODO
-    $f : Pattern( $pid : dyEntryId, this == $lhs, $fct : get("hasFunctorType") )
+    $f : Pattern( $pid : dyEntryId, this == $lhs, $fct : get( "hasFunctorType" ), $fct != null && $fct.size() > 0 )
     $t : Thing( $type : this.semanticTypeName ) from $fct.get(0)
     $x : RuleDescr( name == $uid )
 then

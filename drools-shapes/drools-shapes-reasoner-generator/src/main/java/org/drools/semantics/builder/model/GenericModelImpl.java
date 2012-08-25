@@ -3,15 +3,16 @@ package org.drools.semantics.builder.model;
 
 
 import org.drools.semantics.utils.NameUtils;
+import org.w3._2002._07.owl.Thing;
 
 import java.util.*;
 
 public class GenericModelImpl implements OntoModel, Cloneable {
 
 
-    private String pack;
+    private String defaultPackage;
 
-    private String namespace;
+    private String defaultNamespace;
 
     private String name;
 
@@ -32,7 +33,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     public Object clone() {
         GenericModelImpl twin = newInstance();
-        twin.setPackage( pack );
+        twin.setDefaultPackage( defaultPackage );
         twin.setName( name );
         twin.setFlat( flat );
         twin.setConcepts( new LinkedHashMap<String, Concept>( concepts ) );
@@ -42,28 +43,24 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     }
 
 
-    public String getPackage() {
-        return pack;
+    public String getDefaultPackage() {
+        return defaultPackage;
     }
 
-    public void setPackage( String pack ) {
-        this.pack = NameUtils.namespaceURIToPackage( pack );
+    public void setDefaultPackage( String pack ) {
+        this.defaultPackage = pack;
     }
 
-    public String getNamespace() {
-        return namespace;
+    public String getDefaultNamespace() {
+        return defaultNamespace;
     }
 
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
+    public void setDefaultNamespace(String namespace) {
+        this.defaultNamespace = namespace;
     }
 
-    public String getPack() {
-        return pack;
-    }
-
-    public void setPack(String pack) {
-        this.pack = pack;
+    public String getDefaultPackagee() {
+        return defaultPackage;
     }
 
     public String getName() {
@@ -250,7 +247,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                     con.addShadowProperty( propKey, con.getProperties().get( propKey ) );
                 }
                 for ( Concept sup : con.getSuperConcepts() ) {
-                    if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
+                    if ( ! sup.getFullyQualifiedName().equals( Thing.class.getName() ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
                         System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
                         sup.addShadowProperty( propKey, con.getProperties().get( propKey ) );
                     }
@@ -258,7 +255,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
             }
             for ( String propKey : con.getShadowProperties().keySet() ) {
                 for ( Concept sup : con.getSuperConcepts() ) {
-                    if ( ! sup.getName().equals( "Thing" ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
+                    if ( ! sup.getFullyQualifiedName().equals( Thing.class.getName() ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
                         System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
                         sup.addShadowProperty( propKey, con.getShadowProperties().get( propKey ) );
                     }
@@ -308,35 +305,35 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
 
     public void resolve( ) {
-        for ( Concept con : getConcepts() ) {
-            if ( con.getIri().startsWith("<java://") ) {
-                String fullName = NameUtils.buildFQNameFromIri( con.getIri() );
-                System.out.println( "Looking for " + con.getName() + " as " + fullName );
-                try {
-                    Class existingKlass = Class.forName( fullName );
-                    if ( existingKlass != null ) {
-                        System.out.println( "FOUND!!!! "+ existingKlass.getName() );
-                        con.setFullyQualifiedName( fullName );
-                        con.setResolved( true );
-                        if ( existingKlass.isInterface() ) {
-                            con.setResolvedAs( Concept.Resolution.IFACE );
-                        } else if ( existingKlass.isEnum() ) {
-                            con.setResolvedAs( Concept.Resolution.ENUM );
-                        } else {
-                            con.setResolvedAs( Concept.Resolution.CLASS );
-                        }
-                    }
-                    else {
-                        con.setFullyQualifiedName( name );
-//                        System.out.println( con.getName() + " Is Novel ");
-                    }
-
-                } catch ( ClassNotFoundException e ) {
-                    con.setFullyQualifiedName( name );
-//                    System.out.println( con.getName() + "Is Novel ");
-                }
-            }
-        }
+//        for ( Concept con : getConcepts() ) {
+//            if ( con.getIri().startsWith("<java://") ) {
+//                String fullName = NameUtils.buildFQNameFromIri( con.getIri() );
+//                System.out.println( "Looking for " + con.getName() + " as " + fullName );
+//                try {
+//                    Class existingKlass = Class.forName( fullName );
+//                    if ( existingKlass != null ) {
+//                        System.out.println( "FOUND!!!! "+ existingKlass.getName() );
+//                        con.setFullyQualifiedName( fullName );
+//                        con.setResolved( true );
+//                        if ( existingKlass.isInterface() ) {
+//                            con.setResolvedAs( Concept.Resolution.IFACE );
+//                        } else if ( existingKlass.isEnum() ) {
+//                            con.setResolvedAs( Concept.Resolution.ENUM );
+//                        } else {
+//                            con.setResolvedAs( Concept.Resolution.CLASS );
+//                        }
+//                    }
+//                    else {
+//                        con.setFullyQualifiedName( name );
+////                        System.out.println( con.getName() + " Is Novel ");
+//                    }
+//
+//                } catch ( ClassNotFoundException e ) {
+//                    con.setFullyQualifiedName( name );
+////                    System.out.println( con.getName() + "Is Novel ");
+//                }
+//            }
+//        }
 
     }
 
@@ -362,6 +359,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                 root.addChild( node );
             } else {
                 for ( Concept superCon : con.getSuperConcepts() ) {
+
                     String superKey = superCon.getIri();
 
                     Node<Concept> superNode = map.get( superKey );

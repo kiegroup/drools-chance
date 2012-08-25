@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:owl="http://www.w3.org/2002/07/owl"
+            xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
+            jaxb:extensionBindingPrefixes="hj"
+            elementFormDefault="qualified"
+            targetNamespace="http://www.w3.org/2002/07/owl">
+  <xsd:element name="Thing" type="owl:Thing" />
+  <xsd:complexType name="Thing">
+    <xsd:sequence>
+      <xsd:element name="dyEntryType" type="xsd:string" maxOccurs="1" minOccurs="0" />
+      <xsd:element name="dyReference" type="xsd:boolean" maxOccurs="1" minOccurs="1" />
+      <xsd:element name="dyEntryId" type="xsd:string" maxOccurs="1" minOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

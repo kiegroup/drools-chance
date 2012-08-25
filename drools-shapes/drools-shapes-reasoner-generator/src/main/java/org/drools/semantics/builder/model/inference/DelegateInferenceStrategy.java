@@ -24,6 +24,7 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.*;
+import org.drools.semantics.utils.NamespaceUtils;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.*;
@@ -60,7 +61,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
     private static void register( String prim, String klass ) {
         IRI i1 = IRI.create( prim );
-        Concept con = new Concept( i1.toQuotedString(), klass, true );
+        Concept con = new Concept( i1, klass, true );
         primitives.put( i1.toQuotedString(), con );
     }
 
@@ -126,6 +127,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         // assign Key properties
         setKeys( ontoDescr, hierarchicalModel );
 
+        fixRootHierarchy( hierarchicalModel );
 
         return hierarchicalModel;
     }
@@ -145,7 +147,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 System.exit( -1 );
             }
             
-            Individual ind = new Individual( iri.getFragment(), iri.toQuotedString(), klass.getName() );
+            Individual ind = new Individual( iri.getFragment(), iri.toQuotedString(), klass.getFullyQualifiedName() );
 
 
             for ( OWLDataPropertyExpression prop : individual.getDataPropertyValues( ontoDescr ).keySet() ) {
@@ -156,7 +158,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     Set<Individual.ValueTypePair> values = new HashSet<Individual.ValueTypePair>();
                     for ( OWLLiteral tgt : propValues ) {
                         String value = null;
-                        String typeName = rel.getTarget().getName();
+                        String typeName = rel.getTarget().getFullyQualifiedName();
                         //TODO improve datatype checking
                         if ( typeName.equals( "xsd:string" )
                              || typeName.equals( "xsd:dateTime" ) ) {
@@ -1112,7 +1114,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
                         if ( filler == null ) {
                             String fillerName =
-                                    NameUtils.separatingName( ontoDescr.getOntologyID().getOntologyIRI().getStart() ) +
+                                    NameUtils.separatingName( ontoDescr.getOntologyID().getOntologyIRI().toString() ) +
                                     NameUtils.capitalize( inKlass.getIRI().getFragment() ) +
                                     NameUtils.capitalize( prop.getIRI().getFragment() ) +
                                     "Filler" +
@@ -1425,16 +1427,52 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         addSubConceptsToModel( kSession, ontoDescr, baseModel );
 
 
-
-
         kSession.fireAllRules();
 
 
         return baseModel;
     }
 
+    private void fixRootHierarchy(OntoModel model) {
+        Concept thing = model.getConcept( IRI.create( NamespaceUtils.getNamespaceByPrefix( "owl" ).getURI() + "#Thing"  ).toQuotedString() );
+        if ( thing.getProperties().size() > 0 ) {
+            Concept localRoot = new Concept( IRI.create( model.getDefaultNamespace() + "#Thing" ), "Thing", false );
+            model.addConcept( localRoot );
 
+            localRoot.addSuperConcept( thing );
+            thing.getSubConcepts().add( localRoot );
 
+            for ( String propIri : thing.getProperties().keySet() ) {
+                PropertyRelation rel = thing.getProperty( propIri );
+                rel.setDomain( localRoot );
+                localRoot.addProperty( propIri, rel.getName(), rel );
+            }
+            thing.getProperties().clear();
+
+            for ( Concept con : model.getConcepts() ) {
+                if ( con == localRoot ) {
+                    continue;
+                }
+                if ( con.getSuperConcepts().contains( thing ) ) {
+                    con.getSuperConcepts().remove( thing );
+                    con.getSuperConcepts().add( localRoot );
+                }
+                if ( thing.getSubConcepts().contains( con ) ) {
+                    thing.getSubConcepts().remove( con );
+                    localRoot.getSubConcepts().add( con );
+                }
+            }
+
+            for ( PropertyRelation prop : model.getProperties() ) {
+                if ( prop.getDomain() == thing ) {
+                    prop.setDomain( localRoot );
+                }
+                if ( prop.getTarget() == thing ) {
+                    prop.setTarget( localRoot );
+                }
+            }
+        }
+    }
 
 
     private void processSubConceptAxiom( OWLClassExpression subClass, OWLClassExpression superClass, StatefulKnowledgeSession kSession, String thing ) {
@@ -1520,7 +1558,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         for ( OWLClass con : ontoDescr.getClassesInSignature() ) {
             if ( baseModel.getConcept( con.getIRI().toQuotedString()) == null ) {
                 Concept concept =  new Concept(
-                        con.getIRI().toQuotedString(),
+                        con.getIRI(),
                         NameUtils.buildNameFromIri( con.getIRI().getStart(), con.getIRI().getFragment() ),
                         con.isOWLDatatype() );
 

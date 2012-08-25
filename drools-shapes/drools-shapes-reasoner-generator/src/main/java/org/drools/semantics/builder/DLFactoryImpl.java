@@ -30,11 +30,11 @@ import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.inference.DelegateInferenceStrategy;
 import org.drools.semantics.builder.model.inference.InternalInferenceStrategy;
 import org.drools.semantics.builder.model.inference.ModelInferenceStrategy;
+import org.drools.semantics.utils.NameUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.io.OWLOntologyDocumentSource;
+import org.semanticweb.owlapi.io.StreamDocumentSource;
+import org.semanticweb.owlapi.model.*;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -77,12 +77,21 @@ public class DLFactoryImpl implements DLFactory {
 
 
     public OWLOntology parseOntology( Resource resource ) {
+        return parseOntology( new Resource[] { resource } );
+    }
+
+    public OWLOntology parseOntology( Resource[] resources ) {
         try {
 
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+            OWLOntologyLoaderConfiguration config = new OWLOntologyLoaderConfiguration();
+                config.setMissingOntologyHeaderStrategy( OWLOntologyLoaderConfiguration.MissingOntologyHeaderStrategy.IMPORT_GRAPH );
 
-
-            OWLOntology onto = manager.loadOntologyFromOntologyDocument( resource.getInputStream() );
+            OWLOntology onto = null;
+            for ( Resource res : resources ) {
+                OWLOntologyDocumentSource source = new StreamDocumentSource( res.getInputStream() );
+                onto = manager.loadOntologyFromOntologyDocument( source, config );
+            }
 
             return onto;
         } catch (IOException e) {
@@ -148,13 +157,17 @@ public class DLFactoryImpl implements DLFactory {
     }
 
 
+    public OntoModel buildModel( String name, Resource res, StatefulKnowledgeSession kSession ) {
+        return buildModel( name, new Resource[] { res }, kSession );
+    }
+
     /**
      * Builds an ontology-driven model from a DL resource, using a kSession
      * @param res
      * @param kSession
      * @return
      */
-    public OntoModel buildModel( String name, Resource res, StatefulKnowledgeSession kSession ) {
+    public OntoModel buildModel( String name, Resource[] res, StatefulKnowledgeSession kSession ) {
         OWLOntology ontoDescr = DLFactoryImpl.getInstance().parseOntology( res );
 
 
@@ -194,10 +207,6 @@ public class DLFactoryImpl implements DLFactory {
                                                             ontoDescr,
                                                             theory,
                                                             kSession );
-
-        results.setPackage( ontoDescr.getOntologyID().getOntologyIRI().toString()  );
-        results.setNamespace( ontoDescr.getOntologyID().getOntologyIRI().toString() );
-
         return results;
     }
 
@@ -207,6 +216,15 @@ public class DLFactoryImpl implements DLFactory {
 
 
     public OntoModel buildModel( String name, Resource res ) {
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+
+        setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
+
+        return buildModel( name, res, kSession );
+    }
+
+    public OntoModel buildModel( String name, Resource[] res ) {
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
 

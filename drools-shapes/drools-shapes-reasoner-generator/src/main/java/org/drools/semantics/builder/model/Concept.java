@@ -18,6 +18,7 @@ package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
 import org.drools.semantics.utils.NameUtils;
+import org.semanticweb.owlapi.model.IRI;
 
 import java.util.*;
 
@@ -32,7 +33,9 @@ public class Concept {
     @Position(6)    private     Set<Concept>                    subConcepts;
     @Position(7)    private     Map<String, PropertyRelation>   shadowProperties;
     @Position(8)    private     String                          chosenSuper;
-    @Position(9)    private     String                          fullyQualifiedName;
+    @Position(9)   private     String                          pack;
+    @Position(10)   private     String                          namespace;
+
     
 
     public enum Resolution { NONE, CLASS, IFACE, ENUM ; }
@@ -46,8 +49,8 @@ public class Concept {
 
 
 
-    public Concept( String iri, String name, boolean primitive ) {
-        this.iri = iri;
+    public Concept( IRI iri, String name, boolean primitive ) {
+        this.iri = iri.toQuotedString();
         this.name = primitive ? name : NameUtils.compactUpperCase( name );
         this.superConcepts = new HashSet();
         this.subConcepts = new HashSet();
@@ -56,10 +59,12 @@ public class Concept {
         this.equivalentConcepts = new HashSet();
         this.keys = new ArrayList<PropertyRelation>();
         this.primitive = primitive;
+        this.pack = NameUtils.namespaceURIToPackage( iri.getStart() );
+        this.namespace = iri.getStart();
     }
 
-    public Concept( String iri, String name, Set superConcepts, Map properties, Set equivalentConcepts, Set subConcepts, Map shadowProperties, boolean primitive ) {
-        this.iri = iri;
+    public Concept( IRI iri, String name, Set superConcepts, Map properties, Set equivalentConcepts, Set subConcepts, Map shadowProperties, boolean primitive ) {
+        this.iri = iri.toQuotedString();
         this.name = primitive ? name : NameUtils.compactUpperCase( name );
         this.superConcepts = superConcepts != null ? superConcepts : new HashSet<Concept>();
         this.properties = properties != null ? properties : new HashMap<String, PropertyRelation>();
@@ -67,6 +72,9 @@ public class Concept {
         this.equivalentConcepts = equivalentConcepts != null ? equivalentConcepts : new HashSet<Concept>();
         this.subConcepts = subConcepts != null ? subConcepts : new HashSet<Concept>();
         this.primitive = primitive;
+        this.pack = NameUtils.namespaceURIToPackage( iri.getStart() );
+        this.namespace = iri.getStart();
+
     }
 
 
@@ -86,6 +94,7 @@ public class Concept {
         return "Concept{" +
                 "iri='" + iri + '\'' +
                 ", name='" + name + '\'' +
+                ", pack='" + pack + '\'' +
                 supers +
 //                ", properties=" + properties +
                 '}';
@@ -125,14 +134,6 @@ public class Concept {
         this.name = name;
     }
 
-
-    public String getFullyQualifiedName() {
-        return fullyQualifiedName == null ? name : fullyQualifiedName;
-    }
-
-    public void setFullyQualifiedName(String fullyQualifiedName) {
-        this.fullyQualifiedName = fullyQualifiedName;
-    }
 
     public Set<Concept> getSuperConcepts() {
         return superConcepts;
@@ -328,6 +329,30 @@ public class Concept {
 
     public void setShadowed(boolean shadowed) {
         this.shadowed = shadowed;
+    }
+
+    public String getPackage() {
+        return pack;
+    }
+
+    public void setPackage(String pack) {
+        this.pack = pack;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getFullyQualifiedName() {
+        if ( ! isPrimitive() && pack != null ) {
+            return pack + "." + name;
+        } else {
+            return name;
+        }
     }
 
     public static class Range {

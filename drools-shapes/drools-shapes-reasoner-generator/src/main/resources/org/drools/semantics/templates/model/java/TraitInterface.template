@@ -34,7 +34,7 @@ import javax.persistence.Basic;
 @RdfsClass( value="tns:@{name}" )
 @Namespaces({ "tns", "@{namespace}" })
 public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface != null} , @{ implInterface } @end{}
-                                 @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{ compactUpperCase( sup.name ) } @end{','} @end{}
+                                 @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{sup.package}.@{compactUpperCase( sup.name ) } @end{','} @end{}
 {
 
     @javax.xml.bind.annotation.XmlID
@@ -61,12 +61,12 @@ public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface 
     @if{ ! prop.restricted && ! prop.transient } @RdfProperty("tns:@{prop.name}") @if{ ! prop.simple } @OneToMany( cascade = CascadeType.PERSIST ) @else{} @Basic( ) @end{} @end{}
     public
         @if{ prop.maxCard == 1 }
-            @{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}
+            @{ map( prop.target.fullyQualifiedName, true ) }@if{ !prop.target.primitive }@end{}
         @else{}
-            java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
+            java.util.List<@{ map( prop.target.fullyQualifiedName, true ) }@if{ !prop.target.primitive }@end{}>
         @end{}
 
-        @{ getter( prop.name, prop.target.name, prop.maxCard ) }();
+        @{ getter( prop.name, prop.target.fullyQualifiedName, prop.maxCard ) }();
 
 
 
@@ -76,9 +76,9 @@ public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface 
     // @{prop.property}
     public void set@{ compactUpperCase(prop.name) }(
         @if{ prop.maxCard == 1 }
-            @{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}
+            @{ map( prop.target.fullyQualifiedName, true ) }@if{ !prop.target.primitive }@end{}
         @else{}
-            java.util.List<@{ map( prop.target.name, true ) }@if{ !prop.target.primitive }@end{}>
+            java.util.List<@{ map( prop.target.fullyQualifiedName, true ) }@if{ !prop.target.primitive }@end{}>
         @end{}
         value );
     @end{}
@@ -93,7 +93,7 @@ public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface 
 
     @if{ prop.simple || ( ( prop.maxCard == null || prop.maxCard > 1 ) && ! prop.transient )  }
         @javax.persistence.Transient
-    public void add@{ compactUpperCase(prop.name) }( @{ map( prop.target.name, true ) } x );
+    public void add@{ compactUpperCase(prop.name) }( @{ map( prop.target.fullyQualifiedName, true ) } x );
 
         @javax.persistence.Transient
     public void remove@{ compactUpperCase(prop.name) }( Object x );

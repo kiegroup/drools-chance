@@ -59,14 +59,14 @@ public class DefaultConstructorPlugin extends Plugin {
     @Override
     public boolean run(Outline outline, Options opt, ErrorHandler errorHandler) throws SAXException {
         for (ClassOutline co : outline.getClasses() ) {
-
             CPluginCustomization c = co.target.getCustomizations().find( uri, "default" );
-            if ( co.implClass.getConstructor( new JType[0]) == null ) {
-                createDefaultConstructor( co.implClass );
+            if ( c != null ) {
+                if ( co.implClass.getConstructor( new JType[0]) == null ) {
+                    createDefaultConstructor( co.implClass );
+                }
+                c.markAsAcknowledged();
             }
-            c.markAsAcknowledged();
         }
-
         return true;
     }
 

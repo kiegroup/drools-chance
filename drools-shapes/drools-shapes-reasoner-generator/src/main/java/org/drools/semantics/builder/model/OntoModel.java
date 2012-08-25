@@ -21,17 +21,17 @@ import java.util.Set;
 
 public interface OntoModel extends Cloneable {
 
-    public String getPackage();
+    public String getDefaultPackage();
         
-    public void setPackage( String pack );
+    public void setDefaultPackage( String pack );
 
     public String getName();
         
     public void setName( String name );
 
-    public String getNamespace();
+    public String getDefaultNamespace();
 
-    public void setNamespace( String ns );
+    public void setDefaultNamespace( String ns );
     
     
 

@@ -27,24 +27,25 @@ import java.util.Set;
 public class JavaInterfaceModelImpl extends ModelImpl implements JavaInterfaceModel {
 
 
+    protected static String slash = System.getProperty("file.separator");
 
     JavaInterfaceModelImpl() {
 
     }
 
 
-    private Map<String, String> traits = new HashMap<String, String>();
+    private Map<String, InterfaceHolder> traits = new HashMap<String, InterfaceHolder>();
 
-    public Map<String, String> getTraits() {
+    public Map<String, InterfaceHolder> getTraits() {
         return traits;
     }
 
-    public void addTrait(String name, String trait) {
+    public void addTrait( String name, InterfaceHolder trait ) {
         traits.put( name, trait );
     }
 
-    public void addTrait(String name, Object trait) {
-        addTrait( name, (String) trait );
+    public void addTrait( String name, Object trait ) {
+        addTrait( name, (InterfaceHolder) trait );
     }
 
     public Object getTrait( String name ) {
@@ -68,20 +69,15 @@ public class JavaInterfaceModelImpl extends ModelImpl implements JavaInterfaceMo
 
     public boolean save( String targetDirectory ) {
 
-        String slash = System.getProperty("file.separator");
-
-        String path = targetDirectory + slash + getPackage().replace(".", "/");
-        File dir = new File( path );
-        if (! dir.exists()) {
-            dir.mkdirs();
-        }
-
-
         for ( String key : getTraitNames() ) {
-            File f =  new File( path + slash + key + ".java" );
+            InterfaceHolder holder = (InterfaceHolder) getTrait( key );
+
+            String path = getPackageDir( targetDirectory, holder.getPack() );
+
+            File f =  new File( path + slash + key.substring( key.lastIndexOf('.') + 1 ) + ".java" );
             try {
                 FileOutputStream fos = new FileOutputStream( f );
-                fos.write( getTrait(key).toString().getBytes());
+                fos.write( holder.getSource().getBytes() );
                 fos.flush();
                 fos.close();
             } catch (FileNotFoundException e) {
@@ -98,6 +94,40 @@ public class JavaInterfaceModelImpl extends ModelImpl implements JavaInterfaceMo
 
     }
 
+    private String getPackageDir(String targetDirectory, String pack) {
+        String path = targetDirectory + slash + pack.replace(".", "/");
+        File dir = new File( path );
+        if (! dir.exists()) {
+            dir.mkdirs();
+        }
+        return path;
+    }
 
+
+    public static class InterfaceHolder {
+        private String source;
+        private String pack;
+
+        public InterfaceHolder(String source, String pack) {
+            this.source = source;
+            this.pack = pack;
+        }
+
+        public String getSource() {
+            return source;
+        }
+
+        public void setSource(String source) {
+            this.source = source;
+        }
+
+        public String getPack() {
+            return pack;
+        }
+
+        public void setPack(String pack) {
+            this.pack = pack;
+        }
+    }
 
 }

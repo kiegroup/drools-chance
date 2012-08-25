@@ -8,6 +8,8 @@ import org.drools.lang.DrlDumper;
 import org.drools.lang.descr.PackageDescr;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Test;
+import org.semanticweb.ontologies._2012._1.rule_example.Pattern1Type;
+import org.semanticweb.ontologies._2012._1.rule_example.Pattern1TypeImpl;
 import org.semanticweb.ontologies._2012._1.rule_merged.*;
 
 import java.util.Collection;
@@ -24,8 +26,6 @@ public class IndividualsTest {
         Pattern1Type p1 = new Pattern1TypeImpl();
         Object x = p1.getHasFunctorType();
         Object y = ((Pattern1TypeImpl)p1).getHasFunctorTypeInferred();
-        
-
 
         Collection c = IndividualFactory.getIndividuals();
         assertEquals( 21, c.size() );

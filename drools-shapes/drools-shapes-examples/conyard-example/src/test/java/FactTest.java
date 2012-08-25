@@ -3,6 +3,8 @@ import com.clarkparsia.empire.EmpireOptions;
 import com.clarkparsia.empire.config.ConfigKeys;
 import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
 import com.clarkparsia.empire.sesametwo.RepositoryDataSourceFactory;
+import com.sun.xml.bind.v2.runtime.JAXBContextImpl;
+import com.sun.xml.bind.v2.runtime.NameList;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -15,6 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.w3._2002._07.owl.ThingImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -30,6 +33,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -591,7 +595,7 @@ public class FactTest {
             for ( int j = 0; j < nodeList.getLength(); j++ ) {
                 Node n = nodeList.item( j );
                 if ( n.getNodeName().equals( "xmlns" ) ) {
-                    assertEquals( "http://owl.drools.org/conyard#", n.getNodeValue() );
+                    assertEquals( "http://owl.drools.org/conyard", n.getNodeValue() );
                 } else if ( n.getNodeName().equals( "xmlns:xml" ) ) {
                     assertEquals( "http://www.w3.org/XML/1998/namespace", n.getNodeValue() );
                 } else if ( n.getNodeName().equals( "xmlns:xsi" ) ) {

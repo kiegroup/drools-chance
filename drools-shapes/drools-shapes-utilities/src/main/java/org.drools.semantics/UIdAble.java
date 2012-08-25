@@ -15,9 +15,9 @@ public abstract class UIdAble implements SupportsRdfId {
 
     private Key key;
 
-    private String dyEntryType;
+//    private String dyEntryType;
 
-    private boolean dyReference;
+//    private boolean dyReference;
 
     @XmlTransient
     public RdfKey getRdfId() {

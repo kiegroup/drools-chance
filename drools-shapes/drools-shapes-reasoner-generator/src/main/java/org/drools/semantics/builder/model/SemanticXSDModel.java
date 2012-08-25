@@ -17,17 +17,22 @@
 package org.drools.semantics.builder.model;
 
 
+import org.jdom.Namespace;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 
 public interface SemanticXSDModel extends XSDModel {
 
-    public String getBindings();
+    public String getBindings( String namespace );
 
-    public void setBindings( String bindings );
+    public void setBindings( String namespace, String bindings );
 
-    public boolean streamBindings( OutputStream os);
+    public boolean streamBindings( OutputStream os );
+
+    public boolean streamBindings( File file );
 
     public void setIndex( String index );
 
@@ -36,4 +41,8 @@ public interface SemanticXSDModel extends XSDModel {
     public void setIndividualFactory( String factory );
     
     public boolean streamIndividualFactory( OutputStream os );
+
+    public void setNamespaceFix( String fix );
+
+    public boolean streamNamespaceFix( OutputStream os );
 }

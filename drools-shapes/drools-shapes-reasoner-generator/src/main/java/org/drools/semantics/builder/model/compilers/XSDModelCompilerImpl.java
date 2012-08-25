@@ -16,8 +16,10 @@
 
 package org.drools.semantics.builder.model.compilers;
 
+import org.drools.core.util.StringUtils;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.*;
+import org.drools.semantics.utils.NamespaceUtils;
 import org.jdom.Element;
 
 import java.util.HashMap;
@@ -32,6 +34,10 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     protected Mode mode = Mode.HIERARCHY;
 
     protected Map<String,Map<String,PropertyRelation>> propCache = new HashMap<String, Map<String, PropertyRelation>>();
+
+    protected Map<String,String> reverseNamespaces = new HashMap<String,String>();
+
+    private String schemaMode;
 
     private boolean transientPropertiesEnabled;
     private boolean useImplementation;
@@ -61,19 +67,31 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         this.useImplementation = useImplementation;
     }
 
-    public void setModel( OntoModel model ) {
-        this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.XSD, model );
+    public void setSchemaMode(String mode) {
+        this.schemaMode = mode;
+    }
 
-        ((XSDModel) getModel()).setNamespace( "tns", model.getNamespace() );
+    public void setModel( OntoModel model ) {
+        this.model = (CompiledOntoModel) ModelFactory.newModel( getCompileTarget(), model );
+
+
+        reverseNamespaces.clear();
+        ((XSDModel) getModel()).setNamespace("tns", model.getDefaultNamespace());
     }
 
 
     public void compile( Concept con, Object context, Map<String, Object> params ) {
+        ((XSDModel) model).setSchemaMode( schemaMode );
+
         String name = con.getName().substring(con.getName().lastIndexOf(".") + 1);
+
+        if ( "Thing".equals( con.getName() ) && NamespaceUtils.compareNamespaces( "http://www.w3.org/2002/07/owl", con.getNamespace() ) ) {
+            return;
+        }
 
         Element element = new Element( "element", ((XSDModel) getModel()).getNamespace("xsd") );
         element.setAttribute( "name", isUseImplementation() ? name + "Impl" : name );
-        element.setAttribute( "type", "tns:"+name );
+        element.setAttribute( "type", mapNamespace( con.getNamespace() ) + name );
 
 
 
@@ -133,7 +151,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                 : new Element( "sequence", xmodel.getNamespace( "xsd" ) );
 
 
-        if ( name.equals( "Thing" ) || isUseImplementation() ) {
+        if ( isUseImplementation() ) {
             Element prop;
 
             prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
@@ -144,7 +162,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             seq.addContent( prop );
         }
 
-        if ( name.equals( "Thing" ) || isUseImplementation() ) {
+        if ( isUseImplementation() ) {
             Element prop;
 
             prop = new Element( "element", xmodel.getNamespace( "xsd" ) );
@@ -155,7 +173,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             seq.addContent( prop );
         }
 
-        if ( name.equals( "Thing" ) || isUseImplementation() ) {
+        if ( isUseImplementation() ) {
             Element key = new Element( "element", xmodel.getNamespace( "xsd" ) );
             key.setAttribute( "name", "dyEntryId" );
             key.setAttribute( "type", "xsd:string"  );
@@ -250,7 +268,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         }
 
         String name = tgt.getName().substring( tgt.getName().lastIndexOf(".") + 1 );
-        String namespace = tgt.getName().lastIndexOf( "." ) > 0 ? tgt.getName().substring( 0, tgt.getName().lastIndexOf( name ) - 1 ) : "";
+//        String namespace = tgt.getName().lastIndexOf( "." ) > 0 ? tgt.getName().substring( 0, tgt.getName().lastIndexOf( name ) - 1 ) : "";
         String prefix = "tns";
 
         if ( tgt.isPrimitive() ) {
@@ -273,12 +291,31 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 //            }
 //        }
 
-        return prefix + ":" + name ;
+        return mapNamespace( tgt.getNamespace() ) + name ;
 
 
     }
 
-
+    private String mapNamespace( String namespace ) {
+        namespace = NamespaceUtils.removeLastSeparator( namespace );
+        String prefix;
+        if ( StringUtils.isEmpty( namespace ) ) {
+            prefix = "tns";
+        } else if ( NamespaceUtils.compareNamespaces( model.getDefaultNamespace(), namespace ) ) {
+            prefix = "tns";
+        } else if ( reverseNamespaces.containsKey( namespace ) ) {
+            prefix = reverseNamespaces.get( namespace );
+        } else if ( NamespaceUtils.isKnownSchema(namespace) ) {
+            prefix = NamespaceUtils.getPrefix( namespace );
+            reverseNamespaces.put( namespace, prefix );
+            ((XSDModel)model).setNamespace( prefix, namespace );
+        } else {
+            prefix = "ns" + ( reverseNamespaces.size() + 1 );
+            reverseNamespaces.put( namespace, prefix );
+            ((XSDModel)model).setNamespace( prefix, namespace );
+        }
+        return prefix + ":";
+    }
 
 
     private Element buildTypeAsHierarchy( Concept con, Map<String, Object> params, boolean includeTransient ) {
@@ -300,18 +337,18 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
         if ( ! supers.isEmpty() ) {
             Concept sup = supers.iterator().next();
-            con.setChosenSuper( sup.getName() );
+            con.setChosenSuper( sup.getFullyQualifiedName() );
             Element complex = new Element( "complexContent", xmodel.getNamespace( "xsd" ) );
 
             Element ext = new Element("extension", xmodel.getNamespace( "xsd" ) );
-            ext.setAttribute("base", "tns:"+sup.getName() );
+            ext.setAttribute("base", mapNamespace( sup.getNamespace() ) + sup.getName() );
 
             buildProperties( con, (Map<String, PropertyRelation>) params.get( "properties" ), ext, includeTransient, true );
 
             complex.setContent( ext );
             type.setContent( complex );
         } else {
-            con.setChosenSuper( "Thing" );
+            con.setChosenSuper( "org.w3._2002._07.owl.Thing" );
             buildProperties( con, (Map<String, PropertyRelation>) params.get( "properties" ), type, includeTransient, true );
         }
 
@@ -362,13 +399,13 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
 //            System.err.println( "FOR concept " + name + ", the best super was " + chosenSuper + " among " + supers );
 
-            con.setChosenSuper( chosenSuper != null ? chosenSuper.getName() : null );
+            con.setChosenSuper( chosenSuper != null ? chosenSuper.getFullyQualifiedName() : null );
 
 
             Element complex = new Element( "complexContent", xmodel.getNamespace( "xsd" ) );
 
             Element ext = new Element("extension", xmodel.getNamespace( "xsd" ) );
-            ext.setAttribute("base", "tns:"+chosenSuper.getName() );
+            ext.setAttribute("base", mapNamespace( chosenSuper.getNamespace() ) + chosenSuper.getName() );
 
             Map<String, PropertyRelation> props = new HashMap<String, PropertyRelation>( ( Map<String, PropertyRelation>) params.get( "properties" ) );
 
@@ -419,6 +456,10 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         return type;
     }
 
+
+    public ModelFactory.CompileTarget getCompileTarget() {
+        return ModelFactory.CompileTarget.XSD;
+    }
 
 
 }
