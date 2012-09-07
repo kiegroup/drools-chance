@@ -18,19 +18,28 @@ package org.drools.scorecards.pmml;
 
 import java.util.List;
 
+import org.dmg.pmml_4_1.Attribute;
+import org.dmg.pmml_4_1.Characteristic;
+import org.dmg.pmml_4_1.DATATYPE;
+import org.dmg.pmml_4_1.DataDictionary;
+import org.dmg.pmml_4_1.DataField;
 import org.dmg.pmml_4_1.Extension;
+import org.dmg.pmml_4_1.PMML;
 import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml_4_1.SimplePredicate;
+import org.dmg.pmml_4_1.SimpleSetPredicate;
+import org.drools.scorecards.parser.xls.XLSKeywords;
 
 public class ScorecardPMMLUtils {
 
-    public static String getDataType(org.dmg.pmml_4_1.Characteristic c) {
-        for (Extension extension : c.getExtensions()) {
-            if (PMMLExtensionNames.CHARACTERTISTIC_DATATYPE.equalsIgnoreCase(extension.getName())) {
-                return extension.getValue();
-            }
-        }
-        return null;
-    }
+//    public static String getDataType(org.dmg.pmml_4_1.Characteristic c) {
+//        for (Extension extension : c.getExtensions()) {
+//            if (PMMLExtensionNames.CHARACTERTISTIC_DATATYPE.equalsIgnoreCase(extension.getName())) {
+//                return extension.getValue();
+//            }
+//        }
+//        return null;
+//    }
 
     public static String getExtensionValue(List extensions, String extensionName) {
         for (Object obj : extensions) {
@@ -62,6 +71,41 @@ public class ScorecardPMMLUtils {
         scorecard.setUseReasonCodes(Boolean.FALSE);
         scorecard.setIsScorable(Boolean.TRUE);
         return scorecard;
+    }
+
+    public static String getDataType(PMML pmmlDocument, String fieldName) {
+        DataDictionary dataDictionary = pmmlDocument.getDataDictionary();
+        for (DataField dataField : dataDictionary.getDataFields()){
+            if (dataField.getName().equalsIgnoreCase(fieldName)) {
+                DATATYPE datatype = dataField.getDataType();
+                if (datatype == DATATYPE.DOUBLE) {
+                    return XLSKeywords.DATATYPE_NUMBER;
+                } else if (datatype == DATATYPE.STRING) {
+                    return XLSKeywords.DATATYPE_TEXT;
+                } else if (datatype == DATATYPE.BOOLEAN) {
+                    return XLSKeywords.DATATYPE_BOOLEAN;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static String extractFieldNameFromCharacteristic(Characteristic c) {
+        String field = "";
+        Attribute scoreAttribute = c.getAttributes().get(0);
+        if (scoreAttribute.getSimplePredicate() != null) {
+            field = scoreAttribute.getSimplePredicate().getField();
+        } else if (scoreAttribute.getSimpleSetPredicate() != null) {
+            field = scoreAttribute.getSimpleSetPredicate().getField();
+        } else if (scoreAttribute.getCompoundPredicate() != null) {
+            Object predicate = scoreAttribute.getCompoundPredicate().getSimplePredicatesAndCompoundPredicatesAndSimpleSetPredicates().get(0);
+            if (predicate instanceof SimplePredicate){
+                field = ((SimplePredicate)predicate).getField();
+            } else if (predicate instanceof SimpleSetPredicate){
+                field = ((SimpleSetPredicate)predicate).getField();
+            }
+        }
+        return field;
     }
 
 }

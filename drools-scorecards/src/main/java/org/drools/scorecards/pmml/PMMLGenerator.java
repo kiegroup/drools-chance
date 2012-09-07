@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.dmg.pmml_4_1.Array;
 import org.dmg.pmml_4_1.Attribute;
+import org.dmg.pmml_4_1.Characteristic;
 import org.dmg.pmml_4_1.Characteristics;
 import org.dmg.pmml_4_1.CompoundPredicate;
 import org.dmg.pmml_4_1.DATATYPE;
@@ -31,6 +32,8 @@ import org.dmg.pmml_4_1.DataDictionary;
 import org.dmg.pmml_4_1.DataField;
 import org.dmg.pmml_4_1.Extension;
 import org.dmg.pmml_4_1.Header;
+import org.dmg.pmml_4_1.MiningField;
+import org.dmg.pmml_4_1.MiningSchema;
 import org.dmg.pmml_4_1.OPTYPE;
 import org.dmg.pmml_4_1.Output;
 import org.dmg.pmml_4_1.OutputField;
@@ -53,6 +56,7 @@ public class PMMLGenerator {
 
         //second add additional elements to scorecard
         createAndSetOutput(pmmlScorecard);
+        repositionExternalClassExtensions(pmmlScorecard);
 
         Extension scorecardPackage = ScorecardPMMLUtils.getExtension(pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas(), PMMLExtensionNames.SCORECARD_PACKAGE);
         if ( scorecardPackage != null) {
@@ -78,6 +82,34 @@ public class PMMLGenerator {
         pmml.getAssociationModelsAndBaselineModelsAndClusteringModels().add(pmmlScorecard);
         removeAttributeFieldExtension(pmmlScorecard);
         return pmml;
+    }
+
+    private void repositionExternalClassExtensions(Scorecard pmmlScorecard) {
+        Characteristics characteristics = null;
+        for (Object obj : pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
+            if ( obj instanceof  Characteristics ) {
+                characteristics = (Characteristics) obj;
+                break;
+            }
+        }
+        for (Object obj : pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
+            if ( obj instanceof MiningSchema ) {
+                MiningSchema schema = (MiningSchema)obj;
+                for (MiningField miningField : schema.getMiningFields()) {
+                    String fieldName = miningField.getName();
+                    for (Characteristic characteristic : characteristics.getCharacteristics()){
+                        String characteristicName = ScorecardPMMLUtils.extractFieldNameFromCharacteristic(characteristic);
+                        if (fieldName.equalsIgnoreCase(characteristicName)){
+                            Extension extension = ScorecardPMMLUtils.getExtension(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_EXTERNAL_CLASS);
+                            if ( extension != null ) {
+                                characteristic.getExtensions().remove(extension);
+                                miningField.getExtensions().add(extension);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void removeAttributeFieldExtension(Scorecard pmmlScorecard) {
@@ -108,7 +140,8 @@ public class PMMLGenerator {
                 for (org.dmg.pmml_4_1.Characteristic characteristic : characteristics.getCharacteristics()) {
 
                     DataField dataField = new DataField();
-                    String dataType = ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
+                    Extension dataTypeExtension = ScorecardPMMLUtils.getExtension(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
+                    String dataType = dataTypeExtension.getValue();
                     String factType = ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_FACTTYPE);
 
                     if ( factType != null ){
@@ -139,6 +172,7 @@ public class PMMLGenerator {
                     }
                     dataField.setName(field);
                     dataDictionary.getDataFields().add(dataField);
+                    characteristic.getExtensions().remove(dataTypeExtension);
                     ctr++;
                 }
             }

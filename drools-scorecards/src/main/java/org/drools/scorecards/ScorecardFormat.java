@@ -17,5 +17,5 @@
 package org.drools.scorecards;
 
 public enum ScorecardFormat {
-    XLS, PMML
+    XLS, CSV
 }
