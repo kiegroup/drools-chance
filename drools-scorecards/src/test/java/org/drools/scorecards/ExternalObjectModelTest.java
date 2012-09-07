@@ -37,6 +37,7 @@ public class ExternalObjectModelTest {
             pmmlDocument = scorecardCompiler.getPMMLDocument();
             assertNotNull(pmmlDocument);
             drl = scorecardCompiler.getDRL(ScorecardCompiler.DrlType.EXTERNAL_OBJECT_MODEL);
+            //System.out.println(drl);
         } else {
             fail("failed to parse scoremodel Excel.");
         }
@@ -59,7 +60,7 @@ public class ExternalObjectModelTest {
         StringWriter stringWriter = new StringWriter();
         marshaller.marshal(pmmlDocument, stringWriter);
         assertTrue(stringWriter.toString().length() > 0);
-        //System.out.println(stringWriter.toString());
+        System.out.println(stringWriter.toString());
     }
 
     @Test
@@ -93,7 +94,7 @@ public class ExternalObjectModelTest {
     public void testDrlNoNull() throws Exception {
         assertNotNull(drl);
         assertTrue(drl.length() > 0);
-        //System.out.println(drl);
+        System.out.println(drl);
     }
 
     @Test

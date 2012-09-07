@@ -21,6 +21,8 @@ import java.util.List;
 import org.dmg.pmml_4_1.Attribute;
 import org.dmg.pmml_4_1.Characteristic;
 import org.dmg.pmml_4_1.Extension;
+import org.dmg.pmml_4_1.MiningField;
+import org.dmg.pmml_4_1.MiningSchema;
 import org.dmg.pmml_4_1.Output;
 import org.dmg.pmml_4_1.OutputField;
 import org.dmg.pmml_4_1.PMML;
@@ -35,7 +37,7 @@ import org.drools.template.model.Rule;
 public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
 
     @Override
-    protected void addDeclaredTypeContents(StringBuilder stringBuilder, Scorecard scorecard) {
+    protected void addDeclaredTypeContents(PMML pmmlDocument, StringBuilder stringBuilder, Scorecard scorecard) {
         //empty by design
     }
 
@@ -46,12 +48,26 @@ public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
 
     @Override
     protected void addLHSConditions(Rule rule, PMML pmmlDocument, Scorecard scorecard, Characteristic c, Attribute scoreAttribute) {
-        Extension extension =  ScorecardPMMLUtils.getExtension(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_EXTERNAL_CLASS);
+        Extension extension = null;
+        for (Object obj : scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()){
+            if ( obj instanceof MiningSchema ) {
+                MiningSchema miningSchema = (MiningSchema)obj;
+                String fieldName = ScorecardPMMLUtils.extractFieldNameFromCharacteristic(c);
+                for (MiningField miningField : miningSchema.getMiningFields() ){
+                    if ( miningField.getName().equalsIgnoreCase(fieldName)) {
+                        if (miningField.getExtensions().size() > 0 ) {
+                            extension = miningField.getExtensions().get(0);
+                        }
+                    }
+                }
+            }
+        }
+        //Extension extension =  ScorecardPMMLUtils.getExtension(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_EXTERNAL_CLASS);
         if ( extension != null ) {
             Condition condition = new Condition();
             StringBuilder stringBuilder = new StringBuilder("$");
             stringBuilder.append(c.getName()).append(" : ").append(extension.getValue());
-            createFieldRestriction(c, scoreAttribute, stringBuilder);
+            createFieldRestriction(pmmlDocument, c, scoreAttribute, stringBuilder);
             condition.setSnippet(stringBuilder.toString());
             rule.addCondition(condition);
         }

@@ -241,11 +241,11 @@ public class XLSEventDataCollector implements EventDataCollector {
                     attribute.getExtensions().add(extension);
                     addExpectation(r, currentColCtr+4, "reasonCode", attribute,null);
                 }
-                MiningField dataField = new MiningField();
-                dataField.setInvalidValueTreatment(INVALIDVALUETREATMENTMETHOD.AS_MISSING);
-                dataField.setUsageType(FIELDUSAGETYPE.ACTIVE);
-                miningSchema.getMiningFields().add(dataField);
-                addExpectation(currentRowCtr + 1, currentColCtr, "name", dataField, null);
+                MiningField miningField = new MiningField();
+                miningField.setInvalidValueTreatment(INVALIDVALUETREATMENTMETHOD.AS_MISSING);
+                miningField.setUsageType(FIELDUSAGETYPE.ACTIVE);
+                miningSchema.getMiningFields().add(miningField);
+                addExpectation(currentRowCtr + 1, currentColCtr, "name", miningField, null);
             }
 
         } else if (XLSKeywords.SCORECARD_CHARACTERISTIC_BIN_INITIALSCORE.equalsIgnoreCase(stringCellValue)) {
