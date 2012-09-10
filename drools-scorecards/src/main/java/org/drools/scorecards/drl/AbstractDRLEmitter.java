@@ -37,10 +37,10 @@ import org.drools.template.model.Package;
 
 public abstract class AbstractDRLEmitter {
 
-    protected String formRuleName(String modelName, Characteristic c, Attribute scoreAttribute) {
+    protected String formRuleName(PMML pmmlDocument, String modelName, Characteristic c, Attribute scoreAttribute) {
         StringBuilder sb = new StringBuilder();
         sb.append(modelName).append("_").append(c.getName()).append("_");
-        String dataType = ScorecardPMMLUtils.getDataType(c);
+        String dataType = ScorecardPMMLUtils.getDataType(pmmlDocument, ScorecardPMMLUtils.extractFieldNameFromCharacteristic(c));
         if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 sb.append(scoreAttribute.getSimplePredicate().getOperator()).append("_").append(scoreAttribute.getSimplePredicate().getValue());
@@ -72,24 +72,6 @@ public abstract class AbstractDRLEmitter {
             }
         }
         return null;
-    }
-
-    protected String extractFieldFromCharacteristic(Characteristic c) {
-        String field = "";
-        Attribute scoreAttribute = c.getAttributes().get(0);
-        if (scoreAttribute.getSimplePredicate() != null) {
-            field = scoreAttribute.getSimplePredicate().getField();
-        } else if (scoreAttribute.getSimpleSetPredicate() != null) {
-            field = scoreAttribute.getSimpleSetPredicate().getField();
-        } else if (scoreAttribute.getCompoundPredicate() != null) {
-            Object predicate = scoreAttribute.getCompoundPredicate().getSimplePredicatesAndCompoundPredicatesAndSimpleSetPredicates().get(0);
-            if (predicate instanceof SimplePredicate){
-                field = ((SimplePredicate)predicate).getField();
-            } else if (predicate instanceof SimpleSetPredicate){
-                field = ((SimpleSetPredicate)predicate).getField();
-            }
-        }
-        return field;
     }
 
     protected void addGlobals(PMML pmml, org.drools.template.model.Package aPackage) {
@@ -149,7 +131,7 @@ public abstract class AbstractDRLEmitter {
                 Scorecard scorecard = (Scorecard) obj;
                 stringBuilder.append("declare ").append(scorecard.getModelName().replaceAll(" ","")).append(" extends DroolsScorecard\n");
 
-                addDeclaredTypeContents(stringBuilder, scorecard);
+                addDeclaredTypeContents(pmml, stringBuilder, scorecard);
 
                 stringBuilder.append("end\n");
             }
@@ -167,7 +149,7 @@ public abstract class AbstractDRLEmitter {
                 for (org.dmg.pmml_4_1.Characteristic c : characteristics.getCharacteristics()) {
                     int attributePosition = 0;
                     for (org.dmg.pmml_4_1.Attribute scoreAttribute : c.getAttributes()) {
-                        String name = formRuleName(scorecard.getModelName().replaceAll(" ",""), c, scoreAttribute);
+                        String name = formRuleName(pmmlDocument, scorecard.getModelName().replaceAll(" ",""), c, scoreAttribute);
                         Rule rule = new Rule(name, 99, 1);
                         String desc = ScorecardPMMLUtils.getExtensionValue(scoreAttribute.getExtensions(), "description");
                         if (desc != null) {
@@ -209,7 +191,7 @@ public abstract class AbstractDRLEmitter {
                     if (obj instanceof Characteristics){
                         Characteristics characteristics = (Characteristics)obj;
                         for (Characteristic characteristic : characteristics.getCharacteristics()){
-                            String field = extractFieldFromCharacteristic(characteristic);
+                            String field = ScorecardPMMLUtils.extractFieldNameFromCharacteristic(characteristic);
                             Consequence consequence = new Consequence();
                             if (characteristic.getBaselineScore() == null ||  characteristic.getBaselineScore() == 0 ) {
                                 consequence.setSnippet("insertLogical(new BaselineScore(\"" + objectClass+"\",\""+field + "\","+scorecard.getBaselineScore()+"));");
@@ -240,9 +222,10 @@ public abstract class AbstractDRLEmitter {
         addLHSConditions(rule, pmmlDocument, scorecard, c, scoreAttribute);
     }
 
-    protected void createFieldRestriction(Characteristic c, Attribute scoreAttribute, StringBuilder stringBuilder) {
+    protected void createFieldRestriction(PMML pmmlDocument, Characteristic c, Attribute scoreAttribute, StringBuilder stringBuilder) {
         stringBuilder.append("(");
-        String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
+        //String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
+        String dataType = ScorecardPMMLUtils.getDataType(pmmlDocument, ScorecardPMMLUtils.extractFieldNameFromCharacteristic(c));
         if (XLSKeywords.DATATYPE_TEXT.equalsIgnoreCase(dataType)) {
             if (scoreAttribute.getSimplePredicate() != null) {
                 SimplePredicate predicate = scoreAttribute.getSimplePredicate();
@@ -336,7 +319,7 @@ public abstract class AbstractDRLEmitter {
         String objectClass = scorecard.getModelName().replaceAll(" ", "");
 
         String setter = "insertLogical(new PartialScore(\"";
-        String field = extractFieldFromCharacteristic(c);
+        String field = ScorecardPMMLUtils.extractFieldNameFromCharacteristic(c);
 
         stringBuilder.append(setter).append(objectClass).append("\",\"").append(field).append("\",").append(scoreAttribute.getPartialScore());
         if (scorecard.isUseReasonCodes()){
@@ -387,7 +370,7 @@ public abstract class AbstractDRLEmitter {
         addAdditionalSummationConsequence(calcTotalRule, scorecard);
     }
 
-    protected abstract void addDeclaredTypeContents(StringBuilder stringBuilder, Scorecard scorecard);
+    protected abstract void addDeclaredTypeContents(PMML pmmlDocument, StringBuilder stringBuilder, Scorecard scorecard);
     protected abstract void internalEmitDRL(PMML pmml, List<Rule> ruleList, Package aPackage);
     protected abstract void addLHSConditions(Rule rule, PMML pmmlDocument, Scorecard scorecard, Characteristic c, Attribute scoreAttribute);
     protected abstract void addAdditionalReasonCodeConsequence(Rule rule, Scorecard scorecard);

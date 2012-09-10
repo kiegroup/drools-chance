@@ -24,7 +24,6 @@ import org.dmg.pmml_4_1.Characteristics;
 import org.dmg.pmml_4_1.PMML;
 import org.dmg.pmml_4_1.Scorecard;
 import org.drools.scorecards.parser.xls.XLSKeywords;
-import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.Condition;
 import org.drools.template.model.Consequence;
@@ -33,10 +32,12 @@ import org.drools.template.model.Rule;
 
 public class DeclaredTypesDRLEmitter extends AbstractDRLEmitter{
 
-    protected void addDeclaredTypeContents(StringBuilder stringBuilder, Scorecard scorecard) {
+    protected void addDeclaredTypeContents(PMML pmmlDocument, StringBuilder stringBuilder, Scorecard scorecard) {
         Characteristics characteristics = getCharacteristicsFromScorecard(scorecard);
         for (org.dmg.pmml_4_1.Characteristic c : characteristics.getCharacteristics()) {
-            String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
+            String field = ScorecardPMMLUtils.extractFieldNameFromCharacteristic(c);
+            String dataType = ScorecardPMMLUtils.getDataType(pmmlDocument, field);
+            //String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
             if (XLSKeywords.DATATYPE_TEXT.equalsIgnoreCase(dataType)) {
                 dataType = "String";
             } else if (XLSKeywords.DATATYPE_NUMBER.equalsIgnoreCase(dataType)) {
@@ -44,7 +45,6 @@ public class DeclaredTypesDRLEmitter extends AbstractDRLEmitter{
             } else if (XLSKeywords.DATATYPE_BOOLEAN.equalsIgnoreCase(dataType)) {
                 dataType = "boolean";
             }
-            String field = extractFieldFromCharacteristic(c);
             stringBuilder.append("\t").append(field).append(" : ").append(dataType).append("\n");
         }
     }
@@ -63,7 +63,7 @@ public class DeclaredTypesDRLEmitter extends AbstractDRLEmitter{
         String objectClass = scorecard.getModelName().replaceAll(" ", "");
         stringBuilder.append(var).append(" : ").append(objectClass);
 
-        createFieldRestriction(c, scoreAttribute, stringBuilder);
+        createFieldRestriction(pmmlDocument, c, scoreAttribute, stringBuilder);
 
         condition.setSnippet(stringBuilder.toString());
         rule.addCondition(condition);
