@@ -20,15 +20,11 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.dmg.pmml_4_1.PMML;
-import org.drools.scorecards.EventDataCollector;
 import org.drools.scorecards.ScorecardError;
 
 public abstract class AbstractScorecardParser {
 
-    /**
-     * Parse an input stream, store the resulting rulebase.
-     */
-    public abstract List<ScorecardError> parseFile(EventDataCollector eventDataCollector, InputStream inStream, String worksheetName) throws ScorecardParseException;
+    public abstract List<ScorecardError> parseFile(InputStream inStream, String worksheetName) throws ScorecardParseException;
 
     public abstract PMML getPMMLDocument();
 }

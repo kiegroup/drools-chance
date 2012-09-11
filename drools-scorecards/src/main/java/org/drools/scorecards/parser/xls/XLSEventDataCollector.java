@@ -33,17 +33,15 @@ import org.dmg.pmml_4_1.MiningSchema;
 import org.dmg.pmml_4_1.Output;
 import org.dmg.pmml_4_1.Scorecard;
 import org.drools.core.util.StringUtils;
-import org.drools.scorecards.EventDataCollector;
 import org.drools.scorecards.ScorecardError;
 import org.drools.scorecards.parser.ScorecardParseException;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 
-public class XLSEventDataCollector implements EventDataCollector {
+class XLSEventDataCollector {
 
     private List<DataExpectation> expectations = new ArrayList<DataExpectation>();
     private List<MergedCellRange> cellRangeList;
-    //private String worksheetName;
     private Scorecard scorecard;
     private Characteristics characteristics;
     private Characteristic _characteristic; //stateMachine variables
@@ -270,7 +268,6 @@ public class XLSEventDataCollector implements EventDataCollector {
 
     public void newCell(int currentRowCtr, int currentColCtr, String stringCellValue) throws ScorecardParseException {
         setAdditionalExpectation(currentRowCtr, currentColCtr, stringCellValue);
-        //System.out.println(currentRowCtr+", "+currentColCtr+" : "+stringCellValue);
         fulfillExpectation(currentRowCtr, currentColCtr, stringCellValue, String.class);
     }
 

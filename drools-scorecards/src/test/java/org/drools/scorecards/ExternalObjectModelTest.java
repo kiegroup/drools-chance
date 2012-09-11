@@ -1,9 +1,6 @@
 package org.drools.scorecards;
 
-import java.io.StringWriter;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 
 import org.dmg.pmml_4_1.Extension;
 import org.dmg.pmml_4_1.Output;
@@ -25,18 +22,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
+import static org.drools.scorecards.ScorecardCompiler.DrlType.*;
 
 public class ExternalObjectModelTest {
     private static String drl;
     private PMML pmmlDocument;
-
+    private static ScorecardCompiler scorecardCompiler;
     @Before
     public void setUp() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        scorecardCompiler = new ScorecardCompiler(EXTERNAL_OBJECT_MODEL);
         if (scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_externalmodel.xls")) ) {
             pmmlDocument = scorecardCompiler.getPMMLDocument();
             assertNotNull(pmmlDocument);
-            drl = scorecardCompiler.getDRL(ScorecardCompiler.DrlType.EXTERNAL_OBJECT_MODEL);
+            drl = scorecardCompiler.getDRL();
             //System.out.println(drl);
         } else {
             fail("failed to parse scoremodel Excel.");
@@ -50,17 +48,9 @@ public class ExternalObjectModelTest {
 
     @Test
     public void testPMMLToString() throws Exception {
-        // create a JAXBContext for the PMML class
-        JAXBContext ctx = JAXBContext.newInstance(PMML.class);
-        Marshaller marshaller = ctx.createMarshaller();
-        // the property JAXB_FORMATTED_OUTPUT specifies whether or not the
-        // marshalled XML data is formatted with linefeeds and indentation
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        // marshal the data in the Java content tree
-        StringWriter stringWriter = new StringWriter();
-        marshaller.marshal(pmmlDocument, stringWriter);
-        assertTrue(stringWriter.toString().length() > 0);
-        System.out.println(stringWriter.toString());
+        String pmml = scorecardCompiler.getPMML();
+        assertNotNull(pmml);
+        assertTrue(pmml.length() > 0);
     }
 
     @Test
@@ -94,7 +84,7 @@ public class ExternalObjectModelTest {
     public void testDrlNoNull() throws Exception {
         assertNotNull(drl);
         assertTrue(drl.length() > 0);
-        System.out.println(drl);
+        //System.out.println(drl);
     }
 
     @Test

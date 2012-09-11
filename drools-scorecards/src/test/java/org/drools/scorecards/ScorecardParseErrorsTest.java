@@ -3,11 +3,13 @@ package org.drools.scorecards;
 import junit.framework.Assert;
 import org.junit.Test;
 
+import static org.drools.scorecards.ScorecardCompiler.DrlType.INTERNAL_DECLARED_TYPES;
+
 public class ScorecardParseErrorsTest {
 
     @Test
     public void testErrorCount() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        ScorecardCompiler scorecardCompiler = new ScorecardCompiler(INTERNAL_DECLARED_TYPES);
         boolean compileResult = scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_errors.xls"));
         Assert.assertFalse(compileResult);
         Assert.assertEquals(4, scorecardCompiler.getScorecardParseErrors().size());
@@ -36,7 +38,7 @@ public class ScorecardParseErrorsTest {
 
     @Test
     public void testMissingDataType() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        ScorecardCompiler scorecardCompiler = new ScorecardCompiler(ScorecardCompiler.DrlType.INTERNAL_DECLARED_TYPES);
         boolean compileResult = scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_errors.xls"), "missingDataType");
 //        for(ScorecardError error : scorecardCompiler.getScorecardParseErrors()){
 //            System.out.println("testMissingDataType :"+error.getErrorLocation()+"->"+error.getErrorMessage());
@@ -49,7 +51,7 @@ public class ScorecardParseErrorsTest {
 
     @Test
     public void testMissingAttributes() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        ScorecardCompiler scorecardCompiler = new ScorecardCompiler(ScorecardCompiler.DrlType.INTERNAL_DECLARED_TYPES);
         boolean compileResult = scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_errors.xls"), "incomplete_noAttr");
         Assert.assertFalse(compileResult);
 //        Assert.assertEquals(2, scorecardCompiler.getScorecardParseErrors().size());

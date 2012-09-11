@@ -28,7 +28,7 @@ import org.drools.scorecards.StringUtil;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 
-public class ExcelScorecardValidator {
+class ExcelScorecardValidator {
 
     private Scorecard scorecard;
     private List<ScorecardError> parseErrors;
