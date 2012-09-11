@@ -1,9 +1,5 @@
 package org.drools.scorecards;
 
-import java.io.StringWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-
 import junit.framework.Assert;
 import org.dmg.pmml_4_1.Attribute;
 import org.dmg.pmml_4_1.Characteristics;
@@ -19,14 +15,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
+import static org.drools.scorecards.ScorecardCompiler.DrlType.*;
 
 public class PMMLDocumentTest {
 
     private static PMML pmmlDocument;
+    private static ScorecardCompiler scorecardCompiler;
 
     @Before
     public void setUp() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        scorecardCompiler = new ScorecardCompiler(INTERNAL_DECLARED_TYPES);
         scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_c.xls"));
         pmmlDocument = scorecardCompiler.getPMMLDocument();
     }
@@ -34,17 +32,9 @@ public class PMMLDocumentTest {
     @Test
     public void testPMMLDocument() throws Exception {
         Assert.assertNotNull(pmmlDocument);
-        // create a JAXBContext for the PMML class
-        JAXBContext ctx = JAXBContext.newInstance(PMML.class);
-        Marshaller marshaller = ctx.createMarshaller();
-        // the property JAXB_FORMATTED_OUTPUT specifies whether or not the
-        // marshalled XML data is formatted with linefeeds and indentation
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        // marshal the data in the Java content tree
-        StringWriter stringWriter = new StringWriter();
-        marshaller.marshal(pmmlDocument, stringWriter);
-        assertTrue(stringWriter.toString().length() > 0);
-        //System.out.println(stringWriter.toString());
+        String pmml = scorecardCompiler.getPMML();
+        Assert.assertNotNull(pmml);
+        Assert.assertTrue(pmml.length() > 0);
     }
 
     @Test

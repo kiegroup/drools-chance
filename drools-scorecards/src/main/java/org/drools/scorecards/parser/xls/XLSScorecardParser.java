@@ -29,7 +29,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.dmg.pmml_4_1.PMML;
 import org.dmg.pmml_4_1.Scorecard;
-import org.drools.scorecards.EventDataCollector;
 import org.drools.scorecards.ScorecardError;
 import org.drools.scorecards.parser.AbstractScorecardParser;
 import org.drools.scorecards.parser.ScorecardParseException;
@@ -44,9 +43,9 @@ public class XLSScorecardParser extends AbstractScorecardParser {
     private HSSFSheet currentWorksheet;
 
     @Override
-    public List<ScorecardError>  parseFile(EventDataCollector eventDataCollector, InputStream inStream, String worksheetName) throws ScorecardParseException {
+    public List<ScorecardError>  parseFile(InputStream inStream, String worksheetName) throws ScorecardParseException {
         try {
-            excelDataCollector = (XLSEventDataCollector) eventDataCollector;
+            excelDataCollector = new XLSEventDataCollector();
             excelDataCollector.setParser(this);
             HSSFWorkbook workbook = new HSSFWorkbook(inStream);
             HSSFSheet worksheet = workbook.getSheet(worksheetName);
@@ -93,7 +92,6 @@ public class XLSScorecardParser extends AbstractScorecardParser {
                         }
                         break;
                     case Cell.CELL_TYPE_BOOLEAN:
-                        //System.out.println(currentColCtr+" "+currentRowCtr+" "+Boolean.valueOf(cell.getBooleanCellValue()).toString());
                         excelDataCollector.newCell(currentRowCtr, currentColCtr, Boolean.valueOf(cell.getBooleanCellValue()).toString());
                         break;
                     case Cell.CELL_TYPE_FORMULA:

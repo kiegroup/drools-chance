@@ -16,7 +16,7 @@
 
 package org.drools.scorecards.parser.xls;
 
-public class MergedCellRange {
+class MergedCellRange {
 
     private int firstRow;
     private int firstCol;

@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
+import static org.drools.scorecards.ScorecardCompiler.DrlType.INTERNAL_DECLARED_TYPES;
 
 public class DrlFromPMMLTest {
 
@@ -21,7 +22,7 @@ public class DrlFromPMMLTest {
 
     @Before
     public void setUp() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        ScorecardCompiler scorecardCompiler = new ScorecardCompiler(INTERNAL_DECLARED_TYPES);
         if (scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_c.xls")) ) {
             PMML pmmlDocument = scorecardCompiler.getPMMLDocument();
             assertNotNull(pmmlDocument);
