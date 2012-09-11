@@ -16,12 +16,9 @@
 
 package org.drools.scorecards.parser.xls;
 
-public class XLSKeywords {
+public interface XLSKeywords {
 
     public static final String SCORECARD_NAME = "Scorecard Name";
-    //public static final String SCORECARD_TYPE = "Scorecard Type";
-    //public static final String SCORECARD_OBJECT = "Object";
-    //public static final String SCORECARD_BOUND_VARIABLE = "Bound Variable";
     public static final String SCORECARD_RESULTANT_SCORE_CLASS = "Resultant Score Class";
     public static final String SCORECARD_RESULTANT_SCORE_FIELD = "Resultant Score Field";
     public static final String SCORECARD_CHARACTERISTIC_EXTERNAL_CLASS = "Full Class Name";
@@ -36,8 +33,6 @@ public class XLSKeywords {
     public static final String SCORECARD_CHARACTERISTIC_NAME = "Name";
     public static final String SCORECARD_CHARACTERISTIC_DATATYPE = "Data Type";
     public static final String SCORECARD_CHARACTERISTIC_BASELINE_SCORE = "Baseline Score";
-    //public static final String SCORECARD_GROUP_REASONCODE = "Reason Code";
-    //public static final String SCORECARD_CHARACTERISTIC_WEIGHT = "Weight";
 
     public static final String SCORECARD_CHARACTERISTIC_BIN_ATTRIBUTE = "Characteristic";
     public static final String SCORECARD_CHARACTERISTIC_BIN_OPERATOR = "Operator";

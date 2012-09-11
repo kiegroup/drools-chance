@@ -1,9 +1,5 @@
 package org.drools.scorecards;
 
-import java.io.StringWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-
 import junit.framework.Assert;
 import org.dmg.pmml_4_1.Attribute;
 import org.dmg.pmml_4_1.Characteristic;
@@ -23,44 +19,41 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
+import static org.drools.scorecards.ScorecardCompiler.DrlType.*;
 
 public class ScorecardReasonCodeTest {
     private static PMML pmmlDocument;
     private static String drl;
-
+    private static ScorecardCompiler scorecardCompiler;
     @Before
     public void setUp() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        scorecardCompiler = new ScorecardCompiler(INTERNAL_DECLARED_TYPES);
         boolean compileResult = scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_reasoncodes.xls"));
         if (!compileResult) {
             for(ScorecardError error : scorecardCompiler.getScorecardParseErrors()){
                 System.out.println("setup :"+error.getErrorLocation()+"->"+error.getErrorMessage());
             }
         }
-        pmmlDocument = scorecardCompiler.getPMMLDocument();
         drl = scorecardCompiler.getDRL();
+        Assert.assertNotNull(drl);
+        assertTrue(drl.length() > 0);
         //System.out.println(drl);
     }
 
     @Test
     public void testPMMLDocument() throws Exception {
+        pmmlDocument = scorecardCompiler.getPMMLDocument();
         Assert.assertNotNull(pmmlDocument);
-        // create a JAXBContext for the PMML class
-        JAXBContext ctx = JAXBContext.newInstance(PMML.class);
-        Marshaller marshaller = ctx.createMarshaller();
-        // the property JAXB_FORMATTED_OUTPUT specifies whether or not the
-        // marshalled XML data is formatted with linefeeds and indentation
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        // marshal the data in the Java content tree
-        StringWriter stringWriter = new StringWriter();
-        marshaller.marshal(pmmlDocument, stringWriter);
-        assertTrue(stringWriter.toString().length() > 0);
-        //System.out.println(stringWriter.toString());
+
+        String pmml = scorecardCompiler.getPMML();
+        Assert.assertNotNull(pmml);
+        assertTrue(pmml.length() > 0);
+        //System.out.println(pmml);
     }
 
     @Test
     public void testAbsenceOfReasonCodes() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        ScorecardCompiler scorecardCompiler = new ScorecardCompiler(INTERNAL_DECLARED_TYPES);
         scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_c.xls"));
         PMML pmml = scorecardCompiler.getPMMLDocument();
         for (Object serializable : pmml.getAssociationModelsAndBaselineModelsAndClusteringModels()){
@@ -134,7 +127,7 @@ public class ScorecardReasonCodeTest {
 
     @Test
     public void testMissingBaselineScores() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        ScorecardCompiler scorecardCompiler = new ScorecardCompiler(INTERNAL_DECLARED_TYPES);
         scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_reasoncodes.xls"), "scorecards_reason_error");
         assertEquals(3, scorecardCompiler.getScorecardParseErrors().size());
         assertEquals("$D$30", scorecardCompiler.getScorecardParseErrors().get(2).getErrorLocation());
@@ -142,7 +135,7 @@ public class ScorecardReasonCodeTest {
 
     @Test
     public void testReasonCodesCombinations() throws Exception {
-        ScorecardCompiler scorecardCompiler = new ScorecardCompiler();
+        ScorecardCompiler scorecardCompiler = new ScorecardCompiler(INTERNAL_DECLARED_TYPES);
         scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_reasoncodes.xls"), "scorecards_char_reasoncode");
         assertEquals(0, scorecardCompiler.getScorecardParseErrors().size());
         String drl = scorecardCompiler.getDRL();

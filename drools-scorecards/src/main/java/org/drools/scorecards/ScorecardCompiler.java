@@ -16,89 +16,113 @@
 
 package org.drools.scorecards;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.List;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.dmg.pmml_4_1.PMML;
 import org.drools.scorecards.drl.DeclaredTypesDRLEmitter;
 import org.drools.scorecards.drl.ExternalModelDRLEmitter;
 import org.drools.scorecards.parser.AbstractScorecardParser;
 import org.drools.scorecards.parser.ScorecardParseException;
-import org.drools.scorecards.parser.xls.XLSEventDataCollector;
 import org.drools.scorecards.parser.xls.XLSScorecardParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScorecardCompiler {
 
     private PMML pmmlDocument = null;
     public static final String DEFAULT_SHEET_NAME = "scorecards";
-    private EventDataCollector eventDataCollector;
     private List<ScorecardError> scorecardErrors;
+    private DrlType drlType;
+    private final static Logger logger = LoggerFactory.getLogger(ScorecardCompiler.class);
+
+    public ScorecardCompiler(DrlType drlType) {
+        this.drlType = drlType;
+    }
 
     public ScorecardCompiler() {
-
+        this(DrlType.INTERNAL_DECLARED_TYPES);
     }
 
-    public boolean compileFromExcel(final String classPathResource) {
-        return compile(classPathResource, ScorecardFormat.XLS, DEFAULT_SHEET_NAME);
+    /* method for use from Guvnor */
+    protected void setPMMLDocument(PMML pmmlDocument){
+        this.pmmlDocument = pmmlDocument;
     }
 
-    public boolean compileFromExcel(final String classPathResource, final String worksheetName) {
-        return compile(classPathResource, ScorecardFormat.XLS, worksheetName);
+    public boolean compileFromExcel(final String pathToFile) {
+        return compileFromExcel(pathToFile, DEFAULT_SHEET_NAME);
+    }
+
+    public boolean compileFromExcel(final String pathToFile, final String worksheetName) {
+        FileInputStream inputStream = null;
+        BufferedInputStream bufferedInputStream = null;
+        try {
+            inputStream = new FileInputStream(pathToFile);
+            bufferedInputStream = new BufferedInputStream(inputStream);
+            return compileFromExcel(bufferedInputStream, worksheetName);
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            closeStream(bufferedInputStream);
+            closeStream(inputStream);
+        }
+        return false;
     }
 
     public boolean compileFromExcel(final InputStream stream) {
-        return compile(stream, ScorecardFormat.XLS, DEFAULT_SHEET_NAME);
+        return compileFromExcel(stream, DEFAULT_SHEET_NAME);
     }
 
     public boolean compileFromExcel(final InputStream stream, final String worksheetName) {
-        return compile(stream, ScorecardFormat.XLS, worksheetName);
-    }
-
-    public boolean compile(final String classPathResource, ScorecardFormat format) {
-        return compile(classPathResource, format, DEFAULT_SHEET_NAME);
-    }
-
-    public boolean compile(final InputStream stream, ScorecardFormat format) {
-        return compile(stream, format, DEFAULT_SHEET_NAME);
-    }
-
-    public boolean compile(final String classPathResource, ScorecardFormat format, final String worksheetName) {
-        InputStream is = getClass().getResourceAsStream(classPathResource);
-        return compile(is, format, worksheetName);
-    }
-
-    public EventDataCollector getEventDataCollector() {
-        return eventDataCollector;
+        try {
+            AbstractScorecardParser parser = new XLSScorecardParser();
+            scorecardErrors = parser.parseFile(stream, worksheetName);
+            if ( scorecardErrors.isEmpty() ) {
+                pmmlDocument = parser.getPMMLDocument();
+                return true;
+            }
+        } catch (ScorecardParseException e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            closeStream(stream);
+        }
+        return false;
     }
 
     public PMML getPMMLDocument() {
         return pmmlDocument;
     }
 
-    public boolean compile(final InputStream stream, ScorecardFormat format, final String worksheetName) {
-        if (format == ScorecardFormat.XLS) {
-            AbstractScorecardParser parser = new XLSScorecardParser();
-            try {
-                this.eventDataCollector = new XLSEventDataCollector();
-                scorecardErrors = parser.parseFile(eventDataCollector, stream, worksheetName);
-                if ( scorecardErrors.isEmpty() ) {
-                    pmmlDocument = parser.getPMMLDocument();
-                    return true;
-                }
-            } catch (ScorecardParseException e) {
-                e.printStackTrace();
-            } finally {
-                closeStream(stream);
-            }
+    public String getPMML(){
+        if (pmmlDocument == null ) {
+            return null;
         }
-        return false;
+        // create a JAXBContext for the PMML class
+        JAXBContext ctx = null;
+        try {
+            ctx = JAXBContext.newInstance(PMML.class);
+            Marshaller marshaller = ctx.createMarshaller();
+            // the property JAXB_FORMATTED_OUTPUT specifies whether or not the
+            // marshalled XML data is formatted with linefeeds and indentation
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            // marshal the data in the Java content tree
+            StringWriter stringWriter = new StringWriter();
+            marshaller.marshal(pmmlDocument, stringWriter);
+            return stringWriter.toString();
+        } catch (JAXBException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
     }
 
     public String getDRL(){
-        return  getDRL(DrlType.INTERNAL_DECLARED_TYPES);
-    }
-
-    public String getDRL(DrlType drlType){
         if (pmmlDocument != null) {
             if (drlType == DrlType.INTERNAL_DECLARED_TYPES) {
                 return new DeclaredTypesDRLEmitter().emitDRL(pmmlDocument);
@@ -106,18 +130,17 @@ public class ScorecardCompiler {
                 return new ExternalModelDRLEmitter().emitDRL(pmmlDocument);
             }
         }
-        return  null;
+        return null;
     }
 
-    public static String convertToDRL(PMML pmml, DrlType drlType){
+    /* convienence method for use from Guvnor*/
+    public static String convertToDRL(PMML pmml, DrlType drlType) {
         if (pmml != null) {
-            if (drlType == DrlType.INTERNAL_DECLARED_TYPES) {
-                return new DeclaredTypesDRLEmitter().emitDRL(pmml);
-            } else if (drlType == DrlType.EXTERNAL_OBJECT_MODEL) {
-                return new ExternalModelDRLEmitter().emitDRL(pmml);
-            }
+            ScorecardCompiler scorecardCompiler = new ScorecardCompiler(drlType);
+            scorecardCompiler.setPMMLDocument(pmml);
+            return scorecardCompiler.getDRL();
         }
-        return  null;
+        return null;
     }
 
     public List<ScorecardError> getScorecardParseErrors() {
@@ -130,7 +153,7 @@ public class ScorecardCompiler {
                 stream.close();
             }
         } catch (final Exception e) {
-            System.err.print("WARNING: Wasn't able to " + "correctly close stream for scorecard. " + e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 

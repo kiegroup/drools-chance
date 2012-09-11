@@ -23,8 +23,6 @@ public class PMMLExtensionNames {
     public static final String SCORECARD_CELL_REF = "cellRef";
     public static final String SCORECARD_RESULTANT_SCORE_FIELD = "final";
     public static final String SCORECARD_RESULTANT_SCORE_CLASS = "externalClass";
-
-    //public static final String SCORECARD_BOUND_VAR_NAME = "boundVariableName";
     public static final String SCORECARD_IMPORTS = "importsFromDelimitedString";
 
     public static final String CHARACTERTISTIC_EXTERNAL_CLASS = "externalClass";
