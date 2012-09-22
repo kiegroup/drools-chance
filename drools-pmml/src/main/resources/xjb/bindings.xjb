@@ -33,7 +33,7 @@ version="2.1">
      
     </globalBindings>
      
-    <bindings schemaLocation="../xsd/org/drools/pmml_4_0/pmml-4-0.xsd" node="/xs:schema">
+    <bindings schemaLocation="../xsd/org/drools/pmml_4_1/pmml-4-1.xsd" node="/xs:schema">
 
         <bindings node=".//xs:simpleType[@name='DELIMITER']">
                    <typesafeEnumClass name = "ENUM_DELIMITER"/>

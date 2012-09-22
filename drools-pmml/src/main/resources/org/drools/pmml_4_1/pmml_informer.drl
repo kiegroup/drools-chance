@@ -1,0 +1,298 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.drools.pmml_4_1.compiler;
+
+import org.drools.pmml_4_1.descr.*;
+import org.drools.pmml_4_1.*;
+import org.mvel2.templates.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+
+global StringBuilder theory;
+global TemplateRegistry registry;
+global Map fld2var;
+global org.drools.pmml_4_1.PMML4Wrapper utils;
+
+
+declare EnableSurvey
+    modelName : String  @key
+end
+
+
+rule "Enable Survey in Neural Networks"
+when
+           NeuralNetwork( $name : modelName, $exts : extensionsAndNeuralLayersAndNeuralInputs )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Mining Models"
+when
+           MiningModel( $name : modelName, $exts : extensionsAndMiningSchemasAndOutputs )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Clustering Models"
+when
+           ClusteringModel( $name : modelName, $exts : extensionsAndClustersAndComparisonMeasures )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Association Models"
+when
+           AssociationModel( $name : modelName, $exts : extensionsAndMiningSchemasAndOutputs )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in SVM"
+when
+           SupportVectorMachineModel( $name : modelName, $exts : extensionsAndSupportVectorMachinesAndVectorDictionaries )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Regression Models"
+when
+           RegressionModel( $name : modelName, $exts : extensionsAndRegressionTablesAndMiningSchemas )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Naive Bayes Models"
+when
+           NaiveBayesModel( $name : modelName, $exts : extensionsAndBayesOutputsAndBayesInputs )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Text Models"
+when
+           TextModel( $name : modelName, $exts : extensionsAndDocumentTermMatrixesAndTextCorpuses )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Sequence Models"
+when
+           SequenceModel( $name : modelName, $exts : extensionsAndSequencesAndMiningSchemas )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Generalized Regression Models"
+when
+           GeneralRegressionModel( $name : modelName, $exts : extensionsAndParamMatrixesAndPPMatrixes )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in RuleSet Models"
+when
+           RuleSetModel( $name : modelName, $exts : extensionsAndRuleSetsAndMiningSchemas )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Time Series Models"
+when
+           TimeSeriesModel( $name : modelName, $exts : extensionsAndMiningSchemasAndOutputs )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+rule "Enable Survey in Tree Models"
+when
+           TreeModel( $name : modelName, $exts : extensionsAndNodesAndMiningSchemas )
+    $ext : Extension( $x : content ) from $exts
+    $o   : org.w3c.dom.Element( tagName == "Surveyable" ) from $x
+then
+    insertLogical( new EnableSurvey( utils.compactUpperCase( $name ) ) );
+end
+
+
+
+
+
+rule "Invalid_meta"
+dialect "mvel"
+when
+    exists EnableSurvey()
+then
+    //System.err.println("Found Mined Field " + $fld.name );
+    applyTemplate( "modelInvalidAnswer.drlt", utils, registry, java.util.Collections.emptyMap(), theory );
+    applyTemplate( "modelRevalidate.drlt", utils, registry, java.util.Collections.emptyMap(), theory );
+end
+
+
+rule "Questionnaire"
+dialect "mvel"
+when
+    EnableSurvey( $model : modelName )
+    MiningSchema( $inputs : miningFields )
+then
+    //System.err.println("Found Mined Field " + $fld.name );
+    HashMap map = new HashMap( 3 );
+        map.put( "fields", $inputs );
+        map.put( "model", $model );
+    applyTemplate( "modelQuestionnaire.drlt", utils, registry, map, theory );
+
+    applyTemplate( "modelAddQuestionsToQuestionnaire.drlt", utils, registry, map, theory );
+end
+
+
+
+
+
+
+rule "Question"
+dialect "java"
+when
+            EnableSurvey( $model : modelName )
+            MiningSchema(  $inputs : miningFields )
+    $fld  : MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType == FIELDUSAGETYPE.ACTIVE )
+            TypeOfField( name == $name, $type : dataType )
+    $dfld : DataField( $vsize : values.size() == 0, name == $name, $full : displayName )
+then
+//    String fullS = ""+$full;  //avoiding obscure MVEL problem in choosing between overloaded versions of format() in PMML4Wrapper
+    HashMap map = new HashMap( 5 );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "displayName", $full );
+        map.put( "model", $model );
+        map.put( "dataType", $type );
+//    System.out.println( map );
+    applyTemplate( "modelQuestion.drlt", utils, registry, map, theory );
+    applyTemplate( "modelQuestionBinding.drlt", utils, registry, map, theory );
+    applyTemplate( "modelQuestionRebinding.drlt", utils, registry, map, theory );
+    applyTemplate( "modelCreateByBinding.drlt", utils, registry, map, theory );
+end
+
+
+rule "Question_Multi"
+dialect "java"
+when
+            EnableSurvey( $model : modelName )
+            MiningSchema(  $inputs : miningFields )
+    $fld :  MiningField( this memberOf $inputs,  $name : name, usageType == null || usageType == FIELDUSAGETYPE.ACTIVE )
+            TypeOfField( name == $name, $type : dataType )
+    $dfld : DataField( $vals : values, $vsize : values.size() > 0, name == $name, $full : displayName )
+            accumulate(
+                        $val : Value( property == null || (property != "missing" && property != "invalid") ) from $vals ,
+                        $validz : collectList( utils.format( $dfld, $val ) );
+                        $validz.size > 0
+                      )
+
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "displayName", $full );
+        map.put( "model", $model );
+        map.put( "dataType", $type );
+        map.put( "valid", $validz );
+        map.put( "invalid", new java.util.ArrayList() );
+        map.put( "missing", new java.util.ArrayList() );
+    applyTemplate( "modelMultiQuestion.drlt", utils, registry, map, theory );
+    applyTemplate( "modelQuestionBinding.drlt", utils, registry, map, theory );
+    applyTemplate( "modelQuestionRebinding.drlt", utils, registry, map, theory );
+    applyTemplate( "modelCreateByBinding.drlt", utils, registry, map, theory );
+end
+
+
+   //TODO Replicate for derivedFields in place of datafields
+
+
+
+
+rule "Output_Predicted_AsNotes"
+when
+            EnableSurvey( $model : modelName )
+            MiningSchema(  $inputs : miningFields )
+    $fld  : MiningField( this memberOf $inputs,  $name : name, usageType == FIELDUSAGETYPE.PREDICTED )
+//    TypeOfField( name == $name, $type : dataType )
+    $dfld : DataField( name == $name, $full : displayName )
+then
+    HashMap map = new HashMap( 5 );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "fullName", $full );
+        map.put( "model", $model );
+        map.put( "outType"," Predicted" );
+//        map.put("dataType",$type);
+    applyTemplate( "modelOutputBinding.drlt", utils, registry, map, theory );
+end
+
+
+
+rule "Outputs_AsNotes_Data"
+when
+            EnableSurvey( $model : modelName )
+            OutputField( $name : name, $tgt : targetField )
+    $dfld : DataField( name == $tgt, $full : displayName )
+then
+    HashMap map = new HashMap( 5 );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "fullName", $full );
+        map.put( "model", $model );
+        map.put( "outType", "Out" );
+//        map.put("dataType",$type);
+    applyTemplate( "modelOutputBinding.drlt", utils, registry, map, theory );
+end
+
+
+
+rule "Outputs_AsNotes_Derived"
+when
+            EnableSurvey( $model : modelName )
+            OutputField( $name : name, $tgt : targetField )
+    $dfld : DerivedField( name == $tgt, $full : displayName )
+    not     DataField( name == $tgt )
+then
+    HashMap map = new HashMap( 5 );
+        map.put( "name",utils.compactUpperCase( $name ) );
+        map.put( "fullName", $full );
+        map.put( "model", $model );
+        map.put( "outType", "Out" );
+//        map.put("dataType",$type);
+    applyTemplate( "modelOutputBinding.drlt", utils, registry, map, theory );
+end
