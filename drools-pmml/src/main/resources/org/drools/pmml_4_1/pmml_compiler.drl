@@ -501,12 +501,16 @@ rule "processDerivedField_fieldRef"
 dialect "mvel"
 when
     $fld : DerivedField( $ref : fieldRef )
-    FieldRef( this == $ref, $f : field)
+    FieldRef( this == $ref, $f : field, $miss : mapMissingTo )
+    TypeOfField( name == $f, $type : dataType )
 then
-    HashMap map = new HashMap(7);
+    HashMap map = new HashMap( 7 );
         map.put( "context", utils.context );
         map.put( "name", utils.compactUpperCase( $fld.name ) );
         map.put( "origField", utils.compactUpperCase( $f ) );
+        map.put( "mapsMissing", $miss != null );
+        map.put( "mapMissingTo", $miss );
+        map.put( "type", $type );
     applyTemplate( "aliasedField.drlt", utils, registry, map, theory );
 end
 
@@ -1069,6 +1073,9 @@ end
 
 
 
+
+
+
 declare MatchContext
     father : Apply @key
     root   : Apply @key
@@ -1088,7 +1095,7 @@ then
     retract( $a );
     Apply idApply = new Apply();
        idApply.setFunction( "identity" );
-        idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $a );
+       idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $a );
     modify ( $df ) {
        setNormContinuous( null ),
        setApply( idApply );
@@ -1185,6 +1192,13 @@ then
     retract( $mc );
     modify( $father ) {}
 end
+
+
+
+
+
+
+
 
 
 

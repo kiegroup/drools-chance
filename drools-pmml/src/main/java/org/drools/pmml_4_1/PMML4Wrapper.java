@@ -359,20 +359,24 @@ public class PMML4Wrapper {
         String ans = "(";
         if ("+".equals(functor)) {
             ans += args[0];
-            for (int j = 1; j < args.length; j++)
+            for (int j = 1; j < args.length; j++) {
                 ans += " + " + args[j];
+            }
         } else if ("-".equals(functor)) {
             ans += args[0];
-            for (int j = 1; j < args.length; j++)
+            for (int j = 1; j < args.length; j++) {
                 ans += " - " + args[j];
+            }
         } else if ("*".equals(functor)) {
             ans += args[0];
-            for (int j = 1; j < args.length; j++)
+            for (int j = 1; j < args.length; j++) {
                 ans += " * " + args[j];
+            }
         } else if ("/".equals(functor)) {
             ans += args[0];
-            if (ans.length() > 1)
+            if (ans.length() > 1) {
                 ans += " / " + args[1];
+            }
         } else if ("identity".equals(functor)) {
             ans += args[0];
         } else if ("min".equals(functor)) {
@@ -381,12 +385,25 @@ public class PMML4Wrapper {
             ans += associativeNaryToBinary("Math.max",0,args);
         } else if ("sum".equals(functor)) {
             ans += args[0];
-            for (int j = 1; j < args.length; j++)
+            for (int j = 1; j < args.length; j++) {
                 ans += " + " + args[j];
+            }
+        } else if ("median".equals(functor)) {
+            if ( args.length % 2 == 0 ) {
+                ans += " 0.5 * " + args[ args.length / 2 - 1 ] + " + 0.5 * " + args[ args.length / 2 ] + " ";
+            } else {
+                ans += args[ args.length / 2 ];
+            }
+        } else if ("product".equals(functor)) {
+            ans += args[0];
+            for (int j = 1; j < args.length; j++) {
+                ans += " * " + args[j];
+            }
         } else if ("avg".equals(functor)) {
             ans += "(" + args[0];
-            for (int j = 1; j < args.length; j++)
+            for (int j = 1; j < args.length; j++) {
                 ans += " + " + args[j];
+            }
             ans += ") / " + args.length;
         } else if ("log10".equals(functor)) {
             ans += "Math.log10(" + args[0] +")";
@@ -399,7 +416,11 @@ public class PMML4Wrapper {
         } else if ("exp".equals(functor)) {
             ans += "Math.exp(" + args[0] +")";
         } else if ("pow".equals(functor)) {
-            ans += "Math.pow(" + args[0] +","+ args[1] +")";
+            if ( "0".equals( args[0] ) && "0".equals( args[1] ) ) {
+                ans += "1";
+            } else {
+                ans += "Math.pow(" + args[0] +","+ args[1] +")";
+            }
         } else if ("threshold".equals(functor)) {
             ans += args[0] + " > " + args[1] + " ? 1 : 0";
         } else if ("floor".equals(functor)) {
@@ -451,12 +472,14 @@ public class PMML4Wrapper {
             ans += "( ! " + args[0] + " )";
         } else if ("and".equals(functor)) {
             ans += args[0];
-            for (int j = 1; j < args.length; j++)
+            for (int j = 1; j < args.length; j++) {
                 ans += " && " + args[j];
+            }
         } else if ("or".equals(functor)) {
             ans += args[0];
-            for (int j = 1; j < args.length; j++)
+            for (int j = 1; j < args.length; j++) {
                 ans += " || " + args[j];
+            }
         } else if ("if".equals(functor)) {
             ans += args[0] + " ? " + args[1] + " : " + ( args.length > 2 ? args[2] : "null" );
         } else {

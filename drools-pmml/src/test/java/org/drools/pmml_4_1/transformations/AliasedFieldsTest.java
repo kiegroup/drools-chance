@@ -58,22 +58,25 @@ public class AliasedFieldsTest extends DroolsAbstractPMMLTest {
     }
 
 
-     @Test
+    @Test
     public void testAlias() throws Exception {
-        FactType alias = getKbase().getFactType(packageName, "AliasAge");
-        assertNotNull(alias);
+        FactType alias = getKbase().getFactType( packageName, "AliasAge" );
+        FactType aliasmm = getKbase().getFactType( packageName, "AliasAgeMM" );
+        assertNotNull( alias );
+        assertNotNull( aliasmm );
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(33);
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 33 );
         getKSession().fireAllRules();
 
-        checkFirstDataFieldOfTypeStatus(alias,true,false, null,33);
+        checkFirstDataFieldOfTypeStatus( alias, true, false, null, 33 );
 
         refreshKSession();
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(-1);
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( -1 );
         getKSession().fireAllRules();
 
-        checkFirstDataFieldOfTypeStatus(alias,true,true, null,-1);
+        checkFirstDataFieldOfTypeStatus( alias, true, true, null, -1 );
+        checkFirstDataFieldOfTypeStatus( aliasmm, true, false, null, 99 );
 
     }
 

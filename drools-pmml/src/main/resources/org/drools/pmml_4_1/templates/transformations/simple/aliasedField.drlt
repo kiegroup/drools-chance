@@ -27,16 +27,16 @@
 rule "aliasedField_@{origField}_to_@{name}"
 when
  $src : @{origField}( $m : missing, $v : valid, $val : value, $ctx : context
-                        @if{ context != null } , context == @{format("string",context)} @end{} )
+                        @if{ context != null } , context == @{ format( "string", context ) } @end{} )
 then
-  System.out.println("Cloning " + $src );
-  @{name} x = new @{name}();
-    x.setValue($val);
-    x.setMissing($m);
-    x.setValid($v);
-    x.setName(@{format("string",name)});
-    x.setContext($ctx);
-  insertLogical(x);
+//  System.out.println("Cloning " + $src );
+  @{ name } x = new @{ name }();
+    x.setValue( @if{ mapsMissing } $m ? @{ format( type, mapMissingTo ) } : $val @else{} $val @end{} );
+    x.setMissing( @if{ mapsMissing } false @else{} $m @end{} );
+    x.setValid( $v );
+    x.setName( @{ format( "string", name ) } );
+    x.setContext( $ctx );
+  insertLogical( x );
 end
 @end{}
 

@@ -22,6 +22,12 @@ import org.drools.pmml_4_1.PMML4Wrapper;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.print.attribute.standard.MediaName;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 public class FunctionsTest extends DroolsAbstractPMMLTest {
@@ -64,7 +70,10 @@ public class FunctionsTest extends DroolsAbstractPMMLTest {
         assertEquals("(Math.min(2,Math.min(3,4)))" , ctx.mapFunction("min","2","3","4"));
         assertEquals("(Math.max(2,Math.max(3,4)))" , ctx.mapFunction("max","2","3","4"));
         assertEquals("(2 + 3 + 4)" , ctx.mapFunction("sum","2","3","4"));
+        assertEquals("(2 * 3 * 4)" , ctx.mapFunction("product","2","3","4"));
         assertEquals("((2 + 3 + 4) / 3)" , ctx.mapFunction("avg","2","3","4"));
+        assertEquals("(3)" , ctx.mapFunction("median","1","2","3","4","5"));
+        assertEquals("( 0.5 * 3 + 0.5 * 4 )" , ctx.mapFunction("median","1","2","3","4","5","6"));
 
         assertEquals("(Math.log10(2))" , ctx.mapFunction("log10","2"));
         assertEquals("(Math.log(2))" , ctx.mapFunction("ln","2"));
@@ -72,6 +81,7 @@ public class FunctionsTest extends DroolsAbstractPMMLTest {
         assertEquals("(Math.abs(2))" , ctx.mapFunction("abs","2"));
         assertEquals("(Math.exp(2))" , ctx.mapFunction("exp","2"));
         assertEquals("(Math.pow(2,3))" , ctx.mapFunction("pow","2","3"));
+        assertEquals("(1)" , ctx.mapFunction("pow","0","0"));
         assertEquals("(2 > 3 ? 1 : 0)" , ctx.mapFunction("threshold","2","3"));
         assertEquals("(Math.floor(2))" , ctx.mapFunction("floor","2"));
         assertEquals("(Math.ceil(2))" , ctx.mapFunction("ceil","2"));
@@ -105,6 +115,7 @@ public class FunctionsTest extends DroolsAbstractPMMLTest {
         assertEquals("(a ? b : null)" , ctx.mapFunction("if","a","b"));
 
     }
+
 
 
 

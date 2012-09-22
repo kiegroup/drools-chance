@@ -12,5 +12,8 @@
     <DerivedField dataType="integer" name="AliasAge" optype="continuous">
       <FieldRef field="Age"/>
     </DerivedField>
+    <DerivedField dataType="integer" name="AliasAgeMM" optype="continuous">
+      <FieldRef field="Age" mapMissingTo="99" />
+    </DerivedField>
   </TransformationDictionary>
 </PMML>

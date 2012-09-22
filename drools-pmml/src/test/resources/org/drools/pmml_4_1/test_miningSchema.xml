@@ -1,6 +1,6 @@
 <PMML version="4.1" xsi:schemaLocation="http://www.dmg.org/PMML-4_1 http://www.dmg.org/v4-1/pmml-4-1.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.dmg.org/PMML-4_1">
   <Header copyright="JBoss"/>
-  <DataDictionary numberOfFields="4">
+  <DataDictionary numberOfFields="5">
     <DataField dataType="double" name="Feat1" optype="continuous">
       <Interval closure="closedOpen" leftMargin="0"/>
     </DataField>
@@ -10,6 +10,10 @@
       <Value property="valid" value="4"/>
       <Value property="valid" value="5"/>
       <Value property="valid" value="6"/>
+    </DataField>
+    <DataField dataType="double" name="Feat3" optype="continuous">
+      <Interval closure="closedClosed" leftMargin="7.5" rightMargin="9.5" />
+      <Value property="valid" value="4.0"/>
     </DataField>
     <DataField dataType="string" name="TargetVal1" optype="categorical">
       <Value property="valid" value="ClassA"/>

@@ -29,23 +29,23 @@
     */
 }
 
-@declare{'applyRule'}
+@declare{ 'applyRule' }
 rule "fun_@{name}"
 when
     @code{ keys = exprFieldList.keySet() }
     @foreach{ field : keys }
-        @{field}( valid == true, missing == false, @{exprFieldList.get(field)} : value
-                  @if{ context != null } , context == @{format("string",context)} @end{} )
+        @{ field }( valid == true, missing == false, @{ exprFieldList.get( field ) } : value
+                  @if{ context != null } , context == @{ format( "string", context ) } @end{} )
     @end{}
 then
-    @{name} x = new @{name}();
-    x.setValue((@{dataType}) @{funExpr});
-    x.setMissing(false);
-    x.setValid(true);
-    x.setName(@{format("string",name)});
-    x.setContext(@{context});
-  insertLogical(x);
+    @{name} x = new @{ name }();
+    x.setValue( ( @{ dataType } ) @{ funExpr } );
+    x.setMissing( false );
+    x.setValid( true );
+    x.setName( @{ format( "string", name ) } );
+    x.setContext( @{ context } );
+  insertLogical( x );
 end
 @end{}
 
-@includeNamed{'applyRule'}
+@includeNamed{ 'applyRule' }
