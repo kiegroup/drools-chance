@@ -38,12 +38,12 @@ when
             @if{groupBy != null && constr != null} , value @{constr} $gval @end{} )
     )
 then
-    @{name} x = new @{name}();
-    x.setValue($agg);
-    x.setMissing(false);
-    x.setValid(true);
-    x.setName(@{format("string",name)});
-  insertLogical(x);
+    @{ name } x = new @{ name }();
+    x.setValue( $agg );
+    x.setMissing( false );
+    x.setValid( true );
+    x.setName( @{ format( "string", name ) } );
+  insertLogical( x );
 end
 @end{}
 

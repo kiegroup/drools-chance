@@ -18,11 +18,15 @@ package org.drools.pmml_4_1.compiler;
 import org.drools.pmml_4_1.descr.*;
 import org.drools.pmml_4_1.ModelMarker;
 import org.mvel2.templates.*;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
 
 global StringBuilder theory;
 global TemplateRegistry registry;
@@ -114,6 +118,11 @@ end
 declare FieldMarker
     name : String   @key
     dataType : DATATYPE
+end
+
+declare FieldScope
+    name          : String   @key
+    functionLocal : boolean
 end
 
 declare TypeOfField
@@ -818,8 +827,8 @@ then
         map.put( "context", utils.context );
         map.put( "name", utils.compactUpperCase( $fld.name ) );
         map.put( "groupBy", $groupBy);
-        map.put( "afield", $afield);
-        map.put( "dataType", utils.mapDatatype( $fld.dataType ) );
+        map.put( "afield", utils.compactUpperCase( $afield ) );
+        map.put( "dataType", $fld.dataType );
         map.put( "constr", $constr );
         map.put( "aggrFunc", $func );
     applyTemplate( "aggregate.drlt", utils, registry, map, theory );
@@ -845,12 +854,32 @@ end
 
 
 declare FunctionResult
-    expr   : String
-    father : Apply
+    expr            : String    @key
+    father          : Apply     @key
+    fields          : Collection
 end
 
+query isInFunction( Apply $a )
+    DefineFunction( apply == $a )
+    or
+    (
+        $b : Apply( constantsAndFieldRevesAndNormContinuouses contains $a )
+        and
+        isInFunction( $b ; )
+    )
+end
 
-
+query isLocalToFunction( Apply $a, boolean $ans )
+    ( isInFunction( $a ; )
+      and
+      $ans := Boolean() from Boolean.TRUE
+    )
+    or
+    ( not isInFunction( $a ; )
+      and
+      $ans := Boolean() from Boolean.FALSE
+    )
+end
 
 rule "processDerivedField_Apply"
 dialect "mvel"
@@ -863,17 +892,24 @@ when
         $args : collectList( $x );
         $args.size == $arity
     )
+    accumulate (
+        $x : String() from fld2var.keySet()
+        and
+        not FieldScope( name == $x, functionLocal == true )
+        ,
+        $exprFieldList : collectList( $x )
+    )
 then
-    String funExpr = utils.mapFunction($fun, $args);
-    //System.err.println(">>>>>>>>>>>>>>>>>>>>>>>>>  Built bit " + funExpr);
+    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>  Built bit " + $exprFieldList + " >> " + fld2var );
 
-    Map exprFieldList = new java.util.LinkedHashMap();
     HashMap map = new HashMap( 7 );
         map.put( "context", utils.context );
         map.put( "name", utils.compactUpperCase( $fld.name ) );
         map.put( "dataType", utils.mapDatatype( $fld.dataType ) );
-        map.put( "funExpr", funExpr );
-        map.put( "exprFieldList", fld2var );
+        map.put( "funName", $fun );
+        map.put( "funArgs", $args );
+        map.put( "exprFieldMap", fld2var );
+        map.put( "exprFieldList", $exprFieldList );
     applyTemplate( "apply.drlt", utils, registry, map, theory );
 
     retract( $a );
@@ -883,17 +919,14 @@ end
 
 
 
-
-
 rule "NestedConst"
 dialect "mvel"
 salience -5
 when
     $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
-    $c : Constant( this memberOf $expr, $x : value)
+    $c : Constant( this memberOf $expr, $x : value )
 then
-    //System.out.println("Visit const : " + $x + " child of " + $f);
-    insertLogical( new FunctionResult( $x, $a ) );
+    insertLogical( new FunctionResult( $x, $a, Collections.emptySet() ) );
 end
 
 rule "NestedRef"
@@ -907,26 +940,29 @@ then
     if (! fld2var.containsKey($x)) {
         fld2var.put( $x, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( $x ), $a ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( $x ), $a, Arrays.asList( $x ) ) );
 end
 
 
-rule "Scoop"
+rule "Nested Applys"
 dialect "mvel"
 salience -5
 when
     $a  : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $a2 : Apply( this memberOf $expr, $f2 : this.function, $arity : constantsAndFieldRevesAndNormContinuouses.size() )
     accumulate (
-        $res : FunctionResult( father == $a2, $x : expr ),
-        $args : collectList( $x );
+        $res : FunctionResult( father == $a2, $x : expr, $fs : fields ),
+        $args : collectList( $x ),
+        $bag  : collectSet( $fs );
         $args.size == $arity
     )
 then
     //System.err.println("Building bit for " + $f2 + " child of " + $f + " with args " + $args.size);
     String bit = utils.mapFunction( $f2, $args );
-    //System.err.println("Built bit " + bit + ", result for " + $f);
-    insertLogical( new FunctionResult( bit , $a ) );
+
+    System.err.println("Built bit for fun " + $f2 + " with expr" + bit + ", result for " + $bag );
+
+    insertLogical( new FunctionResult( bit , $a, Collections.emptySet() ) );
     //System.err.println("Kill " + $f2 + "and its children results");
 end
 
@@ -940,18 +976,20 @@ when
     $a     : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $agg   : Aggregate( this memberOf $expr, $aggField : field )
     $super : DataField( name == $aggField, $optype : optype, $dataType : dataType)
+    isLocalToFunction( $a, $local; )
 then
-    String name = "Inner"+utils.nextCount();
+    String name = "__$Inner"+utils.nextCount();
     DerivedField mockField = new DerivedField();
         mockField.setName( name );
         mockField.setOptype( $optype );
         mockField.setDataType( $dataType );
         mockField.setAggregate( $agg );
     insertLogical( mockField );
+    insertLogical( new FieldScope( name, $local ) );
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
 end
 
 
@@ -962,18 +1000,20 @@ when
     $a     : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $agg   : Aggregate( this memberOf $expr, $aggField : field )
     $super : DerivedField( name == $aggField, $optype : optype, $dataType : dataType )
+    isLocalToFunction( $a, $local; )
 then
-    String name = "Inner" + utils.nextCount();
+    String name = "__$Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
         mockField.setName( name );
         mockField.setOptype( $optype );
         mockField.setDataType( $dataType );
         mockField.setAggregate( $agg );
     insertLogical( mockField );
+    insertLogical( new FieldScope( name, $local ) );
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult((String) fld2var.get(name), $a) );
+    insertLogical( new FunctionResult((String) fld2var.get(name), $a, Arrays.asList( name ) ) );
 end
 
 
@@ -983,18 +1023,20 @@ salience -5
 when
     $a   : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $map : MapValues( this memberOf $expr, $dataType : dataType  )
+    isLocalToFunction( $a, $local; )
 then
-    String name = "Inner" + utils.nextCount();
+    String name = "__$Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
         mockField.setName( name );
         mockField.setDataType( $dataType );
         mockField.setMapValues( $map );
         mockField.setOptype( OPTYPE.CONTINUOUS );
     insertLogical( mockField );
+    insertLogical( new FieldScope( name, $local ) );
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
 end
 
 
@@ -1004,18 +1046,20 @@ salience -5
 when
     $a   : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $dix : Discretize( this memberOf $expr, $dataType : dataType  )
+    isLocalToFunction( $a, $local; )
 then
-    String name = "Inner" + utils.nextCount();
+    String name = "__$Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
         mockField.setName( name );
         mockField.setDataType( $dataType );
         mockField.setDiscretize( $dix );
         mockField.setOptype( OPTYPE.CATEGORICAL );
     insertLogical( mockField );
+    insertLogical( new FieldScope( name, $local ) );
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
 end
 
 
@@ -1024,19 +1068,22 @@ dialect "java"
 salience -5
 when
     $a   : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
-    $nct : NormContinuous( this memberOf $expr  )
+    $nct : NormContinuous( this memberOf $expr )
+    isLocalToFunction( $a, $local; )
 then
-    String name = "Inner" + utils.nextCount();
+    System.out.println( "Processing NC " + $local );
+    String name = "__$Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
         mockField.setName( name );
         mockField.setDataType( DATATYPE.DOUBLE );
         mockField.setNormContinuous( $nct );
         mockField.setOptype( OPTYPE.CONTINUOUS );
     insertLogical( mockField );
+    insertLogical( new FieldScope( name, $local ) );
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
 end
 
 
@@ -1047,18 +1094,20 @@ salience -5
 when
     $a   : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $ndx : NormDiscrete( this memberOf $expr  )
+    isLocalToFunction( $a, $local; )
 then
-    String name = "Inner" + utils.nextCount();
+    String name = "__$Inner" + utils.nextCount();
     DerivedField mockField = new DerivedField();
         mockField.setName( name );
         mockField.setDataType( DATATYPE.DOUBLE );
         mockField.setNormDiscrete( $ndx );
         mockField.setOptype( OPTYPE.CATEGORICAL );
     insertLogical( mockField );
+    insertLogical( new FieldScope( name, $local ) );
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
 end
 
 
@@ -1074,132 +1123,53 @@ end
 
 
 
-
-
-declare MatchContext
-    father : Apply @key
-    root   : Apply @key
-    body   : Object
-    params : Map
-end
-
-
-rule "visitApply_user_root"
-salience 15
-no-loop
-when
-    $a :  Apply( $args : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
-          DefineFunction( name == $fun, apply != $a )
-    $df : DerivedField( apply == $a )
-then
-    retract( $a );
-    Apply idApply = new Apply();
-       idApply.setFunction( "identity" );
-       idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $a );
-    modify ( $df ) {
-       setNormContinuous( null ),
-       setApply( idApply );
-    }
-end
-
-
-
-rule "visitApply_user_nested"
+rule "User_Defined_Function_Constant"
 salience -1
 no-loop
 when
-    $a      : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
-              DefineFunction( name == $fun, $body : apply != $a, $paramFields : parameterFields )
-    $father : Apply( $superArgs : constantsAndFieldRevesAndNormContinuouses contains $a )
-    $params : java.util.LinkedHashMap() from accumulate (
-        ParameterField( $name : name, $type : dataType ) from $paramFields,
-        init( java.util.LinkedHashMap map = new java.util.LinkedHashMap(); int j = 0; ),
-        action( map.put($name,new Integer(j++)); ),
-        result( map )
-    )
+    $df  : DefineFunction( $funName : name, $paramFields : parameterFields,
+                          $retType : dataType, $a : apply != null )
+    $res : FunctionResult( father == $a, $x : expr, $innerFields : fields )
 then
-    //System.out.println("\n\nINTERCEPTED USER-DEFINED APPLY " + $fun + " with params " + $params + " and args " + $expr.size() );
-
-    // copy the function body to instantiate it
-    Apply bodyInstance = (Apply) utils.copy( $body );
-     MatchContext mc = new MatchContext(
-        $father,
-        $a,
-        bodyInstance.getConstantsAndFieldRevesAndNormContinuouses().get( 0 ),
-        $params );
-    //System.out.println("\t About to insert context for");
-    //System.out.println("\t\t father : " + $father);
-    //System.out.println("\t\t root : " + $a);
-    //System.out.println("\t\t body : " + mc.getBody());
-    //System.out.println("\t\t ctx : " + $params + "\n\n");
-     insert( mc );
+    System.out.println( " PROCESSED FUN " + $funName + " which has a reslt ");
+    HashMap map = new HashMap( 7 );
+        map.put( "name", $funName );
+        map.put( "dataType", $retType );
+        map.put( "expr", $x );
+        map.put( "exprFieldMap", fld2var );
+        map.put( "params", $paramFields );
+        map.put( "innerFields", $innerFields );
+    applyTemplate( "function.drlt", utils, registry, map, theory );
+    fld2var.clear();
 end
 
 
 
-rule "pre_visit_mc"
-no-loop
-salience 1000
-when
-    MatchContext( $body : body )
-then
-    insertLogical( $body );
-end
-
-
-rule "visit_mc"
-no-loop
-salience -1
-when
-           MatchContext( $body : body, $params : params, $root : root )
-           Apply( this == $root, $args : constantsAndFieldRevesAndNormContinuouses )
-    $a   : Apply( $bodyArgs : constantsAndFieldRevesAndNormContinuouses )
-    $ref : FieldRef( this memberOf $bodyArgs, $fname : field )
-    java.util.LinkedHashMap( keySet contains $fname ) from $params
-then
-    //System.out.println("MC with body and args, found ref  " + $ref);
-    int index = $bodyArgs.indexOf( $ref );
-    $bodyArgs.remove( index );
-    Object arg = $args.get( (Integer) $params.get( $fname ) );
-    $bodyArgs.add( index, utils.copy( arg ) );
-     //System.out.println("REPLACE fieldRef in function " + $fname + " with " + arg + " in context " + $params);
-end
-
-
-
-
-rule "rebuildApply"
+rule "User_Defined_Function_Parameters"
 salience -1
 no-loop
 when
-    $mc : MatchContext( $father: father, $a : root, $newbody : body )
-          Apply(  this == $a, $expr : constantsAndFieldRevesAndNormContinuouses, $fun : this.function  )
-          DefineFunction( name == $fun )
-          Apply( this == $father, $superArgs : constantsAndFieldRevesAndNormContinuouses )
+    $df  : DefineFunction( $fn : name, $paramFields : parameterFields )
+    $fld : ParameterField( $name : name, $dataType : dataType, $optype : optype ) from $paramFields
 then
-    //System.out.println("\t After some processing: matchContext ");
-    //System.out.println("\t\t father : " + $mc.getFather());
-    //System.out.println("\t\t root : " + $mc.getRoot());
-    //System.out.println("\t\t body : " + $mc.getBody());
-    //System.out.println("\t\t ctx : " + $mc.getParams() + "\n\n");
-    retract( $newbody );
+    System.out.println( "PROCESSED DEFFN PARAMS " + $fn );
+    String paramName = $fn + "_" + $name;
 
-    //System.out.println("REBUILD APPLY " + $fun + " with " + $newbody);
-    int index = $superArgs.indexOf( $a );
-    $superArgs.remove( index );
-    $superArgs.add( index, $newbody );
-     //System.out.println("FATHER IS NOW  " + $father);
-    retract( $mc );
-    modify( $father ) {}
+    DerivedField paramField = new DerivedField();
+        paramField.setName( paramName );
+        paramField.setOptype( $optype );
+        paramField.setDataType( $dataType );
+    insertLogical( paramField );
 end
 
-
-
-
-
-
-
-
+//
+//
+//rule "Sc0"
+//when
+//    $fs : FieldScope()
+//then
+//    System.out.println( $fs );
+//end
 
 
 

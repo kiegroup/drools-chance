@@ -17,7 +17,10 @@
 package org.drools.pmml_4_1.transformations;
 
 
+import org.drools.definition.type.FactType;
 import org.drools.pmml_4_1.DroolsAbstractPMMLTest;
+import org.drools.runtime.KnowledgeContext;
+import org.drools.runtime.rule.FactHandle;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,29 +28,126 @@ import org.junit.Test;
 
 public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = false;
-    private static final String source = "org/drools/pmml_4_1/test_user_functions.xml";
+    private static final boolean VERBOSE = true;
+    private static final String source  = "org/drools/pmml_4_1/test_user_functions_nested.xml";
+    private static final String source3 = "org/drools/pmml_4_1/test_user_functions_simpleTransformations.xml";
     private static final String packageName = "org.drools.pmml_4_1.test";
 
 
 
-    @Before
-    public void setUp() throws Exception {
-        setKSession(getModelSession(source, VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
-    }
+    @Test
+    public void testFunctions1() throws Exception {
 
+        setKSession( getModelSession( source3, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        FactType userAge1 = getKbase().getFactType( packageName, "UserAge1" );
+
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus( userAge1, true, false, null, 22.0 );
+    }
 
 
     @Test
-    public void testFunctions() throws Exception {
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(10);
+    public void testFunctions2() throws Exception {
+
+        setKSession( getModelSession( source3, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        FactType userAge2 = getKbase().getFactType( packageName, "UserAge2" );
+
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
 
         getKSession().fireAllRules();
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName, "UserAge"), true, false,  null,6270.0  );
+
+        checkFirstDataFieldOfTypeStatus( userAge2, true, false, null, 0.1 );
 
     }
 
+    @Test
+    public void testFunctions3() throws Exception {
+
+        setKSession( getModelSession( source3, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        FactType userAge3 = getKbase().getFactType( packageName, "UserAge3" );
+
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus( userAge3, true, false, null, 10.0 );
+
+    }
+
+    @Test
+    public void testFunctions4() throws Exception {
+
+        setKSession( getModelSession( source3, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        FactType userAge4 = getKbase().getFactType( packageName, "UserAge4" );
+
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus( userAge4, true, false, null, 24 );
+
+    }
+
+    @Test
+    public void testFunctions5() throws Exception {
+
+        setKSession( getModelSession( source3, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        FactType userAge5 = getKbase().getFactType( packageName, "UserAge5" );
+
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus( userAge5, true, false, null, 45.5 );
+
+    }
+
+    @Test
+    public void testFunctions6() throws Exception {
+
+        setKSession( getModelSession( source3, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        FactType userAge6 = getKbase().getFactType( packageName, "UserAge6" );
+
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus( userAge6, true, false, null, 1.0 );
+
+    }
+
+    @Test
+    public void testFunctionsNested() throws Exception {
+
+        setKSession( getModelSession( source, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        FactType userAge1 = getKbase().getFactType( packageName, "UserAge" );
+        FactType userAge2 = getKbase().getFactType( packageName, "UserAge2" );
+
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus( userAge1, true, false, null, 1.0 );
+        checkFirstDataFieldOfTypeStatus( userAge2, true, false, null, 1.0 );
+
+    }
 
 
 

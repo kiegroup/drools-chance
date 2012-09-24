@@ -32,14 +32,24 @@
 @declare{ 'applyRule' }
 rule "fun_@{name}"
 when
-    @code{ keys = exprFieldList.keySet() }
-    @foreach{ field : keys }
-        @{ field }( valid == true, missing == false, @{ exprFieldList.get( field ) } : value
+    @foreach{ field : exprFieldList }
+        @{ field }( valid == true, missing == false, @{ exprFieldMap.get( field ) } : value
                   @if{ context != null } , context == @{ format( "string", context ) } @end{} )
     @end{}
+    // @{funName} - @{ isBuiltIn( funName ) }
+    @if{ ! isBuiltIn( funName ) }
+        @{ funName }( @foreach{ arg : funArgs } @{arg} @end{ ',' } , $return ; )
+    @end{}
 then
+    System.out.println( "READY TO BUILD @{name} ");
     @{name} x = new @{ name }();
-    x.setValue( ( @{ dataType } ) @{ funExpr } );
+
+    @if{ isBuiltIn( funName ) }
+        x.setValue( ( @{ dataType } ) @{ mapFunction( funName, funArgs ) } );
+    @else{}
+        x.setValue( ( @{ dataType } ) $return );
+    @end{}
+
     x.setMissing( false );
     x.setValid( true );
     x.setName( @{ format( "string", name ) } );

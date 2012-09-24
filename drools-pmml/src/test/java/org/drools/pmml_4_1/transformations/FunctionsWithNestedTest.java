@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class FunctionsWithNestedTest extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
     private static final String source = "org/drools/pmml_4_1/test_functions_nested_transformation.xml";
     private static final String packageName = "org.drools.pmml_4_1.test";
 

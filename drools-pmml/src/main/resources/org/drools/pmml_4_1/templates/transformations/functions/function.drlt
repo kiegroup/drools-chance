@@ -29,9 +29,34 @@
 }
 
 @declare{'customFunction'}
-function @{dataType} @{name}( @foreach{ param : params} @{mapDatatype(param.dataType)} @{exprFieldList.get(param.name)}  @end{','}) {
-    return @{funExpr};
-}
+
+query "@{name}"( @foreach{ param : params } @{ mapDatatype( param.dataType ) } @{ param.name }  @end{','} , @{ mapDatatype( dataType, true ) } $return )
+       @foreach{ field : innerFields }
+               @{ field }( valid == true, missing == false, @{ exprFieldMap.get( field ) } : value
+                         @if{ context != null } , context == @{ format( "string", context ) } @end{} )
+       @end{}
+       $return := @{ mapDatatype( dataType, true ) }() from @{ expr }
+end
+
+rule "@{name}_Goal"
+@code{ int j = 0; }
+when
+    $q : org.drools.base.DroolsQuery( name == "@{name}", @foreach{ param : params } @{ param.name } : elements[@{j++}] @end{ ', ' } )
+then
+
+    @foreach{ param : params }
+        @code{ String pn = compactUpperCase( name ) + "_" + compactUpperCase( param.name ); }
+        @{ pn } _@{pn} = new @{pn}( (@{ mapDatatype( param.dataType, true ) }) @{ param.name }, "@{ name }" );
+        _@{pn}.setValid( true );
+        System.out.println("QUERY @{name} SIED EFFECT GETS " + _@{pn});
+        insertLogical( _@{pn} );
+    @end{}
+
+
+end
+
+
+
 @end{}
 
 @includeNamed{'customFunction'}

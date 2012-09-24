@@ -26,7 +26,7 @@ import java.util.*;
 
 public class PMML4Wrapper {
 
-	private static String pack;
+    private static String pack;
 
     private static int counter = 0;
 
@@ -68,7 +68,7 @@ public class PMML4Wrapper {
 //        }
         boolean flag =  definedModelBeans.contains(beanType);
         if (resolver == null) {
-                try {
+            try {
                 Class.forName(pack+"."+beanType);
                 return true;
             } catch (ClassNotFoundException cnfe) {
@@ -98,14 +98,14 @@ public class PMML4Wrapper {
     }
 
     public static String getPack() {
-		return pack;
-	}
-	public static void setPack(String packageName) {
+        return pack;
+    }
+    public static void setPack(String packageName) {
         pack = packageName;
-	}
+    }
 
 
-/**
+    /**
      * Returns a copy of the object, or null if the object cannot
      * be serialized.
      */
@@ -122,7 +122,7 @@ public class PMML4Wrapper {
             // Make an input stream from the byte array and read
             // a copy of the object back in.
             ObjectInputStream in = new ObjectInputStream(
-                new ByteArrayInputStream(bos.toByteArray()));
+                    new ByteArrayInputStream(bos.toByteArray()));
             obj = in.readObject();
         }
         catch(IOException e) {
@@ -137,11 +137,11 @@ public class PMML4Wrapper {
 
     public String box(String s) {
         if ("int".equalsIgnoreCase(s))
-			return Integer.class.getName();
-		else if ("float".equalsIgnoreCase(s))
-			return Float.class.getName();
+            return Integer.class.getName();
+        else if ("float".equalsIgnoreCase(s))
+            return Float.class.getName();
         else if ("double".equalsIgnoreCase(s))
-			return Double.class.getName();
+            return Double.class.getName();
         else if ("boolean".equalsIgnoreCase(s))
             return Boolean.class.getName();
         else if ("short".equalsIgnoreCase(s))
@@ -153,52 +153,57 @@ public class PMML4Wrapper {
     }
 
 
-	public String mapDatatype(DATATYPE datatype) {
+    public String mapDatatype( DATATYPE datatype ) {
+        return mapDatatype( datatype, false );
+    }
+
+
+    public String mapDatatype(DATATYPE datatype, boolean box) {
         String s = datatype != null ? datatype.value() : null;
-		if (s == null) return Object.class.getName();
-		if ("Integer".equalsIgnoreCase(s))
+        if (s == null) return Object.class.getName();
+        if ("Integer".equalsIgnoreCase(s))
 //			return Integer.class.getName();
-            return "int";
-		else if ("Float".equalsIgnoreCase(s))
+            return box ? "Integer" : "int";
+        else if ("Float".equalsIgnoreCase(s))
 //			return Float.class.getName();
-		    return "float";
+            return box ? "Float" : "float";
         else if ("Double".equalsIgnoreCase(s))
 //			return Double.class.getName();
-		    return "double";
+            return box ? "Double" : "double";
         else if ("Boolean".equalsIgnoreCase(s))
 //          return Boolean.class.getName();
-            return "boolean";
-		else if ("String".equalsIgnoreCase(s))
-			return String.class.getName();
-		else if ("Date".equalsIgnoreCase(s))
-			return java.util.Date.class.getName();
-		else if ("Time".equalsIgnoreCase(s))
-			return java.util.Date.class.getName();
-		else if ("DateTime".equalsIgnoreCase(s))
-			return java.util.Date.class.getName();
-		else if ("DateDaysSince[0]".equalsIgnoreCase(s))
-			return Long.class.getName();
-		else if ("DateDaysSince[1960]".equalsIgnoreCase(s))
-			return Long.class.getName();
-		else if ("DateDaysSince[1970]".equalsIgnoreCase(s))
-			return Long.class.getName();
-		else if ("DateDaysSince[1980]".equalsIgnoreCase(s))
-			return Long.class.getName();
-		else if ("TimeSeconds".equalsIgnoreCase(s))
-			return Long.class.getName();
-		else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(s))
-			return Long.class.getName();
-		else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(s))
-			return Long.class.getName();
-		else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(s))
-			return Long.class.getName();
-		else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(s))
-			return Long.class.getName();
+            return box ? "Boolean" : "boolean";
+        else if ("String".equalsIgnoreCase(s))
+            return String.class.getName();
+        else if ("Date".equalsIgnoreCase(s))
+            return java.util.Date.class.getName();
+        else if ("Time".equalsIgnoreCase(s))
+            return java.util.Date.class.getName();
+        else if ("DateTime".equalsIgnoreCase(s))
+            return java.util.Date.class.getName();
+        else if ("DateDaysSince[0]".equalsIgnoreCase(s))
+            return Long.class.getName();
+        else if ("DateDaysSince[1960]".equalsIgnoreCase(s))
+            return Long.class.getName();
+        else if ("DateDaysSince[1970]".equalsIgnoreCase(s))
+            return Long.class.getName();
+        else if ("DateDaysSince[1980]".equalsIgnoreCase(s))
+            return Long.class.getName();
+        else if ("TimeSeconds".equalsIgnoreCase(s))
+            return Long.class.getName();
+        else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(s))
+            return Long.class.getName();
+        else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(s))
+            return Long.class.getName();
+        else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(s))
+            return Long.class.getName();
+        else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(s))
+            return Long.class.getName();
         else if ("collection".equalsIgnoreCase(s))
-			return java.util.Collection.class.getName();
-		else
-			return Object.class.getName();
-	}
+            return java.util.Collection.class.getName();
+        else
+            return Object.class.getName();
+    }
 
 
 
@@ -242,117 +247,124 @@ public class PMML4Wrapper {
             return val;
         if (val == null)
             return "null";
-		if (Integer.class.getName().equals(type)
-            || "Integer".equalsIgnoreCase(type) || "int".equalsIgnoreCase(type) )
-			return val;
-		else if (Float.class.getName().equals(type)
-            || "Float".equalsIgnoreCase(type) || "float".equalsIgnoreCase(type) )
-			return val;
-		else if (Double.class.getName().equalsIgnoreCase(type)
-            || "Double".equalsIgnoreCase(type) || "double".equalsIgnoreCase(type) )
-			return val;
+        if (Integer.class.getName().equals(type)
+                || "Integer".equalsIgnoreCase(type) || "int".equalsIgnoreCase(type) )
+            return val;
+        else if (Float.class.getName().equals(type)
+                || "Float".equalsIgnoreCase(type) || "float".equalsIgnoreCase(type) )
+            return val;
+        else if (Double.class.getName().equalsIgnoreCase(type)
+                || "Double".equalsIgnoreCase(type) || "double".equalsIgnoreCase(type) )
+            return val;
         else if (Long.class.getName().equalsIgnoreCase(type)
-            || "Long".equalsIgnoreCase(type) || "long".equalsIgnoreCase(type) )
-			return val;
+                || "Long".equalsIgnoreCase(type) || "long".equalsIgnoreCase(type) )
+            return val;
         else if (Short.class.getName().equalsIgnoreCase(type)
-            || "Short".equalsIgnoreCase(type) || "short".equalsIgnoreCase(type) )
-			return val;
+                || "Short".equalsIgnoreCase(type) || "short".equalsIgnoreCase(type) )
+            return val;
         else if (Byte.class.getName().equalsIgnoreCase(type)
-            || "Byte".equalsIgnoreCase(type) || "byte".equalsIgnoreCase(type) )
-			return val;
-		else if (Boolean.class.getName().equalsIgnoreCase(type)
-            || "Boolean".equalsIgnoreCase(type) || "boolean".equalsIgnoreCase(type) )
-			return val;
-		else if (String.class.getName().equalsIgnoreCase(type)
-            || "String".equalsIgnoreCase(type))
-			return "\""+val+"\"";
-		else if ("Date".equalsIgnoreCase(type))
-			return "\""+val+"\"";
-		else if ("Time".equalsIgnoreCase(type))
-			return "\""+val+"\"";
-		else if ("DateTime".equalsIgnoreCase(type))
-			return "\""+val+"\"";
-		else if ("DateDaysSince[0]".equalsIgnoreCase(type))
-			return val;
-		else if ("DateDaysSince[1960]".equalsIgnoreCase(type))
-			return val;
-		else if ("DateDaysSince[1970]".equalsIgnoreCase(type))
-			return val;
-		else if ("DateDaysSince[1980]".equalsIgnoreCase(type))
-			return val;
-		else if ("TimeSeconds".equalsIgnoreCase(type))
-			return val;
-		else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(type))
-			return val;
-		else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(type))
-			return val;
-		else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(type))
-			return val;
-		else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(type))
-			return val;
-		else
-			return val;
+                || "Byte".equalsIgnoreCase(type) || "byte".equalsIgnoreCase(type) )
+            return val;
+        else if (Boolean.class.getName().equalsIgnoreCase(type)
+                || "Boolean".equalsIgnoreCase(type) || "boolean".equalsIgnoreCase(type) )
+            return val;
+        else if (String.class.getName().equalsIgnoreCase(type)
+                || "String".equalsIgnoreCase(type))
+            return "\""+val+"\"";
+        else if ("Date".equalsIgnoreCase(type))
+            return "\""+val+"\"";
+        else if ("Time".equalsIgnoreCase(type))
+            return "\""+val+"\"";
+        else if ("DateTime".equalsIgnoreCase(type))
+            return "\""+val+"\"";
+        else if ("DateDaysSince[0]".equalsIgnoreCase(type))
+            return val;
+        else if ("DateDaysSince[1960]".equalsIgnoreCase(type))
+            return val;
+        else if ("DateDaysSince[1970]".equalsIgnoreCase(type))
+            return val;
+        else if ("DateDaysSince[1980]".equalsIgnoreCase(type))
+            return val;
+        else if ("TimeSeconds".equalsIgnoreCase(type))
+            return val;
+        else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(type))
+            return val;
+        else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(type))
+            return val;
+        else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(type))
+            return val;
+        else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(type))
+            return val;
+        else
+            return val;
     }
 
-     public String format(String type, Number val) {
+    public String format(String type, Number val) {
         if (type == null)
             return val.toString();
-		if ("Integer".endsWith(type) || "int".equalsIgnoreCase(type) )
-			return ""+val.intValue();
-		else if ("Float".endsWith(type) || "float".equalsIgnoreCase(type))
-			return ""+val.floatValue();
-		else if ("Double".endsWith(type) || "double".equalsIgnoreCase(type))
-			return ""+val.doubleValue();
-		else if ("Boolean".endsWith(type)  || "boolean".equalsIgnoreCase(type)) {
+        if ("Integer".endsWith(type) || "int".equalsIgnoreCase(type) )
+            return ""+val.intValue();
+        else if ("Float".endsWith(type) || "float".equalsIgnoreCase(type))
+            return ""+val.floatValue();
+        else if ("Double".endsWith(type) || "double".equalsIgnoreCase(type))
+            return ""+val.doubleValue();
+        else if ("Boolean".endsWith(type)  || "boolean".equalsIgnoreCase(type)) {
             if (val.doubleValue() == 1.0)
                 return "true";
             if (val.doubleValue() == 0.0)
                 return "false";
-			throw new NumberFormatException("Boolean expected, found " + val);
+            throw new NumberFormatException("Boolean expected, found " + val);
         }
-		else if ("String".endsWith(type))
-			return "\""+val.toString()+"\"";
+        else if ("String".endsWith(type))
+            return "\""+val.toString()+"\"";
 
 
-		else if ("Date".endsWith(type))
-			return "\""+ (new SimpleDateFormat().format(new Date(val.longValue())) )+"\"";
-		else if ("Time".endsWith(type))
-			return "\""+val.toString()+"\"";
-		else if ("DateTime".endsWith(type))
-			return "\""+ (new SimpleDateFormat().format(new Date(val.longValue())) )+"\"";
-		else if ("DateDaysSince[0]".equalsIgnoreCase(type))
-			throw new UnsupportedOperationException("TODO");
-		else if ("DateDaysSince[1960]".equalsIgnoreCase(type))
-			throw new UnsupportedOperationException("TODO");
-		else if ("DateDaysSince[1970]".equalsIgnoreCase(type))
-			throw new UnsupportedOperationException("TODO");
-		else if ("DateDaysSince[1980]".equalsIgnoreCase(type))
-			throw new UnsupportedOperationException("TODO");
-		else if ("TimeSeconds".equalsIgnoreCase(type))
-			throw new UnsupportedOperationException("TODO");
-		else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(type))
-			throw new UnsupportedOperationException("TODO");
-		else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(type))
-			throw new UnsupportedOperationException("TODO");
-		else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(type))
-			throw new UnsupportedOperationException("TODO");
-		else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(type))
-			throw new UnsupportedOperationException("TODO");
-		else
-			return val.toString();
+        else if ("Date".endsWith(type))
+            return "\""+ (new SimpleDateFormat().format(new Date(val.longValue())) )+"\"";
+        else if ("Time".endsWith(type))
+            return "\""+val.toString()+"\"";
+        else if ("DateTime".endsWith(type))
+            return "\""+ (new SimpleDateFormat().format(new Date(val.longValue())) )+"\"";
+        else if ("DateDaysSince[0]".equalsIgnoreCase(type))
+            throw new UnsupportedOperationException("TODO");
+        else if ("DateDaysSince[1960]".equalsIgnoreCase(type))
+            throw new UnsupportedOperationException("TODO");
+        else if ("DateDaysSince[1970]".equalsIgnoreCase(type))
+            throw new UnsupportedOperationException("TODO");
+        else if ("DateDaysSince[1980]".equalsIgnoreCase(type))
+            throw new UnsupportedOperationException("TODO");
+        else if ("TimeSeconds".equalsIgnoreCase(type))
+            throw new UnsupportedOperationException("TODO");
+        else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(type))
+            throw new UnsupportedOperationException("TODO");
+        else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(type))
+            throw new UnsupportedOperationException("TODO");
+        else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(type))
+            throw new UnsupportedOperationException("TODO");
+        else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(type))
+            throw new UnsupportedOperationException("TODO");
+        else
+            return val.toString();
     }
 
 
+    public String numberFromNumber( String obj, String datatype ) {
+        if ( "Integer".equalsIgnoreCase( datatype ) ) {
+            return obj + ".intValue()";
+        } else if ( "Float".equalsIgnoreCase( datatype ) ) {
+            return obj + ".floatValue()";
+        } else if ( "Double".equalsIgnoreCase( datatype ) ) {
+            return obj + ".doubleValue()";
+        }
+        return obj + ".doubleValue()";
+    }
 
-    public String mapFunction(String functor, List args) {
-        System.err.print("Received list of args for functor " + functor + " : ");
-            for (Object arg : args)
-                System.err.print(arg + "\t");
-        System.err.println();
+
+    public String mapFunction( String functor, List args ) {
         String[] argz = new String[args.size()];
-            for (int j = 0; j < args.size(); j++)
-                argz[j] = (String) args.get(j);
-        return mapFunction(functor, argz);
+        for (int j = 0; j < args.size(); j++)
+            argz[j] = (String) args.get(j);
+        return mapFunction( functor, argz );
     }
 
     public String mapFunction(String functor, String... args) {
@@ -483,15 +495,105 @@ public class PMML4Wrapper {
         } else if ("if".equals(functor)) {
             ans += args[0] + " ? " + args[1] + " : " + ( args.length > 2 ? args[2] : "null" );
         } else {
+            // custom function!
             if (args.length == 0)
-                return functor+"()";
+                return functor+"( )";
             String tmp = args[0];
             for (int j = 1; j < args.length; j++)
-                tmp += "," + args[j];
-            return functor+"("+tmp+")";
+                tmp += ", " + args[j];
+            return functor + "( " + tmp + " )";
         }
         ans += ")";
         return ans;
+    }
+
+
+    public boolean isBuiltIn( String functor ) {
+        if ("+".equals(functor)) {
+            return true;
+        } else if ("-".equals(functor)) {
+            return true;
+        } else if ("*".equals(functor)) {
+            return true;
+        } else if ("/".equals(functor)) {
+            return true;
+        } else if ("identity".equals(functor)) {
+            return true;
+        } else if ("min".equals(functor)) {
+            return true;
+        } else if ("max".equals(functor)) {
+            return true;
+        } else if ("sum".equals(functor)) {
+            return true;
+        } else if ("median".equals(functor)) {
+            return true;
+        } else if ("product".equals(functor)) {
+            return true;
+        } else if ("avg".equals(functor)) {
+            return true;
+        } else if ("log10".equals(functor)) {
+            return true;
+        } else if ("ln".equals(functor)) {
+            return true;
+        } else if ("sqrt".equals(functor)) {
+            return true;
+        } else if ("abs".equals(functor)) {
+            return true;
+        } else if ("exp".equals(functor)) {
+            return true;
+        } else if ("pow".equals(functor)) {
+            return true;
+        } else if ("threshold".equals(functor)) {
+            return true;
+        } else if ("floor".equals(functor)) {
+            return true;
+        } else if ("round".equals(functor)) {
+            return true;
+        } else if ("ceil".equals(functor)) {
+            return true;
+        } else if ("uppercase".equals(functor)) {
+            return true;
+        } else if ("substring".equals(functor)) {
+            return true;
+        } else if ("trimBlanks".equals(functor)) {
+            return true;
+        } else if ("formatNumber".equals(functor)) {
+            return true;
+        } else if ("formatDatetime".equals(functor)) {
+            return true;
+        } else if ("dateDaysSinceYear".equals(functor)) {
+            return true;
+        } else if ("dateSecondsSinceYear".equals(functor)) {
+            return true;
+        } else if ("dateSecondsSinceMidnight".equals(functor)) {
+            return true;
+        } else if ("equal".equals(functor)) {
+            return true;
+        } else if ("notEqual".equals(functor)) {
+            return true;
+        } else if ("lessThan".equals(functor)) {
+            return true;
+        } else if ("lessOrEqual".equals(functor)) {
+            return true;
+        } else if ("greaterThan".equals(functor)) {
+            return true;
+        } else if ("greaterOrEqual".equals(functor)) {
+            return true;
+        } else if ("isIn".equals(functor)) {
+            return true;
+        } else if ("isNotIn".equals(functor)) {
+            return true;
+        } else if ("not".equals(functor)) {
+            return true;
+        } else if ("and".equals(functor)) {
+            return true;
+        } else if ("or".equals(functor)) {
+            return true;
+        } else if ("if".equals(functor)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private String posix2Java(String posixFormat) {
@@ -511,7 +613,7 @@ public class PMML4Wrapper {
     }
 
 
-     public String mapNeuralActivation(String functor, double threshold) {
+    public String mapNeuralActivation(String functor, double threshold) {
         if ("threshold".equals(functor)) {
             return " x > " + threshold + " ? 1 : 0";
         } else if ("logistic".equals(functor)) {
@@ -539,7 +641,7 @@ public class PMML4Wrapper {
         } else {
             return "x";
         }
-     }
+    }
 
     public String mapRegModelRegressionNormalization( String method, String arg  ) {
         if ( method == null || REGRESSIONNORMALIZATIONMETHOD.NONE.value().equals( method ) ) {
@@ -592,8 +694,8 @@ public class PMML4Wrapper {
     }
 
     public String capitalize(String s) {
-		return s.substring(0, 1).toUpperCase() + s.substring(1);
-     }
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
+    }
 
 
     public String getToken( String s, int j ) {
@@ -606,25 +708,25 @@ public class PMML4Wrapper {
         }
         return tok.nextToken();
     }
-    
+
     public String[] tokenize( String s ) {
         StringTokenizer tok = new StringTokenizer( s );
         int num = tok.countTokens();
         String[] toks = new String[ num ];
-        
+
         for ( int j = 0; j < num; j++ ) {
-            toks[ j ] = tok.nextToken();            
+            toks[ j ] = tok.nextToken();
         }
         return toks;
     }
-    
+
     public String[] ones( Integer num ) {
         String[] ones = new String[ num ];
         Arrays.fill( ones, "1.0" );
         return ones;
     }
-    
-    
+
+
     public String mapComparisonFunction( COMPAREFUNCTION fun, String arg1, String arg2, String scope, String local ) {
         switch ( fun ) {
             case ABS_DIFF:
@@ -724,47 +826,47 @@ public class PMML4Wrapper {
 
     public String mapDatatypeToQuestion(DATATYPE datatype) {
         String s = datatype != null ? datatype.value() : null;
-		if (s == null) return Object.class.getName();
-		if ("Integer".equalsIgnoreCase(s))
+        if (s == null) return Object.class.getName();
+        if ("Integer".equalsIgnoreCase(s))
             return "Question.QuestionType.TYPE_NUMBER";
-		else if ("Float".equalsIgnoreCase(s))
-		    return "Question.QuestionType.TYPE_DECIMAL";
+        else if ("Float".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_DECIMAL";
         else if ("Double".equalsIgnoreCase(s))
-		    return "Question.QuestionType.TYPE_DECIMAL";
+            return "Question.QuestionType.TYPE_DECIMAL";
         else if ("Boolean".equalsIgnoreCase(s))
             return "Question.QuestionType.TYPE_BOOLEAN";
-		else if ("String".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_TEXT";
-		else if ("Date".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_DATE";
-		else if ("Time".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_DATE";
-		else if ("DateTime".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_DATE";
-		else if ("DateDaysSince[0]".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_NUMBER";
-		else if ("DateDaysSince[1960]".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_NUMBER";
-		else if ("DateDaysSince[1970]".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_NUMBER";
-		else if ("DateDaysSince[1980]".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_NUMBER";
-		else if ("TimeSeconds".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_NUMBER";
-		else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_NUMBER";
-		else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_NUMBER";
-		else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_NUMBER";
-		else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_NUMBER";
+        else if ("String".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_TEXT";
+        else if ("Date".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_DATE";
+        else if ("Time".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_DATE";
+        else if ("DateTime".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_DATE";
+        else if ("DateDaysSince[0]".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_NUMBER";
+        else if ("DateDaysSince[1960]".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_NUMBER";
+        else if ("DateDaysSince[1970]".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_NUMBER";
+        else if ("DateDaysSince[1980]".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_NUMBER";
+        else if ("TimeSeconds".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_NUMBER";
+        else if ("DateTimeSecondsSince[0]".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_NUMBER";
+        else if ("DateTimeSecondsSince[1960]".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_NUMBER";
+        else if ("DateTimeSecondsSince[1970]".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_NUMBER";
+        else if ("DateTimeSecondsSince[1980]".equalsIgnoreCase(s))
+            return "Question.QuestionType.TYPE_NUMBER";
         else if ("collection".equalsIgnoreCase(s))
-			return "Question.QuestionType.TYPE_LIST";
-		else
-			return "Question.QuestionType.TYPE_TEXT";
-	}
-    
+            return "Question.QuestionType.TYPE_LIST";
+        else
+            return "Question.QuestionType.TYPE_TEXT";
+    }
+
     public String mapTreeOp( String op ) {
         if ( "and".equals( op ) ) {
             return " && ";

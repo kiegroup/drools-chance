@@ -18,6 +18,7 @@
         <FieldRef field="B"/>
       </Apply>
     </DefineFunction>
+
     <DefineFunction dataType="double" name="myProd2" optype="continuous">
       <ParameterField dataType="integer" name="A"/>
       <ParameterField dataType="integer" name="B"/>
@@ -26,6 +27,7 @@
         <FieldRef field="B"/>
       </Apply>
     </DefineFunction>
+
     <DefineFunction dataType="double" name="myProd3" optype="continuous">
       <ParameterField dataType="integer" name="X"/>
       <ParameterField dataType="integer" name="Y"/>
@@ -34,16 +36,21 @@
         <FieldRef field="Y"/>
       </Apply>
     </DefineFunction>
+
     <!--"+"-->
     <DefineFunction dataType="double" name="mySum" optype="continuous">
       <ParameterField dataType="integer" name="A"/>
       <ParameterField dataType="integer" name="B"/>
       <Apply function="+">
         <FieldRef field="A"/>
-        <FieldRef field="B"/>
+        <Apply function="myProd3">
+          <FieldRef field="B"/>
+          <FieldRef field="B"/>
+        </Apply>
       </Apply>
     </DefineFunction>
     <!--"+"-->
+
     <DefineFunction dataType="double" name="myNormCont" optype="continuous">
       <ParameterField dataType="integer" name="X"/>
       <NormContinuous field="X" mapMissingTo="789" outliers="asIs">
@@ -51,13 +58,15 @@
         <LinearNorm norm="1" orig="100"/>
       </NormContinuous>
     </DefineFunction>
-    <!--( [Age/10] "*" (10 "+" Age) ) + 33 + [Age/10] )-->
-    <DerivedField dataType="double" name="UserAge" optype="continuous">
+
+
+    <!--( [Age/10] "*" (10 "+" Age) ) + 33 + [Age/10] ) -->
+    <!--DerivedField name="UserAgeComplex" optype="continuous" dataType="double">
       <Apply function="sum">
-        <Apply function="myProd">
+        <Apply function="myProd" >
           <NormContinuous field="Age" mapMissingTo="789" outliers="asIs">
-            <LinearNorm norm="0" orig="0"/>
-            <LinearNorm norm="1" orig="100"/>
+            <LinearNorm orig="0" norm="0"/>
+            <LinearNorm orig="100" norm="1"/>
           </NormContinuous>
           <Apply function="mySum">
             <Constant dataType="double">10.0</Constant>
@@ -69,6 +78,20 @@
           <FieldRef field="Age"/>
         </Apply>
       </Apply>
+    </DerivedField-->
+
+    <DerivedField dataType="double" name="UserAge" optype="continuous">
+      <Apply function="myProd2">
+        <Apply function="myProd">
+          <Constant dataType="double">10.0</Constant>
+          <Apply function="mySum">
+            <FieldRef field="Age"/>
+            <Constant dataType="double">3.0</Constant>
+          </Apply>
+        </Apply>
+        <Constant dataType="integer">33</Constant>
+      </Apply>
     </DerivedField>
+
   </TransformationDictionary>
 </PMML>

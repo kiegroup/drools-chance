@@ -236,28 +236,34 @@ no-loop
 when
     $def : DefineFunction( $apply : apply != null, apply.function != "identity" )
 then
+    System.out.println( "PROCESSED DEFFN WITH APPLY " + $def.getName() );
     Apply idApply = new Apply();
           idApply.setFunction( "identity" );
           idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $apply );
     modify ( $def ) {
         setApply( idApply );
     }
+
+    insertLogical( idApply );
 end
 
 rule "visitDefineFunction_NormCont"
 salience 15
 no-loop
 when
-    $def : DefineFunction( $nc : normContinuous != null )
+    $def : DefineFunction( $name : name, $nc : normContinuous != null, $fld : normContinuous.field )
 then
     Apply idApply = new Apply();
           idApply.setFunction("identity");
           idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $nc );
 
     modify ( $def ) {
-        setNormContinuous( null ),
         setApply( idApply );
     }
+
+    $nc.setField( $name + "_" + $fld );
+
+    insertLogical( idApply );
 end
 
 
@@ -265,64 +271,74 @@ rule "visitDefineFunction_Aggregate"
 salience 15
 no-loop
 when
-    $def : DefineFunction( $agg : aggregate != null )
+    $def : DefineFunction( $name : name, $agg : aggregate != null, $fld : aggregate.field )
 then
     Apply idApply = new Apply();
          idApply.setFunction( "identity" );
          idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $agg );
 
     modify ( $def ) {
-        setNormContinuous( null ),
         setApply( idApply );
     }
+
+    $agg.setField( $name + "_" + $fld );
+
+    insertLogical( idApply );
 end
 
 rule "visitDefineFunction_Mapvalue"
 salience 15
 no-loop
 when
-    $def : DefineFunction( $map : mapValues != null )
+    $def : DefineFunction( $name : name, $map : mapValues != null )
 then
     Apply idApply = new Apply();
           idApply.setFunction( "identity" );
           idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $map );
 
     modify ( $def ) {
-        setNormContinuous( null ),
         setApply( idApply );
     }
+
+    insertLogical( idApply );
 end
 
 rule "visitDefineFunction_Discretize"
 salience 15
 no-loop
 when
-    $def : DefineFunction( $dx : discretize != null )
+    $def : DefineFunction( $name : name, $dx : discretize != null, $fld : discretize.field )
 then
     Apply idApply = new Apply();
           idApply.setFunction( "identity" );
           idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $dx );
 
     modify ( $def ) {
-        setNormContinuous( null ),
         setApply( idApply );
     }
+
+    $dx.setField( $name + "_" + $fld );
+
+    insertLogical( idApply );
 end
 
 rule "visitDefineFunction_NormDiscrete"
 salience 15
 no-loop
 when
-    $def : DefineFunction( $nd : normDiscrete != null )
+    $def : DefineFunction( $name : name, $nd : normDiscrete != null, $fld : normDiscrete.field )
 then
     Apply idApply = new Apply();
           idApply.setFunction( "identity" );
           idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $nd );
 
     modify ( $def ) {
-        setNormContinuous( null ),
         setApply( idApply );
     }
+    System.out.println( "Adepted ND to work on fiel " + $name + "_" + $fld );
+    $nd.setField( $name + "_" + $fld );
+
+    insertLogical( idApply );
 end
 
 rule "visitDefineFunction_FldRef"
@@ -336,9 +352,9 @@ then
           idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $ref );
 
     modify ( $def ) {
-        setNormContinuous( null ),
         setApply( idApply );
     }
+    insertLogical( idApply );
 end
 
 rule "visitDefineFunction_Const"
@@ -347,15 +363,17 @@ no-loop
 when
     $def : DefineFunction( $k : constant != null )
 then
+    System.out.println("Rwrtite def fun with const to use apply internall");
     Apply idApply = new Apply();
           idApply.setFunction( "identity" );
           idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $k );
 
     modify ( $def ) {
-        setNormContinuous( null ),
         setApply( idApply );
     }
+    insertLogical( idApply );
 end
+
 
 
 
@@ -368,7 +386,7 @@ when
     Apply( $args : constantsAndFieldRevesAndNormContinuouses, $fun : this.function )
     $arg : Object() from $args
 then
-   insertLogical( $arg );
+    insertLogical( $arg );
 end
 
 
