@@ -230,7 +230,7 @@ end
 
 
 
-rule "visitDefineFunction_Apply"
+rule "visitDefineFunction_Apply_normalize"
 salience 15
 no-loop
 when
@@ -243,8 +243,14 @@ then
     modify ( $def ) {
         setApply( idApply );
     }
+end
 
-    insertLogical( idApply );
+rule "visitDefineFunction_Apply"
+salience 15
+when
+    $def : DefineFunction( $apply : apply != null, apply.function == "identity" )
+then
+    insertLogical( $apply );
 end
 
 rule "visitDefineFunction_NormCont"
@@ -335,7 +341,7 @@ then
     modify ( $def ) {
         setApply( idApply );
     }
-    System.out.println( "Adepted ND to work on fiel " + $name + "_" + $fld );
+
     $nd.setField( $name + "_" + $fld );
 
     insertLogical( idApply );
@@ -345,7 +351,7 @@ rule "visitDefineFunction_FldRef"
 salience 15
 no-loop
 when
-    $def : DefineFunction( $ref : fieldRef != null )
+    $def : DefineFunction( $name : name, $ref : fieldRef != null, $fld : fieldRef.field )
 then
     Apply idApply = new Apply();
           idApply.setFunction( "identity" );
@@ -354,6 +360,9 @@ then
     modify ( $def ) {
         setApply( idApply );
     }
+
+//    $ref.setField( $name + "_" + $fld );
+
     insertLogical( idApply );
 end
 
@@ -363,7 +372,6 @@ no-loop
 when
     $def : DefineFunction( $k : constant != null )
 then
-    System.out.println("Rwrtite def fun with const to use apply internall");
     Apply idApply = new Apply();
           idApply.setFunction( "identity" );
           idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $k );
@@ -371,6 +379,7 @@ then
     modify ( $def ) {
         setApply( idApply );
     }
+
     insertLogical( idApply );
 end
 

@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class AliasedFieldsTest extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
     private static final String source = "org/drools/pmml_4_1/test_derived_fields_alias.xml";
     private static final String packageName = "org.drools.pmml_4_1.test";
 

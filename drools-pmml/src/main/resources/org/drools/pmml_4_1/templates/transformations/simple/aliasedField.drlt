@@ -30,6 +30,7 @@ when
                         @if{ context != null } , context == @{ format( "string", context ) } @end{} )
 then
 //  System.out.println("Cloning " + $src );
+//@{type}
   @{ name } x = new @{ name }();
     x.setValue( @if{ mapsMissing } $m ? @{ format( type, mapMissingTo ) } : $val @else{} $val @end{} );
     x.setMissing( @if{ mapsMissing } false @else{} $m @end{} );

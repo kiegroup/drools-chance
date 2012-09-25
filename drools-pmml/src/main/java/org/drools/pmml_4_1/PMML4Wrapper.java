@@ -28,6 +28,8 @@ public class PMML4Wrapper {
 
     private static String pack;
 
+    private static final String innerFieldPrefix = "__$Inner";
+
     private static int counter = 0;
 
     private Set<String> definedModelBeans;
@@ -37,6 +39,14 @@ public class PMML4Wrapper {
         return counter++;
     }
 
+
+    public String nextInnerFieldName() {
+        return innerFieldPrefix + nextCount();
+    }
+
+    public boolean isInnerFieldName( String name ) {
+        return name != null && name.startsWith( innerFieldPrefix );
+    }
 
     public static String context = null;
 
@@ -360,14 +370,32 @@ public class PMML4Wrapper {
     }
 
 
-    public String mapFunction( String functor, List args ) {
+
+    public String mapFunctionAsQuery( String functor, List args ) {
         String[] argz = new String[args.size()];
-        for (int j = 0; j < args.size(); j++)
-            argz[j] = (String) args.get(j);
-        return mapFunction( functor, argz );
+        for (int j = 0; j < args.size(); j++) {
+            argz[j] = args.get(j).toString();
+        }
+        return mapFunction( functor, true, argz );
     }
 
-    public String mapFunction(String functor, String... args) {
+    public String mapFunctionAsQuery( String functor, String... args ) {
+        return mapFunction( functor, true, args );
+    }
+
+    public String mapFunction( String functor, List args ) {
+        String[] argz = new String[args.size()];
+        for (int j = 0; j < args.size(); j++) {
+            argz[j] = args.get(j).toString();
+        }
+        return mapFunction( functor, false, argz );
+    }
+
+    public String mapFunction( String functor, String... args ) {
+        return mapFunction( functor, false, args );
+    }
+
+    public String mapFunction( String functor, boolean asQuery, String... args ) {
         String ans = "(";
         if ("+".equals(functor)) {
             ans += args[0];
@@ -496,12 +524,24 @@ public class PMML4Wrapper {
             ans += args[0] + " ? " + args[1] + " : " + ( args.length > 2 ? args[2] : "null" );
         } else {
             // custom function!
-            if (args.length == 0)
-                return functor+"( )";
+            if (args.length == 0) {
+                if ( asQuery ) {
+                    return functor + "( $" + functor + "_return ; )";
+                } else {
+                    return functor + "( )";
+                }
+            }
             String tmp = args[0];
-            for (int j = 1; j < args.length; j++)
+            for (int j = 1; j < args.length; j++) {
                 tmp += ", " + args[j];
+            }
+            if ( asQuery ) {
+                tmp += ", $" + functor + "_return ; ";
+            }
             return functor + "( " + tmp + " )";
+        }
+        if ( asQuery ) {
+            ans += ", $" + functor + "_return ; ";
         }
         ans += ")";
         return ans;

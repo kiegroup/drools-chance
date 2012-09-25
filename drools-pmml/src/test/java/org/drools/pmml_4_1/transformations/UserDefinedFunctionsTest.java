@@ -29,7 +29,8 @@ import org.junit.Test;
 public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = true;
-    private static final String source  = "org/drools/pmml_4_1/test_user_functions_nested.xml";
+    private static final String source1  = "org/drools/pmml_4_1/test_user_functions_nested.xml";
+    private static final String source2  = "org/drools/pmml_4_1/test_user_functions_complex.xml";
     private static final String source3 = "org/drools/pmml_4_1/test_user_functions_simpleTransformations.xml";
     private static final String packageName = "org.drools.pmml_4_1.test";
 
@@ -134,18 +135,16 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     @Test
     public void testFunctionsNested() throws Exception {
 
-        setKSession( getModelSession( source, VERBOSE ) );
+        setKSession( getModelSession( source1, VERBOSE ) );
         setKbase( getKSession().getKnowledgeBase() );
 
         FactType userAge1 = getKbase().getFactType( packageName, "UserAge" );
-        FactType userAge2 = getKbase().getFactType( packageName, "UserAge2" );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10.0 );
 
         getKSession().fireAllRules();
 
-        checkFirstDataFieldOfTypeStatus( userAge1, true, false, null, 1.0 );
-        checkFirstDataFieldOfTypeStatus( userAge2, true, false, null, 1.0 );
+        checkFirstDataFieldOfTypeStatus( userAge1, true, false, null, 130.0 );
 
     }
 

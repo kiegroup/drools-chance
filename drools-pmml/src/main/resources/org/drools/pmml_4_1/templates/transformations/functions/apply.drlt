@@ -37,6 +37,10 @@ when
                   @if{ context != null } , context == @{ format( "string", context ) } @end{} )
     @end{}
     // @{funName} - @{ isBuiltIn( funName ) }
+    @foreach{ dep : dependencies}
+        @{ dep }
+    @end{}
+
     @if{ ! isBuiltIn( funName ) }
         @{ funName }( @foreach{ arg : funArgs } @{arg} @end{ ',' } , $return ; )
     @end{}
