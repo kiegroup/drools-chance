@@ -96,15 +96,23 @@ public class IsAEvaluatorDefinition extends org.drools.base.evaluators.IsAEvalua
             if ( object instanceof Thing ) {
                 Thing thing = (Thing) object;
                 core = (TraitableBean) thing.getCore();
-                Thing proxy = core.getTrait( typeName.toString() );
-                return extractDegree(proxy);
+                if ( core.hasTrait( typeName ) ) {
+                    Thing proxy = core.getTrait( typeName.toString() );
+                    return extractDegree( proxy );
+                } else {
+                    return ChanceDegreeTypeRegistry.getSingleInstance().getDefaultOne().False();
+                }
             } else if ( object instanceof TraitableBean ) {
                 core = (TraitableBean) object;
-                Thing proxy = core.getTrait( typeName.toString() );
-                return extractDegree( proxy );
+                if ( core.hasTrait( typeName ) ) {
+                    Thing proxy = core.getTrait( typeName.toString() );
+                    return extractDegree( proxy );
+                } else {
+                    return ChanceDegreeTypeRegistry.getSingleInstance().getDefaultOne().False();
+                }
             } else {
                 core = lookForWrapper( object, workingMemory );
-                if ( core == null ) {
+                if ( core == null || ! core.hasTrait( typeName ) ) {
                     return ChanceDegreeTypeRegistry.getDefaultOne().False();
                 } else {
                     Thing proxy = core.getTrait( typeName.toString() );

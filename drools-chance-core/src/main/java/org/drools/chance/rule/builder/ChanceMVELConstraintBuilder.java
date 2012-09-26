@@ -166,7 +166,7 @@ public class ChanceMVELConstraintBuilder extends MVELConstraintBuilder {
 
                     String mvelExpr = normalizeMVELLiteralExpression(vtype, field, expression, leftValue, operator, rightValue, restrictionDescr);
                     IndexUtil.ConstraintType constraintType = IndexUtil.ConstraintType.decode(operator);
-                    MVELCompilationUnit compilationUnit = buildCompilationUnit( context, pattern, mvelExpr );
+                    MVELCompilationUnit compilationUnit = buildCompilationUnit( context, pattern, mvelExpr, null );
 
                     return new MvelConstraint( context.getPkg().getName(), mvelExpr, compilationUnit, constraintType, field, extractor );
 
@@ -250,8 +250,8 @@ public class ChanceMVELConstraintBuilder extends MVELConstraintBuilder {
                 if (isUnification) {
                     expression = resolveUnificationAmbiguity(expression, declarations, leftValue, rightValue);
                 }
-                IndexUtil.ConstraintType constraintType = IndexUtil.ConstraintType.decode(operatorDescr.getOperator());
-                MVELCompilationUnit compilationUnit = isUnification ? null : buildCompilationUnit(context, pattern, expression);
+                IndexUtil.ConstraintType constraintType = IndexUtil.ConstraintType.decode( operatorDescr.getOperator() );
+                MVELCompilationUnit compilationUnit = isUnification ? null : buildCompilationUnit( context, pattern, expression, null );
                 return new MvelConstraint(context.getPkg().getName(), expression, declarations, compilationUnit, constraintType, requiredDeclaration, extractor, isUnification);
 
             }
