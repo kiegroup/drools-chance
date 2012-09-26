@@ -30,6 +30,7 @@
 
 @declare{'collectRule'}
 rule "coll_@{name}"
+@if{ isInnerFieldName( name ) } @@activationListener('direct') @end{}
 when
     @if{groupBy != null} @{groupBy}( valid == true, missing == false, $gval : value) @end{}
     $agg : java.util.Collection() from collect (

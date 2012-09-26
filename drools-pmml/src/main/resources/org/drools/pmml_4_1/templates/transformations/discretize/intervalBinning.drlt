@@ -29,6 +29,7 @@
 
 @declare{'intervalBinningRule'}
 rule "bin_@{name}_@{index}"
+@if{ isInnerFieldName( name ) } @@activationListener('direct') @end{}
 when
     $in : @{origField}( valid == true, missing == false,
             value @if{intv.closure.startsWith("closed")}>=@else{}>@end{} @{intv.leftMargin} && value @if{intv.closure.endsWith("Closed")}<=@else{}<@end{} @{intv.rightMargin},

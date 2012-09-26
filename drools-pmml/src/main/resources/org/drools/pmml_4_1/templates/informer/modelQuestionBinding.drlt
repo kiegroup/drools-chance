@@ -38,7 +38,7 @@ then
         setAnswer( null );
     }
 
-    System.out.println( drools.getRule().getName() );
+//    System.out.println( drools.getRule().getName() );
     DomainModelAssociation assoc = new DomainModelAssociation();
         assoc.setQuestionId( $id );
         assoc.setContext( $ctx );

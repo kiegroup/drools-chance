@@ -344,7 +344,6 @@ dialect "mvel"
 when
     $fld : DerivedField( $n : name, $t : dataType )
 then
-    System.out.println( "Marking type of field" + $n );
     insert( new FieldMarker( $n,$t ) );
     insertLogical( new TypeOfField( $n, $t ) );
 end
@@ -495,14 +494,6 @@ then
         map.put( "konst", $x );
         map.put( "type", $type );
     applyTemplate( "constantField.drlt", utils, registry, map, theory );
-end
-
-rule "FieldTypes"
-salience 100
-when
-    $tof : TypeOfField( )
-then
-    System.out.println( $tof );
 end
 
 
@@ -715,26 +706,32 @@ end
 
 rule "processDerivedField_MapValues_support"
 dialect "mvel"
+salience 1
 when
     $fld : DerivedField( $map : mapValues )
            MapValues( this == $map, $fcpairs : fieldColumnPairs )
-    $sup : MapSupportBean( ref == $map )
-    $fcp : FieldColumnPair() from $fcpairs
+    $sup : MapSupportBean( ref == $map, $keys : columns.keySet )
+    $fcp : FieldColumnPair( column not memberOf $keys ) from $fcpairs
 then
-    $sup.columns.put($fcp.column, $fcp.field);
+    modify ( $sup ) {
+        columns.put( $fcp.column, $fcp.field );
+    }
 end
 
 
 rule "processDerivedField_MapValues_support2"
 dialect "mvel"
+salience 1
 when
-    $fld : DerivedField( $map : mapValues )
+    $fld : DerivedField( $map : mapValues, $type : dataType )
            MapValues( this == $map, $fcpairs : fieldColumnPairs )
-    $sup : MapSupportBean( ref == $map )
-    $fcp : FieldColumnPair() from $fcpairs
-    DataField( name == $fcp.field, $type : dataType )
+    $sup : MapSupportBean( ref == $map, $keys : types.keySet )
+    $fcp : FieldColumnPair( column not memberOf $keys ) from $fcpairs
+//    DataField( name == $fcp.field, $type : dataType )
 then
-    $sup.types.put($fcp.column, $type.value );
+    modify ( $sup ) {
+        types.put( $fcp.column, $type.value );
+    }
 end
 
 
@@ -854,9 +851,9 @@ end
 
 
 declare FunctionResult
-    expr            : String        @key
-    father          : Apply         @key
-    fields          : Collection    @key
+    expr            : String
+    father          : Apply
+    fields          : Collection
     simple          : boolean       = false
     parents         : List
 end
@@ -909,7 +906,7 @@ when
         $exprFieldList : collectList( $x )
     )
 then
-    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>  Built final bit " + $exprFieldList + " >> " + $args + " will need >>>> " + $deps );
+//    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>  Built final bit " + $exprFieldList + " >> " + $args + " will need >>>> " + $deps );
 
     HashMap map = new HashMap( 7 );
         map.put( "context", utils.context );
@@ -923,7 +920,6 @@ then
     applyTemplate( "apply.drlt", utils, registry, map, theory );
 
     retract( $a );
-    System.out.println( "APPLY CLEARS FLD2VAR ");
     fld2var.clear();
 end
 
@@ -937,7 +933,6 @@ when
     $a : Apply( $expr : constantsAndFieldRevesAndNormContinuouses, $f : this.function )
     $c : Constant( this memberOf $expr, $x : value )
 then
-    System.out.println( "Process Apply with const arg " + $x );
     insertLogical( new FunctionResult( $x, $a, Collections.emptySet(), true, Collections.emptyList() ) );
 end
 
@@ -951,7 +946,6 @@ then
     if (! fld2var.containsKey($x)) {
         fld2var.put( $x, "$var" + fld2var.size() );
     }
-    System.out.println( "Process Apply with ref arg " + $x );
     insertLogical( new FunctionResult( (String) fld2var.get( $x ), $a, Arrays.asList( $x ), true, Collections.emptyList() ) );
 end
 
@@ -990,7 +984,7 @@ then
     }
 
 
-    System.out.println("Built bit for fun " + $f2 + " with expr " + bit + ", result for " + $bag + " using parentes " + $deps );
+//    System.out.println("Built bit for fun " + $f2 + " with expr " + bit + ", result for " + $bag + " using parentes " + $deps );
 
     insertLogical( new FunctionResult( bit, $a, $bag, false, $deps ) );
     //System.err.println("Kill " + $f2 + "and its children results");
@@ -1019,7 +1013,7 @@ then
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ), false, Collections.emptyList() ) );
 end
 
 
@@ -1043,7 +1037,7 @@ then
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult((String) fld2var.get(name), $a, Arrays.asList( name ) ) );
+    insertLogical( new FunctionResult((String) fld2var.get(name), $a, Arrays.asList( name ), false, Collections.emptyList() ) );
 end
 
 
@@ -1066,7 +1060,7 @@ then
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ), false, Collections.emptyList() ) );
 end
 
 
@@ -1089,7 +1083,7 @@ then
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ), false, Collections.emptyList() ) );
 end
 
 
@@ -1101,7 +1095,6 @@ when
     $nct : NormContinuous( this memberOf $expr )
     isLocalToFunction( $a, $local; )
 then
-    System.out.println( "Processing NC " + $local );
     String name = utils.nextInnerFieldName();
     DerivedField mockField = new DerivedField();
         mockField.setName( name );
@@ -1113,7 +1106,7 @@ then
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ), false, Collections.emptyList() ) );
 end
 
 
@@ -1137,7 +1130,7 @@ then
     if ( ! fld2var.containsKey( name ) ) {
         fld2var.put( name, "$var" + fld2var.size() );
     }
-    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ) ) );
+    insertLogical( new FunctionResult( (String) fld2var.get( name ), $a, Arrays.asList( name ), false, Collections.emptyList() ) );
 end
 
 
@@ -1159,9 +1152,8 @@ no-loop
 when
     $df  : DefineFunction( $funName : name, $paramFields : parameterFields,
                           $retType : dataType, $a : apply != null )
-    $res : FunctionResult( father == $a, $x : expr, $innerFields : fields )
+    $res : FunctionResult( father == $a, $x : expr, $innerFields : fields, $deps : parents )
 then
-    System.out.println( " PROCESSED FUN " + $funName + " which has a reslt working with fields " + $innerFields );
     HashMap map = new HashMap( 7 );
         map.put( "name", $funName );
         map.put( "dataType", $retType );
@@ -1169,6 +1161,7 @@ then
         map.put( "exprFieldMap", fld2var );
         map.put( "params", $paramFields );
         map.put( "innerFields", $innerFields );
+        map.put( "dependencies", $deps );
     applyTemplate( "function.drlt", utils, registry, map, theory );
     fld2var.clear();
 end
@@ -1182,7 +1175,6 @@ when
     $df  : DefineFunction( $fn : name, $paramFields : parameterFields )
     $fld : ParameterField( $name : name, $dataType : dataType, $optype : optype ) from $paramFields
 then
-    System.out.println( "PROCESSED DEFFN PARAMS " + $fn );
     String paramName = $fn + "_" + $name;
 
     DerivedField paramField = new DerivedField();
@@ -2013,10 +2005,6 @@ then
 
     $df.setName( $field );
     $ref.setField( utils.compactUpperCase( $nn ) + "_" + $id );
-
-    System.out.println( "Neural output field processing alias " + $field );
-    System.out.println( "Inserting " + $ref );
-    System.out.println( "Inserting " + $fld );
 
     insertLogical( $ref );
     insertLogical( $fld );

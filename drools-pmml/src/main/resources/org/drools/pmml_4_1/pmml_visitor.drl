@@ -236,7 +236,6 @@ no-loop
 when
     $def : DefineFunction( $apply : apply != null, apply.function != "identity" )
 then
-    System.out.println( "PROCESSED DEFFN WITH APPLY " + $def.getName() );
     Apply idApply = new Apply();
           idApply.setFunction( "identity" );
           idApply.getConstantsAndFieldRevesAndNormContinuouses().add( $apply );
@@ -308,6 +307,18 @@ then
 
     insertLogical( idApply );
 end
+
+rule "visitDefineFunction_Mapvalue_FixLocalFieldNames"
+salience 14
+no-loop
+when
+    $def : DefineFunction( $name : name, $map : mapValues != null, $rows : mapValues.fieldColumnPairs )
+    $fcp : FieldColumnPair( $fld : field ) from $rows
+then
+    $fcp.setField( $name + "_" + $fld );
+end
+
+
 
 rule "visitDefineFunction_Discretize"
 salience 15

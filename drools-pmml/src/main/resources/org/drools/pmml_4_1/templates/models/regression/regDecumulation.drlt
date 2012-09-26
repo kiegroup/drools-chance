@@ -59,7 +59,7 @@ when
                           cumulative == false )
 
 then
-    System.out.println( "fixing " + $ix + " taking its weight "+ $wgt + " minus the prev " + $wgt2 );
+//    System.out.println( "fixing " + $ix + " taking its weight "+ $wgt + " minus the prev " + $wgt2 );
     modify ( $bit ) {
         setWeight( $wgt - $wgt2 ),
         setCumulative( false );

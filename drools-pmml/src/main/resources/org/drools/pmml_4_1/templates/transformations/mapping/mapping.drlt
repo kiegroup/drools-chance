@@ -30,18 +30,19 @@
 
 @declare{'mappingRule'}
 rule "mapping_@{name}_@{index}"
+@if{ isInnerFieldName( name ) } @@activationListener('direct') @end{}
 when
    @code{ keys = patterns.keySet() }
-   @foreach{ patt : keys }  @{patt}( value == @{ patterns.get(patt) }
-                                            @if{ context != null } , context == @{format("string",context)} @end{} )
+   @foreach{ patt : keys }  @{ compactUpperCase( patt ) }( value == @{ patterns.get( patt ) }, $ctx := context
+                                            @if{ context != null } , context == @{ format( "string", context ) } @end{} )
    @end{}
 then
-    @{name} x = new @{name}();
-    x.setValue(@{target});
-    x.setMissing(false);
-    x.setValid(true);
-    x.setName(@{format("string",name)});
-    x.setContext(@{context});
+    @{ name } x = new @{ name }();
+    x.setValue( @{ target } );
+    x.setMissing( false );
+    x.setValid( true );
+    x.setName( @{ format( "string", name ) } );
+    x.setContext( $ctx );
   insertLogical(x);
 end
 @end{}

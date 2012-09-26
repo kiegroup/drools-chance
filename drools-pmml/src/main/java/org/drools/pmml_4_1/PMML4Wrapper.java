@@ -536,12 +536,12 @@ public class PMML4Wrapper {
                 tmp += ", " + args[j];
             }
             if ( asQuery ) {
-                tmp += ", $" + functor + "_return ; ";
+                tmp += ", $ctx, $" + functor + "_return ; ";
             }
             return functor + "( " + tmp + " )";
         }
         if ( asQuery ) {
-            ans += ", $" + functor + "_return ; ";
+            ans += ", $ctx, $" + functor + "_return ; ";
         }
         ans += ")";
         return ans;

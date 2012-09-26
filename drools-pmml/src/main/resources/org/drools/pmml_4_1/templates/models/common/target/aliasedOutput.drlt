@@ -32,14 +32,14 @@ when
                         @if{ context != null } , context == @{format("string",context)} @end{}
                         @if{ value != null } , value == @{format(type,value)} @end{} )
 then
-  System.out.println("Cloning output " + $src );
-  @{name} x = new @{name}();
-    x.setValue($val);
-    x.setMissing($m);
-    x.setValid($v);
-    x.setName(@{format("string",name)});
-    x.setContext($ctx);
-  insert(x);
+//  System.out.println("Cloning output " + $src );
+  @{ name } x = new @{ name }();
+    x.setValue( $val );
+    x.setMissing( $m );
+    x.setValid( $v );
+    x.setName( @{ format( "string", name ) } );
+    x.setContext( $ctx );
+  insert( x );
 end
 @end{}
 

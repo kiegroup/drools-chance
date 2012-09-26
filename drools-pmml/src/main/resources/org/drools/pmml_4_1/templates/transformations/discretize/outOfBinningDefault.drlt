@@ -31,6 +31,7 @@
 
 @declare{'outOfBinningDefaultRule'}
 rule "noBinDefault_@{name}"
+@if{ isInnerFieldName( name ) } @@activationListener('direct') @end{}
 when
     $in : @{origField}( valid == true, missing == false,
           @foreach{ bin : bins } (value @if{bin.interval.closure.startsWith("closed")}<@else{}<=@end{} @{bin.interval.leftMargin} || value @if{bin.interval.closure.endsWith("Closed")}>@else{}>=@end{} @{bin.interval.rightMargin}) @end{' && '}

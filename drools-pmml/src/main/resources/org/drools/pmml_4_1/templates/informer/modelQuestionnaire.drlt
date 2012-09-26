@@ -33,14 +33,14 @@ when
     $mm : ModelMarker( "@{model}" ; enabled == true )
     not   Questionnaire( type == @{ format( "string", model ) } )
 then
-    System.out.println( "Creating questionnaire @{model}" );
+//    System.out.println( "Creating questionnaire @{model}" );
     Questionnaire questionnaire = new Questionnaire( @{ format( "string", model) } );
     questionnaire.setContext( questionnaire.getId() );
 	questionnaire.setLabel( @{ format( "string", model ) } + " Input Form" );
 
 //	questionnaire.setItems( new String[] { @foreach{fld : fields} @{format("string",model)}+"_"+@{format("string",compactUpperCase(fld.name))} @end{","}  } );
 
-    insert(questionnaire);
+    insert( questionnaire );
 end
 
 //rule "Model_Questionnaire_@{model} Clear"

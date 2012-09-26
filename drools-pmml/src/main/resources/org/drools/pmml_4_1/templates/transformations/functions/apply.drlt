@@ -32,20 +32,26 @@
 @declare{ 'applyRule' }
 rule "fun_@{name}"
 when
+
     @foreach{ field : exprFieldList }
         @{ field }( valid == true, missing == false, @{ exprFieldMap.get( field ) } : value
                   @if{ context != null } , context == @{ format( "string", context ) } @end{} )
     @end{}
-    // @{funName} - @{ isBuiltIn( funName ) }
+
+    $ctx : String() from java.util.UUID.randomUUID().toString()
+
+//    @{funName} - @{ isBuiltIn( funName ) }
+
     @foreach{ dep : dependencies}
-        @{ dep }
+        ?@{ dep }
     @end{}
 
     @if{ ! isBuiltIn( funName ) }
-        @{ funName }( @foreach{ arg : funArgs } @{arg} @end{ ',' } , $return ; )
+        ?@{ funName }( @foreach{ arg : funArgs } @{arg} @end{ ',' } , $ctx, $return ; )
     @end{}
 then
-    System.out.println( "READY TO BUILD @{name} ");
+//    System.out.println( "READY TO BUILD @{name} ");
+
     @{name} x = new @{ name }();
 
     @if{ isBuiltIn( funName ) }

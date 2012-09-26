@@ -1,5 +1,4 @@
 @comment{
-
   Copyright 2011 JBoss Inc
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,31 +30,55 @@
 @declare{'customFunction'}
 
 @code{ String fld; }
-query "@{name}"( @foreach{ param : params } @{ mapDatatype( param.dataType ) } @{ param.name }  @end{','} , @{ mapDatatype( dataType, true ) } $return )
-       @foreach{ field : innerFields }
-       @code{ if ( isInnerFieldName( field ) ) { fld = field; } else { fld = compactUpperCase( name ) + "_" + compactUpperCase( field ); } }
-               @{ fld  }( valid == true, missing == false, @{ exprFieldMap.get( field ) } : value
-                         @if{ context != null } , context == @{ format( "string", context ) } @end{} )
-       @end{}
+query @{name}( @foreach{ param : params } @{ mapDatatype( param.dataType ) } @{ param.name }  @end{','} , String $ctx, @{ mapDatatype( dataType, true ) } $return )
+
+        @foreach{ field : innerFields }
+        @code{ if ( isInnerFieldName( field ) ) { fld = field; } else { fld = compactUpperCase( name ) + "_" + compactUpperCase( field ); } }
+            @{ fld  }( valid == true, missing == false, $ctx := context, @{ exprFieldMap.get( field ) } : value )
+        @end{}
+
+        @foreach{ dep : dependencies}
+            ?@{ dep }
+        @end{}
+
        $return := @{ mapDatatype( dataType, true ) }() from @{ expr }
 end
 
 rule "@{name}_Goal"
 @code{ int j = 0; }
+@@activationListener('direct')
 when
-    $q : org.drools.base.DroolsQuery( name == "@{name}", @foreach{ param : params } @{ param.name } : elements[@{j++}] @end{ ', ' } )
+    $q : org.drools.base.DroolsQuery( name == "@{name}", @foreach{ param : params } @{ param.name } : elements[@{j++}] @end{ ', ' }, $ctx : elements[@{j++}] )
 then
+//    System.out.println( "QUERY @{name} SIDE EFFECT triggered by " + $q );
 
     @code{ String pn; }
     @foreach{ param : params }
         @code{ pn = compactUpperCase( name ) + "_" + compactUpperCase( param.name ); }
-        @{ pn } _@{pn} = new @{pn}( (@{ mapDatatype( param.dataType, true ) }) @{ param.name }, "@{ name }" );
+        @{ pn } _@{pn} = new @{pn}( (@{ mapDatatype( param.dataType, true ) }) @{ param.name }, $ctx.toString() );
         _@{pn}.setValid( true );
-        System.out.println("QUERY @{name} SIED EFFECT GETS " + _@{pn});
-        insertLogical( _@{pn} );
+        insert( _@{pn} );
     @end{}
 
+end
 
+
+@code{ String pn2; }
+rule "@{name}_Clean"
+@code{ int k = 0; }
+when
+    @foreach{ param : params }
+    @code{ pn2 = compactUpperCase( name ) + "_" + compactUpperCase( param.name ); }
+        var@{k++} : @{pn2}(  $ctx := context )
+    @end{}
+    not org.drools.base.DroolsQuery( name == "@{name}", $ctx memberOf elements )
+then
+//    System.out.println( "Now I can Cleanup @{name}" );
+    @code{ k = 0; }
+    @foreach{ param : params }
+    @code{ pn2 = compactUpperCase( name ) + "_" + compactUpperCase( param.name ); }
+        retract( var@{k++} );
+    @end{}
 end
 
 

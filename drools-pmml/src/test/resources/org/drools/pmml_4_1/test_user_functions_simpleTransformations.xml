@@ -71,7 +71,7 @@
       </Apply>
     </DerivedField>
 
-    <DerivedField dataType="double" name="UserAge3" optype="continuous">
+    <DerivedField dataType="integer" name="UserAge3" optype="continuous">
       <Apply function="myAgg">
         <FieldRef field="Age" />
       </Apply>

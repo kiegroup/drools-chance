@@ -29,19 +29,20 @@
 
 @declare{'linearTractNormalizationRule'}
 rule "linear_@{name}_@{index}"
+@if{ isInnerFieldName( name ) } @@activationListener('direct') @end{}
 when
   $src : @{origField}( missing == false, valid == true, $val: value, $ctx : context,
             value > @{xmin} && value <= @{xmax}
             @if{ context != null } , context == @{format("string",context)} @end{})
 then
-  @{name} x = new @{name}();
-    x.setValue((@{type}) (@{ymin} + ($val - @{xmin})*@{(ymax-ymin)/(xmax-xmin)}));
-    x.setMissing(false);
-    x.setValid(true);
-    x.setContext($ctx);
-    x.setName(@{format("string",name)});
+  @{ name } x = new @{ name }();
+    x.setValue( ( @{type} ) (@{ymin} + ($val - @{xmin})*@{(ymax-ymin)/(xmax-xmin)} ) );
+    x.setMissing( false );
+    x.setValid( true );
+    x.setContext( $ctx );
+    x.setName( @{ format( "string", name ) } );
     //x.setContinous();
-  insertLogical(x);
+  insertLogical( x );
 end
 @end{}
 

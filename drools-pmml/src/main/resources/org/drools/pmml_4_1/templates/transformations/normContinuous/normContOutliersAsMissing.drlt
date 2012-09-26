@@ -28,6 +28,7 @@
 
 @declare{'normContOutliersAsMissingRule'}
 rule "outliersAsMissing_@{name}"
+@if{ isInnerFieldName( name ) } @@activationListener('direct') @end{}
 when
   $src : @{origField}( missing == false, valid == true,
             value < @{xmin} || value > @{xmax}, $ctx : context

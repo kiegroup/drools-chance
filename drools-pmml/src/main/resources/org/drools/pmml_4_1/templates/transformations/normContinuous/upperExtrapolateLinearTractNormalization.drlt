@@ -29,6 +29,7 @@
 
 @declare{'upperExtrapolateLinearTractNormalizationRule'}
 rule "linear_@{name}_@{index}"
+@if{ isInnerFieldName( name ) } @@activationListener('direct') @end{}
 when
   $src : @{origField}( missing == false, valid == true, $val: value,
             value > @{xmax}, $ctx : context
