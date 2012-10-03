@@ -16,19 +16,19 @@
 
 package org.drools.scorecards.pmml;
 
-import java.util.List;
-
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.DATATYPE;
-import org.dmg.pmml_4_1.DataDictionary;
-import org.dmg.pmml_4_1.DataField;
-import org.dmg.pmml_4_1.Extension;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
-import org.dmg.pmml_4_1.SimplePredicate;
-import org.dmg.pmml_4_1.SimpleSetPredicate;
+import org.dmg.pmml.pmml_4_1.descr.Attribute;
+import org.dmg.pmml.pmml_4_1.descr.Characteristic;
+import org.dmg.pmml.pmml_4_1.descr.DATATYPE;
+import org.dmg.pmml.pmml_4_1.descr.DataDictionary;
+import org.dmg.pmml.pmml_4_1.descr.DataField;
+import org.dmg.pmml.pmml_4_1.descr.Extension;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.SimplePredicate;
+import org.dmg.pmml.pmml_4_1.descr.SimpleSetPredicate;
 import org.drools.scorecards.parser.xls.XLSKeywords;
+
+import java.util.List;
 
 public class ScorecardPMMLUtils {
 

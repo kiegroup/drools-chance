@@ -1,6 +1,6 @@
 package org.drools.scorecards;
 
-import org.dmg.pmml_4_1.PMML;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -13,7 +13,11 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.drools.scorecards.ScorecardCompiler.DrlType.INTERNAL_DECLARED_TYPES;
 
 public class DrlFromPMMLTest {
@@ -27,6 +31,7 @@ public class DrlFromPMMLTest {
             PMML pmmlDocument = scorecardCompiler.getPMMLDocument();
             assertNotNull(pmmlDocument);
             drl = scorecardCompiler.getDRL();
+            System.out.println( drl );
         } else {
             fail("failed to parse scoremodel Excel.");
         }

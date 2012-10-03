@@ -2,11 +2,11 @@ package org.drools.scorecards;
 
 import java.util.List;
 
-import org.dmg.pmml_4_1.Extension;
-import org.dmg.pmml_4_1.Output;
-import org.dmg.pmml_4_1.OutputField;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.Extension;
+import org.dmg.pmml.pmml_4_1.descr.Output;
+import org.dmg.pmml.pmml_4_1.descr.OutputField;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.Scorecard;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;

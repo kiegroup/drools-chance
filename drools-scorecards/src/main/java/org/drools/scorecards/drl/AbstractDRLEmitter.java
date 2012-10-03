@@ -15,25 +15,29 @@
  */
 package org.drools.scorecards.drl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.dmg.pmml_4_1.Array;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.CompoundPredicate;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
-import org.dmg.pmml_4_1.SimplePredicate;
-import org.dmg.pmml_4_1.SimpleSetPredicate;
+import org.dmg.pmml.pmml_4_1.descr.Array;
+import org.dmg.pmml.pmml_4_1.descr.Attribute;
+import org.dmg.pmml.pmml_4_1.descr.Characteristic;
+import org.dmg.pmml.pmml_4_1.descr.Characteristics;
+import org.dmg.pmml.pmml_4_1.descr.CompoundPredicate;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.SimplePredicate;
+import org.dmg.pmml.pmml_4_1.descr.SimpleSetPredicate;
 import org.drools.core.util.StringUtils;
 import org.drools.scorecards.parser.xls.XLSKeywords;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.PMMLOperators;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
-import org.drools.template.model.*;
+import org.drools.template.model.Condition;
+import org.drools.template.model.Consequence;
+import org.drools.template.model.DRLOutput;
+import org.drools.template.model.Import;
 import org.drools.template.model.Package;
+import org.drools.template.model.Rule;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractDRLEmitter {
 
@@ -146,9 +150,9 @@ public abstract class AbstractDRLEmitter {
                 Scorecard scorecard = (Scorecard) obj;
                 Characteristics characteristics = getCharacteristicsFromScorecard(scorecard);
                 createInitialRule(ruleList, scorecard);
-                for (org.dmg.pmml_4_1.Characteristic c : characteristics.getCharacteristics()) {
+                for (Characteristic c : characteristics.getCharacteristics()) {
                     int attributePosition = 0;
-                    for (org.dmg.pmml_4_1.Attribute scoreAttribute : c.getAttributes()) {
+                    for (Attribute scoreAttribute : c.getAttributes()) {
                         String name = formRuleName(pmmlDocument, scorecard.getModelName().replaceAll(" ",""), c, scoreAttribute);
                         Rule rule = new Rule(name, 99, 1);
                         String desc = ScorecardPMMLUtils.getExtensionValue(scoreAttribute.getExtensions(), "description");

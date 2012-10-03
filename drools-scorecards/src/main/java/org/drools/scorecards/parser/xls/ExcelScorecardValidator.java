@@ -18,10 +18,10 @@ package org.drools.scorecards.parser.xls;
 
 import java.util.List;
 
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.Attribute;
+import org.dmg.pmml.pmml_4_1.descr.Characteristic;
+import org.dmg.pmml.pmml_4_1.descr.Characteristics;
+import org.dmg.pmml.pmml_4_1.descr.Scorecard;
 import org.drools.core.util.StringUtils;
 import org.drools.scorecards.ScorecardError;
 import org.drools.scorecards.StringUtil;

@@ -22,27 +22,27 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.dmg.pmml_4_1.Array;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.CompoundPredicate;
-import org.dmg.pmml_4_1.DATATYPE;
-import org.dmg.pmml_4_1.DataDictionary;
-import org.dmg.pmml_4_1.DataField;
-import org.dmg.pmml_4_1.Extension;
-import org.dmg.pmml_4_1.Header;
-import org.dmg.pmml_4_1.MiningField;
-import org.dmg.pmml_4_1.MiningSchema;
-import org.dmg.pmml_4_1.OPTYPE;
-import org.dmg.pmml_4_1.Output;
-import org.dmg.pmml_4_1.OutputField;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.RESULTFEATURE;
-import org.dmg.pmml_4_1.Scorecard;
-import org.dmg.pmml_4_1.SimplePredicate;
-import org.dmg.pmml_4_1.SimpleSetPredicate;
-import org.dmg.pmml_4_1.Timestamp;
+import org.dmg.pmml.pmml_4_1.descr.Array;
+import org.dmg.pmml.pmml_4_1.descr.Attribute;
+import org.dmg.pmml.pmml_4_1.descr.Characteristic;
+import org.dmg.pmml.pmml_4_1.descr.Characteristics;
+import org.dmg.pmml.pmml_4_1.descr.CompoundPredicate;
+import org.dmg.pmml.pmml_4_1.descr.DATATYPE;
+import org.dmg.pmml.pmml_4_1.descr.DataDictionary;
+import org.dmg.pmml.pmml_4_1.descr.DataField;
+import org.dmg.pmml.pmml_4_1.descr.Extension;
+import org.dmg.pmml.pmml_4_1.descr.Header;
+import org.dmg.pmml.pmml_4_1.descr.MiningField;
+import org.dmg.pmml.pmml_4_1.descr.MiningSchema;
+import org.dmg.pmml.pmml_4_1.descr.OPTYPE;
+import org.dmg.pmml.pmml_4_1.descr.Output;
+import org.dmg.pmml.pmml_4_1.descr.OutputField;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.RESULTFEATURE;
+import org.dmg.pmml.pmml_4_1.descr.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.SimplePredicate;
+import org.dmg.pmml.pmml_4_1.descr.SimpleSetPredicate;
+import org.dmg.pmml.pmml_4_1.descr.Timestamp;
 import org.drools.core.util.StringUtils;
 import org.drools.scorecards.StringUtil;
 import org.drools.scorecards.parser.xls.XLSKeywords;
@@ -93,7 +93,7 @@ public class PMMLGenerator {
             }
         }
         for (Object obj : pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
-            if ( obj instanceof MiningSchema ) {
+            if ( obj instanceof MiningSchema) {
                 MiningSchema schema = (MiningSchema)obj;
                 for (MiningField miningField : schema.getMiningFields()) {
                     String fieldName = miningField.getName();
@@ -116,7 +116,7 @@ public class PMMLGenerator {
         for (Object obj : pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
             if (obj instanceof Characteristics) {
                 Characteristics characteristics = (Characteristics) obj;
-                for (org.dmg.pmml_4_1.Characteristic characteristic : characteristics.getCharacteristics()) {
+                for (Characteristic characteristic : characteristics.getCharacteristics()) {
                     for (Attribute attribute : characteristic.getAttributes()) {
                         Extension fieldExtension = ScorecardPMMLUtils.getExtension(attribute.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_FIELD);
                         if ( fieldExtension != null ) {
@@ -137,7 +137,7 @@ public class PMMLGenerator {
         for (Object obj : pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
             if (obj instanceof Characteristics) {
                 Characteristics characteristics = (Characteristics) obj;
-                for (org.dmg.pmml_4_1.Characteristic characteristic : characteristics.getCharacteristics()) {
+                for (Characteristic characteristic : characteristics.getCharacteristics()) {
 
                     DataField dataField = new DataField();
                     Extension dataTypeExtension = ScorecardPMMLUtils.getExtension(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
@@ -210,7 +210,7 @@ public class PMMLGenerator {
         for (Object obj : pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
             if (obj instanceof Characteristics) {
                 Characteristics characteristics = (Characteristics) obj;
-                for (org.dmg.pmml_4_1.Characteristic characteristic : characteristics.getCharacteristics()) {
+                for (Characteristic characteristic : characteristics.getCharacteristics()) {
                     String dataType = ScorecardPMMLUtils.getExtensionValue(characteristic.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
                     Extension predicateExtension = null;
                     for (Attribute attribute : characteristic.getAttributes()) {
@@ -337,7 +337,7 @@ public class PMMLGenerator {
         for (Object obj : pmmlScorecard.getExtensionsAndCharacteristicsAndMiningSchemas()) {
             if (obj instanceof Characteristics) {
                 Characteristics characteristics = (Characteristics) obj;
-                for (org.dmg.pmml_4_1.Characteristic characteristic : characteristics.getCharacteristics()) {
+                for (Characteristic characteristic : characteristics.getCharacteristics()) {
                     List<Extension> toRemoveExtensionsList = new ArrayList<Extension>();
                     for (Extension extension : characteristic.getExtensions()) {
                         if (StringUtils.isEmpty(extension.getValue())) {

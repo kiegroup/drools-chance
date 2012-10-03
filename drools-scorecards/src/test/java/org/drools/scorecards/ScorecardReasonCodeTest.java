@@ -1,11 +1,11 @@
 package org.drools.scorecards;
 
 import junit.framework.Assert;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.Attribute;
+import org.dmg.pmml.pmml_4_1.descr.Characteristic;
+import org.dmg.pmml.pmml_4_1.descr.Characteristics;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.Scorecard;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -18,8 +18,12 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
-import static org.drools.scorecards.ScorecardCompiler.DrlType.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static org.drools.scorecards.ScorecardCompiler.DrlType.INTERNAL_DECLARED_TYPES;
 
 public class ScorecardReasonCodeTest {
     private static PMML pmmlDocument;
@@ -83,7 +87,8 @@ public class ScorecardReasonCodeTest {
                         Characteristics characteristics = (Characteristics)obj;
                         assertEquals(4, characteristics.getCharacteristics().size());
                         for (Characteristic characteristic : characteristics.getCharacteristics()){
-                            for (Attribute attribute : characteristic.getAttributes()){
+                            for (Attribute
+                                    attribute : characteristic.getAttributes()){
                                 assertNotNull(attribute.getReasonCode());
                             }
                         }

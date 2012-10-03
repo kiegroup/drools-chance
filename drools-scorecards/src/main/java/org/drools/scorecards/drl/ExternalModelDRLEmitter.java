@@ -16,41 +16,39 @@
 
 package org.drools.scorecards.drl;
 
-import java.util.List;
-
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Extension;
-import org.dmg.pmml_4_1.MiningField;
-import org.dmg.pmml_4_1.MiningSchema;
-import org.dmg.pmml_4_1.Output;
-import org.dmg.pmml_4_1.OutputField;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.Attribute;
+import org.dmg.pmml.pmml_4_1.descr.Characteristic;
+import org.dmg.pmml.pmml_4_1.descr.Extension;
+import org.dmg.pmml.pmml_4_1.descr.MiningField;
+import org.dmg.pmml.pmml_4_1.descr.MiningSchema;
+import org.dmg.pmml.pmml_4_1.descr.Output;
+import org.dmg.pmml.pmml_4_1.descr.OutputField;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.Scorecard;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
-import org.drools.template.model.Condition;
-import org.drools.template.model.Consequence;
+import org.drools.template.model.*;
 import org.drools.template.model.Package;
-import org.drools.template.model.Rule;
+
+import java.util.List;
 
 public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
 
-    @Override
+    
     protected void addDeclaredTypeContents(PMML pmmlDocument, StringBuilder stringBuilder, Scorecard scorecard) {
         //empty by design
     }
 
     @Override
     protected void internalEmitDRL(PMML pmml, List<Rule> ruleList, Package aPackage) {
-        //do nothing for now.
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
+    
     protected void addLHSConditions(Rule rule, PMML pmmlDocument, Scorecard scorecard, Characteristic c, Attribute scoreAttribute) {
         Extension extension = null;
         for (Object obj : scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()){
-            if ( obj instanceof MiningSchema ) {
+            if ( obj instanceof MiningSchema) {
                 MiningSchema miningSchema = (MiningSchema)obj;
                 String fieldName = ScorecardPMMLUtils.extractFieldNameFromCharacteristic(c);
                 for (MiningField miningField : miningSchema.getMiningFields() ){
@@ -73,17 +71,17 @@ public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
         }
     }
 
-    @Override
+    
     protected void addAdditionalReasonCodeConsequence(Rule rule, Scorecard scorecard) {
 
     }
 
-    @Override
+    
     protected void addAdditionalReasonCodeCondition(Rule rule, Scorecard scorecard) {
 
     }
 
-    @Override
+    
     protected void addAdditionalSummationConsequence(Rule calcTotalRule, Scorecard scorecard) {
         String externalClassName =  null;
         String fieldName =  null;
@@ -108,7 +106,7 @@ public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
 
     }
 
-    @Override
+    
     protected void addAdditionalSummationCondition(Rule calcTotalRule, Scorecard scorecard) {
         String externalClassName =  null;
         String fieldName =  null;

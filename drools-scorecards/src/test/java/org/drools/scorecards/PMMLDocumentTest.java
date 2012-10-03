@@ -1,14 +1,15 @@
 package org.drools.scorecards;
 
 import junit.framework.Assert;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.DataDictionary;
-import org.dmg.pmml_4_1.Header;
-import org.dmg.pmml_4_1.MiningSchema;
-import org.dmg.pmml_4_1.Output;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.Attribute;
+import org.dmg.pmml.pmml_4_1.descr.Characteristics;
+import org.dmg.pmml.pmml_4_1.descr.DataDictionary;
+import org.dmg.pmml.pmml_4_1.descr.Header;
+import org.dmg.pmml.pmml_4_1.descr.MiningSchema;
+import org.dmg.pmml.pmml_4_1.descr.Output;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.Scorecard;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.junit.Before;

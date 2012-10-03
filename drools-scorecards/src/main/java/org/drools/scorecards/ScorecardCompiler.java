@@ -26,7 +26,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.dmg.pmml_4_1.PMML;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
 import org.drools.scorecards.drl.DeclaredTypesDRLEmitter;
 import org.drools.scorecards.drl.ExternalModelDRLEmitter;
 import org.drools.scorecards.parser.AbstractScorecardParser;
