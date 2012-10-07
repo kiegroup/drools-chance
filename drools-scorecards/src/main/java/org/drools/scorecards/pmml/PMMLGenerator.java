@@ -16,36 +16,16 @@
 
 package org.drools.scorecards.pmml;
 
+import org.dmg.pmml_4_1.*;
+import org.drools.core.util.StringUtils;
+import org.drools.scorecards.StringUtil;
+import org.drools.scorecards.parser.xls.XLSKeywords;
+
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.dmg.pmml_4_1.Array;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.CompoundPredicate;
-import org.dmg.pmml_4_1.DATATYPE;
-import org.dmg.pmml_4_1.DataDictionary;
-import org.dmg.pmml_4_1.DataField;
-import org.dmg.pmml_4_1.Extension;
-import org.dmg.pmml_4_1.Header;
-import org.dmg.pmml_4_1.MiningField;
-import org.dmg.pmml_4_1.MiningSchema;
-import org.dmg.pmml_4_1.OPTYPE;
-import org.dmg.pmml_4_1.Output;
-import org.dmg.pmml_4_1.OutputField;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.RESULTFEATURE;
-import org.dmg.pmml_4_1.Scorecard;
-import org.dmg.pmml_4_1.SimplePredicate;
-import org.dmg.pmml_4_1.SimpleSetPredicate;
-import org.dmg.pmml_4_1.Timestamp;
-import org.drools.core.util.StringUtils;
-import org.drools.scorecards.StringUtil;
-import org.drools.scorecards.parser.xls.XLSKeywords;
 
 public class PMMLGenerator {
 
@@ -271,6 +251,10 @@ public class PMMLGenerator {
                 simpleSetPredicate.setBooleanOperator(PMMLOperators.IS_IN);
             }
             simpleSetPredicate.setField(field);
+            predicateAsString = predicateAsString.trim();
+            if  (predicateAsString.endsWith(",")) {
+                predicateAsString = predicateAsString.substring(0, predicateAsString.length()-1);
+            }
             Array array = new Array();
             array.setContent(predicateAsString.replace(",", " "));
             array.setType("string");

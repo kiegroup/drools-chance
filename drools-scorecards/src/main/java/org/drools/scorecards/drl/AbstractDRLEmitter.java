@@ -15,18 +15,7 @@
  */
 package org.drools.scorecards.drl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.dmg.pmml_4_1.Array;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.CompoundPredicate;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
-import org.dmg.pmml_4_1.SimplePredicate;
-import org.dmg.pmml_4_1.SimpleSetPredicate;
+import org.dmg.pmml_4_1.*;
 import org.drools.core.util.StringUtils;
 import org.drools.scorecards.parser.xls.XLSKeywords;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
@@ -34,6 +23,9 @@ import org.drools.scorecards.pmml.PMMLOperators;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.*;
 import org.drools.template.model.Package;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractDRLEmitter {
 
@@ -173,12 +165,8 @@ public abstract class AbstractDRLEmitter {
             String ruleName = objectClass+"_init";
             Rule rule = new Rule(ruleName, 999, 1);
             rule.setDescription("set the initial score");
-            StringBuilder stringBuilder = new StringBuilder();
-            String var = "$sc";
 
-            stringBuilder.append(var).append(" : ").append(objectClass).append("()");
-            Condition condition = new Condition();
-            condition.setSnippet(stringBuilder.toString());
+            Condition condition = createInitialRuleCondition(scorecard, objectClass);
             rule.addCondition(condition);
             if (scorecard.getInitialScore() > 0 ) {
                 Consequence consequence = new Consequence();
@@ -377,4 +365,5 @@ public abstract class AbstractDRLEmitter {
     protected abstract void addAdditionalReasonCodeCondition(Rule rule, Scorecard scorecard);
     protected abstract void addAdditionalSummationConsequence(Rule rule, Scorecard scorecard);
     protected abstract void addAdditionalSummationCondition(Rule rule, Scorecard scorecard);
+    protected abstract Condition createInitialRuleCondition(Scorecard scorecard, String objectClass);
 }

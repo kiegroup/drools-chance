@@ -16,23 +16,15 @@
 
 package org.drools.scorecards.drl;
 
-import java.util.List;
-
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Extension;
-import org.dmg.pmml_4_1.MiningField;
-import org.dmg.pmml_4_1.MiningSchema;
-import org.dmg.pmml_4_1.Output;
-import org.dmg.pmml_4_1.OutputField;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml_4_1.*;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.Condition;
 import org.drools.template.model.Consequence;
 import org.drools.template.model.Package;
 import org.drools.template.model.Rule;
+
+import java.util.List;
 
 public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
 
@@ -101,7 +93,11 @@ public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
             Consequence consequence = new Consequence();
             StringBuilder stringBuilder = new StringBuilder("$");
             stringBuilder.append(fieldName).append("Var").append(".set").append(Character.toUpperCase(fieldName.charAt(0))).append(fieldName.substring(1));
-            stringBuilder.append("($calculatedScore);");
+            if (scorecard.getInitialScore() > 0 ) {
+                stringBuilder.append("($calculatedScore+$initialScore);");
+            } else {
+                stringBuilder.append("($calculatedScore);");
+            }
             consequence.setSnippet(stringBuilder.toString());
             calcTotalRule.addConsequence(consequence);
         }
@@ -129,6 +125,24 @@ public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
             condition.setSnippet(stringBuilder.toString());
             calcTotalRule.addCondition(condition);
         }
+    }
 
+    protected Condition createInitialRuleCondition(Scorecard scorecard, String objectClass) {
+        String externalClassName =  null;
+        for (Object obj :scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()){
+            if ( obj instanceof Output) {
+                Output output = (Output)obj;
+                final List<OutputField> outputFields = output.getOutputFields();
+                final OutputField outputField = outputFields.get(0);
+                externalClassName = ScorecardPMMLUtils.getExtension(outputField.getExtensions(), PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_CLASS).getValue();
+                break;
+            }
+        }
+        if ( externalClassName != null) {
+            Condition condition = new Condition();
+            condition.setSnippet(externalClassName+"()");
+            return condition;
+        }
+        return null;
     }
 }
