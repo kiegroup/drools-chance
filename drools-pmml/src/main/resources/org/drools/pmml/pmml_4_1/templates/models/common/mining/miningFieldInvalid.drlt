@@ -33,7 +33,8 @@ when
                context == @{format("string",model)} )
 then
     modify ( $x ) {
-        setValue( @{replacement} ),
+        //@{replacement}
+        setValue( @{ replacement != null ? format( mapDatatype( type ), replacement ) : zeroForDatatype( type ) } ),
         setMissing( @{replacement == null} ),
         setValid( true );
     }

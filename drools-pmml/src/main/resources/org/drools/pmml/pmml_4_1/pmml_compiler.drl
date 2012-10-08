@@ -91,17 +91,49 @@ global org.drools.pmml.pmml_4_1.PMML4Helper utils;
 //*********************************** HEADER SECTION *****************************************************//
 
 rule "processHeader"
+salience 9990
+when
+    $h : Header( )
+then
+    applyTemplate( "commonQueries.drlt", $h, registry, Collections.emptyMap(), theory );
+
+    retract( $h );
+end
+
+
+rule "processHeaderImports"
+salience 9995
+when
+    $h : Header( $xt : extensions )
+    Extension( name == "importsFromDelimitedString", $val : value ) from $xt
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "imports", utils.tokenize( $val ) );
+    applyTemplate( "pmml_import.drlt", $h, registry, map, theory );
+end
+
+
+
+rule "processHeaderPackage"
 salience 9999
 when
-    $h : Header()
+    $h : Header( $xt : extensions )
+    Extension( name == "package", $val : value ) from $xt
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "pack", $val );
+    applyTemplate( "pmml_header.drlt", $h, registry, map, theory );
+end
+
+rule "processHeaderNoPackage"
+salience 9999
+when
+    $h : Header( $xt : extensions )
+    not Extension( name == "package" ) from $xt
 then
     HashMap map = new HashMap( 3 );
         map.put( "pack", utils.getPack() );
     applyTemplate( "pmml_header.drlt", $h, registry, map, theory );
-
-    applyTemplate( "commonQueries.drlt", $h, registry, map, theory );
-
-    retract( $h );
 end
 
 
@@ -1466,7 +1498,8 @@ then
     HashMap map = new HashMap( 7 );
         map.put( "name", utils.compactUpperCase( $name ) );
         map.put( "model", utils.context );
-        map.put( "replacement", utils.format( utils.mapDatatype( $type ), $val ) );
+        map.put( "type", $type );
+        map.put( "replacement", $val );
     applyTemplate( "miningFieldInvalid.drlt", utils, registry, map, theory );
 end
 
@@ -2709,7 +2742,6 @@ end
 
 
 
-
   //******************************************************************************************************************
   //     REGRESSION MODEL
   //
@@ -3018,7 +3050,6 @@ end
 
 
 
-
 rule "Clustering_Cleanup"
 salience -20
 when
@@ -3034,6 +3065,153 @@ end
 
 
 
+
+
+
+//**********************************************************************************************************
+//
+//  SCORECARDS
+//
+//**********************************************************************************************************
+
+
+
+rule "Scorecard Root"
+when
+    $sc : Scorecard()
+then
+    applyTemplate( "scorecardDeclare.drlt", utils, registry, null, theory );
+end
+
+
+
+rule "Scorecard_context"
+salience -9
+when
+    $svm : Scorecard( $name : modelName )
+then
+    utils.context = utils.compactUpperCase( $name );
+
+    HashMap map = new HashMap( 3 );
+        map.put( "name", utils.context );
+        map.put( "type","Scorecard" );
+    applyTemplate( "modelMark.drlt", null, registry, map, theory );
+end
+
+rule "Inherit baseline score"
+salience 1
+when
+    $net : Scorecard( $info : extensionsAndCharacteristicsAndMiningSchemas, $name : modelName, $base : baselineScore != null )
+    $cx  : Characteristics( this memberOf $info, $charz : characteristics )
+    $c   : Characteristic( this memberOf $charz, baselineScore == null )
+then
+    modify ( $c ) {
+        setBaselineScore( $base );
+    }
+end
+
+rule "Inherit reasonCodes"
+salience 1
+when
+    $c   : Characteristic( $attz : attributes, $code : reasonCode != null )
+    $att : Attribute( this memberOf $attz, reasonCode == null )
+then
+    modify ( $att ) {
+        setReasonCode( $code );
+    }
+end
+
+
+rule "ScoreCard Attributes : Simple Predicate"
+salience -10
+when
+    $char   : Characteristic( $attz : attributes, $charName : name, $base : baselineScore )
+    $attr   : Attribute( this memberOf $attz, $code : reasonCode, $score : partialScore, $simple : simplePredicate != null )
+    $mock   : List() from collect( SimplePredicate() from $simple )
+    compilePredicate( $mock, $pred, $simple ; )
+//    ?compilePredicateForMissing( $mock, $miss, $src ; )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.context );
+        map.put( "characteristic", $charName );
+        map.put( "predicate", $pred );
+        map.put( "score", $score );
+        map.put( "code", $code );
+    applyTemplate( "scorecardPartialScore.drlt", utils, registry, map, theory );
+end
+
+rule "ScoreCard Attributes : Compound Predicate"
+salience -10
+when
+    $char   : Characteristic( $attz : attributes, $charName : name, $base : baselineScore )
+    $attr   : Attribute( this memberOf $attz, $code : reasonCode, $score : partialScore, $comp : compoundPredicate != null )
+    $mock   : List() from collect( CompoundPredicate() from $comp )
+    compilePredicate( $mock, $pred, $comp ; )
+//    ?compilePredicateForMissing( $mock, $miss, $src ; )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.context );
+        map.put( "characteristic", $charName );
+        map.put( "predicate", $pred );
+        map.put( "score", $score );
+        map.put( "code", $code );
+    applyTemplate( "scorecardPartialScore.drlt", utils, registry, map, theory );
+end
+
+rule "ScoreCard Attributes : Set Predicate"
+salience -10
+when
+    $char   : Characteristic( $attz : attributes, $charName : name, $base : baselineScore )
+    $attr   : Attribute( this memberOf $attz, $code : reasonCode, $score : partialScore, $set : simpleSetPredicate != null )
+    $mock   : List() from collect( SimpleSetPredicate() from $set )
+    compilePredicate( $mock, $pred, $set ; )
+//    ?compilePredicateForMissing( $mock, $miss, $src ; )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "name", utils.context );
+        map.put( "characteristic", $charName );
+        map.put( "predicate", $pred );
+        map.put( "score", $score );
+        map.put( "code", $code );
+    applyTemplate( "scorecardPartialScore.drlt", utils, registry, map, theory );
+end
+
+
+rule "Create Scorecard"
+dialect "mvel"
+salience -10
+when
+    Scorecard( $modelName : modelName, $info : extensionsAndCharacteristicsAndMiningSchemas )
+    MiningSchema( this memberOf $info, $miningFields : miningFields )
+    accumulate( $mf : MiningField( usageType == FIELDUSAGETYPE.ACTIVE ) from $miningFields, $expNum : count( $mf ) )
+    $fields : java.util.Map( size == $expNum ) from accumulate (
+            MiningField( this memberOf $miningFields, $name : name, usageType == FIELDUSAGETYPE.ACTIVE ) from $miningFields
+            and
+            TypeOfField( $n : name == $name, $type : dataType )
+         ,
+        init( java.util.Map map = new java.util.LinkedHashMap(); ),
+        action( map.put( utils.compactUpperCase( $n ), $type ); ),
+        result( map )
+    )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $modelName ) );
+        map.put( "fields", $fields );
+    applyTemplate( "scorecardHolderDeclare.drlt", utils, registry, map, theory );
+
+    applyTemplate( "scorecardInit.drlt", utils, registry, map, theory );
+end
+
+
+rule "Scorecard_Cleanup"
+salience -20
+when
+    $sc : Scorecard( )
+then
+    utils.context = null;
+    retract( $sc );
+end
 
 
 

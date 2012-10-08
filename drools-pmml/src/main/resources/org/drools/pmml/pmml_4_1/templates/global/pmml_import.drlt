@@ -21,18 +21,14 @@
 }
 
 
-// Imported PMML Model Theory
-// Trained with : @if{ application != null } @{application.name} @end{}
-// Creation timestamp : @if{ timestamp != null } @{timestamp.content.get(0)} @end{}
-// Description : @if{ description != null } @{description} @end{}
-// Copyright : @{copyright}
-@foreach{ annotation : annotations }
-// Annotation : @{annotation.content.get(0)}
+
+
+@declare{'pmml_import'}
+
+@foreach{ imp : imports }
+import @{imp};
 @end{}
 
+@end{}
 
-
-package @{pack};
-
-import org.drools.pmml.pmml_4_1.ModelMarker;
-import org.drools.pmml.pmml_4_1.PMML4AbstractField;
+@includeNamed{'pmml_import'}

@@ -153,6 +153,17 @@ end
 
 
 
+rule "Header imports"
+salience 9995
+dialect "mvel"
+when
+    exists EnableSurvey()
+then
+    //System.err.println("Found Mined Field " + $fld.name );
+    applyTemplate( "informer_imports.drlt", utils, registry, java.util.Collections.emptyMap(), theory );
+end
+
+
 
 
 rule "Invalid_meta"

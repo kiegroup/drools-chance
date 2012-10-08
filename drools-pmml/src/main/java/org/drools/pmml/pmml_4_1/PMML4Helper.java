@@ -115,7 +115,6 @@ public class PMML4Helper {
         pack = packageName;
     }
 
-
     /**
      * Returns a copy of the object, or null if the object cannot
      * be serialized.
@@ -226,30 +225,33 @@ public class PMML4Helper {
 
 
     public String format(DataField fld, Value val) {
-        if (val == null)
+        if (val == null) {
             return "null";
+        }
         String s = fld.getDataType().value();
         return format(s, val);
     }
 
     public String format(String type, Value val) {
-        if (val == null)
+        if (val == null) {
             return "null";
+        }
         return format(type,val.getValue());
     }
 
     public String format(DataField fld, String val) {
-        if (val == null)
+        if (val == null) {
             return "null";
+        }
         String s = fld.getDataType().value();
         return format(s, val);
     }
 
 
     public String format(DATATYPE type, String val) {
-        if (val == null)
+        if (val == null) {
             return "null";
-
+        }
         return format(type != null ? type.value() : null, val);
     }
 
@@ -358,6 +360,43 @@ public class PMML4Helper {
         else
             return val.toString();
     }
+
+
+
+    public String zeroForDatatype( DATATYPE type ) {
+        return zeroForDatatype( type != null ? type.value() : null );
+    }
+
+    public String zeroForDatatype( String type ) {
+            if (type == null)
+                return "null";
+            if (Integer.class.getName().equals(type)
+                    || "Integer".equalsIgnoreCase(type) || "int".equalsIgnoreCase(type) )
+                return "0";
+            else if (Float.class.getName().equals(type)
+                    || "Float".equalsIgnoreCase(type) || "float".equalsIgnoreCase(type) )
+                return "0.0f";
+            else if (Double.class.getName().equalsIgnoreCase(type)
+                    || "Double".equalsIgnoreCase(type) || "double".equalsIgnoreCase(type) )
+                return "0.0";
+            else if (Long.class.getName().equalsIgnoreCase(type)
+                    || "Long".equalsIgnoreCase(type) || "long".equalsIgnoreCase(type) )
+                return "0L";
+            else if (Short.class.getName().equalsIgnoreCase(type)
+                    || "Short".equalsIgnoreCase(type) || "short".equalsIgnoreCase(type) )
+                return "0";
+            else if (Byte.class.getName().equalsIgnoreCase(type)
+                    || "Byte".equalsIgnoreCase(type) || "byte".equalsIgnoreCase(type) )
+                return "0";
+            else if (Boolean.class.getName().equalsIgnoreCase(type)
+                    || "Boolean".equalsIgnoreCase(type) || "boolean".equalsIgnoreCase(type) )
+                return "false";
+            else if (String.class.getName().equalsIgnoreCase(type)
+                    || "String".equalsIgnoreCase(type))
+                return "null";
+            else
+                return "null";
+        }
 
 
     public String numberFromNumber( String obj, String datatype ) {
@@ -750,6 +789,7 @@ public class PMML4Helper {
         }
         return tok.nextToken();
     }
+
 
     public String[] tokenize( String s ) {
         StringTokenizer tok = new StringTokenizer( s );

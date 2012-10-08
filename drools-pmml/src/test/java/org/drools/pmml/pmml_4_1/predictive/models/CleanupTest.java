@@ -47,6 +47,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
     private static final String source3 = "org/drools/pmml/pmml_4_1//test_regression.xml";
     private static final String source4 = "org/drools/pmml/pmml_4_1//test_clustering.xml";
     private static final String source5 = "org/drools/pmml/pmml_4_1//test_svm.xml";
+    private static final String source6 = "org/drools/pmml/pmml_4_1//test_scorecard.xml";
 
     private static final String source9 = "org/drools/pmml/pmml_4_1//mock_cold.xml";
 
@@ -188,6 +189,26 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         assertNotNull( marker );
 
         kSession.getWorkingMemoryEntryPoint( "enable_SVMXORModel" ).insert(Boolean.FALSE);
+        kSession.fireAllRules();
+
+        System.err.println(reportWMObjects(kSession));
+
+        assertEquals( 1, kSession.getObjects().size() );
+
+    }
+
+    @Test
+    public void testCleanupScorecard() {
+        StatefulKnowledgeSession kSession = loadModel( source6 );
+        assertTrue( kSession.getObjects().size() > 0 );
+
+        QueryResults qres = kSession.getQueryResults( "modelMarker", "SampleScore", Variable.v );
+        assertEquals( 1, qres.size() );
+
+        Object marker = qres.iterator().next().get( "$mm" );
+        assertNotNull( marker );
+
+        kSession.getWorkingMemoryEntryPoint( "enable_SampleScore" ).insert(Boolean.FALSE);
         kSession.fireAllRules();
 
         System.err.println(reportWMObjects(kSession));
@@ -394,6 +415,42 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         kSession.fireAllRules();
 
         assertEquals( 0, kBase.getKnowledgePackage( packageName ).getRules().size() );
+
+        System.err.println( reportWMObjects( kSession ) );
+        assertEquals( 0, kSession.getObjects().size() );
+    }
+
+    @Test
+    public void testCleanupScorecardRulesWithIncrementalKA() {
+        KnowledgeAgent kAgent = initIncrementalKA();
+        //        kAgent.setSystemEventListener( new PrintStreamSystemEventListener() );
+
+        KnowledgeBase kBase = kAgent.getKnowledgeBase();
+        StatefulKnowledgeSession kSession = kBase.newStatefulKnowledgeSession();
+
+        ChangeSetHelperImpl csAdd = new ChangeSetHelperImpl();
+        ClassPathResource res = (ClassPathResource) ResourceFactory.newClassPathResource( source6 );
+        res.setResourceType( ResourceType.PMML );
+        csAdd.addNewResource(res);
+
+        System.out.println( "************************ ADDING resources ");
+
+        kAgent.applyChangeSet( csAdd.getChangeSet() );
+
+        assertTrue( kBase.getKnowledgePackage( "org.drools.scorecards.example" ).getRules().size() > 0 );
+        kSession.fireAllRules();
+        assertTrue( kSession.getObjects().size() > 0 );
+
+
+        System.out.println( "************************ REMOVING resource 1 ");
+
+        ChangeSetHelperImpl csRem = new ChangeSetHelperImpl();
+        csRem.addRemovedResource( res );
+        kAgent.applyChangeSet( csRem .getChangeSet() );
+
+        kSession.fireAllRules();
+
+        assertEquals( 0, kBase.getKnowledgePackage( "org.drools.scorecards.example" ).getRules().size() );
 
         System.err.println( reportWMObjects( kSession ) );
         assertEquals( 0, kSession.getObjects().size() );

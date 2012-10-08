@@ -16,23 +16,23 @@
 }
 
 
+
+
 @comment{
-  Header section.
+
 }
 
+@declare{'scorecardPartialScore'}
 
-// Imported PMML Model Theory
-// Trained with : @if{ application != null } @{application.name} @end{}
-// Creation timestamp : @if{ timestamp != null } @{timestamp.content.get(0)} @end{}
-// Description : @if{ description != null } @{description} @end{}
-// Copyright : @{copyright}
-@foreach{ annotation : annotations }
-// Annotation : @{annotation.content.get(0)}
+
+rule "PartialScore_@{name}_@{characteristic}_@{nextCount()}"
+when
+    $sc : @{name}ScoreCard( @{predicate} )
+then
+    insertLogical( new PartialScore( "@{name}", @{score}, "@{characteristic}", @{ code == null ? "null" : format( "string", code ) } ) );
+end
+
 @end{}
 
 
-
-package @{pack};
-
-import org.drools.pmml.pmml_4_1.ModelMarker;
-import org.drools.pmml.pmml_4_1.PMML4AbstractField;
+@includeNamed{'scorecardPartialScore'}

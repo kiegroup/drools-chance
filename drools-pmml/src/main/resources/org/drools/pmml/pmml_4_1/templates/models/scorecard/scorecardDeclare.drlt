@@ -16,23 +16,32 @@
 }
 
 
+
+
 @comment{
-  Header section.
+
 }
 
+@declare{'scorecardDeclare'}
 
-// Imported PMML Model Theory
-// Trained with : @if{ application != null } @{application.name} @end{}
-// Creation timestamp : @if{ timestamp != null } @{timestamp.content.get(0)} @end{}
-// Description : @if{ description != null } @{description} @end{}
-// Copyright : @{copyright}
-@foreach{ annotation : annotations }
-// Annotation : @{annotation.content.get(0)}
+declare Score
+    scoreCard       : String
+    value           : double
+end
+
+declare InitialScore extends Score
+end
+
+declare BaselineScore extends Score
+    characteristic  : String
+end
+
+declare PartialScore extends Score
+    characteristic  : String
+    reasonCode      : String
+end
+
 @end{}
 
 
-
-package @{pack};
-
-import org.drools.pmml.pmml_4_1.ModelMarker;
-import org.drools.pmml.pmml_4_1.PMML4AbstractField;
+@includeNamed{'scorecardDeclare'}

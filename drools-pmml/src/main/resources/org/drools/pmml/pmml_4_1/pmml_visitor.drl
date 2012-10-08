@@ -790,39 +790,57 @@ then
 end
 
 
+ //------------------------------------------------------------------------------------------------------------//
 
 
-   /*
-    protected DATATYPE dataType;
-    protected String targetField;
-    protected String value;
+rule "visitScorecard"
+salience -10
+when
+    $net : Scorecard( $info : extensionsAndCharacteristicsAndMiningSchemas, $name : modelName )
+    $o   : Object() from $info
+then
+    insertLogical( $o );
+end
 
+rule "visitScorecard Characteristics"
+salience -10
+when
+    $net : Scorecard( $info : extensionsAndCharacteristicsAndMiningSchemas, $name : modelName )
+    $cx  : Characteristics( this memberOf $info, $charz : characteristics )
+    $c   : Characteristic() from $charz
 
-    protected RESULTFEATURE feature;
+then
+    insertLogical( $c );
+end
 
-        PREDICTED_VALUE("predictedValue"),
-        PREDICTED_DISPLAY_VALUE("predictedDisplayValue"),
-        PROBABILITY("probability"),
-        RESIDUAL("residual"),
-        STANDARD_ERROR("standardError"),
-        CLUSTER_ID("clusterId"),
-        CLUSTER_AFFINITY("clusterAffinity"),
-        ENTITY_ID("entityId"),
-        ENTITY_AFFINITY("entityAffinity"),
-        WARNING("warning"),
-        RULE_VALUE("ruleValue");
+rule "visitScorecard Characteristic Attributes"
+salience -10
+when
+    $c   : Characteristic( $atts : attributes )
+    $a   : Attribute() from $atts
+then
+    insertLogical( $a );
+end
 
-    protected RULEFEATURE ruleFeature;
+rule "visitScorecard Attributes Simple Predicate"
+salience -10
+when
+    $a   : Attribute( $simple : simplePredicate != null  )
+then
+    insertLogical( $simple );
+end
 
-    protected String algorithm;
-    protected BigInteger rank;
-    protected String rankBasis;
-    protected String rankOrder;
-    protected String isMultiValued;
-    */
-
-
-
-
-
-
+rule "visitScorecard Attributes Comp Predicate"
+salience -10
+when
+    $a   : Attribute( $comp : compoundPredicate != null  )
+then
+    insertLogical( $comp );
+end
+rule "visitScorecard Attributes Set Predicate"
+salience -10
+when
+    $a   : Attribute( $set : simpleSetPredicate != null  )
+then
+    insertLogical( $set );
+end

@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.*;
@@ -60,6 +61,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     protected static boolean globalLoaded = false;
     protected static final String[] GLOBAL_TEMPLATES = new String[] {
             "global/pmml_header.drlt",
+            "global/pmml_import.drlt",
             "global/modelMark.drlt",
             "global/commonQueries.drlt",
 
@@ -190,9 +192,20 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/tree/treeMissHandleNull.drlt",
             "models/tree/treeMissHandleNone.drlt"
     };
-            
+
+    protected static boolean scorecardLoaded = false;
+    protected static final String[] SCORECARD_TEMPLATES = new String[] {
+            "models/scorecard/scorecardInit.drlt",
+            "models/scorecard/scorecardDeclare.drlt",
+            "models/scorecard/scorecardHolderDeclare.drlt",
+            "models/scorecard/scorecardPartialScore.drlt"
+
+    };
+
+
     protected static boolean informerLoaded = false;
     protected static final String[] INFORMER_TEMPLATES = new String[] {        
+            "informer/informer_imports.drlt",
             "informer/modelQuestionnaire.drlt",
             "informer/modelAddQuestionsToQuestionnaire.drlt",
             "informer/modelQuestion.drlt",
@@ -354,6 +367,13 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
                 }
                 simpleRegLoaded = true;
             }
+
+            if ( ! scorecardLoaded && o instanceof Scorecard ) {
+                for ( String ntempl : SCORECARD_TEMPLATES ) {
+                    prepareTemplate( ntempl );
+                }
+                scorecardLoaded = true;
+            }
         }
 
         for ( Object o : pmml.getAssociationModelsAndBaselineModelsAndClusteringModels() ) {
@@ -449,11 +469,11 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     }
 
 
-	public void dump(String s, OutputStream ostream) {
+	public void dump( String s, OutputStream ostream ) {
 		// write to outstream
 		Writer writer = null;
 		try {
-			writer = new OutputStreamWriter(ostream, "UTF-8");
+			writer = new OutputStreamWriter( ostream, "UTF-8" );
 			writer.write(s);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -495,6 +515,18 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 	}
 
+    public void dumpModel( PMML model, OutputStream target ) {
+        try {
+            JAXBContext jc = JAXBContext.newInstance( PMML.class.getPackage().getName() );
+            Marshaller marshaller = jc.createMarshaller();
+            marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+
+            marshaller.marshal( model, target );
+        } catch ( JAXBException e ) {
+            e.printStackTrace();
+        }
+
+    }
 
 
 
