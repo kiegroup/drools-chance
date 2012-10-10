@@ -23,9 +23,11 @@ import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Test;
 
-import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class ScorecardTest extends DroolsAbstractPMMLTest {
@@ -53,6 +55,31 @@ public class ScorecardTest extends DroolsAbstractPMMLTest {
         kSession.fireAllRules();  //init model
 
         System.err.println( reportWMObjects( kSession ) );
+
+        FactType scoreCardType = getKbase().getFactType( "org.drools.scorecards.example", "ScoreCard" );
+        assertNotNull( scoreCardType );
+
+        assertEquals( 1, kSession.getObjects( new ClassObjectFilter( scoreCardType.getFactClass() ) ).size() );
+        Object scoreCard = kSession.getObjects( new ClassObjectFilter( scoreCardType.getFactClass() ) ).iterator().next();
+
+        assertEquals( "SampleScore", scoreCardType.get( scoreCard, "modelName" ) );
+        assertEquals( 41.345, scoreCardType.get( scoreCard, "score" ) );
+
+        Object x = scoreCardType.get( scoreCard, "ranking" );
+        assertTrue( x instanceof LinkedHashMap );
+        LinkedHashMap map = (LinkedHashMap) x;
+        assertTrue( map.containsKey( "LX00") );
+        assertTrue( map.containsKey( "RES") );
+        assertTrue( map.containsKey( "CX2" ) );
+        assertEquals( -1.0, map.get( "LX00" ) );
+        assertEquals( -10.0, map.get( "RES" ) );
+        assertEquals( -30.0, map.get( "CX2" ) );
+
+        Iterator iter = map.keySet().iterator();
+        assertEquals( "LX00", iter.next() );
+        assertEquals( "RES", iter.next() );
+        assertEquals( "CX2", iter.next() );
+
     }
 
 

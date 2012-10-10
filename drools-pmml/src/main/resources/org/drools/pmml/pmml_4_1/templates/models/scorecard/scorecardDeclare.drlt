@@ -24,21 +24,54 @@
 
 @declare{'scorecardDeclare'}
 
-declare Score
-    scoreCard       : String
-    value           : double
+@comment{ The inner data structure collects the info from the datafield, and is used to be compatible with predicates,
+ as in decision trees. The containment is then used to update data and aggregate scores independently, preserving truth maintenance }
+
+declare ScoreCard
+    modelName   : String @key
+    score       : double
+    holder      : ScoreCardData
+    enableRC    : boolean
+    pointsBelow : boolean
+    ranking     : java.util.Map
 end
 
-declare InitialScore extends Score
+
+declare ScoreRank
+    rank   : java.util.Map
+end
+
+declare ScoreCardData
+@propertyReactive
+    modelName   : String @key
+end
+
+declare Score
+    scoreCard       : String    @key
+    value           : double    @key
+end
+
+declare InitialScore extends PartialScore
 end
 
 declare BaselineScore extends Score
-    characteristic  : String
+    characteristic  : String    @key
 end
 
 declare PartialScore extends Score
-    characteristic  : String
+    characteristic  : String    @key
     reasonCode      : String
+end
+
+declare ScoreRow extends Score
+    characteristic  : String    @key
+    reasonCode      : String
+    id              : String
+end
+
+declare CodeScore
+    code            : String    @key
+    score           : double
 end
 
 @end{}

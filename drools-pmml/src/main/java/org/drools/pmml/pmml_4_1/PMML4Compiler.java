@@ -196,10 +196,11 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     protected static boolean scorecardLoaded = false;
     protected static final String[] SCORECARD_TEMPLATES = new String[] {
             "models/scorecard/scorecardInit.drlt",
+            "models/scorecard/scorecardParamsInit.drlt",
             "models/scorecard/scorecardDeclare.drlt",
-            "models/scorecard/scorecardHolderDeclare.drlt",
-            "models/scorecard/scorecardPartialScore.drlt"
-
+            "models/scorecard/scorecardDataDeclare.drlt",
+            "models/scorecard/scorecardPartialScore.drlt",
+            "models/scorecard/scorecardScoring.drlt"
     };
 
 

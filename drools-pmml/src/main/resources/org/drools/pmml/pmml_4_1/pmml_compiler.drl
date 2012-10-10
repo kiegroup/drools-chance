@@ -3081,6 +3081,7 @@ when
     $sc : Scorecard()
 then
     applyTemplate( "scorecardDeclare.drlt", utils, registry, null, theory );
+    applyTemplate( "scorecardScoring.drlt", utils, registry, null, theory );
 end
 
 
@@ -3133,10 +3134,9 @@ when
 then
     HashMap map = new HashMap( 7 );
         map.put( "name", utils.context );
-        map.put( "characteristic", $charName );
+        map.put( "char", $char );
+        map.put( "attr", $attr );
         map.put( "predicate", $pred );
-        map.put( "score", $score );
-        map.put( "code", $code );
     applyTemplate( "scorecardPartialScore.drlt", utils, registry, map, theory );
 end
 
@@ -3151,10 +3151,9 @@ when
 then
     HashMap map = new HashMap( 7 );
         map.put( "name", utils.context );
-        map.put( "characteristic", $charName );
+        map.put( "char", $char );
+        map.put( "attr", $attr );
         map.put( "predicate", $pred );
-        map.put( "score", $score );
-        map.put( "code", $code );
     applyTemplate( "scorecardPartialScore.drlt", utils, registry, map, theory );
 end
 
@@ -3169,10 +3168,9 @@ when
 then
     HashMap map = new HashMap( 7 );
         map.put( "name", utils.context );
-        map.put( "characteristic", $charName );
+        map.put( "char", $char );
+        map.put( "attr", $attr );
         map.put( "predicate", $pred );
-        map.put( "score", $score );
-        map.put( "code", $code );
     applyTemplate( "scorecardPartialScore.drlt", utils, registry, map, theory );
 end
 
@@ -3181,7 +3179,8 @@ rule "Create Scorecard"
 dialect "mvel"
 salience -10
 when
-    Scorecard( $modelName : modelName, $info : extensionsAndCharacteristicsAndMiningSchemas )
+    Scorecard( $modelName : modelName, $info : extensionsAndCharacteristicsAndMiningSchemas, $zero : initialScore,
+               $useRC : useReasonCodes, $rcAlgo : reasonCodeAlgorithm )
     MiningSchema( this memberOf $info, $miningFields : miningFields )
     accumulate( $mf : MiningField( usageType == FIELDUSAGETYPE.ACTIVE ) from $miningFields, $expNum : count( $mf ) )
     $fields : java.util.Map( size == $expNum ) from accumulate (
@@ -3194,14 +3193,38 @@ when
         result( map )
     )
 then
-    HashMap map = new HashMap( 7 );
+    HashMap map = new HashMap( 5 );
         map.put( "context", utils.context );
         map.put( "name", utils.compactUpperCase( $modelName ) );
         map.put( "fields", $fields );
-    applyTemplate( "scorecardHolderDeclare.drlt", utils, registry, map, theory );
+        map.put( "zero", $zero );
+        map.put( "useRC", $useRC );
+        map.put( "pointsBelow", $rcAlgo == null || "pointsBelow".equals( $rcAlgo ) );
+    applyTemplate( "scorecardDataDeclare.drlt", utils, registry, map, theory );
 
     applyTemplate( "scorecardInit.drlt", utils, registry, map, theory );
 end
+
+
+
+rule "ScoreCard Attributes Parameter"
+salience -12
+when
+    $scard : Scorecard( $modelName : modelName, $info : extensionsAndCharacteristicsAndMiningSchemas )
+    $chars : Characteristics( this memberOf $info )
+    accumulate(
+        $char : Characteristic( this memberOf $chars.characteristics ),
+        $list : collectList( $char );
+        $list.size() > 0
+    )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "name", utils.compactUpperCase( $modelName ) );
+        map.put( "characteristics", $list );
+    applyTemplate( "scorecardParamsInit.drlt", utils, registry, map, theory );
+end
+
 
 
 rule "Scorecard_Cleanup"

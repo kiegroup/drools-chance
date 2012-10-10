@@ -22,7 +22,7 @@
     <DataField name="validLicense" optype="categorical" dataType="boolean"/>
     <DataField name="overallScore" optype="continuous" dataType="double" />
   </DataDictionary>
-  <Scorecard modelName="Sample Score" useReasonCodes="false" isScorable="true" functionName="regression" baselineScore="0.0">
+  <Scorecard modelName="Sample Score" useReasonCodes="true" isScorable="true" functionName="regression" baselineScore="0.0" initialScore="0.345">
     <MiningSchema>
       <MiningField name="age" usageType="active" invalidValueTreatment="asMissing"/>
       <MiningField name="occupation" usageType="active" invalidValueTreatment="asMissing"/>
@@ -47,7 +47,7 @@
             <SimplePredicate field="age" operator="lessThan" value="12"/>
           </CompoundPredicate>
         </Attribute>
-        <Attribute partialScore="40.0">
+        <Attribute partialScore="40.0" reasonCode="CX2">
           <Extension name="cellRef" value="$C$12"/>
           <CompoundPredicate booleanOperator="and">
             <SimplePredicate field="age" operator="greaterOrEqual" value="13"/>
@@ -61,7 +61,7 @@
       </Characteristic>
       <Characteristic name="OccupationScore" baselineScore="0.0">
         <Extension name="cellRef" value="$B$16"/>
-        <Attribute partialScore="-10.0">
+        <Attribute partialScore="-10.0" reasonCode="CX2">
           <Extension name="description" value="skydiving is a risky occupation"/>
           <Extension name="cellRef" value="$C$18"/>
           <SimpleSetPredicate field="occupation" booleanOperator="isIn">
@@ -79,7 +79,7 @@
           <SimplePredicate field="occupation" operator="equal" value="PROGRAMMER"/>
         </Attribute>
       </Characteristic>
-      <Characteristic name="ResidenceStateScore" baselineScore="0.0">
+      <Characteristic name="ResidenceStateScore" baselineScore="0.0" reasonCode="RES">
         <Extension name="cellRef" value="$B$22"/>
         <Attribute partialScore="-10.0">
           <Extension name="cellRef" value="$C$24"/>
@@ -96,11 +96,11 @@
       </Characteristic>
       <Characteristic name="ValidLicenseScore" baselineScore="0.0">
         <Extension name="cellRef" value="$B$28"/>
-        <Attribute partialScore="1.0">
+        <Attribute partialScore="1.0" reasonCode="LX00">
           <Extension name="cellRef" value="$C$30"/>
           <SimplePredicate field="validLicense" operator="equal" value="true"/>
         </Attribute>
-        <Attribute partialScore="-1.0">
+        <Attribute partialScore="-1.0" reasonCode="LX00">
           <Extension name="cellRef" value="$C$31"/>
           <SimplePredicate field="validLicense" operator="equal" value="false"/>
         </Attribute>

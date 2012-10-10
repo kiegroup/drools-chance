@@ -25,11 +25,13 @@
 @declare{'scorecardPartialScore'}
 
 
-rule "PartialScore_@{name}_@{characteristic}_@{nextCount()}"
+rule "PartialScore_@{name}_@{char.name}_@{nextCount()}"
 when
-    $sc : @{name}ScoreCard( @{predicate} )
+    ScoreRow( scoreCard == "@{name}", id == "@{char.name + char.attributes.indexOf( attr )}", $val : value, $char : characteristic, $code : reasonCode )
+    $sc : @{name}ScoreCardData( @{predicate} )
 then
-    insertLogical( new PartialScore( "@{name}", @{score}, "@{characteristic}", @{ code == null ? "null" : format( "string", code ) } ) );
+//    System.out.println( "PARTIALLY SCORING SC " + $val + " " + $char );
+    insertLogical( new PartialScore( "@{name}", $val, $char, $code ) );
 end
 
 @end{}

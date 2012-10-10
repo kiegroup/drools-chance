@@ -24,19 +24,22 @@
 
 @declare{'scorecardHolderDeclare'}
 
-declare @{name}ScoreCard
+
+declare @{name}ScoreCardData extends ScoreCardData
 @propertyReactive
+
     @foreach{ fieldName : fields.keySet() }
         m@{ compactUpperCase( fieldName ) } : boolean   = true
         v@{ compactUpperCase( fieldName ) } : @{ mapDatatype( fields[ fieldName ]) }
     @end{}
+
 end
 
 @foreach{ fieldName : fields.keySet() }
 rule "Bind_Scorecard_@{name}_@{fieldName}"
 when
     $in : @{ compactUpperCase( fieldName ) }( context == "@{name}", missing == true || valid == true, $m : missing, $v : value )
-    $sc : @{name}ScoreCard( v@{ compactUpperCase( fieldName ) } != $v )
+    $sc : @{name}ScoreCardData( v@{ compactUpperCase( fieldName ) } != $v )
 then
     modify ( $sc ) {
         setM@{ compactUpperCase( fieldName ) }( $m ),
@@ -44,6 +47,9 @@ then
     }
 end
 @end{}
+
+
+
 
 @end{}
 
