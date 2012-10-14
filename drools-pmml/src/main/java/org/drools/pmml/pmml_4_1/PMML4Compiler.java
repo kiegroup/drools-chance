@@ -67,6 +67,8 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
             "global/dataDefinition/common.drlt",
             "global/dataDefinition/rootDataField.drlt",
+            "global/dataDefinition/inputBinding.drlt",
+            "global/dataDefinition/outputBinding.drlt",
             "global/dataDefinition/ioTypeDeclare.drlt",
             "global/dataDefinition/updateIOField.drlt",
             "global/dataDefinition/inputFromEP.drlt",
@@ -122,7 +124,9 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
             "models/common/target/targetReshape.drlt",
             "models/common/target/aliasedOutput.drlt",
-            "models/common/target/addOutputFeature.drlt"
+            "models/common/target/addOutputFeature.drlt",
+            "models/common/target/outputQuery.drlt",
+            "models/common/target/outputQueryPredicate.drlt"
     };
     
     protected static boolean neuralLoaded = false; 
@@ -134,8 +138,6 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/neural/neuralFire.drlt",
             "models/neural/neuralLayerMaxNormalization.drlt",
             "models/neural/neuralLayerSoftMaxNormalization.drlt",
-            "models/neural/neuralOutputQuery.drlt",
-            "models/neural/neuralOutputQueryPredicate.drlt",
             "models/neural/neuralOutputField.drlt",
             "models/neural/neuralClean.drlt"
     };
@@ -200,7 +202,8 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/scorecard/scorecardDeclare.drlt",
             "models/scorecard/scorecardDataDeclare.drlt",
             "models/scorecard/scorecardPartialScore.drlt",
-            "models/scorecard/scorecardScoring.drlt"
+            "models/scorecard/scorecardScoring.drlt",
+            "models/scorecard/scorecardOutputGeneration.drlt"
     };
 
 
@@ -516,7 +519,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 	}
 
-    public void dumpModel( PMML model, OutputStream target ) {
+    public static void dumpModel( PMML model, OutputStream target ) {
         try {
             JAXBContext jc = JAXBContext.newInstance( PMML.class.getPackage().getName() );
             Marshaller marshaller = jc.createMarshaller();

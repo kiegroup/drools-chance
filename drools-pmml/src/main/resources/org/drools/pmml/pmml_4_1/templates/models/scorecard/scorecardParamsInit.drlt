@@ -31,7 +31,11 @@ then
     @foreach{ char : characteristics }
         insertLogical( new BaselineScore( "@{context}", @{char.baselineScore}, "@{char.name}" ) );
         @foreach{ attr : char.attributes }
-            insertLogical( new ScoreRow( "@{context}", @{attr.partialScore}, "@{char.name}", @{ format( "string", attr.reasonCode ) }, "@{char.name + char.attributes.indexOf( attr )}" ) );
+            insertLogical( new ScoreRow( "@{context}",
+                           @{attr.partialScore},
+                           "@{char.name}",
+                           "@{attr.reasonCode}",
+                           "@{char.name + char.attributes.indexOf( attr )}" ) );
         @end{}
     @end{}
 end

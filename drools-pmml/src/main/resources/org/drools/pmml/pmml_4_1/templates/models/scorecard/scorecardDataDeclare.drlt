@@ -39,7 +39,8 @@ end
 rule "Bind_Scorecard_@{name}_@{fieldName}"
 when
     $in : @{ compactUpperCase( fieldName ) }( context == "@{name}", missing == true || valid == true, $m : missing, $v : value )
-    $sc : @{name}ScoreCardData( v@{ compactUpperCase( fieldName ) } != $v )
+    $sc : @{name}ScoreCardData( ( m@{ compactUpperCase( fieldName ) } == true && != $m )
+                                || v@{ compactUpperCase( fieldName ) } != $v )
 then
     modify ( $sc ) {
         setM@{ compactUpperCase( fieldName ) }( $m ),

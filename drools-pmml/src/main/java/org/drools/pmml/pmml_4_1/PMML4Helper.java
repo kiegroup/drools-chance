@@ -163,6 +163,24 @@ public class PMML4Helper {
     }
 
 
+    public String streamInputType(String s) {
+        if ("int".equalsIgnoreCase(s))
+            return Number.class.getName();
+        else if ("float".equalsIgnoreCase(s))
+            return Number.class.getName();
+        else if ("double".equalsIgnoreCase(s))
+            return Number.class.getName();
+        else if ("boolean".equalsIgnoreCase(s))
+            return Boolean.class.getName();
+        else if ("short".equalsIgnoreCase(s))
+            return Number.class.getName();
+        else if ("long".equalsIgnoreCase(s))
+            return Number.class.getName();
+        else
+            return s;
+    }
+
+
     public String mapDatatype( DATATYPE datatype ) {
         return mapDatatype( datatype, false );
     }
@@ -281,7 +299,7 @@ public class PMML4Helper {
             return val;
         else if (Boolean.class.getName().equalsIgnoreCase(type)
                 || "Boolean".equalsIgnoreCase(type) || "boolean".equalsIgnoreCase(type) )
-            return val;
+            return val.toLowerCase();
         else if (String.class.getName().equalsIgnoreCase(type)
                 || "String".equalsIgnoreCase(type))
             return "\""+val+"\"";
@@ -400,14 +418,14 @@ public class PMML4Helper {
 
 
     public String numberFromNumber( String obj, String datatype ) {
-        if ( "Integer".equalsIgnoreCase( datatype ) ) {
+        if ( Integer.class.getSimpleName().equalsIgnoreCase( datatype ) || Integer.class.getName().equalsIgnoreCase( datatype ) ) {
             return obj + ".intValue()";
-        } else if ( "Float".equalsIgnoreCase( datatype ) ) {
+        } else if ( Float.class.getSimpleName().equalsIgnoreCase( datatype ) || Float.class.getName().equalsIgnoreCase( datatype ) ) {
             return obj + ".floatValue()";
-        } else if ( "Double".equalsIgnoreCase( datatype ) ) {
+        } else if ( Double.class.getSimpleName().equalsIgnoreCase( datatype ) || Double.class.getName().equalsIgnoreCase( datatype ) ) {
             return obj + ".doubleValue()";
         }
-        return obj + ".doubleValue()";
+        return obj;
     }
 
 
@@ -791,8 +809,19 @@ public class PMML4Helper {
     }
 
 
+
+    public String[] tokenize( String s, String delimiters ) {
+        StringTokenizer tok = new StringTokenizer( s, delimiters );
+        return tokenize( tok );
+    }
+
+
     public String[] tokenize( String s ) {
         StringTokenizer tok = new StringTokenizer( s );
+        return tokenize( tok );
+    }
+
+    private String[] tokenize( StringTokenizer tok ) {
         int num = tok.countTokens();
         String[] toks = new String[ num ];
 

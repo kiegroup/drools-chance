@@ -558,6 +558,15 @@ then
 end
 
 
+rule "Outputs_Scorecard"
+when
+    $out : Output( $outs : outputFields )
+    $of  : OutputField() from $outs
+    Scorecard( $info : extensionsAndCharacteristicsAndMiningSchemas contains $out )
+then
+    insertLogical( $of );
+    insertLogical( new OutputParentModel( $of, "Scorecard" ) );
+end
 
 
 

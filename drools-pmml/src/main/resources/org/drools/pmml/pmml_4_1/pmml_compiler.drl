@@ -108,7 +108,7 @@ when
     Extension( name == "importsFromDelimitedString", $val : value ) from $xt
 then
     HashMap map = new HashMap( 3 );
-        map.put( "imports", utils.tokenize( $val ) );
+        map.put( "imports", utils.tokenize( $val, "," ) );
     applyTemplate( "pmml_import.drlt", $h, registry, map, theory );
 end
 
@@ -210,6 +210,21 @@ then
     applyTemplate( "ioTypeDeclare.drlt", utils, registry, map, theory );
 //    applyTemplate("updateIOField.drlt", utils, registry, map, theory);
 
+end
+
+
+rule "Bind_DataField_MiningField"
+dialect "mvel"
+salience -10
+when
+    DataField( $fieldName : name, $xt : extensions )
+    Extension( name == "externalClass", $type : value ) from $xt
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "fieldName", $fieldName );
+        map.put( "factType", $type );
+    applyTemplate( "inputBinding.drlt", utils, registry, map, theory );
 end
 
 
@@ -1477,6 +1492,23 @@ then
 end
 
 
+rule "Bind_FactField_MiningField"
+dialect "mvel"
+salience -10
+when
+    MiningField( $fieldName : name, usageType == FIELDUSAGETYPE.ACTIVE, $xt : extensions )
+    Extension( name == "externalClass", $type : value ) from $xt
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "fieldName", $fieldName );
+        map.put( "factType", $type );
+    applyTemplate( "inputBinding.drlt", utils, registry, map, theory );
+end
+
+
+
+
 rule "Preprocess_Inputs_InvalidsAsInvalid"
 dialect "mvel"
 when
@@ -1590,7 +1622,7 @@ then
     HashMap map = new HashMap( 7 );
              map.put( "model", $context );
              map.put( "field", $name);
-    applyTemplate( "neuralOutputQuery.drlt", utils, registry, map, theory );
+    applyTemplate( "outputQuery.drlt", utils, registry, map, theory );
 end
 
   //******************************************************************************************************************
@@ -1640,6 +1672,19 @@ when
     TypeOfField( name == $tgt, $dataType : dataType )
 then
     insertLogical( new TypeOfField( $name, $dataType ) );
+end
+
+rule "Bind_FactField_Outputield"
+dialect "mvel"
+when
+    OutputField( $fieldName : name, $xt : extensions )
+    Extension( name == "externalClass", $type : value ) from $xt
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "fieldName", $fieldName );
+        map.put( "factType", $type );
+    applyTemplate( "outputBinding.drlt", utils, registry, map, theory );
 end
 
 
@@ -2014,7 +2059,7 @@ then
         map.put( "field", utils.compactUpperCase($field) );
         map.put( "label", $val );
         map.put( "target", utils.format($type,utils.compactUpperCase( $val ) ) );
-    applyTemplate( "neuralOutputQueryPredicate.drlt", utils, registry, map, theory );
+    applyTemplate( "outputQueryPredicate.drlt", utils, registry, map, theory );
 
     map = new HashMap();
         map.put( "name", utils.compactUpperCase( $field ) );
@@ -3114,8 +3159,8 @@ end
 rule "Inherit reasonCodes"
 salience 1
 when
-    $c   : Characteristic( $attz : attributes, $code : reasonCode != null )
-    $att : Attribute( this memberOf $attz, reasonCode == null )
+    $c   : Characteristic( $attz : attributes, $code : reasonCode != null && != "" )
+    $att : Attribute( this memberOf $attz, reasonCode == null || == "" )
 then
     modify ( $att ) {
         setReasonCode( $code );
@@ -3225,6 +3270,20 @@ then
     applyTemplate( "scorecardParamsInit.drlt", utils, registry, map, theory );
 end
 
+
+
+rule "Scorecard Output"
+salience -9
+when
+    Scorecard( $name : modelName, $info : extensionsAndCharacteristicsAndMiningSchemas )
+    MiningSchema( this memberOf $info, $mfs : miningFields )
+    MiningField( this memberOf $mfs, usageType == FIELDUSAGETYPE.PREDICTED, $tgtName : name )
+then
+    HashMap map = new HashMap( 3 );
+        map.put( "context", utils.context );
+        map.put( "target", utils.compactUpperCase( $tgtName ) );
+    applyTemplate( "scorecardOutputGeneration.drlt", utils, registry, map, theory );
+end
 
 
 rule "Scorecard_Cleanup"

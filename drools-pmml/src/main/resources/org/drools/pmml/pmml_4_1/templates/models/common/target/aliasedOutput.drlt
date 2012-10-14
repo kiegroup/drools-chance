@@ -32,7 +32,7 @@ when
                         @if{ context != null } , context == @{format("string",context)} @end{}
                         @if{ value != null } , value == @{format(type,value)} @end{} )
 then
-//  System.out.println("Cloning output " + $src );
+  System.out.println("Cloning output " + $src );
   @{ name } x = new @{ name }();
     x.setValue( $val );
     x.setMissing( $m );
@@ -41,6 +41,21 @@ then
     x.setContext( $ctx );
   insert( x );
 end
+
+
+rule "Clear Output_@{context}_@{name}"
+salience -110
+when
+ not  ModelMarker( enabled == true, modelName == "@{context}" )
+ $x : @{ name }( context == "@{context}")
+then
+  retract( $x );
+end
+
+
 @end{}
+
+
+
 
 @includeNamed{'aliasedOutputRule'}
