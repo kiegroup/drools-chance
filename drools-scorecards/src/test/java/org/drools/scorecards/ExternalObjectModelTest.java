@@ -14,11 +14,13 @@ import org.drools.builder.KnowledgeBuilderError;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
+import org.drools.pmml.pmml_4_1.PMML4Compiler;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.scorecards.example.Applicant;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
@@ -26,13 +28,15 @@ import static org.drools.scorecards.ScorecardCompiler.DrlType.*;
 
 public class ExternalObjectModelTest {
     private static String drl;
-    private PMML pmmlDocument;
+    private static PMML pmmlDocument;
     private static ScorecardCompiler scorecardCompiler;
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         scorecardCompiler = new ScorecardCompiler(EXTERNAL_OBJECT_MODEL);
         if (scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_externalmodel.xls")) ) {
             pmmlDocument = scorecardCompiler.getPMMLDocument();
+            System.out.println( scorecardCompiler.getPMML() );
+
             assertNotNull(pmmlDocument);
             drl = scorecardCompiler.getDRL();
             //System.out.println(drl);
@@ -90,7 +94,7 @@ public class ExternalObjectModelTest {
     @Test
     public void testDRLExecution() throws Exception {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-
+        System.out.println( drl );
         kbuilder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL);
         for (KnowledgeBuilderError error : kbuilder.getErrors()){
             System.out.println(error.getMessage());
@@ -107,6 +111,10 @@ public class ExternalObjectModelTest {
         applicant.setAge(10);
         session.insert( applicant );
         session.fireAllRules();
+
+        for ( Object o : session.getObjects() ) {
+            System.err.println(  o );
+        }
         session.dispose();
         //occupation = 0, age = 30, validLicence -1
         assertEquals(29.0,applicant.getTotalScore());

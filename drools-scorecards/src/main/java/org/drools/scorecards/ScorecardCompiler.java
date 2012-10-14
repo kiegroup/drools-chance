@@ -17,6 +17,7 @@
 package org.drools.scorecards;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -27,8 +28,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.dmg.pmml.pmml_4_1.descr.PMML;
-import org.drools.scorecards.drl.DeclaredTypesDRLEmitter;
-import org.drools.scorecards.drl.ExternalModelDRLEmitter;
+import org.drools.compiler.PMMLCompilerFactory;
+import org.drools.pmml.pmml_4_1.PMML4Compiler;
 import org.drools.scorecards.parser.AbstractScorecardParser;
 import org.drools.scorecards.parser.ScorecardParseException;
 import org.drools.scorecards.parser.xls.XLSScorecardParser;
@@ -123,12 +124,8 @@ public class ScorecardCompiler {
     }
 
     public String getDRL(){
-        if (pmmlDocument != null) {
-            if (drlType == DrlType.INTERNAL_DECLARED_TYPES) {
-                return new DeclaredTypesDRLEmitter().emitDRL(pmmlDocument);
-            } else if (drlType == DrlType.EXTERNAL_OBJECT_MODEL) {
-                return new ExternalModelDRLEmitter().emitDRL(pmmlDocument);
-            }
+        if ( pmmlDocument != null ) {
+            return ( (PMML4Compiler) PMMLCompilerFactory.getPMMLCompiler() ).generateTheory( pmmlDocument );
         }
         return null;
     }

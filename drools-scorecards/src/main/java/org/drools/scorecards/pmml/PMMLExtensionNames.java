@@ -18,7 +18,7 @@ package org.drools.scorecards.pmml;
 
 public class PMMLExtensionNames {
 
-    public static final String SCORECARD_PACKAGE = "scorecardPackage";
+    public static final String SCORECARD_PACKAGE = "package";
 
     public static final String SCORECARD_CELL_REF = "cellRef";
     public static final String SCORECARD_RESULTANT_SCORE_FIELD = "final";
@@ -29,4 +29,6 @@ public class PMMLExtensionNames {
     public static final String CHARACTERTISTIC_FACTTYPE = "factType";
     public static final String CHARACTERTISTIC_FIELD = "field";
     public static final String CHARACTERTISTIC_DATATYPE = "dataType";
+
+    public static final String DEFAULT_PREDICTED_FIELD = "scorecard__calculatedScore";
 }

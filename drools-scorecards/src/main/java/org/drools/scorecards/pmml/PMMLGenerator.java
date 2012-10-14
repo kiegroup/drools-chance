@@ -31,6 +31,7 @@ import org.dmg.pmml.pmml_4_1.descr.DATATYPE;
 import org.dmg.pmml.pmml_4_1.descr.DataDictionary;
 import org.dmg.pmml.pmml_4_1.descr.DataField;
 import org.dmg.pmml.pmml_4_1.descr.Extension;
+import org.dmg.pmml.pmml_4_1.descr.FIELDUSAGETYPE;
 import org.dmg.pmml.pmml_4_1.descr.Header;
 import org.dmg.pmml.pmml_4_1.descr.MiningField;
 import org.dmg.pmml.pmml_4_1.descr.MiningSchema;
@@ -108,7 +109,20 @@ public class PMMLGenerator {
                         }
                     }
                 }
+                MiningField targetField = new MiningField();
+                    targetField.setName( PMMLExtensionNames.DEFAULT_PREDICTED_FIELD );
+                    targetField.setUsageType( FIELDUSAGETYPE.PREDICTED );
+                schema.getMiningFields().add( targetField );
+            } else if ( obj instanceof Output ) {
+                for ( OutputField of : ((Output) obj).getOutputFields() ) {
+                    //TODO FIXME : is "calculatedScore" a constant name?
+                    // or is there always one outputfield?
+                    if ( "calculatedScore".equals( of.getName() ) ) {
+                        of.setTargetField( PMMLExtensionNames.DEFAULT_PREDICTED_FIELD );
+                    }
+                }
             }
+
         }
     }
 
@@ -177,7 +191,12 @@ public class PMMLGenerator {
                 }
             }
         }
-        dataDictionary.setNumberOfFields(BigInteger.valueOf(ctr));
+        DataField targetField = new DataField();
+        targetField.setName( PMMLExtensionNames.DEFAULT_PREDICTED_FIELD );
+        targetField.setDataType( DATATYPE.DOUBLE );
+        targetField.setOptype( OPTYPE.CONTINUOUS );
+        dataDictionary.getDataFields().add( targetField );
+        dataDictionary.setNumberOfFields( BigInteger.valueOf( ctr + 1 ) );
     }
 
     private void createAndSetOutput(Scorecard pmmlScorecard) {
@@ -201,6 +220,7 @@ public class PMMLGenerator {
                 }
                 output.getOutputFields().add(outputField);
                 outputField.setFeature(RESULTFEATURE.PREDICTED_VALUE);
+                outputField.setTargetField(PMMLExtensionNames.DEFAULT_PREDICTED_FIELD);
                 break;
             }
         }

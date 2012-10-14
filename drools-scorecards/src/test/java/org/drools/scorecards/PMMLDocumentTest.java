@@ -8,11 +8,13 @@ import org.dmg.pmml.pmml_4_1.descr.DataDictionary;
 import org.dmg.pmml.pmml_4_1.descr.Header;
 import org.dmg.pmml.pmml_4_1.descr.MiningSchema;
 import org.dmg.pmml.pmml_4_1.descr.Output;
-import org.dmg.pmml.pmml_4_1.descr.PMML;
 import org.dmg.pmml.pmml_4_1.descr.Scorecard;
+import org.drools.compiler.PMMLCompiler;
+import org.drools.pmml.pmml_4_1.PMML4Compiler;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
@@ -23,11 +25,12 @@ public class PMMLDocumentTest {
     private static PMML pmmlDocument;
     private static ScorecardCompiler scorecardCompiler;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         scorecardCompiler = new ScorecardCompiler(INTERNAL_DECLARED_TYPES);
         scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_c.xls"));
         pmmlDocument = scorecardCompiler.getPMMLDocument();
+        new PMML4Compiler().dumpModel( pmmlDocument, System.out );
     }
 
     @Test
@@ -50,11 +53,12 @@ public class PMMLDocumentTest {
     public void testDataDictionary() throws Exception {
         DataDictionary dataDictionary = pmmlDocument.getDataDictionary();
         assertNotNull(dataDictionary);
-        assertEquals(4, dataDictionary.getNumberOfFields().intValue());
+        assertEquals(5, dataDictionary.getNumberOfFields().intValue());
         assertEquals("age", dataDictionary.getDataFields().get(0).getName());
         assertEquals("occupation",dataDictionary.getDataFields().get(1).getName());
         assertEquals("residenceState", dataDictionary.getDataFields().get(2).getName());
         assertEquals("validLicense", dataDictionary.getDataFields().get(3).getName());
+        assertEquals(PMMLExtensionNames.DEFAULT_PREDICTED_FIELD, dataDictionary.getDataFields().get(4).getName());
     }
 
     @Test
@@ -64,11 +68,12 @@ public class PMMLDocumentTest {
                 for (Object obj :((Scorecard)serializable) .getExtensionsAndCharacteristicsAndMiningSchemas()){
                     if (obj instanceof MiningSchema){
                         MiningSchema miningSchema = ((MiningSchema)obj);
-                        assertEquals(4, miningSchema.getMiningFields().size());
+                        assertEquals(5, miningSchema.getMiningFields().size());
                         assertEquals("age", miningSchema.getMiningFields().get(0).getName());
                         assertEquals("occupation",miningSchema.getMiningFields().get(1).getName());
                         assertEquals("residenceState", miningSchema.getMiningFields().get(2).getName());
                         assertEquals("validLicense", miningSchema.getMiningFields().get(3).getName());
+                        assertEquals(PMMLExtensionNames.DEFAULT_PREDICTED_FIELD, miningSchema.getMiningFields().get(4).getName());
                         return;
                     }
                 }

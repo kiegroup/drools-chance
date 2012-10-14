@@ -14,9 +14,16 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.definition.type.FactType;
 import org.drools.io.ResourceFactory;
+import org.drools.pmml.pmml_4_1.PMML4Compiler;
+import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -25,12 +32,13 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.drools.scorecards.ScorecardCompiler.DrlType.INTERNAL_DECLARED_TYPES;
 
-public class ScorecardReasonCodeTest {
+public class ReasonCodeTest {
     private static PMML pmmlDocument;
     private static String drl;
     private static ScorecardCompiler scorecardCompiler;
-    @Before
-    public void setUp() throws Exception {
+
+    @BeforeClass
+    public static void setUp() throws Exception {
         scorecardCompiler = new ScorecardCompiler(INTERNAL_DECLARED_TYPES);
         boolean compileResult = scorecardCompiler.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_reasoncodes.xls"));
         if (!compileResult) {
@@ -38,6 +46,7 @@ public class ScorecardReasonCodeTest {
                 System.out.println("setup :"+error.getErrorLocation()+"->"+error.getErrorMessage());
             }
         }
+        System.out.println(scorecardCompiler.getPMML());
         drl = scorecardCompiler.getDRL();
         Assert.assertNotNull(drl);
         assertTrue(drl.length() > 0);
@@ -145,7 +154,7 @@ public class ScorecardReasonCodeTest {
         assertEquals(0, scorecardCompiler.getScorecardParseErrors().size());
         String drl = scorecardCompiler.getDRL();
         assertNotNull(drl);
-        //System.out.println(drl);
+        System.out.println(drl);
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
 
         kbuilder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL);
@@ -160,52 +169,59 @@ public class ScorecardReasonCodeTest {
 
         //NEW WORKING MEMORY
         StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
-        FactType scorecardType = kbase.getFactType( "org.drools.scorecards.example","SampleScore" );
-
-        DroolsScorecard scorecard = (DroolsScorecard) scorecardType.newInstance();
-        scorecardType.set(scorecard, "age", 10);
-        session.insert(scorecard);
         session.fireAllRules();
-        session.dispose();
-        //age = 30, validLicence -1
-        assertTrue(29 == scorecard.getCalculatedScore());
-        //age-reasoncode=AGE02, license-reasoncode=VL002
-        assertEquals(2, scorecard.getReasonCodes().size());
-        assertTrue(scorecard.getReasonCodes().contains("AGE02"));
-        assertTrue(scorecard.getReasonCodes().contains("VL099"));
 
-        session = kbase.newStatefulKnowledgeSession();
-        scorecard = (DroolsScorecard) scorecardType.newInstance();
-        scorecardType.set(scorecard, "age", 0);
-        scorecardType.set(scorecard, "occupation", "SKYDIVER");
-        session.insert(scorecard);
-        session.fireAllRules();
-        session.dispose();
-        //occupation = -10, age = +10, validLicense = -1;
-        assertTrue(-1 == scorecard.getCalculatedScore());
-        assertEquals(3, scorecard.getReasonCodes().size());
-        //[AGE01, VL002, OCC01]
-        assertTrue(scorecard.getReasonCodes().contains("AGE01"));
-        assertTrue(scorecard.getReasonCodes().contains("VL099"));
-        assertTrue(scorecard.getReasonCodes().contains("OCC99"));
+        FactType scorecardType = kbase.getFactType( "org.drools.scorecards.example","ScoreCard" );
 
-        session = kbase.newStatefulKnowledgeSession();
-        scorecard = (DroolsScorecard) scorecardType.newInstance();
-        scorecardType.set(scorecard, "age", 20);
-        scorecardType.set(scorecard, "occupation", "TEACHER");
-        scorecardType.set(scorecard, "residenceState", "AP");
-        scorecardType.set(scorecard, "validLicense", true);
-        session.insert( scorecard );
+        Object scorecard = session.getObjects( new ClassObjectFilter( scorecardType.getFactClass() ) ).iterator().next();
+        session.getWorkingMemoryEntryPoint( "in_Age" ).insert( 10.0 );
+        session.getWorkingMemoryEntryPoint( "in_ValidLicense" ).insert( false );
         session.fireAllRules();
-        session.dispose();
-        //occupation = +10, age = +40, state = -10, validLicense = 1
-        assertEquals(41.0,scorecard.getCalculatedScore());
-        //[OCC02, AGE03, VL001, RS001]
-        assertEquals(4, scorecard.getReasonCodes().size());
-        assertTrue(scorecard.getReasonCodes().contains("OCC99"));
-        assertTrue(scorecard.getReasonCodes().contains("AGE03"));
-        assertTrue(scorecard.getReasonCodes().contains("VL001"));
-        assertTrue(scorecard.getReasonCodes().contains("RS001"));
+
+        assertEquals( 29.0, scorecardType.get( scorecard, "score" ) );
+        Map codes = (Map) scorecardType.get( scorecard, "ranking" );
+        Iterator code = codes.keySet().iterator();
+
+        //age-reasoncode=AGE02, license-reasoncode=VL099 inherited
+        assertEquals(2, codes.size());
+        assertEquals("VL099", code.next());
+        assertEquals("AGE02", code.next());
+
+
+        session.getWorkingMemoryEntryPoint( "in_Age" ).insert( 0.0 );
+        session.getWorkingMemoryEntryPoint( "in_Occupation" ).insert( "SKYDIVER" );
+        session.fireAllRules();
+
+        scorecard = session.getObjects( new ClassObjectFilter( scorecardType.getFactClass() ) ).iterator().next();
+        assertEquals( -1.0, scorecardType.get( scorecard, "score" ) );
+        codes = (Map) scorecardType.get( scorecard, "ranking" );
+        code = codes.keySet().iterator();
+
+        System.out.println( codes );
+        assertEquals(3, codes.size());
+        assertEquals("OCC99", code.next());
+        assertEquals("VL099", code.next());
+        assertEquals("AGE01", code.next());
+
+
+        session.getWorkingMemoryEntryPoint( "in_Age" ).insert( 20.0 );
+        session.getWorkingMemoryEntryPoint( "in_Occupation" ).insert( "TEACHER" );
+        session.getWorkingMemoryEntryPoint( "in_ResidenceState" ).insert( "AP" );
+        session.getWorkingMemoryEntryPoint( "in_ValidLicense" ).insert( true );
+        session.fireAllRules();
+
+        scorecard = session.getObjects( new ClassObjectFilter( scorecardType.getFactClass() ) ).iterator().next();
+        assertEquals( 41.0, scorecardType.get( scorecard, "score" ) );
+        codes = (Map) scorecardType.get( scorecard, "ranking" );
+        code = codes.keySet().iterator();
+
+        System.out.println( codes );
+        assertEquals(4, codes.size());
+        assertEquals("RS001", code.next());
+        assertEquals("OCC99", code.next());
+        assertEquals("VL001", code.next());
+        assertEquals("AGE03", code.next());
+
     }
 
     @Test
@@ -224,53 +240,59 @@ public class ScorecardReasonCodeTest {
 
         //NEW WORKING MEMORY
         StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
-        FactType scorecardType = kbase.getFactType( "org.drools.scorecards.example","SampleScore" );
-
-        DroolsScorecard scorecard = (DroolsScorecard) scorecardType.newInstance();
-        scorecardType.set(scorecard, "age", 10);
-        session.insert(scorecard);
         session.fireAllRules();
-        session.dispose();
-        //age = 30, validLicence -1, initialScore = 100;
-        assertTrue(129 == scorecard.getCalculatedScore());
-        //age-reasoncode=AGE02, license-reasoncode=VL002
-        assertEquals(2, scorecard.getReasonCodes().size());
-        assertTrue(scorecard.getReasonCodes().contains("AGE02"));
-        assertTrue(scorecard.getReasonCodes().contains("VL002"));
 
-        session = kbase.newStatefulKnowledgeSession();
-        scorecard = (DroolsScorecard) scorecardType.newInstance();
-        scorecardType.set(scorecard, "age", 0);
-        scorecardType.set(scorecard, "occupation", "SKYDIVER");
-        session.insert(scorecard);
+        FactType scorecardType = kbase.getFactType( "org.drools.scorecards.example","ScoreCard" );
+
+        Object scorecard = session.getObjects( new ClassObjectFilter( scorecardType.getFactClass() ) ).iterator().next();
+        session.getWorkingMemoryEntryPoint( "in_Age" ).insert( 10.0 );
+        session.getWorkingMemoryEntryPoint( "in_ValidLicense" ).insert( false );
         session.fireAllRules();
-        session.dispose();
-        //occupation = -10, age = +10, validLicense = -1, initialScore = 100;
-        assertEquals(99.0, scorecard.getCalculatedScore());
 
-        assertEquals(3, scorecard.getReasonCodes().size());
-        //[AGE01, VL002, OCC01]
-        assertTrue(scorecard.getReasonCodes().contains("AGE01"));
-        assertTrue(scorecard.getReasonCodes().contains("VL002"));
-        assertTrue(scorecard.getReasonCodes().contains("OCC01"));
+        assertEquals( 129.0, scorecardType.get( scorecard, "score" ) );
+        Map codes = (Map) scorecardType.get( scorecard, "ranking" );
+        Iterator code = codes.keySet().iterator();
 
-        session = kbase.newStatefulKnowledgeSession();
-        scorecard = (DroolsScorecard) scorecardType.newInstance();
-        scorecardType.set(scorecard, "age", 20);
-        scorecardType.set(scorecard, "occupation", "TEACHER");
-        scorecardType.set(scorecard, "residenceState", "AP");
-        scorecardType.set(scorecard, "validLicense", true);
-        session.insert( scorecard );
+        //age-reasoncode=AGE02, license-reasoncode=VL099 inherited
+        assertEquals(2, codes.size());
+        assertEquals("VL002", code.next());
+        assertEquals("AGE02", code.next());
+
+
+        session.getWorkingMemoryEntryPoint( "in_Age" ).insert( 0.0 );
+        session.getWorkingMemoryEntryPoint( "in_Occupation" ).insert( "SKYDIVER" );
         session.fireAllRules();
-        session.dispose();
-        //occupation = +10, age = +40, state = -10, validLicense = 1, initialScore = 100;
-        assertEquals(141.0,scorecard.getCalculatedScore());
-        //[OCC02, AGE03, VL001, RS001]
-        assertEquals(4, scorecard.getReasonCodes().size());
-        assertTrue(scorecard.getReasonCodes().contains("OCC02"));
-        assertTrue(scorecard.getReasonCodes().contains("AGE03"));
-        assertTrue(scorecard.getReasonCodes().contains("VL001"));
-        assertTrue(scorecard.getReasonCodes().contains("RS001"));
+
+        scorecard = session.getObjects( new ClassObjectFilter( scorecardType.getFactClass() ) ).iterator().next();
+        assertEquals( 99.0, scorecardType.get( scorecard, "score" ) );
+        codes = (Map) scorecardType.get( scorecard, "ranking" );
+        code = codes.keySet().iterator();
+
+        System.out.println( codes );
+        assertEquals(3, codes.size());
+        assertEquals("OCC01", code.next());
+        assertEquals("VL002", code.next());
+        assertEquals("AGE01", code.next());
+
+
+        session.getWorkingMemoryEntryPoint( "in_Age" ).insert( 20.0 );
+        session.getWorkingMemoryEntryPoint( "in_Occupation" ).insert( "TEACHER" );
+        session.getWorkingMemoryEntryPoint( "in_ResidenceState" ).insert( "AP" );
+        session.getWorkingMemoryEntryPoint( "in_ValidLicense" ).insert( true );
+        session.fireAllRules();
+
+        scorecard = session.getObjects( new ClassObjectFilter( scorecardType.getFactClass() ) ).iterator().next();
+        assertEquals( 141.0, scorecardType.get( scorecard, "score" ) );
+        codes = (Map) scorecardType.get( scorecard, "ranking" );
+        code = codes.keySet().iterator();
+
+        System.out.println( codes );
+        assertEquals(4, codes.size());
+        assertEquals("OCC02", code.next());
+        assertEquals("RS001", code.next());
+        assertEquals("VL001", code.next());
+        assertEquals("AGE03", code.next());
+
     }
 
 }
