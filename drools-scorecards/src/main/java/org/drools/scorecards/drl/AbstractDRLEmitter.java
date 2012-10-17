@@ -15,18 +15,7 @@
  */
 package org.drools.scorecards.drl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.dmg.pmml_4_1.Array;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.CompoundPredicate;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
-import org.dmg.pmml_4_1.SimplePredicate;
-import org.dmg.pmml_4_1.SimpleSetPredicate;
+import org.dmg.pmml.pmml_4_1.descr.*;
 import org.drools.core.util.StringUtils;
 import org.drools.scorecards.parser.xls.XLSKeywords;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
@@ -34,6 +23,9 @@ import org.drools.scorecards.pmml.PMMLOperators;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.*;
 import org.drools.template.model.Package;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractDRLEmitter {
 
@@ -146,9 +138,9 @@ public abstract class AbstractDRLEmitter {
                 Scorecard scorecard = (Scorecard) obj;
                 Characteristics characteristics = getCharacteristicsFromScorecard(scorecard);
                 createInitialRule(ruleList, scorecard);
-                for (org.dmg.pmml_4_1.Characteristic c : characteristics.getCharacteristics()) {
+                for (org.dmg.pmml.pmml_4_1.descr.Characteristic c : characteristics.getCharacteristics()) {
                     int attributePosition = 0;
-                    for (org.dmg.pmml_4_1.Attribute scoreAttribute : c.getAttributes()) {
+                    for (org.dmg.pmml.pmml_4_1.descr.Attribute scoreAttribute : c.getAttributes()) {
                         String name = formRuleName(pmmlDocument, scorecard.getModelName().replaceAll(" ",""), c, scoreAttribute);
                         Rule rule = new Rule(name, 99, 1);
                         String desc = ScorecardPMMLUtils.getExtensionValue(scoreAttribute.getExtensions(), "description");
@@ -173,12 +165,8 @@ public abstract class AbstractDRLEmitter {
             String ruleName = objectClass+"_init";
             Rule rule = new Rule(ruleName, 999, 1);
             rule.setDescription("set the initial score");
-            StringBuilder stringBuilder = new StringBuilder();
-            String var = "$sc";
 
-            stringBuilder.append(var).append(" : ").append(objectClass).append("()");
-            Condition condition = new Condition();
-            condition.setSnippet(stringBuilder.toString());
+            Condition condition = createInitialRuleCondition(scorecard, objectClass);
             rule.addCondition(condition);
             if (scorecard.getInitialScore() > 0 ) {
                 Consequence consequence = new Consequence();
@@ -207,9 +195,10 @@ public abstract class AbstractDRLEmitter {
                 if (scorecard.getReasonCodeAlgorithm() != null) {
                     Consequence consequence = new Consequence();
                     if ("pointsAbove".equalsIgnoreCase(scorecard.getReasonCodeAlgorithm())) {
-                        consequence.setSnippet("$sc.setReasonCodeAlgorithm(DroolsScorecard.REASON_CODE_ALGORITHM_POINTSABOVE);");
+                        //TODO: ReasonCode Algorithm
+                        consequence.setSnippet("//$sc.setReasonCodeAlgorithm(DroolsScorecard.REASON_CODE_ALGORITHM_POINTSABOVE);");
                     } else if ("pointsBelow".equalsIgnoreCase(scorecard.getReasonCodeAlgorithm())) {
-                        consequence.setSnippet("$sc.setReasonCodeAlgorithm(DroolsScorecard.REASON_CODE_ALGORITHM_POINTSBELOW);");
+                        consequence.setSnippet("//$sc.setReasonCodeAlgorithm(DroolsScorecard.REASON_CODE_ALGORITHM_POINTSBELOW);");
                     }
                     rule.addConsequence(consequence);
                 }
@@ -272,7 +261,7 @@ public abstract class AbstractDRLEmitter {
                 } else if (PMMLOperators.NOT_EQUAL.equalsIgnoreCase(operator)) {
                     stringBuilder.append(" <> ");
                 } else if (PMMLOperators.EQUAL.equalsIgnoreCase(operator)) {
-                    stringBuilder.append(" = ");
+                    stringBuilder.append(" == ");
                 } else if (PMMLOperators.GREATER_OR_EQUAL.equalsIgnoreCase(operator)) {
                     stringBuilder.append(" >= ");
                 } else if (PMMLOperators.LESS_OR_EQUAL.equalsIgnoreCase(operator)) {
@@ -299,7 +288,7 @@ public abstract class AbstractDRLEmitter {
                         } else if (PMMLOperators.NOT_EQUAL.equalsIgnoreCase(operator)) {
                             stringBuilder.append(" <> ");
                         } else if (PMMLOperators.EQUAL.equalsIgnoreCase(operator)) {
-                            stringBuilder.append(" = ");
+                            stringBuilder.append(" == ");
                         } else if (PMMLOperators.GREATER_OR_EQUAL.equalsIgnoreCase(operator)) {
                             stringBuilder.append(" >= ");
                         } else if (PMMLOperators.LESS_OR_EQUAL.equalsIgnoreCase(operator)) {
@@ -377,4 +366,5 @@ public abstract class AbstractDRLEmitter {
     protected abstract void addAdditionalReasonCodeCondition(Rule rule, Scorecard scorecard);
     protected abstract void addAdditionalSummationConsequence(Rule rule, Scorecard scorecard);
     protected abstract void addAdditionalSummationCondition(Rule rule, Scorecard scorecard);
+    protected abstract Condition createInitialRuleCondition(Scorecard scorecard, String objectClass);
 }

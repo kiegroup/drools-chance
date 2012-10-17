@@ -1,5 +1,7 @@
 package org.drools.scorecards.example;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: vinod
@@ -13,6 +15,16 @@ public class Applicant {
     String  residenceState;
     double totalScore;
     boolean validLicense;
+
+    public List<String> getReasonCodes() {
+        return reasonCodes;
+    }
+
+    public void setReasonCodes(List<String> reasonCodes) {
+        this.reasonCodes = reasonCodes;
+    }
+
+    List<String> reasonCodes;
 
     public boolean isValidLicense() {
         return validLicense;

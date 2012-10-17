@@ -21,6 +21,7 @@ public interface XLSKeywords {
     public static final String SCORECARD_NAME = "Scorecard Name";
     public static final String SCORECARD_RESULTANT_SCORE_CLASS = "Resultant Score Class";
     public static final String SCORECARD_RESULTANT_SCORE_FIELD = "Resultant Score Field";
+    public static final String SCORECARD_RESULTANT_REASONCODES_FIELD = "Resultant Reasoncodes Field";
     public static final String SCORECARD_CHARACTERISTIC_EXTERNAL_CLASS = "Full Class Name";
 
     public static final String SCORECARD_BASE_SCORE = "Initial Score";

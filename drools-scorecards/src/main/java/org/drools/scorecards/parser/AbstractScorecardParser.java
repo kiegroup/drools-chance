@@ -16,11 +16,11 @@
 
 package org.drools.scorecards.parser;
 
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.drools.scorecards.ScorecardError;
+
 import java.io.InputStream;
 import java.util.List;
-
-import org.dmg.pmml_4_1.PMML;
-import org.drools.scorecards.ScorecardError;
 
 public abstract class AbstractScorecardParser {
 

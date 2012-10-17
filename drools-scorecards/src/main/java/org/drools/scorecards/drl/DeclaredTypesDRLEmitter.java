@@ -16,13 +16,7 @@
 
 package org.drools.scorecards.drl;
 
-import java.util.List;
-
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.*;
 import org.drools.scorecards.parser.xls.XLSKeywords;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.Condition;
@@ -30,11 +24,13 @@ import org.drools.template.model.Consequence;
 import org.drools.template.model.Package;
 import org.drools.template.model.Rule;
 
+import java.util.List;
+
 public class DeclaredTypesDRLEmitter extends AbstractDRLEmitter{
 
     protected void addDeclaredTypeContents(PMML pmmlDocument, StringBuilder stringBuilder, Scorecard scorecard) {
         Characteristics characteristics = getCharacteristicsFromScorecard(scorecard);
-        for (org.dmg.pmml_4_1.Characteristic c : characteristics.getCharacteristics()) {
+        for (org.dmg.pmml.pmml_4_1.descr.Characteristic c : characteristics.getCharacteristics()) {
             String field = ScorecardPMMLUtils.extractFieldNameFromCharacteristic(c);
             String dataType = ScorecardPMMLUtils.getDataType(pmmlDocument, field);
             //String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
@@ -112,5 +108,15 @@ public class DeclaredTypesDRLEmitter extends AbstractDRLEmitter{
         Condition condition = new Condition();
         condition.setSnippet(stringBuilder.toString());
         rule.addCondition(condition);
+    }
+
+    protected Condition createInitialRuleCondition(Scorecard scorecard, String objectClass) {
+        String var = "$sc";
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(var).append(" : ").append(objectClass).append("()");
+        Condition condition = new Condition();
+        condition.setSnippet(stringBuilder.toString());
+        return condition;
     }
 }
