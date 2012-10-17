@@ -1,6 +1,6 @@
 package org.drools.scorecards;
 
-import org.dmg.pmml_4_1.PMML;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -36,7 +36,7 @@ public class DrlFromPMMLTest {
     public void testDrlNoNull() throws Exception {
         assertNotNull(drl);
         assertTrue(drl.length() > 0);
-        //System.out.println(drl);
+        System.out.println(drl);
     }
 
     @Test

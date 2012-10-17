@@ -1,21 +1,14 @@
 package org.drools.scorecards;
 
 import junit.framework.Assert;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.DataDictionary;
-import org.dmg.pmml_4_1.Header;
-import org.dmg.pmml_4_1.MiningSchema;
-import org.dmg.pmml_4_1.Output;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.*;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
-import static org.drools.scorecards.ScorecardCompiler.DrlType.*;
+import static org.drools.scorecards.ScorecardCompiler.DrlType.INTERNAL_DECLARED_TYPES;
 
 public class PMMLDocumentTest {
 
@@ -49,7 +42,7 @@ public class PMMLDocumentTest {
     public void testDataDictionary() throws Exception {
         DataDictionary dataDictionary = pmmlDocument.getDataDictionary();
         assertNotNull(dataDictionary);
-        assertEquals(4, dataDictionary.getNumberOfFields().intValue());
+        assertEquals(5, dataDictionary.getNumberOfFields().intValue());
         assertEquals("age", dataDictionary.getDataFields().get(0).getName());
         assertEquals("occupation",dataDictionary.getDataFields().get(1).getName());
         assertEquals("residenceState", dataDictionary.getDataFields().get(2).getName());
@@ -63,7 +56,7 @@ public class PMMLDocumentTest {
                 for (Object obj :((Scorecard)serializable) .getExtensionsAndCharacteristicsAndMiningSchemas()){
                     if (obj instanceof MiningSchema){
                         MiningSchema miningSchema = ((MiningSchema)obj);
-                        assertEquals(4, miningSchema.getMiningFields().size());
+                        assertEquals(5, miningSchema.getMiningFields().size());
                         assertEquals("age", miningSchema.getMiningFields().get(0).getName());
                         assertEquals("occupation",miningSchema.getMiningFields().get(1).getName());
                         assertEquals("residenceState", miningSchema.getMiningFields().get(2).getName());

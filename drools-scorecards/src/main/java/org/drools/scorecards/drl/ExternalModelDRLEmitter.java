@@ -16,7 +16,7 @@
 
 package org.drools.scorecards.drl;
 
-import org.dmg.pmml_4_1.*;
+import org.dmg.pmml.pmml_4_1.descr.*;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.Condition;
@@ -67,11 +67,68 @@ public class ExternalModelDRLEmitter  extends AbstractDRLEmitter {
 
     @Override
     protected void addAdditionalReasonCodeConsequence(Rule rule, Scorecard scorecard) {
+        if (!scorecard.isUseReasonCodes()) {
+            return;
+        }
+        String externalClassName =  null;
+        String reasonCodesField = null;
+        String fieldName =  null;
+
+        for (Object obj :scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()){
+            if ( obj instanceof Output) {
+                Output output = (Output)obj;
+                final List<OutputField> outputFields = output.getOutputFields();
+                final OutputField outputField = outputFields.get(0);
+                externalClassName = ScorecardPMMLUtils.getExtension(outputField.getExtensions(), PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_CLASS).getValue();
+                fieldName = outputField.getName();
+                Extension e = ScorecardPMMLUtils.getExtension(outputField.getExtensions(), PMMLExtensionNames.SCORECARD_RESULTANT_REASONCODES_FIELD);
+                if (e != null) {
+                    reasonCodesField = e.getValue();
+                }
+                break;
+            }
+        }
+        if ( reasonCodesField != null && externalClassName != null && fieldName != null) {
+            Consequence consequence = new Consequence();
+            StringBuilder stringBuilder = new StringBuilder("$");
+            stringBuilder.append(fieldName).append("Var").append(".set").append(Character.toUpperCase(reasonCodesField.charAt(0))).append(reasonCodesField.substring(1));
+            stringBuilder.append("($reasons);");
+            consequence.setSnippet(stringBuilder.toString());
+            rule.addConsequence(consequence);
+        }
 
     }
 
     @Override
     protected void addAdditionalReasonCodeCondition(Rule rule, Scorecard scorecard) {
+        if (!scorecard.isUseReasonCodes()) {
+            return;
+        }
+        String externalClassName =  null;
+        String reasonCodesField = null;
+        String fieldName =  null;
+
+        for (Object obj :scorecard.getExtensionsAndCharacteristicsAndMiningSchemas()){
+            if ( obj instanceof Output) {
+                Output output = (Output)obj;
+                final List<OutputField> outputFields = output.getOutputFields();
+                final OutputField outputField = outputFields.get(0);
+                externalClassName = ScorecardPMMLUtils.getExtension(outputField.getExtensions(), PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_CLASS).getValue();
+                fieldName = outputField.getName();
+                Extension e = ScorecardPMMLUtils.getExtension(outputField.getExtensions(), PMMLExtensionNames.SCORECARD_RESULTANT_REASONCODES_FIELD);
+                if (e != null) {
+                    reasonCodesField = e.getValue();
+                }
+                break;
+            }
+        }
+        if ( reasonCodesField != null && externalClassName != null && fieldName != null) {
+            Condition condition = new Condition();
+            StringBuilder stringBuilder = new StringBuilder("$");
+            stringBuilder.append(fieldName).append("Var : ").append(externalClassName).append("()");
+            condition.setSnippet(stringBuilder.toString());
+            rule.addCondition(condition);
+        }
 
     }
 

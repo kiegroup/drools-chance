@@ -1,6 +1,6 @@
 package org.drools.scorecards;
 
-import org.dmg.pmml_4_1.*;
+import org.dmg.pmml.pmml_4_1.descr.*;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -86,7 +86,6 @@ public class ExternalObjectModelTest {
     @Test
     public void testDRLExecution() throws Exception {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-
         kbuilder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL);
         for (KnowledgeBuilderError error : kbuilder.getErrors()){
             System.out.println(error.getMessage());
@@ -169,6 +168,73 @@ public class ExternalObjectModelTest {
         session.dispose();
         //occupation = 0, age = 30, validLicence -1, initialScore=100
         assertEquals(129.0,applicant.getTotalScore());
+
+        session = kbase.newStatefulKnowledgeSession();
+        applicant = new Applicant();
+        applicant.setOccupation("SKYDIVER");
+        applicant.setAge(0);
+        session.insert( applicant );
+        session.fireAllRules();
+        session.dispose();
+        //occupation = -10, age = +10, validLicense = -1, initialScore=100;
+        assertEquals(99.0, applicant.getTotalScore());
+
+        session = kbase.newStatefulKnowledgeSession();
+        applicant = new Applicant();
+        applicant.setResidenceState("AP");
+        applicant.setOccupation("TEACHER");
+        applicant.setAge(20);
+        applicant.setValidLicense(true);
+        session.insert( applicant );
+        session.fireAllRules();
+        session.dispose();
+        //occupation = +10, age = +40, state = -10, validLicense = 1, initialScore=100
+        assertEquals(141.0,applicant.getTotalScore());
+    }
+
+    @Test
+    public void testWithReasonCodes() throws Exception {
+        ScorecardCompiler scorecardCompiler2 = new ScorecardCompiler(EXTERNAL_OBJECT_MODEL);
+        PMML pmmlDocument2 = null;
+        String drl2 = null;
+        if (scorecardCompiler2.compileFromExcel(PMMLDocumentTest.class.getResourceAsStream("/scoremodel_externalmodel.xls"), "scorecards_reasoncode") ) {
+            pmmlDocument2 = scorecardCompiler2.getPMMLDocument();
+            assertNotNull(pmmlDocument2);
+            drl2 = scorecardCompiler2.getDRL();
+            //System.out.println(drl2);
+        } else {
+            for (ScorecardError error : scorecardCompiler2.getScorecardParseErrors()){
+                System.out.println(error.getErrorLocation()+":"+error.getErrorMessage());
+            }
+            fail("failed to parse scoremodel Excel (scorecards_reasoncode).");
+        }
+        testDRLExecutionWithReasonCodes(drl2);
+    }
+
+    public void testDRLExecutionWithReasonCodes(String drl2) throws Exception {
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+
+        kbuilder.add( ResourceFactory.newByteArrayResource(drl2.getBytes()), ResourceType.DRL);
+        for (KnowledgeBuilderError error : kbuilder.getErrors()){
+            System.out.println(error.getMessage());
+        }
+        assertFalse( kbuilder.hasErrors() );
+
+        //BUILD RULEBASE
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
+
+        //NEW WORKING MEMORY
+        StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
+        Applicant applicant = new Applicant();
+        applicant.setAge(10);
+        session.insert(applicant);
+        //session.addEventListener(new DebugWorkingMemoryEventListener());
+        session.fireAllRules();
+        session.dispose();
+        //occupation = 0, age = 30, validLicence -1, initialScore=100
+        assertEquals(129.0,applicant.getTotalScore());
+        assertTrue(applicant.getReasonCodes().size() > 0);
 
         session = kbase.newStatefulKnowledgeSession();
         applicant = new Applicant();

@@ -1,11 +1,7 @@
 package org.drools.scorecards;
 
 import junit.framework.Assert;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.PMML;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.*;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -19,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
-import static org.drools.scorecards.ScorecardCompiler.DrlType.*;
+import static org.drools.scorecards.ScorecardCompiler.DrlType.INTERNAL_DECLARED_TYPES;
 
 public class ScorecardReasonCodeTest {
     private static PMML pmmlDocument;

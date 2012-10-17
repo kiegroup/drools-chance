@@ -16,27 +16,18 @@
 
 package org.drools.scorecards.parser.xls;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.poi.hssf.util.CellReference;
-import org.dmg.pmml_4_1.Attribute;
-import org.dmg.pmml_4_1.Characteristic;
-import org.dmg.pmml_4_1.Characteristics;
-import org.dmg.pmml_4_1.Extension;
-import org.dmg.pmml_4_1.FIELDUSAGETYPE;
-import org.dmg.pmml_4_1.INVALIDVALUETREATMENTMETHOD;
-import org.dmg.pmml_4_1.MiningField;
-import org.dmg.pmml_4_1.MiningSchema;
-import org.dmg.pmml_4_1.Output;
-import org.dmg.pmml_4_1.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.*;
 import org.drools.core.util.StringUtils;
 import org.drools.scorecards.ScorecardError;
 import org.drools.scorecards.parser.ScorecardParseException;
 import org.drools.scorecards.pmml.PMMLExtensionNames;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 class XLSEventDataCollector {
 
@@ -148,6 +139,12 @@ class XLSEventDataCollector {
         } else if (XLSKeywords.SCORECARD_RESULTANT_SCORE_FIELD.equalsIgnoreCase(stringCellValue)) {
             Extension extension = new Extension();
             extension.setName(PMMLExtensionNames.SCORECARD_RESULTANT_SCORE_FIELD);
+            scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
+            addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, null);
+
+        } else if (XLSKeywords.SCORECARD_RESULTANT_REASONCODES_FIELD.equalsIgnoreCase(stringCellValue)) {
+            Extension extension = new Extension();
+            extension.setName(PMMLExtensionNames.SCORECARD_RESULTANT_REASONCODES_FIELD);
             scorecard.getExtensionsAndCharacteristicsAndMiningSchemas().add(extension);
             addExpectation(currentRowCtr, currentColCtr + 1, "value", extension, null);
 

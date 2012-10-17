@@ -16,7 +16,7 @@
 
 package org.drools.scorecards.drl;
 
-import org.dmg.pmml_4_1.*;
+import org.dmg.pmml.pmml_4_1.descr.*;
 import org.drools.scorecards.parser.xls.XLSKeywords;
 import org.drools.scorecards.pmml.ScorecardPMMLUtils;
 import org.drools.template.model.Condition;
@@ -30,7 +30,7 @@ public class DeclaredTypesDRLEmitter extends AbstractDRLEmitter{
 
     protected void addDeclaredTypeContents(PMML pmmlDocument, StringBuilder stringBuilder, Scorecard scorecard) {
         Characteristics characteristics = getCharacteristicsFromScorecard(scorecard);
-        for (org.dmg.pmml_4_1.Characteristic c : characteristics.getCharacteristics()) {
+        for (org.dmg.pmml.pmml_4_1.descr.Characteristic c : characteristics.getCharacteristics()) {
             String field = ScorecardPMMLUtils.extractFieldNameFromCharacteristic(c);
             String dataType = ScorecardPMMLUtils.getDataType(pmmlDocument, field);
             //String dataType = ScorecardPMMLUtils.getExtensionValue(c.getExtensions(), PMMLExtensionNames.CHARACTERTISTIC_DATATYPE);
