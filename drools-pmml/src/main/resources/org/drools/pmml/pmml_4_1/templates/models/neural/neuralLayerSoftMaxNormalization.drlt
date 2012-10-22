@@ -45,9 +45,10 @@ when
             result( d )
         )
 then
-    //System.out.println(">>>>>>>>>>>>>>  SOFTMAX LAYER SUM " + $den );
-    for (int j = 0; j < $list.size(); j++) {
-        Stym s = (Stym) $list.get(j);
+    System.out.println(">>>>>>>>>>>>>>  SOFTMAX LAYER SUM " + $den );
+    java.util.List list = new java.util.ArrayList( $list );
+    for (int j = 0; j < list.size(); j++) {
+        Stym s = (Stym) list.get(j);
         modify ( s ) {
             setNormalized( true ),
             setValue( Math.exp( s.getValue() ) / $den );

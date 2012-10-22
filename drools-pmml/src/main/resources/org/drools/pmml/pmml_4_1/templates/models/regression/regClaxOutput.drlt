@@ -33,29 +33,22 @@ when
                             normalized == true,
                             cumulative == false
                           )
-    accumulate( $bit     : RegTargetBit( context == "@{context}",
-                                         target == "@{target}",
-                                         $wgt : weight,
-                                         normalized == true,
-                                         cumulative == false ),
-                $maxConf : max( $wgt ),
-                $bits    : collectList( $bit );
-                $maxConf == $winWgt,
-                $bits.size == @{num} )
+//    accumulate( $bit     : RegTargetBit( context == "@{context}",
+//                                         target == "@{target}",
+//                                         $wgt : weight,
+//                                         normalized == true,
+//                                         cumulative == false ),
+//                $maxConf : max( $wgt ),
+//                $bits    : collectList( $bit );
+//                $maxConf == $winWgt,
+//                $bits.size == @{num} )
 then
-    // TODO For use with Imperfect Beans!
-
-//    System.out.println( "Max weight is " + $maxConf );
-//    System.out.println( "Winner Cat is " + $winCat );
-//    for ( Object o : $bits ) {
-//        RegTargetBit bit = (RegTargetBit) o;
-//        System.out.println( "Distribution bit : " + bit.getValue() + " // " + bit.getWeight() );
-//    }
     @{target} x = new @{target}();
             x.setContext( "@{context}" );
             x.setValid( true );
             x.setMissing( false );
             x.setValue( $winCat );
+            x.setWeight( $winWgt );
     insertLogical(x);
 end
 

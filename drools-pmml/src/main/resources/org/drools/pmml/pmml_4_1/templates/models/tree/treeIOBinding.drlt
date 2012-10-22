@@ -57,6 +57,7 @@ then
             x.setValid( true );
             x.setMissing( false );
             x.setValue( $out );
+            x.setWeight( $conf );
     insertLogical( x );
 end
 

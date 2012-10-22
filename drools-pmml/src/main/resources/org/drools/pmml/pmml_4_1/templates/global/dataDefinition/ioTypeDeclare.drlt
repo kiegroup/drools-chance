@@ -38,37 +38,14 @@
   @@role(event)
   @Traitable
 
-   value : @{type} @@key @position(1) @comment{
+    value : @{type} @@key @position(1) @comment{
                                         //@if{continuous} @@comparable @elseif{cyclic} @@comparable(cyclic) @elseif{ordinal} @@comparable(ordinal) @end{}
                                        }
-   displayValue : String = @if{ fullName != null } @{format("string",fullName)} @else{} @{format("string",name)} @end{}
+    displayValue : String = @if{ fullName != null } @{format("string",fullName)} @else{} @{format("string",name)} @end{}
 
-   @if{ "NeuralNetwork".equals(modelType) }
-     residual : Double
-     standardError : Double
-     probability  : double = -1.0
-     entityId  : int = -1
-   @elseif{ "Association".equals(modelType) }
-     probability : double = -1.0
-     entityId  : int = -1
-     ruleValue : String
-   @elseif{ "Clustering".equals(modelType) }
-     entityId   : int = -1
-     clusterId : int = -1
-     clusterAffinity  : double = -1.0
-   @elseif{ "GenRegression".equals(modelType) || "Regression".equals(modelType) ||  "SVM".equals(modelType)}
-     residual : Double
-     standardError : Double
-     probability  : double = -1.0
-   @elseif{ "NaiveBayes".equals(modelType) }
-     residual : Double
-     probability  : double = -1.0
-   @elseif{ "RuleSet".equals(modelType) || "Tree".equals(modelType) }
-     residual : Double
-     probability : double = -1.0
-     entityId : int  = -1
-   @end{}
+    weight : double     = 1.0
 
+    @if{ tgtType != null } tgtValue : @{ mapDatatype( tgtType ) } @end{}
  end
 @end{}
 
@@ -111,6 +88,35 @@
 *******************************************************************************************************
 }
 
+
+@comment{
+@if{ "NeuralNetwork".equals(modelType) }
+     residual : Double
+     standardError : Double
+     probability  : double = -1.0
+     entityId  : int = -1
+   @elseif{ "Association".equals(modelType) }
+     probability : double = -1.0
+     entityId  : int = -1
+     ruleValue : String
+   @elseif{ "Clustering".equals(modelType) }
+     entityId   : int = -1
+     clusterId : int = -1
+     clusterAffinity  : double = -1.0
+   @elseif{ "GenRegression".equals(modelType) || "Regression".equals(modelType) ||  "SVM".equals(modelType)}
+     residual : Double
+     standardError : Double
+     probability  : double = -1.0
+   @elseif{ "NaiveBayes".equals(modelType) }
+     residual : Double
+     probability  : double = -1.0
+   @elseif{ "RuleSet".equals(modelType) || "Tree".equals(modelType) }
+     residual : Double
+     probability : double = -1.0
+     entityId : int  = -1
+   @end{}
+
+}
 
 @includeNamed{'ioTypeDeclareRule'}
 

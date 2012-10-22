@@ -29,13 +29,14 @@ rule "SVM Output Collection @{context}"
 salience -1
 when
     accumulate( @{context}SVMVote_@{target}( $wgt : weight ), $minWgt : min( $wgt ) )
-    @{context}SVMVote_@{target}( weight == $minWgt.doubleValue(), $out : outcome )
+    @{context}SVMVote_@{target}( $wgt : weight == $minWgt.doubleValue(), $out : outcome )
 then
     @{ target } x = new @{ target }();
                 x.setContext( "@{context}" );
                 x.setValid( true );
                 x.setMissing( false );
                 x.setValue( $out );
+                x.setWeight( $wgt );
     insertLogical( x );
 end
 

@@ -30,23 +30,25 @@ salience -1
 when
     accumulate( @{context}SVMVote_@{target}( $out : outcome ), $outcomes : collectSet( $out ) )
     $tgt : @{mapDatatype(type)}() from $outcomes
-    accumulate( @{context}SVMVote_@{target}( outcome == $tgt ),
-                $num : count( 1 ) )
+    accumulate( @{context}SVMVote_@{target}( outcome == $tgt, $wgt : weight ),
+                $num : count( 1 ),
+                $max : max( $wgt ) )
 then
-    insertLogical( new @{context}SVMPoll_@{target}( $tgt, $num ) );
+    insertLogical( new @{context}SVMPoll_@{target}( $tgt, $num, $max.doubleValue() ) );
 end
 
 rule "Sort @{context}"
 salience -2
 when
     accumulate( @{context}SVMPoll_@{target}( $num : num ), $max : max( $num ) )
-    @{context}SVMPoll_@{target}( num == $max.intValue(), $val : outcome )
+    @{context}SVMPoll_@{target}( num == $max.intValue(), $val : outcome, $wgt : weight )
 then
     @{ target } x = new @{ target }();
             x.setContext( "@{context}" );
             x.setValid( true );
             x.setMissing( false );
             x.setValue( $val );
+            x.setWeight( $wgt );
     insertLogical( x );
 end
 

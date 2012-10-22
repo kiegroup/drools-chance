@@ -28,30 +28,35 @@ rule "simpleOutput_@{origField}_to_@{name}"
 salience -110
 
 when
- $src : @{origField}( $m : missing, $v : valid, $val : value, $ctx : context
+ $src : @{origField}( $m : missing, $v : valid == true, $val : value, $ctx : context, $wgt : weight
                         @if{ context != null } , context == @{format("string",context)} @end{}
-                        @if{ value != null } , value == @{format(type,value)} @end{} )
+                        @if{ value != null } , value == @{format(type,value)} @end{}
+                    )
+ @if{ classifier }
+    not @{origField}( missing == false, valid == true, this != $src, weight > $wgt )
+ @end{}
 then
-  System.out.println("Cloning output " + $src );
+//  System.out.println("Cloning output " + $src );
   @{ name } x = new @{ name }();
     x.setValue( $val );
     x.setMissing( $m );
     x.setValid( $v );
     x.setName( @{ format( "string", name ) } );
     x.setContext( $ctx );
-  insert( x );
+    x.setWeight( $wgt );
+  insertLogical( x );
 end
 
 
-rule "Clear Output_@{context}_@{name}"
-salience -110
-when
- not  ModelMarker( enabled == true, modelName == "@{context}" )
- $x : @{ name }( context == "@{context}")
-then
-  retract( $x );
-end
-
+//rule "Clear Output_@{context}_@{name}"
+//salience -110
+//when
+// not  ModelMarker( enabled == true, modelName == "@{context}" )
+// $x : @{ name }( context == "@{context}")
+//then
+//  retract( $x );
+//end
+//
 
 @end{}
 

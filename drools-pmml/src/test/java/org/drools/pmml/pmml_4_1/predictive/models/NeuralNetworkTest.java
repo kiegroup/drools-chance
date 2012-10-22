@@ -57,6 +57,8 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
     private static final String source7 = "org/drools/pmml/pmml_4_1/mock_cold.xml";
     private static final String source8 = "org/drools/pmml/pmml_4_1/mock_breastcancer.xml";
 
+    private static final String source9 = "org/drools/pmml/pmml_4_1/test_nn_clax_output.xml";
+
     private static final String packageName = "org.drools.pmml.pmml_4_1.test";
 
     private static final String smartVent = "org/drools/pmml/pmml_4_1/smartvent.xml";
@@ -125,7 +127,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
 
-        Assert.assertEquals(2930.0, Math.floor(queryDoubleField("OutAmOfClaims", "NeuralInsurance")));
+        Assert.assertEquals(828.0, Math.floor(queryDoubleField("OutAmOfClaims", "NeuralInsurance")));
 
     }
 
@@ -240,7 +242,6 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
     }
 
     @Test
-    @Ignore
     public void testIris() throws Exception {
         setKSession(getModelSession(source2,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
@@ -267,11 +268,11 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         FactType s1 = getKbase().getFactType( packageName, "Cspecies_virginica" );
 
         Assert.assertEquals(0.001,
-                truncN(getDoubleFieldValue( t7 ), 3));
-        Assert.assertEquals(0.290,
-                truncN(getDoubleFieldValue( t8 ), 3));
+                truncN(getDoubleFieldValue( t7 ), 3), 1e-4);
+        Assert.assertEquals(0.282,
+                truncN(getDoubleFieldValue( t8 ), 3), 1e-4);
         Assert.assertEquals(0.716,
-                truncN(getDoubleFieldValue( t9 ), 3));
+                truncN(getDoubleFieldValue( t9 ), 3), 1e-4);
 
 //        Assert.assertEquals("virginica",
 //                getFieldValue("Cspecies_virginica", "Test_MLP"));
@@ -280,7 +281,15 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 //        Assert.assertEquals("Test_versicolor",
 //                getFieldValue("Cspecies_versicolor", "Test_MLP"));
 
-        fail( "TODO Implement confidence");
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"SpecSetosa"),
+                                true, false,"Test_MLP",0.001111);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"SpecVirgin"),
+                                true, false,"Test_MLP",0.716639);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"SpecVersic"),
+                                true, false,"Test_MLP",0.282249);
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"SpecOut"),
+                                        true, false,"Test_MLP","virginica");
 
     }
 
@@ -289,7 +298,6 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
     @Test
-    @Ignore
     public void testIris2() throws Exception {
         setKSession(getModelSession(source22,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
@@ -320,14 +328,11 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         Assert.assertEquals(3.0,
                 truncN(getDoubleFieldValue(t6), 3));
 
-//        Assert.assertEquals("Iris_virginica",
-//                queryStringField("NSPECIES_Iris_virginica", "IRIS_MLP"));
-//        Assert.assertEquals("Iris_setosa",
-//                queryStringField("NSPECIES_Iris_setosa", "IRIS_MLP"));
-//        Assert.assertEquals("Iris_versicolor",
-//                queryStringField("NSPECIES_Iris_versicolor", "IRIS_MLP"));
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutSpecies"),
+                                                true, false,"Test_MLP","versicolor");
 
-        fail( "TODO Implement confidence");
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutProb"),
+                                                        true, false,"Test_MLP",0.999999);
 
 
     }
@@ -388,7 +393,6 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
     @Test
-    @Ignore
     public void testHeart() throws Exception {
         setKSession(getModelSession(source4,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
@@ -417,7 +421,11 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
         System.err.println(reportWMObjects(getKSession()));
-        Assert.fail("Probabilty feature not yet done");
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutN"),
+                true, false,"HEART_MLP",">50_1");
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutP"),
+                true, false,"HEART_MLP",0.943336);
+
     }
 
 
@@ -522,6 +530,30 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         assertEquals( 0.4, queryDoubleField("Out_sIT", "SmartVent"), 0.05 );
         assertEquals( -1, queryDoubleField("Out_sFIO2", "SmartVent"), 0.05 );
 
+
+    }
+
+
+    @Test
+    public void testClaxOutput() throws Exception {
+        setKSession( getModelSession( source9, true ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        getKSession().fireAllRules();  //init model
+
+        getKSession().getWorkingMemoryEntryPoint( "in_Temp" ).insert(28.0);
+
+        getKSession().fireAllRules();
+
+        Thread.sleep(200);
+        System.err.println( reportWMObjects( getKSession() ) );
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"ColdCat"),
+                        true, false,"MockCold","SURE");
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"ColdYES"),
+                        true, false,"MockCold",0.6475435612444598);
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"ColdNO"),
+                        true, false,"MockCold",0.0036540476859388943);
 
     }
 

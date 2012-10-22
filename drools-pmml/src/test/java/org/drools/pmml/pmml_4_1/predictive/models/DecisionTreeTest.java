@@ -463,4 +463,39 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         checkFirstDataFieldOfTypeStatus( tgt, true, false, "Missing", "tgtX" );
     }
 
+
+    @Test
+    public void testSimpleTreeOutput() throws Exception {
+        setKSession( getModelSession( source2, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+        StatefulKnowledgeSession kSession = getKSession();
+
+        kSession.fireAllRules();  //init model
+
+        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+
+        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( -1.0 );
+        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( -1.0 );
+        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "optA" );
+
+        kSession.fireAllRules();
+
+        System.err.println( reportWMObjects( kSession ) );
+
+        Object token = getToken( kSession );
+        assertEquals( 0.8, tok.get( token, "confidence" ) );
+        assertEquals( "null", tok.get( token, "current" ) );
+        assertEquals( 50.0, tok.get( token, "totalCount" ) );
+
+        checkFirstDataFieldOfTypeStatus(tgt, true, false, "Missing", "tgtX" );
+
+        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "OutClass" ),
+                    true, false, "Missing", "tgtX" );
+        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "OutProb" ),
+                    true, false, "Missing", 0.8 );
+
+
+    }
+
 }

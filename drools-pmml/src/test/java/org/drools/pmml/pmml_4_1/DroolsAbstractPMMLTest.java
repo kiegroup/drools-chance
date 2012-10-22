@@ -256,7 +256,13 @@ public abstract class DroolsAbstractPMMLTest {
             while ( ( ! ctx.equals( type.get( obj, "context" ) ) ) && iter.hasNext() )
                 obj = iter.next();
         }
-        assertEquals( target[0], type.get( obj, "value" ) );
+        Object tgt = type.get( obj, "value" );
+        if ( tgt instanceof Double ) {
+            assert( target[0] instanceof Double );
+            assertEquals( (Double) target[0], (Double) tgt, 1e-6 );
+        } else {
+            assertEquals( target[0], tgt );
+        }
         assertEquals( valid, type.get( obj, "valid" ) );
         assertEquals( missing, type.get( obj, "missing" ) );
 

@@ -35,6 +35,7 @@ public class ScorecardTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = true;
     private static final String source1 = "org/drools/pmml/pmml_4_1/test_scorecard.xml";
+    private static final String source2 = "org/drools/pmml/pmml_4_1/test_scorecardOut.xml";
     private static final String packageName = "org.drools.pmml.pmml_4_1.test";
 
 
@@ -79,6 +80,31 @@ public class ScorecardTest extends DroolsAbstractPMMLTest {
         assertEquals( "LX00", iter.next() );
         assertEquals( "RES", iter.next() );
         assertEquals( "CX2", iter.next() );
+
+    }
+
+    @Test
+    public void testScorecardOutputs() throws Exception {
+        setKSession( getModelSession( source2, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+        StatefulKnowledgeSession kSession = getKSession();
+
+        kSession.fireAllRules();  //init model
+
+        kSession.getWorkingMemoryEntryPoint( "in_Cage" ).insert( "engineering" );
+        kSession.getWorkingMemoryEntryPoint( "in_Age" ).insert( 25 );
+        kSession.getWorkingMemoryEntryPoint( "in_Wage" ).insert( 500.0 );
+
+        kSession.fireAllRules();  //init model
+
+        System.err.println( reportWMObjects( kSession ) );
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutRC1"),
+                        true, false,"SampleScorecard", "RC2" );
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutRC2"),
+                        true, false,"SampleScorecard", "RC1" );
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutRC3"),
+                        true, false,"SampleScorecard", "RC1" );
 
     }
 

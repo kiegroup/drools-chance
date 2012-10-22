@@ -203,6 +203,7 @@ then
         map.put( "super", null );
         map.put( "type", utils.mapDatatype( $fld.dataType ) );
         map.put( "modelType", null );
+        map.put( "tgtType", null );
         //map.put("cyclic",("1".equals($fld.isCyclic)));
         //map.put("categorical","categorical".equalsIgnoreCase($fld.optype.v alue));
         //map.put("continuous","continuous".equalsIgnoreCase($fld.optype.v alue));
@@ -379,6 +380,7 @@ then
         map.put( "type", utils.mapDatatype( $fld.dataType ) );
         map.put( "super", null );
         map.put( "modelType", null );
+        map.put( "tgtType", null );
 //        map.put("cyclic",false);
 //        map.put("categorical","categorical".equalsIgnoreCase(opt));
 //        map.put("continuous","continuous".equalsIgnoreCase(opt));
@@ -1630,29 +1632,72 @@ end
     //
     //******************************************************************************************************************
 
-
- rule "Generic_Target"
- when
+rule "Generic_Target"
+when
     $t: Target( $field : field, targetValues.size() == 0,
                  $cast : castInteger, $max : max, $min : min, $offset : rescaleConstant, $scale : rescaleFactor  )
     MiningField( name == $field, usageType == FIELDUSAGETYPE.PREDICTED )
- then
-     HashMap map = new HashMap( 7 );
-         map.put( "model", utils.context );
-         map.put( "field", utils.compactUpperCase( $field ) );
-         map.put( "cast", $cast );
-         map.put( "min", $min );
-         map.put( "max", $max );
-         map.put( "offset", $offset );
-         map.put( "scale", $scale );
-     applyTemplate( "targetReshape.drlt", utils, registry, map, theory );
- end
+    TypeOfField( name == $field, $type : dataType )
+then
+    HashMap map = new HashMap( 11 );
+        map.put( "model", utils.context );
+        map.put( "field", utils.compactUpperCase( $field ) );
+        map.put( "fldType", $type );
+        map.put( "cast", $cast );
+        map.put( "min", $min );
+        map.put( "max", $max );
+        map.put( "offset", $offset );
+        map.put( "scale", $scale );
+        map.put( "tgt", null );
+        map.put( "tgtValue", null );
+    applyTemplate( "targetReshape.drlt", utils, registry, map, theory );
+end
 
 
- //******************************************************************************************************************
+rule "TargetValue_Target"
+when
+    $t      : Target( $field : field, $tgtValues : targetValues,
+                  $cast : castInteger, $max : max, $min : min, $offset : rescaleConstant, $scale : rescaleFactor  )
+    $tgt    : TargetValue( $tgtVal : value ) from $tgtValues
+    MiningField( name == $field, usageType == FIELDUSAGETYPE.PREDICTED )
+    TypeOfField( name == $field, $dataType : dataType )
+then
+    HashMap map = new HashMap( 11 );
+        map.put( "model", utils.context );
+        map.put( "field", utils.compactUpperCase( $field ) );
+        map.put( "cast", $cast );
+        map.put( "min", $min );
+        map.put( "max", $max );
+        map.put( "offset", $offset );
+        map.put( "scale", $scale );
+        map.put( "tgt", $tgt );
+        map.put( "tgtValue", $tgtVal );
+        map.put( "fldType", $dataType );
+    applyTemplate( "targetReshape.drlt", utils, registry, map, theory );
+end
+
+
+
+     //******************************************************************************************************************
      //    Outputs
      //
      //******************************************************************************************************************
+
+
+rule "Implicit Output"
+salience 100
+//TODO Should check the scope: same model
+when
+    $of : OutputField( targetField == null )
+          accumulate ( MiningField( usageType == FIELDUSAGETYPE.PREDICTED ),
+                       $num : count( 1 );
+                       $num == 1 )
+          MiningField( $name : name, usageType == FIELDUSAGETYPE.PREDICTED )
+then
+    modify ( $of ) {
+        setTargetField( $name );
+    }
+end
 
 
 
@@ -1661,7 +1706,6 @@ rule "Output_Type"
 when
      $of : OutputField( $name : name, $dataType : dataType != null )
 then
-
     insertLogical( new TypeOfField( $name, $dataType ) );
 end
 
@@ -1690,14 +1734,15 @@ end
 
 
 
-rule "DeclareOutput_Neural"
+rule "DeclareOutput"
 dialect "mvel"
 salience 1
 when
-    $of  : OutputField( $name : name, $tgt : targetField )
+    $of  : OutputField( $name : name, $tgt : targetField, $feat : feature )
+           TypeOfField( name == $tgt, $tgtType : dataType != null )
     $tf  : TypeOfField( name == $name )
     $mod : OutputParentModel( field == $of, $mt : modelType )
-    eval(! utils.isModelBeanDefined( utils.compactUpperCase( $name ) ) )
+//    eval(! utils.isModelBeanDefined( utils.compactUpperCase( $name ) ) )
 then
     utils.addModelBeanDefinition( $name );
     HashMap map = new HashMap( 7 );
@@ -1705,15 +1750,16 @@ then
         map.put( "fullName", $of.displayName );
         map.put( "name", utils.compactUpperCase( $of.name ) );
         map.put( "super", "OutputField" );
-        map.put( "modelType", $mt )
-        map.put( "type", utils.mapDatatype( $tf.dataType ) );
+        map.put( "modelType", $mt );
+        map.put( "tgtType", $tgtType );
+        map.put( "type", utils.mapDatatype( utils.mapFeatureType( $tf.dataType, $feat ) ) );
     applyTemplate( "ioTypeDeclare.drlt", utils, registry, map, theory );
     applyTemplate( "updateIOField.drlt", utils, registry, map, theory );
 end
 
 rule "Output_Expose"
 when
-    $of : OutputField( $name : name )
+    $of : OutputField( $name : name, targetField != null )
 then
     insert( new QueryMarker( utils.compactUpperCase( $name ), utils.context ) );
 end
@@ -1724,8 +1770,10 @@ end
 rule "SimpleValueOutput"
 dialect "mvel"
 when
-    $of : OutputField( $tgt : targetField, $val : value, $name : name, feature == null || feature == RESULTFEATURE.PREDICTED_VALUE )
+    $of : OutputField( $tgt : targetField != null, $val : value, $name : name,
+                       feature == null || feature == RESULTFEATURE.PREDICTED_VALUE )
     $tf : TypeOfField( name == $name, $type : dataType )
+    $md : OutputParentModel( field == $of, $mt : modelType, $mf : miningFunc )
 then
     HashMap map = new HashMap( 7 );
         map.put( "context", utils.context );
@@ -1733,18 +1781,19 @@ then
         map.put( "name", utils.compactUpperCase( $name ) );
         map.put( "value", $val );
         map.put( "type", $type );
+        map.put( "classifier", "classification".equals( $mf ) );
     applyTemplate( "aliasedOutput.drlt", utils, registry, map, theory );
 end
 
 
 
-
-
-rule "AddFeature_DisplayValue"
+rule "SimpleFeatureOutput"
 dialect "mvel"
 when
     $of : OutputField( $tgt : targetField, $val : value, $name : name,
-                       feature == RESULTFEATURE.PREDICTED_DISPLAY_VALUE )
+                       feature != null, $feat : feature.value(),
+                       feature == RESULTFEATURE.PREDICTED_DISPLAY_VALUE || == RESULTFEATURE.WARNING
+                        || == RESULTFEATURE.PROBABILITY )
     $tf : TypeOfField( name == $name, $type : dataType )
 then
     HashMap map = new HashMap( 7 );
@@ -1753,10 +1802,29 @@ then
         map.put( "name", utils.compactUpperCase( $name ) );
         map.put( "value", $val );
         map.put( "type", $type );
-        map.put( "feature", "displayValue" );
+        map.put( "feature", $feat );
     applyTemplate( "addOutputFeature.drlt", utils, registry, map, theory );
 end
 
+rule "RelativeFeatureOutput"
+dialect "mvel"
+when
+    $of : OutputField( $tgt : targetField, $val : value != null, $name : name,
+                       feature != null, $feat : feature.value(),
+                       feature == RESULTFEATURE.RESIDUAL )
+    $tf : TypeOfField( name == $name, $type : dataType )
+    $md : OutputParentModel( field == $of, $mt : modelType, $mf : miningFunc )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "origField", utils.compactUpperCase( $tgt ) );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "value", $val );
+        map.put( "type", $type );
+        map.put( "feature", $feat );
+        map.put( "classifier", "classification".equals( $mf ) );
+    applyTemplate( "addRelOutputFeature.drlt", utils, registry, map, theory );
+end
 
 
 
@@ -1983,6 +2051,7 @@ then
         map.put( "continuous", true );
         map.put( "ordinal", false );
         map.put( "modelType", null );
+        map.put( "tgtType", null );
     applyTemplate( "ioTypeDeclare.drlt", utils, registry, map, theory );
     applyTemplate( "updateIOField.drlt", utils, registry, map, theory );
 end
@@ -2054,17 +2123,18 @@ when
     NormDiscrete( $field : field, $val : value ) from $norm
     TypeOfField( name == $field, $type : dataType )
 then
-    HashMap map = new HashMap(7);
+    HashMap map = new HashMap( 7 );
         map.put( "model", utils.context );
         map.put( "field", utils.compactUpperCase($field) );
         map.put( "label", $val );
         map.put( "target", utils.format($type,utils.compactUpperCase( $val ) ) );
     applyTemplate( "outputQueryPredicate.drlt", utils, registry, map, theory );
 
-    map = new HashMap();
+    map = new HashMap( 7 );
         map.put( "name", utils.compactUpperCase( $field ) );
+        map.put( "type", $type );
         map.put( "model", utils.context );
-        map.put( "target", utils.format( $type, $val ) );
+        map.put( "target", $val );
         map.put( "origField", utils.compactUpperCase( $nn )+"_"+$id );
     applyTemplate( "predicateField.drlt", utils, registry, map, theory );
 end
@@ -2318,8 +2388,10 @@ query compilePredicate( java.util.List $parent, String $pred, Object $src )
       TypeOfField( $fld, $type ; )
       and
       $pred := String() from "( " +
-                                "m" + utils.compactUpperCase( $fld ) + " == false && " +
-                                "v" + utils.compactUpperCase( $fld ) + " " + utils.mapOperator( $op ) + " " + utils.format( $type, $val ) +
+                                "m" + utils.compactUpperCase( $fld ) + " == " + "isMissing".equals( $op ) +
+                                 ( "isMissing".equals( $op ) ? "" :
+                                        " && v" + utils.compactUpperCase( $fld ) + " " + utils.mapOperator( $op ) + " " + utils.format( $type, $val )
+                                 ) +
                              " )"
     )
     or
@@ -3286,6 +3358,24 @@ then
 end
 
 
+
+rule "Scorecard output feature rank"
+dialect "mvel"
+when
+    $of : OutputField( $tgt : targetField != null, $name : name,
+                       feature != null, $feat : feature.value(),
+                       feature == RESULTFEATURE.REASON_CODE, $index : rank )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "context", utils.context );
+        map.put( "origField", utils.compactUpperCase( $tgt ) );
+        map.put( "name", utils.compactUpperCase( $name ) );
+        map.put( "index", $index );
+        map.put( "target", $name );
+    applyTemplate( "scorecardOutputRankCode.drlt", utils, registry, map, theory );
+end
+
+
 rule "Scorecard_Cleanup"
 salience -20
 when
@@ -3294,6 +3384,7 @@ then
     utils.context = null;
     retract( $sc );
 end
+
 
 
 

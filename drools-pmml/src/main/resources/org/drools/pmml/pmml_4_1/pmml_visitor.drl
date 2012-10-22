@@ -461,48 +461,49 @@ end
 //------------------------------------------------------------------------------------------------------------//
 
 declare OutputParentModel
-    field : OutputField     @key
-    modelType : String
+    field       : OutputField     @key
+    modelType   : String
+    miningFunc  : String
 end
 
 rule "Outputs_Neural"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs contains $out )
+           NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs contains $out, $func : functionName.value() )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "NeuralNetwork" ) );
+    insertLogical( new OutputParentModel( $of, "NeuralNetwork", $func ) );
 end
 
 rule "Outputs_Association"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    AssociationModel( $info : extensionsAndMiningSchemasAndOutputs contains $out )
+    AssociationModel( $info : extensionsAndMiningSchemasAndOutputs contains $out, $func : functionName.value() )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "Association" ) );
+    insertLogical( new OutputParentModel( $of, "Association", $func  ) );
 end
 
 rule "Outputs_Clustering"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    ClusteringModel( $info : extensionsAndClustersAndComparisonMeasures contains $out )
+    ClusteringModel( $info : extensionsAndClustersAndComparisonMeasures contains $out, $func : functionName.value()  )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "Clustering" ) );
+    insertLogical( new OutputParentModel( $of, "Clustering", $func  ) );
 end
 
 rule "Outputs_Regression"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    RegressionModel( $info : extensionsAndRegressionTablesAndMiningSchemas contains $out )
+    RegressionModel( $info : extensionsAndRegressionTablesAndMiningSchemas contains $out, $func : functionName.value()  )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "Regression" ) );
+    insertLogical( new OutputParentModel( $of, "Regression", $func  ) );
 end
 
 
@@ -510,10 +511,10 @@ rule "Outputs_GenRegression"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    GeneralRegressionModel( $info : extensionsAndParamMatrixesAndPPMatrixes contains $out )
+    GeneralRegressionModel( $info : extensionsAndParamMatrixesAndPPMatrixes contains $out, $func : functionName.value()  )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "GeneralRegression" ) );
+    insertLogical( new OutputParentModel( $of, "GeneralRegression", $func  ) );
 end
 
 
@@ -521,40 +522,40 @@ rule "Outputs_NaiveBayes"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    NaiveBayesModel( $info : extensionsAndBayesOutputsAndBayesInputs contains $out )
+    NaiveBayesModel( $info : extensionsAndBayesOutputsAndBayesInputs contains $out, $func : functionName.value()  )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "NaiveBayes" ) );
+    insertLogical( new OutputParentModel( $of, "NaiveBayes", $func  ) );
 end
 
 rule "Outputs_RuleSet"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    RuleSetModel( $info : extensionsAndRuleSetsAndMiningSchemas contains $out )
+    RuleSetModel( $info : extensionsAndRuleSetsAndMiningSchemas contains $out, $func : functionName.value()  )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "RuleSet" ) );
+    insertLogical( new OutputParentModel( $of, "RuleSet", $func  ) );
 end
 
 rule "Outputs_SVM"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries contains $out )
+    SupportVectorMachineModel( $info : extensionsAndSupportVectorMachinesAndVectorDictionaries contains $out, $func : functionName.value()  )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "SVM" ) );
+    insertLogical( new OutputParentModel( $of, "SVM", $func  ) );
 end
 
 rule "Outputs_Tree"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    TreeModel( $info : extensionsAndNodesAndMiningSchemas contains $out )
+    TreeModel( $info : extensionsAndNodesAndMiningSchemas contains $out, $func : functionName.value()  )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "Tree" ) );
+    insertLogical( new OutputParentModel( $of, "Tree", $func  ) );
 end
 
 
@@ -562,10 +563,10 @@ rule "Outputs_Scorecard"
 when
     $out : Output( $outs : outputFields )
     $of  : OutputField() from $outs
-    Scorecard( $info : extensionsAndCharacteristicsAndMiningSchemas contains $out )
+    Scorecard( $info : extensionsAndCharacteristicsAndMiningSchemas contains $out, $func : functionName.value()  )
 then
     insertLogical( $of );
-    insertLogical( new OutputParentModel( $of, "Scorecard" ) );
+    insertLogical( new OutputParentModel( $of, "Scorecard", $func ) );
 end
 
 

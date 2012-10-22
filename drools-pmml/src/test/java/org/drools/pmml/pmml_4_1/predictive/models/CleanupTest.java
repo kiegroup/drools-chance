@@ -253,7 +253,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         kSession.fireAllRules();
 
-        assertEquals( 38, kBase.getKnowledgePackage( packageName ).getRules().size() );
+        assertEquals( 37, kBase.getKnowledgePackage( packageName ).getRules().size() );
 
         System.out.println( "************************ REMOVING resource 2 ");
 

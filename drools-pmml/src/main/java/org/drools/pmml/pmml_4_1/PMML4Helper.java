@@ -993,4 +993,17 @@ public class PMML4Helper {
     }
 
 
+    public DATATYPE mapFeatureType( DATATYPE srcType, RESULTFEATURE feat ) {
+        if ( feat == null ) {
+            return srcType;
+        } else switch ( feat ) {
+            case PREDICTED_VALUE: return srcType;
+            case PREDICTED_DISPLAY_VALUE: return DATATYPE.STRING;
+            case PROBABILITY: return DATATYPE.DOUBLE;
+            case REASON_CODE: return DATATYPE.STRING;
+        }
+        return srcType;
+    }
+
+
 }

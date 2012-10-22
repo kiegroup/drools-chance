@@ -42,6 +42,7 @@
     </MiningSchema>
     <Output>
       <OutputField name="OutSpecies" targetField="species"/>
+      <OutputField name="OutProb" targetField="species" feature="probability"/>
     </Output>
     <NeuralInputs>
       <NeuralInput id="0">

@@ -125,6 +125,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/common/target/targetReshape.drlt",
             "models/common/target/aliasedOutput.drlt",
             "models/common/target/addOutputFeature.drlt",
+            "models/common/target/addRelOutputFeature.drlt",
             "models/common/target/outputQuery.drlt",
             "models/common/target/outputQueryPredicate.drlt"
     };
@@ -203,7 +204,8 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/scorecard/scorecardDataDeclare.drlt",
             "models/scorecard/scorecardPartialScore.drlt",
             "models/scorecard/scorecardScoring.drlt",
-            "models/scorecard/scorecardOutputGeneration.drlt"
+            "models/scorecard/scorecardOutputGeneration.drlt",
+            "models/scorecard/scorecardOutputRankCode.drlt"
     };
 
 

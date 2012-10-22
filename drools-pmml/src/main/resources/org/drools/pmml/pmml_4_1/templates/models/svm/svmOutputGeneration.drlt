@@ -48,6 +48,7 @@ then
                     x.setValid( true );
                     x.setMissing( false );
                     x.setValue( val >= @{threshold} ? @{format( type, posCat )} : @{format( type, negCat )} );
+                    x.setWeight( val );
         insertLogical( x );
     @end{}
 end

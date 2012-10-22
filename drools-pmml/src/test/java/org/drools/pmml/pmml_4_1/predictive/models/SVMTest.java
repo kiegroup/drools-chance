@@ -96,6 +96,11 @@ public class SVMTest extends DroolsAbstractPMMLTest {
 
         checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "no" );
 
+        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "OutZ" ),
+                                                true, false, "SVMXORMODEL", "no" );
+        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "ProbZNo" ),
+                                                true, false, "SVMXORMODEL", 0.7357588 );
+
     }
 
     @Test
@@ -110,13 +115,18 @@ public class SVMTest extends DroolsAbstractPMMLTest {
         assertNotNull( ztype );
 
 
-        kSession.getWorkingMemoryEntryPoint( "in_X" ).insert( 0.0 );
+        kSession.getWorkingMemoryEntryPoint( "in_X" ).insert( 0.63 );
         kSession.getWorkingMemoryEntryPoint( "in_Y" ).insert( 0.0 );
         kSession.fireAllRules();
 
         System.err.println( reportWMObjects(kSession)  );
 
         checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "yes" );
+
+        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "OutZ" ),
+                                                true, false, "SVMXORMODEL", "yes" );
+        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "ProbZYes" ),
+                                                true, false, "SVMXORMODEL", 0.872057 );
 
 
     }

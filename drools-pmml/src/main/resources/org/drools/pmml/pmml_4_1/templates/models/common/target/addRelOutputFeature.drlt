@@ -23,25 +23,19 @@
     */
 }
 
-@declare{'addOutputFeatureRule'}
+@declare{'addRelOutputFeatureRule'}
 rule "outputFeature_@{origField}_to_@{name}_@{feature}"
 
 when
     $src : @{origField}(   $v : valid, $wgt : weight,
                            @if{ context != null } $ctx : context == @{format("string",context)}, @end{}
 
-                           @if{ feature == "predictedDisplayValue" } $x : displayValue, @end{}
-                           @if{ feature == "warning" } $x : displayValue, @end{}
-                           @if{ feature == "probability" } $x : weight, @end{}
-
-                           $srcVal : value @if{ value != null } == @{format(type,value)} @end{}
+                           @if{ ! classifier } $srcVal : value @end{}
+                           @if{ classifier } $srcVal : weight @end{}
                     )
-    @if{ value == null }
-    not @{origField}( this != $src, weight > $wgt )
-    @end{}
 then
     @{ name } x = new @{ name }();
-        x.setValue( $x );
+        x.setValue( @{value} - $srcVal );
         x.setMissing( false );
         x.setValid( $v );
         x.setName( @{ format( "string", name ) } );
@@ -51,4 +45,4 @@ end
 
 @end{}
 
-@includeNamed{'addOutputFeatureRule'}
+@includeNamed{'addRelOutputFeatureRule'}

@@ -14,6 +14,11 @@
       <MiningField name="y"/>
       <MiningField name="z" usageType="predicted"/>
     </MiningSchema>
+    <Output>
+      <OutputField name="OutZ" targetField="z"/>
+      <OutputField name="ProbZYes" targetField="z" value="yes" feature="probability" />
+      <OutputField name="ProbZNo" targetField="z" value="no" feature="probability" />
+    </Output>
     <RadialBasisKernelType description="Radial basis kernel type" gamma="1.0"/>
     <VectorDictionary numberOfVectors="4">
       <VectorFields numberOfFields="2">

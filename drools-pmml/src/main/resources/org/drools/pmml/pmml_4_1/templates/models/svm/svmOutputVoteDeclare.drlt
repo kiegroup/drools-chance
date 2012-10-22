@@ -32,6 +32,7 @@ end
 declare @{context}SVMPoll_@{target}
     outcome  : @{mapDatatype(type)}
     num      : Number
+    weight   : double
 end
 
 @end{}

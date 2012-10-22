@@ -69,6 +69,7 @@
       <MiningField name="feat15" usageType="supplementary"/>
     </MiningSchema>
     <Output>
+      <OutputField name="OutP" targetField="feat14" feature="probability"/>
       <OutputField name="OutN" targetField="feat14"/>
     </Output>
     <NeuralInputs>

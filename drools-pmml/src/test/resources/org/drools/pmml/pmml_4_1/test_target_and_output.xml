@@ -18,7 +18,7 @@
     </DataField>
     <DataField dataType="double" name="NCSPECIES" optype="continuous"/>
   </DataDictionary>
-  <NeuralNetwork activationFunction="logistic" algorithmName="Neural Net" functionName="classification" modelName="IRIS_MLP">
+  <NeuralNetwork activationFunction="logistic" algorithmName="Neural Net" functionName="regression" modelName="IRIS_MLP">
     <MiningSchema>
       <MiningField highValue="6.9" invalidValueTreatment="asMissing" lowValue="1.0" missingValueReplacement="3.95" missingValueTreatment="asMedian" name="petal length" outliers="asExtremeValues" usageType="active"/>
       <MiningField highValue="6" invalidValueTreatment="asMissing" lowValue="4" missingValueReplacement="5" missingValueTreatment="asValue" name="petal number" outliers="asExtremeValues" usageType="active"/>
@@ -28,11 +28,14 @@
     <Output>
       <OutputField dataType="double" name="outNCSP1" optype="categorical" targetField="NCSPECIES1"/>
       <OutputField name="outNCSP2" targetField="NCSPECIES2"/>
-      <OutputField feature="predictedDisplayValue" name="outAsFeat" targetField="NCSPECIES2"/>
+      <OutputField feature="predictedDisplayValue" name="outFeatDV" targetField="NCSPECIES2"/>
+      <OutputField name="outResidual" targetField="NCSPECIES2" feature="residual" value="6.0" />
     </Output>
     <Targets>
       <Target castInteger="round" field="NCSPECIES1" max="0.8" min="0.2" optype="continuous" rescaleConstant="2.0" rescaleFactor="3.0"/>
-      <Target castInteger="round" field="NCSPECIES2" max="0.8" min="0.2" optype="continuous" rescaleConstant="2.0" rescaleFactor="3.0"/>
+      <Target castInteger="round" field="NCSPECIES2" max="0.8" min="0.2" optype="continuous" rescaleConstant="2.0" rescaleFactor="3.0">
+        <TargetValue defaultValue="0.123" displayValue="NC Species II" priorProbability="0.05" />
+      </Target>
     </Targets>
     <NeuralInputs>
       <NeuralInput id="0">

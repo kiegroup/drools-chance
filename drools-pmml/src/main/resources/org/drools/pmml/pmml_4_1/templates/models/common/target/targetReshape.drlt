@@ -37,16 +37,37 @@
 
 
 @declare{'targetReshapeRule'}
-rule "targetReshape_@{model}_@{field}_generic"
+@code{ boolean affected = false; }
+rule "targetReshape_@{model}_@{field}@if{ tgtValue != null}_@{tgtValue}@end{}"
 salience -100
 no-loop
 when
- $src : @{field}( $m : missing == false, $v : valid == true, context == @{format("string",model)}, $val : value )
+    $src : @{field}( $m : missing @if{ tgt != null && tgt.defaultValue == null } == false @end{},
+                     $v : valid == true,
+                     context == @{ format( "string", model ) },
+                     $val : value @if{ tgtValue != null } == @{ format( fldType, tgtValue ) } @end{} )
 then
-    double x = $val;
+    @{ mapDatatype( fldType ) } x = $val;
 
     System.out.println("Intercepting target value " + x);
+
+    @if{ min != null }
+        @code{ affected = true; }
+        x = Math.max(x,@{min});
+    @end{}
+
+    @if{ max != null }
+        @code{ affected = true; }
+        x = Math.min(x,@{max});
+    @end{}
+
+    @if{ ( scale != null || offset != null ) && scale != 1.0 && offset != 0.0 }
+        @code{ affected = true; }
+        x = @if{scale != null} @{scale} * @end{} x @if{offset != null} + @{offset} @end{} ;
+    @end{}
+
     @if{ cast != null }
+        @code{ affected = true; }
         @if{ cast == "round" }
             x = Math.round(x);
         @elseif{ cast == "floor" }
@@ -56,22 +77,20 @@ then
         @end{}
     @end{}
 
-    @if{ min != null }
-        x = Math.max(x,@{min});
+    @if{ tgt != null && tgt.defaultValue != null }
+        @code{ affected = true; }
+        x = $m ? @{ tgt.defaultValue } : x;
     @end{}
 
-    @if{ max != null }
-        x = Math.min(x,@{max});
-    @end{}
-
-    @if{ scale != null || offset != null }
-        x = @if{scale != null} @{scale} * @end{} x @if{offset != null} + @{offset} @end{} ;
-    @end{}
-
-
+    @if{ affected }
     modify ( $src ) {
-        setValue( x );
+        @if{ tgt != null && tgt.displayValue != null }
+            setDisplayValue( "@{tgt.displayValue}" ),
+        @end{}
+            setValue( x );
     }
+    @end{}
+
 end
 @end{}
 

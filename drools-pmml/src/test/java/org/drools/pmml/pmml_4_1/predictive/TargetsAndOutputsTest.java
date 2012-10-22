@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class TargetsAndOutputsTest extends DroolsAbstractPMMLTest {
 
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
     private static final String source = "org/drools/pmml/pmml_4_1/test_target_and_output.xml";
     private static final String packageName = "org.drools.pmml.pmml_4_1.test";
 
@@ -44,19 +44,15 @@ public class TargetsAndOutputsTest extends DroolsAbstractPMMLTest {
 
 
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutNCSP1"),
-                true, false,"IRIS_MLP",2.6);
+                true, false,"IRIS_MLP",3.0);
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutNCSP2"),
-                true, false,"IRIS_MLP",4.4);
+                true, false,"IRIS_MLP",4.0);
 
     }
 
 
-
-
-
-
-@Test
-    public void testOutputFeatures() throws Exception {
+    @Test
+    public void testOutputValue() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
 
@@ -68,12 +64,46 @@ public class TargetsAndOutputsTest extends DroolsAbstractPMMLTest {
 
 
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutNCSP1"),
-                true, false,"IRIS_MLP",2.6);
+                true, false,"IRIS_MLP",3.0);
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutNCSP2"),
-                true, false,"IRIS_MLP",4.4);
+                true, false,"IRIS_MLP",4.0);
 
     }
 
+
+    @Test
+    public void testOutputDisplayValue() throws Exception {
+        setKSession(getModelSession(source,VERBOSE));
+        setKbase(getKSession().getKnowledgeBase());
+
+        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(4);
+        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(3.5);
+        getKSession().fireAllRules();
+
+        System.err.println(reportWMObjects(getKSession()));
+
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutFeatDV"),
+                true, false,"IRIS_MLP", "NC Species II");
+
+    }
+
+    @Test
+    public void testOutputResidual() throws Exception {
+        setKSession(getModelSession( source, VERBOSE ) );
+        setKbase(getKSession().getKnowledgeBase());
+
+        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(4);
+        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(3.5);
+        getKSession().fireAllRules();
+
+        System.err.println(reportWMObjects(getKSession()));
+
+
+        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"OutResidual"),
+                true, false,"IRIS_MLP", 2.0 );
+
+    }
 
 
 

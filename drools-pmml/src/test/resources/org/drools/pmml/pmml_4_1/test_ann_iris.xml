@@ -21,6 +21,12 @@
       <MiningField name="species" usageType="predicted"/>
       <MiningField name="cspecies" usageType="supplementary"/>
     </MiningSchema>
+    <Output>
+      <OutputField name="specOut" targetField="species" />
+      <OutputField name="specSetosa" targetField="species" feature="probability" value="setosa" />
+      <OutputField name="specVersic" targetField="species" feature="probability" value="versicolor" />
+      <OutputField name="specVirgin" targetField="species" feature="probability" value="virginica" />
+    </Output>
     <NeuralInputs>
       <NeuralInput id="0">
         <DerivedField dataType="double" optype="continuous">
