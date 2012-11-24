@@ -27,6 +27,12 @@ import org.drools.semantics.builder.model.*;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
+import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.util.*;
 
 import java.util.*;
@@ -38,6 +44,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     public static int minCounter = 0;
     public static int maxCounter = 0;
 
+    private OWLReasoner               owler;
     private InferredOntologyGenerator reasoner;
 
     private Map<OWLClassExpression,OWLClassExpression> aliases;
@@ -623,13 +630,13 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         for ( OWLDataProperty dp : ontoDescr.getDataPropertiesInSignature() ) {
             if ( ! dp.isOWLTopDataProperty() && ! dp.isOWLBottomDataProperty() ) {
-                Set<OWLClassExpression> domains = dp.getDomains( ontoDescr );
+                Set<OWLClassExpression> domains = dp.getDomains( ontoDescr.getImportsClosure() );
                 if ( domains.isEmpty() ) {
                     domains.add( factory.getOWLThing() );
                     System.err.println( "WARNING Added missing domain for" + dp);
                     missDomain++;
                 }
-                Set<OWLDataRange> ranges = dp.getRanges( ontoDescr );
+                Set<OWLDataRange> ranges = dp.getRanges( ontoDescr.getImportsClosure() );
                 if ( ranges.isEmpty() ) {
                     ranges.add( factory.getRDFPlainLiteral() );
                     System.err.println( "WARNING Added missing range for" + dp);
@@ -660,13 +667,13 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         for ( OWLObjectProperty op : ontoDescr.getObjectPropertiesInSignature() ) {
             if ( ! op.isOWLTopObjectProperty() && ! op.isOWLBottomObjectProperty() ) {
-                Set<OWLClassExpression> domains = op.getDomains( ontoDescr );
+                Set<OWLClassExpression> domains = op.getDomains( ontoDescr.getImportsClosure() );
                 if ( domains.isEmpty() ) {
                     domains.add( factory.getOWLThing() );
                     System.err.println( "WARNING Added missing domain for" + op);
                     missDomain++;
                 }
-                Set<OWLClassExpression> ranges = op.getRanges( ontoDescr );
+                Set<OWLClassExpression> ranges = op.getRanges( ontoDescr.getImportsClosure() );
                 if ( ranges.isEmpty() ) {
                     ranges.add( factory.getOWLThing() );
                     System.err.println( "WARNING Added missing range for" + op);
@@ -678,6 +685,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         OWLClassExpression realDom = filterAliases( domain );
                         OWLClassExpression realRan = filterAliases( range );
 
+//                        if ( realDom.isAnonymous() || realRan.isAnonymous() ) {
+//                            System.out.println( "SOMEthING WENt WRONG" + realDom );
+//                        }
                         PropertyRelation rel = new PropertyRelation( realDom.asOWLClass().getIRI().toQuotedString(),
                                 op.getIRI().toQuotedString(),
                                 realRan.asOWLClass().getIRI().toQuotedString(),
@@ -817,18 +827,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
 
-    private void launchReasoner( boolean dirty, StatefulKnowledgeSession kSession, OWLOntology ontoDescr ) {
-        if ( dirty ) {
-            System.err.println( " START REASONER " );
-            initReasoner(kSession, ontoDescr);
-            reasoner.fillOntology( ontoDescr.getOWLOntologyManager(), ontoDescr );
-            System.err.println( " STOP REASONER " );
-        } else {
-            System.err.println( " REASONER NOT NEEDED" );
-        }
 
 
-    }
 
 
     private boolean processComplexDomainAndRanges(OWLOntology ontoDescr, OWLDataFactory factory) {
@@ -1271,6 +1271,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             if ( ! dp.isTopEntity() && ! dp.isBottomEntity() ) {
                 String propIri = dp.getIRI().toQuotedString();
                 String propName = NameUtils.buildLowCaseNameFromIri( dp.getIRI().getFragment() );
+                if ( propName == null ) {
+                    propName = NameUtils.buildLowCaseNameFromIri( dp.getIRI().getStart() );
+                }
                 props.put( propIri, propName );
             }
         }
@@ -1279,6 +1282,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             if ( ! op.isTopEntity() && ! op.isBottomEntity() ) {
                 String propIri = op.getIRI().toQuotedString();
                 String propName = NameUtils.buildLowCaseNameFromIri( op.getIRI().getFragment() );
+                if ( propName == null ) {
+                    propName = NameUtils.buildLowCaseNameFromIri( op.getIRI().getStart() );
+                }
                 props.put( propIri, propName );
             }
         }
@@ -1648,32 +1654,69 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
 
+
+
+    private void launchReasoner( boolean dirty, StatefulKnowledgeSession kSession, OWLOntology ontoDescr ) {
+        if ( dirty ) {
+            long now = new Date().getTime();
+            System.err.println( " START REASONER " );
+
+            initReasoner( kSession, ontoDescr );
+//            owler.flush();
+
+            reasoner.fillOntology( ontoDescr.getOWLOntologyManager(), ontoDescr );
+
+            System.err.println( " STOP REASONER : time elapsed >> " + ( new Date().getTime() - now ) );
+
+        } else {
+            System.err.println( " REASONER NOT NEEDED" );
+        }
+
+
+    }
+
+
+
+
     protected void initReasoner( StatefulKnowledgeSession kSession, OWLOntology ontoDescr ) {
+
+        ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
+        OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
+
 
         switch ( externalReasoner ) {
 //            case PELLET: reasoner = new InferredOntologyGenerator( PelletReasonerFactory.getInstance().createReasoner( ontoDescr ) ) ;
 //                break;
             case HERMIT:
             default:
-                reasoner = new InferredOntologyGenerator( new Reasoner( ontoDescr ) );
+                OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
+                if ( owler == null ) {
+                    owler = reasonerFactory.createNonBufferingReasoner( ontoDescr, config );
+                    owler.precomputeInferences( InferenceType.CLASS_HIERARCHY,
+                                             InferenceType.CLASS_ASSERTIONS,
 
+                                             InferenceType.OBJECT_PROPERTY_ASSERTIONS,
+                                             InferenceType.DATA_PROPERTY_ASSERTIONS,
+
+                                             InferenceType.DIFFERENT_INDIVIDUALS,
+                                             InferenceType.SAME_INDIVIDUAL,
+
+                                             InferenceType.DISJOINT_CLASSES,
+
+         //                                        InferenceType.DATA_PROPERTY_HIERARCHY,
+                                             InferenceType.OBJECT_PROPERTY_HIERARCHY
+                     );
+
+                    reasoner = new InferredOntologyGenerator( owler );
+                    for ( InferredAxiomGenerator ax : reasoner.getAxiomGenerators() ) {
+                        if ( ax instanceof InferredSubDataPropertyAxiomGenerator ) {
+                            reasoner.removeGenerator( ax );
+                        }
+                    }
+
+                }
         }
 
-        //TODO FIXME: find why hermit oftern hangs when using this axGen
-        // but only when called using the APIs! e.g. not from protege...
-        // are the ontologies corrupted because of the MS ?
-        for ( InferredAxiomGenerator ax : reasoner.getAxiomGenerators() ) {
-            if ( (ax instanceof InferredEquivalentClassAxiomGenerator ) ) {
-                reasoner.removeGenerator( ax );
-            }
-            if ( (ax instanceof InferredSubDataPropertyAxiomGenerator ) ) {
-                reasoner.removeGenerator( ax );
-            }
-            if ( (ax instanceof InferredEquivalentDataPropertiesAxiomGenerator ) ) {
-                reasoner.removeGenerator( ax );
-            }
-
-        }
     }
 
 
