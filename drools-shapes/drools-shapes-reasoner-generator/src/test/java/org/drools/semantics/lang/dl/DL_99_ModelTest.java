@@ -320,6 +320,7 @@ public class DL_99_ModelTest {
 
         OntoModel results = factory.buildModel( "kmr2", res, kSession );
 
+
         ModelCompiler jcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
         JarModel jarModel = (JarModel) jcompiler.compile( results );
 
@@ -365,6 +366,12 @@ public class DL_99_ModelTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        ModelCompiler javaCompiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAVA );
+        JavaInterfaceModel javaModel = (JavaInterfaceModel) javaCompiler.compile( results );
+
+        javaModel.save( folder.getRoot().getPath() );
+
 
     }
 

@@ -14,7 +14,7 @@
     <dependency>
       <groupId>com.clarkparsia</groupId>
       <artifactId>Empire-core</artifactId>
-      <version>0.7.2</version>
+      <version>0.7.3</version>
     </dependency>
     <dependency>
       <groupId>org.jvnet.hyperjaxb3</groupId>

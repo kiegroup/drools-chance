@@ -940,7 +940,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         System.out.println("Im in");
         boolean dirty = false;
         for ( OWLObjectProperty op : ontoDescr.getObjectPropertiesInSignature() ) {
-            String typeName = NameUtils.buildNameFromIri( op.getIRI().getStart(), op.getIRI().toString() );
+            String typeName = NameUtils.buildNameFromIri( op.getIRI().getStart(), op.getIRI().getFragment() );
 
             Set<OWLObjectPropertyRangeAxiom> ranges = ontoDescr.getObjectPropertyRangeAxioms(op);
             if ( ranges.size() > 1 ) {
@@ -1442,7 +1442,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     private void fixRootHierarchy(OntoModel model) {
         Concept thing = model.getConcept( IRI.create( NamespaceUtils.getNamespaceByPrefix( "owl" ).getURI() + "#Thing"  ).toQuotedString() );
         if ( thing.getProperties().size() > 0 ) {
-            Concept localRoot = new Concept( IRI.create( model.getDefaultNamespace() + "#Thing" ), "Thing", false );
+            Concept localRoot = new Concept(
+                    IRI.create( NameUtils.separatingName( model.getDefaultNamespace() ) + "Thing" ),
+                    "Thing",
+                    false );
             model.addConcept( localRoot );
 
             localRoot.addSuperConcept( thing );
@@ -1690,31 +1693,42 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case HERMIT:
             default:
                 OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
-                if ( owler == null ) {
-                    owler = reasonerFactory.createNonBufferingReasoner( ontoDescr, config );
-                    owler.precomputeInferences( InferenceType.CLASS_HIERARCHY,
-                                             InferenceType.CLASS_ASSERTIONS,
+//                if ( owler == null ) {
+                owler = reasonerFactory.createReasoner( ontoDescr, config );
+                owler.precomputeInferences( InferenceType.CLASS_HIERARCHY,
+                        InferenceType.CLASS_ASSERTIONS,
 
-                                             InferenceType.OBJECT_PROPERTY_ASSERTIONS,
-                                             InferenceType.DATA_PROPERTY_ASSERTIONS,
+                        InferenceType.OBJECT_PROPERTY_ASSERTIONS,
+                        InferenceType.DATA_PROPERTY_ASSERTIONS,
 
-                                             InferenceType.DIFFERENT_INDIVIDUALS,
-                                             InferenceType.SAME_INDIVIDUAL,
+                        InferenceType.DIFFERENT_INDIVIDUALS,
+                        InferenceType.SAME_INDIVIDUAL,
 
-                                             InferenceType.DISJOINT_CLASSES,
+                        InferenceType.DISJOINT_CLASSES,
 
-         //                                        InferenceType.DATA_PROPERTY_HIERARCHY,
-                                             InferenceType.OBJECT_PROPERTY_HIERARCHY
-                     );
+                        //                                        InferenceType.DATA_PROPERTY_HIERARCHY,
+                        InferenceType.OBJECT_PROPERTY_HIERARCHY
+                );
 
-                    reasoner = new InferredOntologyGenerator( owler );
-                    for ( InferredAxiomGenerator ax : reasoner.getAxiomGenerators() ) {
-                        if ( ax instanceof InferredSubDataPropertyAxiomGenerator ) {
-                            reasoner.removeGenerator( ax );
-                        }
+                reasoner = new InferredOntologyGenerator( owler );
+                for ( InferredAxiomGenerator ax : reasoner.getAxiomGenerators() ) {
+                    if ( ax instanceof InferredSubDataPropertyAxiomGenerator ) {
+                        reasoner.removeGenerator( ax );
                     }
-
+                    if ( ax instanceof InferredEquivalentDataPropertiesAxiomGenerator ) {
+                        reasoner.removeGenerator( ax );
+                    }
+//                        if ( ax instanceof InferredDataPropertyAxiomGenerator ) {
+//                            reasoner.removeGenerator( ax );
+//                        }
+//                        if ( ax instanceof InferredDataPropertyCharacteristicAxiomGenerator ) {
+//                            reasoner.removeGenerator( ax );
+//                        }
                 }
+//                for ( InferredAxiomGenerator ax : reasoner.getAxiomGenerators() ) {
+//                    System.err.println( "Inferencer will do " + ax );
+//                }
+//                }
         }
 
     }

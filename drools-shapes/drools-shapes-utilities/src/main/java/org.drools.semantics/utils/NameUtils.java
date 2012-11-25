@@ -185,7 +185,7 @@ public final class NameUtils {
     }
 
     public static String separatingName( String name ) {
-        return name.endsWith( "/" ) || name.endsWith( "#" ) ? name : ( name + "/" );
+        return name.endsWith( "/" ) || name.endsWith( "#" ) ? name : ( name + "#" );
     }
 
 

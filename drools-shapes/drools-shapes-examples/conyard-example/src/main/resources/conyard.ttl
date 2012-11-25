@@ -1036,14 +1036,14 @@ xsd:string rdf:type rdfs:Datatype .
             
             rdfs:subClassOf :Activity ,
                             [ rdf:type owl:Restriction ;
-                              owl:onProperty :requires ;
-                              owl:onClass :Equipment ;
-                              owl:maxQualifiedCardinality "3"^^xsd:nonNegativeInteger
-                            ] ,
-                            [ rdf:type owl:Restriction ;
                               owl:onProperty :involves ;
                               owl:onClass :Person ;
                               owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :requires ;
+                              owl:onClass :Equipment ;
+                              owl:maxQualifiedCardinality "3"^^xsd:nonNegativeInteger
                             ] .
 
 
@@ -1180,9 +1180,9 @@ xsd:string rdf:type rdfs:Datatype .
                                                )
                           ] ;
           
-          owl:hasKey ( :hasComment
+          owl:hasKey ( :oid
                      ) ,
-                     ( :oid
+                     ( :hasComment
                      ) .
 
 
@@ -1447,17 +1447,17 @@ xsd:string rdf:type rdfs:Datatype .
              
              rdfs:subClassOf :Activity ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :involves ;
-                               owl:onClass :Mason ;
-                               owl:minQualifiedCardinality "3"^^xsd:nonNegativeInteger
+                               owl:onProperty :requires ;
+                               owl:allValuesFrom :Bricks
                              ] ,
                              [ rdf:type owl:Restriction ;
                                owl:onProperty :involves ;
                                owl:allValuesFrom :Mason
                              ] ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :requires ;
-                               owl:allValuesFrom :Bricks
+                               owl:onProperty :involves ;
+                               owl:onClass :Mason ;
+                               owl:minQualifiedCardinality "3"^^xsd:nonNegativeInteger
                              ] ,
                              [ rdf:type owl:Restriction ;
                                owl:onProperty :requires ;
@@ -1631,6 +1631,12 @@ owl:Thing rdf:type owl:Class .
                 :Intruder
                 :WeldingTorchBrandX
                 :Worker
+              )
+] .
+[ rdf:type owl:AllDisjointProperties ;
+  owl:members ( :centerX
+                :centerY
+                :radius
               )
 ] .
 

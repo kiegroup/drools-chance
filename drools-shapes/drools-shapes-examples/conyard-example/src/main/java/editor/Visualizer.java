@@ -3,6 +3,7 @@ package editor;
 import com.clarkparsia.empire.annotation.InvalidRdfException;
 import com.clarkparsia.empire.annotation.RdfGenerator;
 import com.clarkparsia.openrdf.ExtGraph;
+import com.clarkparsia.openrdf.Graphs;
 import org.drools.owl.conyard.ConstructionYardImpl;
 import org.drools.owl.conyard.Painting;
 import org.drools.owl.conyard.PaintingImpl;
@@ -86,8 +87,9 @@ public class Visualizer extends JFrame {
         model = new FactGraphAnalyzer().analyzeObject( object );
 
         try {
-            ExtGraph tripples = RdfGenerator.asRdf(object);
-            tripples.write( System.out, RDFFormat.TURTLE );
+            org.openrdf.model.Graph tripples = RdfGenerator.asRdf(object);
+            ExtGraph ext = Graphs.extend( tripples );
+            ext.write( System.out, RDFFormat.TURTLE );
         } catch (InvalidRdfException e) {
             e.printStackTrace();
         } catch (IOException e) {

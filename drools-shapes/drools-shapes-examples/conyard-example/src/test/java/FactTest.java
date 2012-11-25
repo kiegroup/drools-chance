@@ -47,6 +47,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
 
@@ -461,12 +462,14 @@ public class FactTest {
 
 
     @Test
-    @Ignore("fix depedencies")
-    public void testJPA() {
+    public void testJPA() throws ClassNotFoundException {
 
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory( ObjectFactory.class.getPackage().getName() );
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(
+                "org.drools.owl.conyard:org.w3._2002._07.owl"
+        );
         EntityManager em = emf.createEntityManager();
+
+
 
         persist(painting, em);
 

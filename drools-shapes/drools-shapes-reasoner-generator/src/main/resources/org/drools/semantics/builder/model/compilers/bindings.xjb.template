@@ -137,6 +137,7 @@
 
                     <annox:annotate>
                         <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="tns:@{prop.name}" />
+                        <annox:annotate annox:class="javax.persistence.JoinTable" name="@{concept.name.toUpperCase()}IMPL_@{prop.name.toUpperCase()}" />
                     </annox:annotate>
 
 

@@ -70,7 +70,6 @@ public class DL_6_MixedNamespacesTest {
 
         ModelCompiler jcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
         jcompiler.setMode( ModelCompiler.Mode.HIERARCHY );
-        JarModel jarModel = (JarModel) jcompiler.compile( results );
 
 
         ModelCompiler compiler =  ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.XSDX);
@@ -82,6 +81,25 @@ public class DL_6_MixedNamespacesTest {
 
     }
 
+
+
+
+    @Test
+    public void testWWTPMix() {
+        String source1 = "wwtp_ok.ttl";
+        String source2 = "mulo.ttl";
+        Resource res = ResourceFactory.newClassPathResource(source1);
+        Resource res2 = ResourceFactory.newClassPathResource(source2);
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+
+        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
+        OntoModel results = factory.buildModel( "mule", new Resource[] { res, res2 }, kSession );
+
+        assertEquals( 37, results.getIndividuals().size() );
+        assertEquals( "it.bologna.enea.utvalamb.wwtp.mulo", results.getDefaultPackage() );
+
+    }
 
 
 }

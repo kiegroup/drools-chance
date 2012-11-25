@@ -67,14 +67,14 @@
     <dependency>
       <groupId>com.clarkparsia</groupId>
       <artifactId>Empire-core</artifactId>
-      <version>0.7.2</version>
+      <version>0.7.3</version>
     </dependency>
 
 
     <dependency>
       <groupId>com.clarkparsia</groupId>
       <artifactId>Empire-sesame2</artifactId>
-      <version>0.7.2</version>
+      <version>0.7.3</version>
       <scope>test</scope>
     </dependency>
 
@@ -317,7 +317,7 @@
           <dependency>
             <groupId>com.clarkparsia</groupId>
             <artifactId>Empire-core</artifactId>
-            <version>0.7</version>
+            <version>0.7.3</version>
           </dependency>
           <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>

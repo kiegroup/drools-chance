@@ -429,9 +429,7 @@ xsd:string rdf:type rdfs:Datatype .
                                                                     
                                                                     rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ;
                                                                     
-                                                                    rdfs:range xsd:string ;
-                                                                    
-                                                                    rdfs:subPropertyOf owl:topDataProperty .
+                                                                    rdfs:range xsd:string .
 
 
 
@@ -772,13 +770,13 @@ xsd:string rdf:type rdfs:Datatype .
                                                                   
                                                                   rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ,
                                                                                   [ rdf:type owl:Restriction ;
+                                                                                    owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> ;
+                                                                                    owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaPattern>
+                                                                                  ] ,
+                                                                                  [ rdf:type owl:Restriction ;
                                                                                     owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#aboutRule> ;
                                                                                     owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ;
                                                                                     owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
-                                                                                  ] ,
-                                                                                  [ rdf:type owl:Restriction ;
-                                                                                    owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> ;
-                                                                                    owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaPattern>
                                                                                   ] ,
                                                                                   [ rdf:type owl:Restriction ;
                                                                                     owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#aboutRule> ;
@@ -844,6 +842,11 @@ xsd:string rdf:type rdfs:Datatype .
                                                                          
                                                                          rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ,
                                                                                          [ rdf:type owl:Restriction ;
+                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> ;
+                                                                                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                           owl:onDataRange xsd:string
+                                                                                         ] ,
+                                                                                         [ rdf:type owl:Restriction ;
                                                                                            owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#upperThreshold> ;
                                                                                            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
                                                                                            owl:onDataRange xsd:string
@@ -851,11 +854,6 @@ xsd:string rdf:type rdfs:Datatype .
                                                                                          [ rdf:type owl:Restriction ;
                                                                                            owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator> ;
                                                                                            owl:hasValue "between"^^xsd:string
-                                                                                         ] ,
-                                                                                         [ rdf:type owl:Restriction ;
-                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> ;
-                                                                                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                                                                                           owl:onDataRange xsd:string
                                                                                          ] ,
                                                                                          [ rdf:type owl:Restriction ;
                                                                                            owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#lowerThreshold> ;
@@ -871,13 +869,13 @@ xsd:string rdf:type rdfs:Datatype .
                                                               
                                                               rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RuleThing> ,
                                                                               [ rdf:type owl:Restriction ;
-                                                                                owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConclusion> ;
-                                                                                owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Conclusion> ;
+                                                                                owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> ;
+                                                                                owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> ;
                                                                                 owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
                                                                               ] ,
                                                                               [ rdf:type owl:Restriction ;
-                                                                                owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> ;
-                                                                                owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> ;
+                                                                                owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConclusion> ;
+                                                                                owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Conclusion> ;
                                                                                 owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
                                                                               ] .
 
@@ -911,12 +909,12 @@ xsd:string rdf:type rdfs:Datatype .
                                                                          
                                                                          rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ,
                                                                                          [ rdf:type owl:Restriction ;
-                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasValue> ;
+                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> ;
                                                                                            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
                                                                                            owl:onDataRange xsd:string
                                                                                          ] ,
                                                                                          [ rdf:type owl:Restriction ;
-                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> ;
+                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasValue> ;
                                                                                            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
                                                                                            owl:onDataRange xsd:string
                                                                                          ] .
