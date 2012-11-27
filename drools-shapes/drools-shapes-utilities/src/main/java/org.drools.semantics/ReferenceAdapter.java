@@ -74,8 +74,12 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
     }
 
     public Collection getObjects() {
-            return cache.values();
-        }
+        return cache.values();
+    }
+
+    public Object getObject( String key ) {
+        return cache.get( key );
+    }
 
     @Override
     public Thing unmarshal(UIdAble v) throws Exception {
@@ -118,6 +122,7 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
                 Class k = x.getClass();
                 UIdAble alter = (UIdAble) k.newInstance();
                 alter.setDyEntryId( x.getDyEntryId() );
+                alter.setDyEntryType( x.getDyEntryType() );
                 alter.setDyReference( true );
                 return alter;
             }

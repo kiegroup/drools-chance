@@ -17,6 +17,8 @@
 package org.drools.semantics.builder.model;
 
 
+import org.drools.semantics.builder.model.compilers.ModelCompiler;
+
 import java.util.List;
 import java.util.Set;
 
@@ -158,8 +160,8 @@ public abstract class ModelImpl implements OntoModel {
         innerModel.elevate();
     }
 
-    public boolean isFlat() {
-        return innerModel.isFlat();
-    }
 
+    public ModelCompiler.Mode getMode() {
+        return  innerModel.getMode();
+    }
 }

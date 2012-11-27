@@ -110,7 +110,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                 getModel().elevate();
                 getModel().addTrait( name, buildTypeAsHierarchy( con, params, isTransientPropertiesEnabled() ) );
                 break;
-            case LEVELLED: getModel().raze();
+            case VARIANT: getModel().raze();
                 getModel().raze();
                 getModel().addTrait( name, buildTypeAsLevelled( con, params, isTransientPropertiesEnabled() ) );
                 break;

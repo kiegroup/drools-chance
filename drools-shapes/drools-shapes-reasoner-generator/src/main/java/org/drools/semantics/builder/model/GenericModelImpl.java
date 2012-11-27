@@ -2,6 +2,7 @@
 package org.drools.semantics.builder.model;
 
 
+import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.utils.NameUtils;
 import org.w3._2002._07.owl.Thing;
 
@@ -16,7 +17,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private String name;
 
-    private boolean flat = false;
+    private ModelCompiler.Mode mode = ModelCompiler.Mode.HIERARCHY;
     
     private Set<Individual> individuals = new HashSet<Individual>();
 
@@ -35,7 +36,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         GenericModelImpl twin = newInstance();
         twin.setDefaultPackage( defaultPackage );
         twin.setName( name );
-        twin.setFlat( flat );
+        twin.setMode(mode);
         twin.setConcepts( new LinkedHashMap<String, Concept>( concepts ) );
         twin.setSubConcepts( new HashSet<SubConceptOf>( subConcepts ) );
         twin.setProperties( new HashMap<String, Set<PropertyRelation>>( properties ) );
@@ -214,7 +215,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
 
     public void flatten() {
-        if ( ! isFlat() ) {
+        if ( mode == ModelCompiler.Mode.HIERARCHY ) {
             for ( String conceptName : concepts.keySet() ) {
                 Concept con = concepts.get( conceptName );
                 Map<String, PropertyRelation> baseProps = con.getProperties();
@@ -229,12 +230,12 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                 }
                 con.setShadowed( true );
             }
-            flat = true;
+            mode = ModelCompiler.Mode.FLAT;
         }
     }
 
     public void raze() {
-        if ( ! isFlat() ) {
+        if ( mode == ModelCompiler.Mode.HIERARCHY ) {
             flatten();
         }
 
@@ -263,12 +264,14 @@ public class GenericModelImpl implements OntoModel, Cloneable {
             }
         }
 
+        mode = ModelCompiler.Mode.VARIANT;
+
     }
 
 
 
     public void elevate() {
-        if ( isFlat() ) {
+        if ( mode != ModelCompiler.Mode.HIERARCHY ) {
             for ( String conceptName : concepts.keySet() ) {
                 Concept con = concepts.get( conceptName );
 
@@ -289,20 +292,17 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                 con.setShadowed( false );
             }
 
-            flat = true;
+            mode = ModelCompiler.Mode.HIERARCHY;
         }
     }
 
-    public boolean isFlat() {
-        return flat;
+    public ModelCompiler.Mode getMode() {
+        return mode;
     }
 
-    protected void setFlat( boolean flat ) {
-        this.flat = flat;
+    protected void setMode(ModelCompiler.Mode mode) {
+        this.mode = mode;
     }
-
-
-
 
     public void resolve( ) {
 //        for ( Concept con : getConcepts() ) {

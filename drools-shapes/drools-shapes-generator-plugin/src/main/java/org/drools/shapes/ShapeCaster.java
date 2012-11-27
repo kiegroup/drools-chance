@@ -391,7 +391,7 @@ public class ShapeCaster
 
         if ( isGenerateInterfaceJar() || isGenerateInterfaces() ) {
 
-            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.LEVELLED;
+            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.VARIANT;
             if ( isPreserveInheritanceInImpl() ) {
                 results.elevate();
             } else {
@@ -427,7 +427,7 @@ public class ShapeCaster
 
         if ( isGenerateDefaultImplClasses() ) {
 
-            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.LEVELLED;
+            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.VARIANT;
             if ( isPreserveInheritanceInImpl() ) {
                 results.elevate();
             } else {
@@ -503,7 +503,7 @@ public class ShapeCaster
         }
 
         if ( isGenerateIndividuals() ) {
-            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.LEVELLED;
+            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.VARIANT;
             ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
             compiler.setMode( mode );
             SemanticXSDModel xsdModel;

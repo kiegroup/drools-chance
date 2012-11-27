@@ -30,10 +30,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.spi.PersistenceProvider;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlNs;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -87,8 +89,6 @@ public class FactTest {
 
 
         unmarshaller = jaxbContext.createUnmarshaller();
-
-
 
 
     }
@@ -156,6 +156,15 @@ public class FactTest {
         assertEquals( 10, (int) ((Stair) painting.getRequiresAlso().get( 0 )).getStairLength() );
 
         assertEquals( 3, painting.getInvolves().size() );
+
+//        boolean found = false;
+//        for ( Person p : painting.getInvolves() ) {
+//            if ( p.getParticipatesIn().size() > 0 ) {
+//                assertEquals( painting.getOid(), p.getParticipatesIn().get( 0 ).getOid() );
+//                found = true;
+//            }
+//        }
+//        assertTrue( found );
 
     }
 
@@ -612,6 +621,77 @@ public class FactTest {
             fail(e.getMessage());
         }
 
+    }
+
+
+    @Test
+    public void testJaxbFromStringEmptyContext() {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<PaintingImpl xmlns=\"http://owl.drools.org/conyard\">\n" +
+                "    <dyReference>false</dyReference>\n" +
+                "    <dyEntryId>http://ed4355f5-35ab-43e5-8527-c0e49fd555e4</dyEntryId>\n" +
+                "    <involves>\n" +
+                "        <dyEntryType>Person</dyEntryType>\n" +
+                "        <dyReference>false</dyReference>\n" +
+                "        <dyEntryId>http://dc04373e-ac52-41ed-8ab2-165c3642bce8</dyEntryId>\n" +
+                "    </involves>\n" +
+                "    <involves xsi:type=\"Labourer\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                "        <dyEntryType>Labourer</dyEntryType>\n" +
+                "        <dyReference>false</dyReference>\n" +
+                "        <dyEntryId>http://c33f8564-9fbf-4366-be28-f4f7a28b7eb5</dyEntryId>\n" +
+                "    </involves>\n" +
+                "    <involves xsi:type=\"Labourer\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                "        <dyEntryType>Labourer</dyEntryType>\n" +
+                "        <dyReference>false</dyReference>\n" +
+                "        <dyEntryId>http://1df5204c-52cf-44e3-9c20-9c0c230ac776</dyEntryId>\n" +
+                "        <participatesIn xsi:type=\"Painting\">\n" +
+                "            <dyEntryType>Painting</dyEntryType>\n" +
+                "            <dyReference>true</dyReference>\n" +
+                "            <dyEntryId>http://ed4355f5-35ab-43e5-8527-c0e49fd555e4</dyEntryId>\n" +
+                "        </participatesIn>\n" +
+                "    </involves>\n" +
+                "    <hasComment>Some comment on this object</hasComment>\n" +
+                "    <startsOn>2012-11-26T18:48:04Z</startsOn>\n" +
+                "    <requires xsi:type=\"Stair\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                "        <dyEntryType>Stair</dyEntryType>\n" +
+                "        <dyReference>false</dyReference>\n" +
+                "        <dyEntryId>http://72eea3a5-f5a1-44b6-879d-df64559b9f92</dyEntryId>\n" +
+                "        <stairLength>10</stairLength>\n" +
+                "    </requires>\n" +
+                "    <requires xsi:type=\"Paint\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                "        <dyEntryType>Paint</dyEntryType>\n" +
+                "        <dyReference>false</dyReference>\n" +
+                "        <dyEntryId>http://92c40710-2fee-4185-8657-42b1c12b70e2</dyEntryId>\n" +
+                "        <storedIn>\n" +
+                "            <dyEntryType>Site</dyEntryType>\n" +
+                "            <dyReference>false</dyReference>\n" +
+                "            <dyEntryId>http://b923f025-57ff-47d5-890c-4be3171822c7</dyEntryId>\n" +
+                "            <centerY>20.0</centerY>\n" +
+                "            <radius>100.0</radius>\n" +
+                "            <centerX>10.0</centerX>\n" +
+                "        </storedIn>\n" +
+                "    </requires>\n" +
+                "    <requires>\n" +
+                "        <dyEntryType>Equipment</dyEntryType>\n" +
+                "        <dyReference>false</dyReference>\n" +
+                "        <dyEntryId>http://5b8edc25-0ffe-403a-b91b-797a857c5f36</dyEntryId>\n" +
+                "    </requires>\n" +
+                "    <oid>oidX</oid>\n" +
+                "    <endsOn>2012-11-26T18:48:04Z</endsOn>\n" +
+                "    <requiresAlso xsi:type=\"Stair\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                "        <dyEntryType>Stair</dyEntryType>\n" +
+                "        <dyReference>true</dyReference>\n" +
+                "        <dyEntryId>http://72eea3a5-f5a1-44b6-879d-df64559b9f92</dyEntryId>\n" +
+                "    </requiresAlso>\n" +
+                "</PaintingImpl>\n";
+
+        try {
+            Object paint2 = unmarshaller.unmarshal( new StringReader( xml ) );
+            checkPainting( (Painting) paint2 );
+        } catch ( JAXBException jxe ) {
+            jxe.printStackTrace();
+            fail(jxe.getMessage());
+        }
     }
 
 }

@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-utilities</artifactId>
-      <version>5.5.0-SNAPSHOT</version>
+      <version>${chance.version}</version>
     </dependency>
 
     <!--dependency>

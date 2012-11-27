@@ -59,7 +59,7 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
             case HIERARCHY:
                 getModel().elevate();
                 break;
-            case LEVELLED:
+            case VARIANT:
                 getModel().raze();
                 break;
         }

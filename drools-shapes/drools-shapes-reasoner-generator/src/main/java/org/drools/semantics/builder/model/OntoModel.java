@@ -16,6 +16,8 @@
 
 package org.drools.semantics.builder.model;
 
+import org.drools.semantics.builder.model.compilers.ModelCompiler;
+
 import java.util.List;
 import java.util.Set;
 
@@ -81,7 +83,7 @@ public interface OntoModel extends Cloneable {
 
     public void elevate();
 
-    public boolean isFlat();
+    public ModelCompiler.Mode getMode();
 
 
 }
