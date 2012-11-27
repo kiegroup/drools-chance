@@ -299,11 +299,6 @@ public class ThingImpl
 
 
 
-
-
-
-
-
     public int hashCode() {
         if ( getDyEntryId() != null ) {
             return super.hashCode();
@@ -321,33 +316,6 @@ public class ThingImpl
      }
 
 
-
-
-
-
-
-
-//    public ThingImpl( Thing$$Shadow other ) {
-//        setDyEntryId( other.getDyEntryId() );
-//
-//    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public Object onCycleDetected( com.sun.xml.bind.CycleRecoverable.Context context ) {
 
            ThingImpl x = new ThingImpl();
@@ -355,19 +323,6 @@ public class ThingImpl
                x.setDyEntryType( "Thing" );
            return x;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @javax.persistence.Transient

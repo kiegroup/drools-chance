@@ -668,25 +668,25 @@ public class EditControlAdapter extends ControlAdapter {
 
         //TODO: cheating here...
 
-        Class shadow = null;
-        try {
-            shadow = Class.forName( range.getName() + "$$Shadow" );
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        addSubType( shadow, model);
+//        Class shadow = null;
+//        try {
+//            shadow = Class.forName( range.getName() + "$$Shadow" );
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+//        addSubType( shadow, model);
 
         box.setModel( model );
         return box;
     }
 
     private void addSubType(Class ix, DefaultComboBoxModel subs) {
-        if ( ix.getName().endsWith( "$$Shadow") ) {
-            subs.addElement(ix.getName().replace("$$Shadow", ""));
-            for ( Class sx : ix.getInterfaces() ) {
-                addSubType( sx, subs );
-            }
-        }
+//        if ( ix.getName().endsWith( "$$Shadow") ) {
+//            subs.addElement(ix.getName().replace("$$Shadow", ""));
+//            for ( Class sx : ix.getInterfaces() ) {
+//                addSubType( sx, subs );
+//            }
+//        }
     }
 
 

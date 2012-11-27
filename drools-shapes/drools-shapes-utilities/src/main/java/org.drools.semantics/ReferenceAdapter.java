@@ -92,14 +92,15 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
             if ( ! v.getClass().getName().equals( actualClass ) ) {
 
                 Class k = Class.forName( actualClass );
-                if ( k != null ) {
-                    String desiredClass = baseType + "$$Shadow";
-                    Class shadowInterface = Class.forName(desiredClass );
-                    if ( shadowInterface != null ) {
-                        Constructor con = k.getConstructor( shadowInterface );
-                        reborn = (UIdAble) con.newInstance( v );
-                    }
-                }
+                throw new UnsupportedOperationException( "Used to call a shadow constructor..." );
+//                if ( k != null ) {
+//                    String desiredClass = baseType + "$$Shadow";
+//                    Class shadowInterface = Class.forName(desiredClass );
+//                    if ( shadowInterface != null ) {
+//                        Constructor con = k.getConstructor( shadowInterface );
+//                        reborn = (UIdAble) con.newInstance( v );
+//                    }
+//                }
             }
 
             cache.put( reborn.getDyEntryId(), reborn );

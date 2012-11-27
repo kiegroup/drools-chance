@@ -1443,8 +1443,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         Concept thing = model.getConcept( IRI.create( NamespaceUtils.getNamespaceByPrefix( "owl" ).getURI() + "#Thing"  ).toQuotedString() );
         if ( thing.getProperties().size() > 0 ) {
             Concept localRoot = new Concept(
-                    IRI.create( NameUtils.separatingName( model.getDefaultNamespace() ) + "Thing" ),
-                    "Thing",
+                    IRI.create( NameUtils.separatingName( model.getDefaultNamespace() ) + "RootThing" ),
+                    "RootThing",
                     false );
             model.addConcept( localRoot );
 

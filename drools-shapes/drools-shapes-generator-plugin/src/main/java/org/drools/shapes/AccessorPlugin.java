@@ -144,9 +144,6 @@ public class AccessorPlugin extends Plugin {
             compileProperty( co.implClass, (Element) props.item( j ) );
         }
 
-
-        createShadowConstructor(co.implClass, props);
-
         createCycleManager(co.implClass);
 
 
@@ -165,28 +162,6 @@ public class AccessorPlugin extends Plugin {
         String method = SemanticXSDModelCompilerImpl.getTemplatedCode("onCycleDetected", vars);
 
                 implClass.direct(method);
-    }
-
-    private void createShadowConstructor(JDefinedClass implClass, NodeList props) {
-        List<PropEssentials> properties = new ArrayList<PropEssentials>();
-        for ( int j = 0; j < props.getLength(); j++ ) {
-            Element el = (Element) props.item( j ) ;
-
-            String name = el.getAttribute( "name" );
-            String type = el.getAttribute( "type" );
-            String simp = el.getAttribute( "simple" );
-            PropEssentials prop = new PropEssentials( name, type, Boolean.valueOf( simp ) );
-
-            properties.add( prop );
-        }
-
-        Map<String,Object> vars = new HashMap<String, Object>();
-        vars.put( "name", implClass.name().substring(0, implClass.name().length() - 4) ); //remove "Impl"
-        vars.put( "properties", properties );
-
-        String constructor = SemanticXSDModelCompilerImpl.getTemplatedCode("shadowConstructor", vars);
-
-        implClass.direct(constructor);
     }
 
 

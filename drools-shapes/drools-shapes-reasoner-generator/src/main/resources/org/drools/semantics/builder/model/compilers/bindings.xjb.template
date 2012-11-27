@@ -42,7 +42,6 @@
         <class name="@{concept.name}Impl"/>
 
         <inheritance:implements>@{concept.fullyQualifiedName}</inheritance:implements>
-        @if{ flat && concept.name != "org.w3._2002._07.owl.Thing" } <inheritance:implements>@{package}.@{concept.name + "$$Shadow"}</inheritance:implements> @end{}
         <inheritance:implements>com.sun.xml.bind.CycleRecoverable</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.Equals</inheritance:implements>
         <inheritance:implements>org.jvnet.jaxb2_commons.lang.HashCode</inheritance:implements>

@@ -45,7 +45,6 @@ public class DLTemplateManager {
     };
     protected static final String[] NAMED_TEMPLATES_JAVA = new String[] {
             "model/java/TraitInterface.template",
-            "model/java/ShadowInterface.template",
             "model/java/IndividualFactory.template",
             "model/java/package-info.java.template"
 
@@ -58,7 +57,6 @@ public class DLTemplateManager {
             "model/java/restrictedGetterSetter.template",
             "model/java/restrictedAddRemove.template",
             "model/java/chainGetter.template",
-            "model/java/shadowConstructor.template",
             "model/java/onCycleDetected.template",
             "model/java/equals.template",
             "model/java/hashKy.template",

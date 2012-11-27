@@ -56,18 +56,12 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
         ((JarModel) getModel()).addCompiledTrait( name, this.compile( name, params ) );
 
-        ((JarModel) getModel()).addCompiledTrait( name + "$$Shadow", this.compile( name + "$$Shadow", params ) );
 //     }
     }
 
 
     private JarModelImpl.Holder compile( String trait, Map<String, Object> params ) {
-        boolean isShadow = trait.endsWith( "$$Shadow" );
-        if ( isShadow ) {
-            return compileShadow( trait, params );
-        } else {
             return compileInterface( trait, params );
-        }
     }
 
     private JarModelImpl.Holder compileInterface( String trait, Map<String, Object> params ) {
@@ -268,135 +262,6 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
 
 
-    private JarModelImpl.Holder compileShadow( String trait, Map<String, Object> params ) {
-
-        ClassWriter cw = new ClassWriter(0);
-        FieldVisitor fv;
-        MethodVisitor mv;
-        AnnotationVisitor av0;
-
-
-//        String pack = ( (String) params.get( "package" ) ).replace( ".", "/" ) + "/";
-
-        Set<Concept> sup =  ((Set<Concept>) params.get( "subConcepts" ) );
-
-        String[] superTypes = new String[ sup.size() +1 ];
-        superTypes[0] = Type.getInternalName( SupportsRdfId.class );
-        int j = 1;
-        for ( Iterator<Concept> iter = sup.iterator(); iter.hasNext(); ) {
-            superTypes[j++] = iter.next().getFullyQualifiedName().replace( ".", "/" ) + "$$Shadow";
-        }
-
-
-        Map<String, PropertyRelation> props =  (Map<String, PropertyRelation>) params.get( "shadowProperties" );
-                                                                                         
-
-
-
-        cw.visit(V1_5, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
-                trait.replace( ".", "/" ),
-                null,
-                Type.getInternalName( Object.class ),
-                superTypes);
-
-        {
-            av0 = cw.visitAnnotation( Type.getDescriptor( RdfsClass.class ), true );
-            av0.visit( "value", "tns:" + params.get( "name" ) );
-            av0.visitEnd();
-        }
-        {
-            av0 = cw.visitAnnotation( Type.getDescriptor( Namespaces.class ), true);
-            {
-                AnnotationVisitor av1 = av0.visitArray( "value" );
-                av1.visit( null, "tns" );
-//                av1.visit( null, "http://" + pack + "#" );
-                av1.visit( null, params.get( "namespace" ) );
-                av1.visitEnd();
-            }
-            av0.visitEnd();
-        }
-
-        {
-            mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT, "getDyEntryId", "()" + Type.getDescriptor( String.class ), null, null );
-            {
-                av0 = mv.visitAnnotation( Type.getDescriptor( XmlID.class ), true );
-                av0.visitEnd();
-            }
-            mv.visitEnd();
-        }
-        {
-            mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT, "setDyEntryId", "(" + Type.getDescriptor( String.class ) + ")V", null, null );
-            mv.visitEnd();
-        }
-
-
-
-
-        for ( String propKey : props.keySet() ) {
-            PropertyRelation rel = props.get( propKey );
-            String propName = rel.getName();
-            propName = propName.substring( 0, 1 ).toUpperCase() + propName.substring( 1 );
-            //String target =  pack + props.get( rel ).getName();
-            String target = rel.getTarget().getFullyQualifiedName();
-            boolean isBoolean = target.equalsIgnoreCase( "xsd:boolean" );
-            if ( target.startsWith("xsd:") ) {
-                target = NameUtils.map( target, rel.getMaxCard() == null || rel.getMaxCard() != 1 ).replace( ".", "/" );
-            } else {
-                target = target.replace( ".", "/" );
-            }
-
-            String propType = BuildUtils.getTypeDescriptor( target );
-            String genericGetType = null;
-            String genericSetType = null;
-            if ( rel.getMaxCard() == null || rel.getMaxCard() != 1  ) {
-                genericGetType = "()Ljava/util/List<" + propType + ">;";
-                genericSetType = "(Ljava/util/List<" + propType + ">;)V";
-                propType = Type.getDescriptor( List.class );
-                isBoolean = false;
-            }
-
-
-            if ( ! rel.isRestricted() && ! rel.isTransient() ) {
-                mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                        NameUtils.getter( rel.getName(), rel.getTarget().getFullyQualifiedName(), rel.getMaxCard() ),
-                        "()" + propType,
-                        genericGetType,
-                        null);
-                if ( ! rel.isRestricted() && ! rel.isTransient() ) {
-                    av0 = mv.visitAnnotation( Type.getDescriptor( RdfProperty.class ), true );
-                    av0.visit( "value", "tns:" + propName );
-                    av0.visitEnd();
-                    if ( rel.isSimple() ) {
-                        av0 = mv.visitAnnotation( Type.getDescriptor( Basic.class ), true);
-                        av0.visitEnd();
-                    } else {
-                        av0 = mv.visitAnnotation( Type.getDescriptor( OneToMany.class ), true);
-                        {
-                            AnnotationVisitor av1 = av0.visitArray( "cascade" );
-                            av1.visitEnum( null,  Type.getDescriptor( CascadeType.class ), "PERSIST" );
-                            av1.visitEnd();
-                        }
-                        av0.visitEnd();
-                    }
-
-                    mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            NameUtils.setter( rel.getName() ),
-                            "(" + propType + ")V",
-                            genericSetType,
-                            null);
-                    mv.visitEnd();
-                }
-
-                mv.visitEnd();
-            }
-
-        }
-
-        cw.visitEnd();
-
-        return new JarModelImpl.Holder( cw.toByteArray() );
-
-    }
 
 
 
