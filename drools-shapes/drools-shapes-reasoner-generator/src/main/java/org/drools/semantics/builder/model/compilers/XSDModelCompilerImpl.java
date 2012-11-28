@@ -29,26 +29,14 @@ import java.util.Set;
 
 public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelCompiler {
 
-
-
-    protected Mode mode = Mode.HIERARCHY;
-
     protected Map<String,Map<String,PropertyRelation>> propCache = new HashMap<String, Map<String, PropertyRelation>>();
 
     protected Map<String,String> reverseNamespaces = new HashMap<String,String>();
 
-    private String schemaMode;
+    private XSDSchemaMode schemaMode;
 
     private boolean transientPropertiesEnabled;
     private boolean useImplementation;
-
-    public void setMode( Mode m ) {
-        mode = m;
-    }
-
-    public Mode getCurrentMode() {
-        return mode;
-    }
 
 
     public boolean isTransientPropertiesEnabled() {
@@ -67,7 +55,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         this.useImplementation = useImplementation;
     }
 
-    public void setSchemaMode(String mode) {
+    public void setSchemaMode(XSDSchemaMode mode) {
         this.schemaMode = mode;
     }
 
@@ -101,7 +89,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
         getModel().addTrait( name, element );
 
-        switch( getCurrentMode() ) {
+        switch( model.getMode() ) {
             case FLAT:
                 getModel().flatten();
                 getModel().addTrait( name, buildTypeAsFlat( con, params, isTransientPropertiesEnabled() ) );

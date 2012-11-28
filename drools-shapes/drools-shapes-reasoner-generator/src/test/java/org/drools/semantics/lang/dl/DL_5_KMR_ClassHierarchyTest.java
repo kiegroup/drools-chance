@@ -27,6 +27,10 @@ import org.drools.semantics.builder.model.OntoModel;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
 
 /**
  * This is a sample class to launch a rule.
@@ -38,29 +42,48 @@ public class DL_5_KMR_ClassHierarchyTest  {
     
 
     @Test
-    @Ignore // need to check and update after refactor
-    public void testHierarchyFromClassesInternal() {
-        String source = "DLex7.manchester";
-        Resource res = ResourceFactory.newClassPathResource(source);
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
-
-        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.INTERNAL );
-        OntoModel results = factory.buildModel( "ex7", res, kSession );
-        System.out.println(results);
-    }
-
-
-    @Test
     public void testHierarchyFromClassesExternal() {
-        String source = "DLex7.manchester";
-        Resource res = ResourceFactory.newClassPathResource(source);
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
 
-        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
-        OntoModel results = factory.buildModel( "ex7", res, kSession );
+        String source = "DLex7.manchester";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "ex7", res, OntoModel.Mode.HIERARCHY );
+
         System.out.println(results);
+
+        assertEquals( 4, results.getProperties().size() );
+        assertEquals( "<_Test>", results.getProperty( "<_zimple3>" ).getSubject() );
+        assertEquals( "<http://www.w3.org/2001/XMLSchema#int>", results.getProperty( "<_zimple3>" ).getObject() );
+        assertEquals( "<http://jboss.org/drools/semantics/Zimple2Domain>", results.getProperty( "<_zimple2>" ).getSubject() );
+        assertEquals( "<http://www.w3.org/2001/XMLSchema#int>", results.getProperty( "<_zimple2>" ).getObject() );
+        assertEquals( "<http://jboss.org/drools/semantics/Zimple1Domain>", results.getProperty( "<_zimple1>" ).getSubject() );
+        assertEquals( "<http://www.w3.org/2001/XMLSchema#int>", results.getProperty( "<_zimple1>" ).getObject() );
+        assertEquals( "<_Test>", results.getProperty( "<_zimple1Integer>" ).getSubject() );
+        assertEquals( "<http://www.w3.org/2001/XMLSchema#int>", results.getProperty( "<_zimple1Integer>" ).getObject() );
+        assertEquals( 1, results.getProperty( "<_zimple1Integer>" ).getMaxCard().intValue() );
+
+        // restricted props contains the prop itself, too
+        assertEquals( 2, results.getProperty( "<_zimple1>" ).getRestrictedProperties().size() );
+
+        assertEquals( 7, results.getConcepts().size() );
+        assertNotNull( results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ) );
+        assertNotNull( results.getConcept( "<http://jboss.org/drools/semantics/Zimple1Domain>" ) );
+        assertNotNull( results.getConcept( "<http://jboss.org/drools/semantics/Zimple2Domain>" ) );
+        assertNotNull( results.getConcept( "<_Test3>" ) );
+        assertNotNull( results.getConcept( "<_Test2>" ) );
+        assertNotNull( results.getConcept( "<_Test>" ) );
+        assertNotNull( results.getConcept( "<_Fact>" ) );
+
+        assertEquals( 7, results.getSubConcepts().size() );
+        assertNotNull( results.getSubConceptOf( "<http://jboss.org/drools/semantics/Zimple1Domain>", "<http://www.w3.org/2002/07/owl#Thing>" ) );
+        assertNotNull( results.getSubConceptOf( "<http://jboss.org/drools/semantics/Zimple2Domain>", "<http://jboss.org/drools/semantics/Zimple1Domain>" ) );
+        assertNotNull( results.getSubConceptOf( "<_Test2>", "<http://jboss.org/drools/semantics/Zimple2Domain>" ) );
+        assertNotNull( results.getSubConceptOf( "<_Test>", "<http://jboss.org/drools/semantics/Zimple2Domain>" ) );
+        assertNotNull( results.getSubConceptOf( "<_Test3>", "<http://jboss.org/drools/semantics/Zimple1Domain>" ) );
+        assertNotNull( results.getSubConceptOf( "<_Test>", "<_Fact>" ) );
+        assertNotNull( results.getSubConceptOf( "<_Fact>", "<http://www.w3.org/2002/07/owl#Thing>" ) );
+
+
     }
 
 

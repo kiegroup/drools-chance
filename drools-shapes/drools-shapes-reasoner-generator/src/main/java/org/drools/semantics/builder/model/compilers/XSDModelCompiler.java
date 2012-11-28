@@ -26,6 +26,24 @@ public interface XSDModelCompiler extends ModelCompiler {
 
     public void setUseImplementation( boolean flag );
 
-    public void setSchemaMode( String mode );
+
+    public enum XSDSchemaMode {
+        SPEC( "_$spec" ),
+        IMPL( "_$impl" ),
+        FULL( "_$full" ),
+        JAXB( "" );
+
+        String ext;
+
+        XSDSchemaMode( String ext ) {
+            this.ext = ext;
+        }
+
+        public String getFileSuffix() {
+            return ext;
+        }
+    }
+
+    public void setSchemaMode( XSDSchemaMode mode );
 
 }

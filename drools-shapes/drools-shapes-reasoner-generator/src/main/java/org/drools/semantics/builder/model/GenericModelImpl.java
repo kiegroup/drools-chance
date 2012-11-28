@@ -17,7 +17,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private String name;
 
-    private ModelCompiler.Mode mode = ModelCompiler.Mode.HIERARCHY;
+    private Mode mode = Mode.HIERARCHY;
     
     private Set<Individual> individuals = new HashSet<Individual>();
 
@@ -215,7 +215,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
 
     public void flatten() {
-        if ( mode == ModelCompiler.Mode.HIERARCHY ) {
+        if ( mode == Mode.HIERARCHY ) {
             for ( String conceptName : concepts.keySet() ) {
                 Concept con = concepts.get( conceptName );
                 Map<String, PropertyRelation> baseProps = con.getProperties();
@@ -230,12 +230,12 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                 }
                 con.setShadowed( true );
             }
-            mode = ModelCompiler.Mode.FLAT;
+            mode = Mode.FLAT;
         }
     }
 
     public void raze() {
-        if ( mode == ModelCompiler.Mode.HIERARCHY ) {
+        if ( mode == Mode.HIERARCHY ) {
             flatten();
         }
 
@@ -264,14 +264,14 @@ public class GenericModelImpl implements OntoModel, Cloneable {
             }
         }
 
-        mode = ModelCompiler.Mode.VARIANT;
+        mode = Mode.VARIANT;
 
     }
 
 
 
     public void elevate() {
-        if ( mode != ModelCompiler.Mode.HIERARCHY ) {
+        if ( mode != Mode.HIERARCHY ) {
             for ( String conceptName : concepts.keySet() ) {
                 Concept con = concepts.get( conceptName );
 
@@ -292,50 +292,19 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                 con.setShadowed( false );
             }
 
-            mode = ModelCompiler.Mode.HIERARCHY;
+            mode = Mode.HIERARCHY;
         }
     }
 
-    public ModelCompiler.Mode getMode() {
+    public Mode getMode() {
         return mode;
     }
 
-    protected void setMode(ModelCompiler.Mode mode) {
+    public void setMode(Mode mode) {
         this.mode = mode;
     }
 
-    public void resolve( ) {
-//        for ( Concept con : getConcepts() ) {
-//            if ( con.getIri().startsWith("<java://") ) {
-//                String fullName = NameUtils.buildFQNameFromIri( con.getIri() );
-//                System.out.println( "Looking for " + con.getName() + " as " + fullName );
-//                try {
-//                    Class existingKlass = Class.forName( fullName );
-//                    if ( existingKlass != null ) {
-//                        System.out.println( "FOUND!!!! "+ existingKlass.getName() );
-//                        con.setFullyQualifiedName( fullName );
-//                        con.setResolved( true );
-//                        if ( existingKlass.isInterface() ) {
-//                            con.setResolvedAs( Concept.Resolution.IFACE );
-//                        } else if ( existingKlass.isEnum() ) {
-//                            con.setResolvedAs( Concept.Resolution.ENUM );
-//                        } else {
-//                            con.setResolvedAs( Concept.Resolution.CLASS );
-//                        }
-//                    }
-//                    else {
-//                        con.setFullyQualifiedName( name );
-////                        System.out.println( con.getName() + " Is Novel ");
-//                    }
-//
-//                } catch ( ClassNotFoundException e ) {
-//                    con.setFullyQualifiedName( name );
-////                    System.out.println( con.getName() + "Is Novel ");
-//                }
-//            }
-//        }
 
-    }
 
 
 

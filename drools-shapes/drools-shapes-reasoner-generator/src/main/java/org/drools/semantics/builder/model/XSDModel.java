@@ -17,6 +17,7 @@
 package org.drools.semantics.builder.model;
 
 
+import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.jdom.Document;
 import org.jdom.Namespace;
 
@@ -40,5 +41,5 @@ public interface XSDModel extends CompiledOntoModel {
 
     public void setNamespace( String ns, String nameSpace );
 
-    public void setSchemaMode( String schemMode );
+    public void setSchemaMode( XSDModelCompiler.XSDSchemaMode schemMode );
 }

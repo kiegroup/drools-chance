@@ -21,44 +21,52 @@ import org.drools.io.Resource;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.inference.ModelInferenceStrategy;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 
+import java.util.List;
 import java.util.Map;
 
 public interface DLFactory {
 
 
-    public enum INFERENCE_STRATEGY { INTERNAL, EXTERNAL }
-    public enum SupportedReasoners { HERMIT /*, PELLET */ }
-
-    public void setInferenceStrategy( INFERENCE_STRATEGY strategy );
-    public void setExternalReasoner( SupportedReasoners externalReasoner );
-
-
-
-
     public OWLOntology parseOntology( Resource resource );
-
-
-
 
 
     public String buildTableauRules( OWLOntology ontologyDescr, Resource[] visitor );
 
 
 
+    public OntoModel buildModel( String name,
+                                 Resource res,
+                                 OntoModel.Mode mode );
 
+    public OntoModel buildModel( String name,
+                                 Resource[] res,
+                                 OntoModel.Mode mode );
 
+    public OntoModel buildModel( String name,
+                                 Resource res,
+                                 OntoModel.Mode mode,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens );
 
-    public OntoModel buildModel( String name, OWLOntology ontoDescr, Map<ModelInferenceStrategy.InferenceTask, Resource> theory );
+    public OntoModel buildModel( String name,
+                                 Resource[] res,
+                                 OntoModel.Mode mode,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens );
 
-    public OntoModel buildModel( String name, Resource res, StatefulKnowledgeSession kSession );
+    public OntoModel buildModel( String name,
+                                 Resource res,
+                                 OntoModel.Mode mode,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
+                                 List<ModelInferenceStrategy.InferenceTask> tasks );
 
-    public OntoModel buildModel( String name, Resource[] res, StatefulKnowledgeSession kSession );
-
-    public OntoModel buildModel( String name, Resource res );
-
-    public OntoModel buildModel( String name, Resource[] res );
+    public OntoModel buildModel( String name,
+                                 Resource[] res,
+                                 OntoModel.Mode mode,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
+                                 List<ModelInferenceStrategy.InferenceTask> tasks );
 
 
 }

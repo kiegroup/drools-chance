@@ -29,10 +29,6 @@ public class GraphModelCompilerImpl extends ModelCompilerImpl implements GraphMo
     }
 
 
-    public void setMode(Mode mode) {
-        //TODO
-    }
-
     public CompiledOntoModel compile( OntoModel model ) {
         setModel( model );
         GraphModel gModel = (GraphModel) getModel();

@@ -19,18 +19,26 @@ package org.drools.semantics.builder.model.inference;
 import org.drools.io.Resource;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.model.OntoModel;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ModelInferenceStrategy {
-
 
     public enum InferenceTask {
         COMMON, TABLEAU, CLASS_LATTICE_BUILD_AND_PRUNE, CLASS_LATTICE_PRUNE, PROPERTY_MATCH
     }
 
-    public OntoModel buildModel( String name, OWLOntology ontoDescr, Map<InferenceTask, Resource> theory, StatefulKnowledgeSession kSession );
+    public OntoModel buildModel( String name,
+                                 OWLOntology ontoDescr,
+                                 OntoModel.Mode mode,
+                                 Map<InferenceTask, Resource> theory,
+//                                 StatefulKnowledgeSession kSession,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens );
+
 
 
 }

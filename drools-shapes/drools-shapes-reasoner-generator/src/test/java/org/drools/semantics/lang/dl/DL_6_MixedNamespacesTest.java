@@ -60,20 +60,12 @@ public class DL_6_MixedNamespacesTest {
         String source2 = "mixed.owl";
         Resource res = ResourceFactory.newClassPathResource(source1);
         Resource res2 = ResourceFactory.newClassPathResource(source2);
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
 
-        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
-        OntoModel results = factory.buildModel( "mixedModel", new Resource[] { res, res2 }, kSession );
+        OntoModel results = factory.buildModel( "mixedModel", new Resource[] { res, res2 }, OntoModel.Mode.HIERARCHY );
 
         System.out.println( results );
 
-        ModelCompiler jcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
-        jcompiler.setMode( ModelCompiler.Mode.HIERARCHY );
-
-
         ModelCompiler compiler =  ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.XSDX);
-        compiler.setMode( ModelCompiler.Mode.HIERARCHY );
         SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
 
         assertEquals( 4, xsdModel.getNamespaces().size() );
@@ -90,11 +82,8 @@ public class DL_6_MixedNamespacesTest {
         String source2 = "mulo.ttl";
         Resource res = ResourceFactory.newClassPathResource(source1);
         Resource res2 = ResourceFactory.newClassPathResource(source2);
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
 
-        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
-        OntoModel results = factory.buildModel( "mule", new Resource[] { res, res2 }, kSession );
+        OntoModel results = factory.buildModel( "mule", new Resource[] { res, res2 }, OntoModel.Mode.HIERARCHY );
 
         assertEquals( 37, results.getIndividuals().size() );
         assertEquals( "it.bologna.enea.utvalamb.wwtp.mulo", results.getDefaultPackage() );

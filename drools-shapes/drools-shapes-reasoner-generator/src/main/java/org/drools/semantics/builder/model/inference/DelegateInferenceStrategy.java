@@ -17,25 +17,88 @@
 package org.drools.semantics.builder.model.inference;
 
 //import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+
 import org.apache.commons.collections15.map.MultiKeyMap;
 import org.drools.io.Resource;
 import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.semantics.builder.DLFactory;
+import org.drools.semantics.builder.model.Concept;
+import org.drools.semantics.builder.model.Individual;
+import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.PropertyRelation;
+import org.drools.semantics.builder.model.SubConceptOf;
 import org.drools.semantics.utils.NameUtils;
-import org.drools.semantics.builder.model.*;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.semanticweb.HermiT.Reasoner;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLCardinalityRestriction;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
+import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataExactCardinality;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
+import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLHasKeyAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
+import org.semanticweb.owlapi.model.OWLObjectHasSelf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.OWLQuantifiedDataRestriction;
+import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
 import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
-import org.semanticweb.owlapi.util.*;
+import org.semanticweb.owlapi.util.InferredAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
@@ -44,23 +107,12 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     public static int minCounter = 0;
     public static int maxCounter = 0;
 
-    private OWLReasoner               owler;
-    private InferredOntologyGenerator reasoner;
-
     private Map<OWLClassExpression,OWLClassExpression> aliases;
 
     private Map<String, Concept> conceptCache = new HashMap<String, Concept>();
     private Map<String, String> individualTypesCache = new HashMap<String, String>();
     private Map<OWLClassExpression, OWLClass> fillerCache = new HashMap<OWLClassExpression, OWLClass>();
     private Map<String, String> props = new HashMap<String, String>();
-
-
-
-    private static DLFactory.SupportedReasoners externalReasoner = DLFactory.SupportedReasoners.HERMIT;
-    public static void setExternalReasoner( DLFactory.SupportedReasoners newReasoner ) {
-        externalReasoner = newReasoner;
-    }
-
 
 
     private MultiKeyMap minCards = new MultiKeyMap();
@@ -71,6 +123,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         Concept con = new Concept( i1, klass, true );
         primitives.put( i1.toQuotedString(), con );
     }
+
+
 
     private static Map<String, Concept> primitives = new HashMap<String, Concept>();
 
@@ -1387,15 +1441,19 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
 
-    @Override
-    protected OntoModel buildClassLattice(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel baseModel) {
+    protected OntoModel buildClassLattice( OWLOntology ontoDescr,
+                                           StatefulKnowledgeSession kSession,
+                                           Map<InferenceTask,
+                                           Resource> theory,
+                                           OntoModel baseModel,
+                                           List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators ) {
 
         boolean dirty = true;
         OWLDataFactory factory = ontoDescr.getOWLOntologyManager().getOWLDataFactory();
-        addResource(kSession, theory.get(InferenceTask.CLASS_LATTICE_PRUNE));
+
         kSession.setGlobal("latticeModel", baseModel);
 
-        launchReasoner( dirty, kSession, ontoDescr );
+        launchReasoner( dirty, kSession, ontoDescr, axiomGenerators );
 
 
         // reify complex domains and ranges
@@ -1414,7 +1472,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         /************************************************************************************************************************************/
 
         // new classes have been added, classify the
-        launchReasoner(dirty, kSession, ontoDescr);
+        launchReasoner( dirty, kSession, ontoDescr, axiomGenerators );
 
         /************************************************************************************************************************************/
 
@@ -1659,13 +1717,15 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
 
-    private void launchReasoner( boolean dirty, StatefulKnowledgeSession kSession, OWLOntology ontoDescr ) {
+    private void launchReasoner( boolean dirty,
+                                 StatefulKnowledgeSession kSession,
+                                 OWLOntology ontoDescr,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators ) {
         if ( dirty ) {
             long now = new Date().getTime();
             System.err.println( " START REASONER " );
 
-            initReasoner( kSession, ontoDescr );
-//            owler.flush();
+            InferredOntologyGenerator reasoner = initReasoner( kSession, ontoDescr, axiomGenerators );
 
             reasoner.fillOntology( ontoDescr.getOWLOntologyManager(), ontoDescr );
 
@@ -1681,21 +1741,19 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
 
-    protected void initReasoner( StatefulKnowledgeSession kSession, OWLOntology ontoDescr ) {
+    protected InferredOntologyGenerator initReasoner( StatefulKnowledgeSession kSession,
+                                                      OWLOntology ontoDescr,
+                                                      List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators ) {
 
         ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
         OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
 
 
-        switch ( externalReasoner ) {
-//            case PELLET: reasoner = new InferredOntologyGenerator( PelletReasonerFactory.getInstance().createReasoner( ontoDescr ) ) ;
-//                break;
-            case HERMIT:
-            default:
-                OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
+        OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 //                if ( owler == null ) {
-                owler = reasonerFactory.createReasoner( ontoDescr, config );
-                owler.precomputeInferences( InferenceType.CLASS_HIERARCHY,
+        OWLReasoner owler = reasonerFactory.createReasoner( ontoDescr, config );
+                owler.precomputeInferences(
+                        InferenceType.CLASS_HIERARCHY,
                         InferenceType.CLASS_ASSERTIONS,
 
                         InferenceType.OBJECT_PROPERTY_ASSERTIONS,
@@ -1710,26 +1768,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         InferenceType.OBJECT_PROPERTY_HIERARCHY
                 );
 
-                reasoner = new InferredOntologyGenerator( owler );
-                for ( InferredAxiomGenerator ax : reasoner.getAxiomGenerators() ) {
-                    if ( ax instanceof InferredSubDataPropertyAxiomGenerator ) {
-                        reasoner.removeGenerator( ax );
-                    }
-                    if ( ax instanceof InferredEquivalentDataPropertiesAxiomGenerator ) {
-                        reasoner.removeGenerator( ax );
-                    }
-//                        if ( ax instanceof InferredDataPropertyAxiomGenerator ) {
-//                            reasoner.removeGenerator( ax );
-//                        }
-//                        if ( ax instanceof InferredDataPropertyCharacteristicAxiomGenerator ) {
-//                            reasoner.removeGenerator( ax );
-//                        }
-                }
-//                for ( InferredAxiomGenerator ax : reasoner.getAxiomGenerators() ) {
-//                    System.err.println( "Inferencer will do " + ax );
-//                }
-//                }
-        }
+
+        return new InferredOntologyGenerator( owler, axiomGenerators );
 
     }
 

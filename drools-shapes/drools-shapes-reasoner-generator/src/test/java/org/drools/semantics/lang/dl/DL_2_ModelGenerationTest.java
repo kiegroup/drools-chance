@@ -67,27 +67,7 @@ public class DL_2_ModelGenerationTest {
 
         OntoModel results;
 
-        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
-        results = factory.buildModel( "diamond", res, KnowledgeBaseFactory.newKnowledgeBase().newStatefulKnowledgeSession() );
-
-        checkDiamond( results );
-
-    }
-
-
-
-    @Test
-    @Ignore
-    public void testDiamondModelInternal() {
-
-        String source = "diamond.manchester";
-        org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
-
-        OntoModel results;
-
-
-        factory.setInferenceStrategy(DLFactory.INFERENCE_STRATEGY.INTERNAL);
-        results = factory.buildModel( "diamond", res, KnowledgeBaseFactory.newKnowledgeBase().newStatefulKnowledgeSession() );
+        results = factory.buildModel( "diamond", res, OntoModel.Mode.FLAT );
 
         checkDiamond( results );
 
@@ -100,14 +80,10 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testPropertiesGenerationExternal() {
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
-
         String source = "DLex6.manchester";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
-        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
-        OntoModel results = factory.buildModel( "ex6", res, kSession );
+        OntoModel results = factory.buildModel( "ex6", res, OntoModel.Mode.HIERARCHY );
 
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.DRL);
@@ -139,30 +115,6 @@ public class DL_2_ModelGenerationTest {
 
 
 
-
-
-
-
-
-
-    @Test
-    @Ignore //fails due to changes in the data structs, not yet updated
-    public void testPropertiesGenerationInternal() {
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
-
-        String source = "DLex6.manchester";
-        org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
-
-        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.INTERNAL );
-        OntoModel results = factory.buildModel( "ex6", res, kSession );
-
-
-        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.DRL);
-        DRLModel drlModel = (DRLModel) compiler.compile( results );
-
-        check( results, drlModel );
-    }
 
     protected void check( OntoModel results, DRLModel drlModel ) {
 
@@ -253,15 +205,10 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testComplexAnonymous() {
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
-
-
         String source = "DLex8.manchester";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
-        factory.setInferenceStrategy( DLFactory.INFERENCE_STRATEGY.EXTERNAL );
-        OntoModel results = factory.buildModel( "ex8", res, kSession );
+        OntoModel results = factory.buildModel( "ex8", res, OntoModel.Mode.HIERARCHY );
 
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.DRL);

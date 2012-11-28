@@ -90,7 +90,4 @@ public class WorkingSetModelCompilerImpl extends ModelCompilerImpl implements Wo
         father.setWorkingSets( newWs );
     }
 
-    public void setMode(Mode mode) {
-        //TODO
-    }
 }

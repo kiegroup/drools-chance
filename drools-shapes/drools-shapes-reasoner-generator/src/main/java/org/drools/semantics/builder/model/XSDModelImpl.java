@@ -2,6 +2,7 @@
 package org.drools.semantics.builder.model;
 
 import org.drools.io.ResourceFactory;
+import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.jdom.Document;
@@ -23,7 +24,7 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
 
     protected Map<String,Namespace> namespaces = new HashMap<String,Namespace>();
 
-    private String schemaMode = "";
+    private XSDModelCompiler.XSDSchemaMode schemaMode = XSDModelCompiler.XSDSchemaMode.JAXB;
 
 
     XSDModelImpl() {
@@ -227,7 +228,7 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
             String prefix = NamespaceUtils.compareNamespaces( altNamespace.getURI(), getDefaultNamespace() )
                     ? ""
                     : ( "_" + altNamespace.getPrefix() );
-            return getName() + getSchemaMode() + prefix + ".xsd";
+            return getName() + prefix + ".xsd";
         }
     }
 
@@ -279,11 +280,11 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         }
     }
 
-    public String getSchemaMode() {
+    public XSDModelCompiler.XSDSchemaMode getSchemaMode() {
         return schemaMode;
     }
 
-    public void setSchemaMode(String schemaMode) {
+    public void setSchemaMode(XSDModelCompiler.XSDSchemaMode schemaMode) {
         this.schemaMode = schemaMode;
     }
 }

@@ -30,9 +30,10 @@
 
   <groupId>org.drools</groupId>
   <artifactId>translator-example</artifactId>
-
+  <version>5.5.0-SNAPSHOT</version>
   <properties>
-    <drools.version>5.5.0-SNAPSHOT</drools.version>
+    <drools.version>5.5.0.Final</drools.version>
+    <chance.version>5.5.0-SNAPSHOT</chance.version>
     <jpa.provider>hibernate</jpa.provider>
     <!--jpa.provider>datanucleus</jpa.provider-->
   </properties>
@@ -43,12 +44,12 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-reasoner-generator</artifactId>
-      <version>5.5.0-SNAPSHOT</version>
+      <version>${chance.version}</version>
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-utilities</artifactId>
-      <version>5.5.0-SNAPSHOT</version>
+      <version>${chance.version}</version>
     </dependency>
 
     <dependency>
@@ -82,7 +83,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-
       <scope>test</scope>
     </dependency>
 
@@ -90,7 +90,6 @@
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -235,7 +234,7 @@
       <plugin>
         <groupId>org.drools</groupId>
         <artifactId>drools-shapes-generator-plugin</artifactId>
-        <version>5.5.0-SNAPSHOT</version>
+        <version>${chance.version}</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>
@@ -248,14 +247,12 @@
           <outputDirectory>${pom.basedir}/target</outputDirectory>
           <ontology>${pom.basedir}/src/main/resources/sem_rules.owl</ontology>
           <modelName>semrule</modelName>
-          <delegateInference>true</delegateInference>
           <generateInterfaces>true</generateInterfaces>
           <generateInterfaceJar>true</generateInterfaceJar>
           <generateTraitDRL>true</generateTraitDRL>
           <generateDefaultImplClasses>true</generateDefaultImplClasses>
-          <preserveInheritanceInImpl>false</preserveInheritanceInImpl>
-          <buildSpecXSDs>false</buildSpecXSDs>
-          <useExistingImplementations>true</useExistingImplementations>
+          <inheritanceMode>HYBRID</inheritanceMode>
+          <generateSpecXSDs>false</generateSpecXSDs>
           <generateIndividuals>true</generateIndividuals>
         </configuration>
       </plugin>
@@ -327,7 +324,7 @@
           <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-shapes-generator-plugin</artifactId>
-            <version>5.5.0-SNAPSHOT</version>
+            <version>${chance.version}</version>
           </dependency>
           <dependency>
             <groupId>javax.jdo</groupId>

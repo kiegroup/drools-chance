@@ -73,10 +73,11 @@ public class DRLModelImpl extends ModelImpl implements DRLModel {
         StringBuilder sb = new StringBuilder();
 
         sb.append( "package " + getDefaultPackage() + ";\n");
-        sb.append( "declare " + Thing.class.getName() + " end \n" );
+
         for ( String key : getTraitNames() ) {
             sb.append( getTrait(key) ).append( "\n" );
         }
+
         return sb.toString();
     }
 

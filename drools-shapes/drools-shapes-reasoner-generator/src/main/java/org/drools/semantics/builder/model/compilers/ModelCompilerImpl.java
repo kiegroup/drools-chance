@@ -28,7 +28,6 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
 
     protected CompiledOntoModel model;
 
-
     public CompiledOntoModel getModel() {
         return model;
     }
@@ -44,11 +43,12 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
         if ( getModel() != null ) {
             for ( Concept con : getModel().getConcepts() ) {
                 String name = NameUtils.compactUpperCase( con.getName() );
+
                 Map map = new HashMap();
                 map.put( "package", con.getPackage() );
                 map.put( "namespace", con.getNamespace() );
                 map.put( "iri", con.getIri() );
-                map.put( "name", con.getName().substring(con.getName().lastIndexOf(".") + 1) );
+                map.put( "name", con.getName().substring( con.getName().lastIndexOf(".") + 1 ) );
                 map.put( "fullyQualifiedName", con.getFullyQualifiedName() );
                 map.put( "superConcepts", con.getSuperConcepts() );
                 map.put( "subConcepts", con.getSubConcepts() );
@@ -62,6 +62,7 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
                 }
                 map.put( "keys", con.getKeys() );
                 map.put( "shadowed", con.isShadowed() );
+
                 compile( con, NameUtils.getInstance(), map );
             }
         }

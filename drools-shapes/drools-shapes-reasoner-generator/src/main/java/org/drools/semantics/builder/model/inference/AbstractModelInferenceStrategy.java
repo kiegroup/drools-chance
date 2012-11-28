@@ -17,29 +17,39 @@
 package org.drools.semantics.builder.model.inference;
 
 import org.drools.KnowledgeBase;
+import org.drools.KnowledgeBaseFactory;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentConfiguration;
 import org.drools.agent.KnowledgeAgentFactory;
+import org.drools.builder.KnowledgeBuilder;
+import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.builder.ResourceType;
 import org.drools.io.Resource;
 import org.drools.io.impl.ChangeSetImpl;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.utils.NameUtils;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.util.InferredAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractModelInferenceStrategy implements ModelInferenceStrategy {
 
 
 
-    public OntoModel buildModel( String name, OWLOntology ontoDescr,
-                                          Map<InferenceTask, Resource> theory,
-                                          StatefulKnowledgeSession kSession ) {
+    public OntoModel buildModel( String name,
+                                 OWLOntology ontoDescr,
+                                 OntoModel.Mode mode,
+                                 Map<InferenceTask, Resource> theory,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens ) {
 
-        addResource( kSession, theory.get( InferenceTask.COMMON ) );
+        StatefulKnowledgeSession kSession = buildKnowledgeSession( theory );
 
         OntoModel baseModel = ModelFactory.newModel( name, ModelFactory.CompileTarget.BASE );
 
@@ -51,7 +61,7 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
         kSession.insert( ontoDescr );
         kSession.fireAllRules();
 
-        OntoModel latticeModel = buildClassLattice( ontoDescr, kSession, theory, baseModel );
+        OntoModel latticeModel = buildClassLattice( ontoDescr, kSession, theory, baseModel, axiomGens );
 
         latticeModel.sort();
 
@@ -63,32 +73,52 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
         reportSessionStatus( kSession );
 
-        return propertyModel;
+        switch ( mode ) {
+            case HIERARCHY:
+                break;
+            case FLAT:
+                populatedModel.flatten();
+                break;
+            case HYBRID:
+            case VARIANT:
+                populatedModel.raze();
+                break;
+        }
+
+        return populatedModel;
     }
 
 
-    protected abstract OntoModel buildProperties(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel);
+
+    protected abstract OntoModel buildProperties( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
 
 
-    protected abstract OntoModel buildIndividuals(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel);
+    protected abstract OntoModel buildIndividuals( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
 
 
-    protected abstract OntoModel buildClassLattice(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel baseModel);
+    protected abstract OntoModel buildClassLattice( OWLOntology ontoDescr,
+                                                    StatefulKnowledgeSession kSession,
+                                                    Map<InferenceTask, Resource> theory,
+                                                    OntoModel baseModel,
+                                                    List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators );
 
 
-    protected abstract void initReasoner( StatefulKnowledgeSession kSession, OWLOntology ontoDescr );
+    protected abstract InferredOntologyGenerator initReasoner( StatefulKnowledgeSession kSession, OWLOntology ontoDescr, List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators );
 
 
-    protected void addResource( StatefulKnowledgeSession kSession, Resource res ) {
-        KnowledgeBase kbase = kSession.getKnowledgeBase();
-
-        ChangeSetImpl cs = new ChangeSetImpl();
-            cs.setResourcesAdded( Arrays.asList( res ) );
-        KnowledgeAgentConfiguration kaConfig = KnowledgeAgentFactory.newKnowledgeAgentConfiguration();
-            kaConfig.setProperty("drools.agent.newInstance", "false");
-        KnowledgeAgent kAgent = KnowledgeAgentFactory.newKnowledgeAgent(" adder ", kbase, kaConfig );
-        kAgent.applyChangeSet(cs);
+    private StatefulKnowledgeSession buildKnowledgeSession(Map<InferenceTask, Resource> theory) {
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        for ( InferenceTask task : theory.keySet() ) {
+            kbuilder.add( theory.get( task ), ResourceType.DRL );
+            if ( kbuilder.hasErrors() ) {
+                throw new RuntimeException( kbuilder.getErrors().toString() );
+            }
+        }
+        kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
+        return kbase.newStatefulKnowledgeSession();
     }
+
 
     private void reportSessionStatus(StatefulKnowledgeSession kSession) {
 

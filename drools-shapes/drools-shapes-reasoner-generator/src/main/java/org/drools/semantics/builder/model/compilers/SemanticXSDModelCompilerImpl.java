@@ -117,7 +117,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             vars.put( "package", NameUtils.namespaceURIToPackage( ns ) );
             vars.put( "namespace", ns );
             vars.put( "concepts", filterConceptsByNS( getModel().getConcepts(), ns ) );
-            vars.put( "flat", this.getCurrentMode().equals( Mode.FLAT ) || this.getCurrentMode().equals( Mode.VARIANT ) );
+            vars.put( "flat", getModel().getMode() != OntoModel.Mode.HIERARCHY );
             vars.put( "properties", propCache );
             vars.put( "modelName", getModel().getName() );
             vars.put( "schemaLocation", getModel().getName() + ( prefix == null ? "" : ( "_" + prefix ) ) );

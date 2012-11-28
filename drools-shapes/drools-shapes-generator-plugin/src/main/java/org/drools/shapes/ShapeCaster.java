@@ -16,36 +16,25 @@ package org.drools.shapes;
  * limitations under the License.
  */
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.xml.bind.v2.runtime.XMLSerializer;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
-import org.drools.semantics.builder.model.*;
+import org.drools.semantics.builder.model.DRLModel;
+import org.drools.semantics.builder.model.JarModel;
+import org.drools.semantics.builder.model.ModelFactory;
+import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.SemanticXSDModel;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.w3._2002._07.owl.Thing;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-import java.io.*;
-import java.util.Collection;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,13 +51,32 @@ public class ShapeCaster
 {
 
 
+    /**
+     * @parameter default-value="false"
+     */
+    private String inheritanceMode = OntoModel.Mode.HIERARCHY.name();
+    private OntoModel.Mode mode;
+
+    public String getInheritanceMode() {
+        return inheritanceMode;
+    }
+
+    public void setInheritanceMode(String inheritanceMode) {
+        this.inheritanceMode = inheritanceMode;
+        this.mode = OntoModel.Mode.valueOf( inheritanceMode );
+    }
+
+
+
+    private File target;
+    private File metainf;
+    private File drlDir;
 
 
     /**
      * @parameter default-value="./target/gen-sources"
      */
     private File outputDirectory;
-
 
     public File getOutputDirectory() {
         return outputDirectory;
@@ -119,18 +127,8 @@ public class ShapeCaster
         this.modelName = modelName;
     }
 
-    /**
-     * @parameter default-value="true"
-     */
-    private boolean delegateInference = true;
 
-    public boolean isDelegateInference() {
-        return delegateInference;
-    }
 
-    public void setDelegateInference(boolean delegateInference) {
-        this.delegateInference = delegateInference;
-    }
 
 
 
@@ -147,8 +145,6 @@ public class ShapeCaster
         this.generateInterfaces = generateInterfaces;
     }
 
-
-
     /**
      * @parameter default-value="false"
      */
@@ -162,7 +158,6 @@ public class ShapeCaster
         this.generateInterfaceJar = generateInterfaceJar;
     }
 
-
     /**
      * @parameter default-value="true"
      */
@@ -175,6 +170,13 @@ public class ShapeCaster
     public void setGenerateTraitDRL(boolean generateTraitDRL) {
         this.generateTraitDRL = generateTraitDRL;
     }
+
+
+
+
+
+
+
 
     /**
      * @parameter default-value="true"
@@ -193,43 +195,14 @@ public class ShapeCaster
     /**
      * @parameter default-value="false"
      */
-    private boolean preserveInheritanceInImpl = false;
+    private boolean generateSpecXSDs = false;
 
-    public boolean isPreserveInheritanceInImpl() {
-        return preserveInheritanceInImpl;
+    public boolean isGenerateSpecXSDs() {
+        return generateSpecXSDs;
     }
 
-    public void setPreserveInheritanceInImpl(boolean preserveInheritanceInImpl) {
-        this.preserveInheritanceInImpl = preserveInheritanceInImpl;
-    }
-
-
-
-    /**
-     * @parameter default-value="false"
-     */
-    private boolean buildSpecXSDs = false;
-
-    public boolean isBuildSpecXSDs() {
-        return buildSpecXSDs;
-    }
-
-    public void setBuildSpecXSDs(boolean buildSpecXSDs) {
-        this.buildSpecXSDs = buildSpecXSDs;
-    }
-
-
-    /**
-     * @parameter default-value="false"
-     */
-    private boolean useExistingImplementations = false;
-
-    public boolean isUseExistingImplementations() {
-        return useExistingImplementations;
-    }
-
-    public void setUseExistingImplementations(boolean useExistingImplementations) {
-        this.useExistingImplementations = useExistingImplementations;
+    public void setGenerateSpecXSDs(boolean generateSpecXSDs) {
+        this.generateSpecXSDs = generateSpecXSDs;
     }
 
     /**
@@ -245,7 +218,14 @@ public class ShapeCaster
         this.generateIndividuals = generateIndividuals;
     }
 
-    
+
+
+
+
+
+
+
+
     /**
      * @parameter default-value="false"
      */
@@ -262,21 +242,248 @@ public class ShapeCaster
 
 
 
+
+
+
     public void execute() throws MojoExecutionException {
 
-        String slash = System.getProperty("file.separator");
-        String target = outputDirectory.getAbsolutePath() + slash + "generated-sources" + slash;
-        String metainf = "META-INF" + slash;
-        String drlDir = "DRL" + slash;
+        boolean exists = initTargetFolders();
 
-        File ontoFile = new File( ontology );
-        if ( ! ontoFile.exists() ) {
-            throw new MojoExecutionException( " File not found : " + ontology );
-        }
-
-        if ( new File( target ).exists() ) {
+        if ( exists ) {
             getLog().info( "Target folder " + target + " exists, skipping generation process" );
             return;
+        }
+
+
+        OntoModel results = processOntology( mode );
+
+        if ( isGenerateDRL() ) {
+            generateDRLDeclares(results);
+        }
+
+        if ( isGenerateInterfaceJar() || isGenerateInterfaces() ) {
+            generateJavaInterfaces( results );
+        }
+
+
+
+
+        if ( isGenerateSpecXSDs() ) {
+            generateSpecXSDs( results );
+        }
+
+
+
+        if ( isGenerateDefaultImplClasses() ) {
+            generateDefaultImplClasses( results );
+        }
+
+        if ( isGenerateIndividuals() ) {
+            generateIndividuals( results );
+        }
+
+    }
+
+
+
+
+    private void generateIndividuals(OntoModel results) throws MojoExecutionException {
+        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+        SemanticXSDModel xsdModel;
+
+
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+        ((XSDModelCompiler) compiler).setUseImplementation( true );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        try {
+            String classPath = target.getAbsolutePath() + File.separator + "xjc" + File.separator + xsdModel.getDefaultPackage().replace(".", File.separator);
+            File f = new File( classPath );
+            if ( ! f.exists() ) {
+                f.mkdirs();
+            }
+
+            FileOutputStream fos = new FileOutputStream(  classPath + File.separator + "IndividualFactory.java" );
+            xsdModel.streamIndividualFactory( fos );
+            fos.flush();
+            fos.close();
+
+
+        } catch (Exception e) {
+            throw new MojoExecutionException( e.getMessage() );
+        }
+    }
+
+
+    private void generateDefaultImplClasses(OntoModel results) throws MojoExecutionException {
+        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+        SemanticXSDModel xsdModel;
+
+        ((XSDModelCompiler) compiler).setUseImplementation( false );
+        ((XSDModelCompiler) compiler).setSchemaMode( XSDModelCompiler.XSDSchemaMode.JAXB );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+
+        try {
+            File fos = new File( metainf.getAbsolutePath() + File.separator + getModelName() + XSDModelCompiler.XSDSchemaMode.JAXB.getFileSuffix() + ".xsd" );
+            xsdModel.stream( fos );
+        } catch (Exception e) {
+            throw new MojoExecutionException( e.getMessage() );
+        }
+
+
+        try {
+            File fos = new File( metainf.getAbsolutePath() + File.separator + "bindings.xjb" );
+            xsdModel.streamBindings( fos );
+        } catch (Exception e) {
+            throw new MojoExecutionException( e.getMessage() );
+        }
+
+
+        try {
+            FileOutputStream fos = new FileOutputStream( metainf.getAbsolutePath() + File.separator + "empire.annotation.index" );
+            xsdModel.streamIndex( fos );
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            throw new MojoExecutionException( e.getMessage() );
+        }
+
+
+        // namespace fix. For some reason, hj needs the (local) owl package to be assigned to the default namespace
+        try {
+            String classPathTemp = target.getAbsolutePath() + File.separator + "xjc" + File.separator + Thing.class.getPackage().getName().replace(".", File.separator);
+            File f2 = new File( classPathTemp );
+            if ( ! f2.exists() ) {
+                f2.mkdirs();
+            }
+
+            FileOutputStream fos2 = new FileOutputStream(  classPathTemp + File.separator + "package-info.java" );
+            xsdModel.streamNamespaceFix( fos2 );
+
+            fos2.flush();
+            fos2.close();
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    private void generateSpecXSDs(OntoModel results) throws MojoExecutionException {
+
+        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+        SemanticXSDModel xsdModel;
+
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+        ((XSDModelCompiler) compiler).setUseImplementation( false );
+        ((XSDModelCompiler) compiler).setSchemaMode( XSDModelCompiler.XSDSchemaMode.SPEC );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        try {
+            File fos = new File( metainf.getAbsolutePath() + File.separator + getModelName() + XSDModelCompiler.XSDSchemaMode.SPEC.getFileSuffix() + ".xsd" );
+            xsdModel.stream( fos );
+        } catch (Exception e) {
+            throw new MojoExecutionException( e.getMessage() );
+        }
+
+
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+        ((XSDModelCompiler) compiler).setUseImplementation( true );
+        ((XSDModelCompiler) compiler).setSchemaMode( XSDModelCompiler.XSDSchemaMode.IMPL );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        try {
+            File fos = new File( metainf.getAbsolutePath() + File.separator + getModelName() + XSDModelCompiler.XSDSchemaMode.IMPL.getFileSuffix() + ".xsd" );
+            xsdModel.stream( fos );
+        } catch (Exception e) {
+            throw new MojoExecutionException( e.getMessage() );
+        }
+
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
+        ((XSDModelCompiler) compiler).setUseImplementation( false );
+        ((XSDModelCompiler) compiler).setSchemaMode( XSDModelCompiler.XSDSchemaMode.FULL );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        try {
+            File fos = new File( metainf.getAbsolutePath() + File.separator + getModelName() + XSDModelCompiler.XSDSchemaMode.FULL.getFileSuffix() + ".xsd" );
+            xsdModel.stream( fos );
+        } catch (Exception e) {
+            throw new MojoExecutionException( e.getMessage() );
+        }
+
+    }
+
+    private void generateJavaInterfaces( OntoModel results ) throws MojoExecutionException {
+        ModelCompiler jcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
+        JarModel jarModel = (JarModel) jcompiler.compile( results );
+
+        if ( isGenerateInterfaces() ) {
+            jarModel.save( target.getAbsolutePath() + File.separator + "java" );
+        }
+
+        if ( isGenerateInterfaceJar() ) {
+            try {
+                FileOutputStream fos = new FileOutputStream( outputDirectory.getAbsolutePath() + File.separator + getModelName() + ".jar" );
+                byte[] content = jarModel.buildJar().toByteArray();
+
+                fos.write( content, 0, content.length );
+                fos.flush();
+                fos.close();
+            } catch ( IOException e ) {
+                throw new MojoExecutionException( e.getMessage() );
+            }
+        }
+
+    }
+
+
+    private boolean initTargetFolders() {
+        String targetPath = outputDirectory.getAbsolutePath() + File.separator + "generated-sources" + File.separator;
+        target = new File( targetPath );
+        boolean exists = target.exists();
+        if ( ! exists ) {
+            target.mkdirs();
+        }
+
+        String metainfPath = "META-INF";
+        metainf = new File( target.getAbsolutePath() + File.separator + metainfPath );
+        if ( ! metainf.exists() ) {
+            metainf.mkdirs();
+        }
+
+        String drlDirPath = "DRL";
+        drlDir = new File( target.getAbsolutePath() + File.separator + drlDirPath );
+        if ( ! drlDir.exists() ) {
+            drlDir.mkdirs();
+        }
+
+        return exists;
+    }
+
+
+
+
+    private void generateDRLDeclares( OntoModel results ) throws MojoExecutionException {
+        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.DRL );
+
+        DRLModel drlModel;
+        drlModel = (DRLModel) compiler.compile( results );
+
+        try {
+            FileOutputStream fos = new FileOutputStream( drlDir.getAbsolutePath() + File.separator + getModelName() +"_trait.drl" );
+            drlModel.stream( fos );
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            throw new MojoExecutionException( e.getMessage() );
+        }
+    }
+
+
+    private OntoModel processOntology( OntoModel.Mode mode ) throws MojoExecutionException {
+        File ontoFile = new File( ontology );
+        if ( ! ontoFile.exists() ) {
+            throw new MojoExecutionException( " Ontology file not found : " + ontology );
         }
 
         DLFactory factory = DLFactoryBuilder.newDLFactoryInstance();
@@ -292,254 +499,8 @@ public class ShapeCaster
         }
         res[j] = ResourceFactory.newFileResource( ontology );
 
-        factory.setInferenceStrategy( isDelegateInference() ? DLFactory.INFERENCE_STRATEGY.EXTERNAL : DLFactory.INFERENCE_STRATEGY.INTERNAL );
-        OntoModel results = factory.buildModel( getModelName(), res );
-
-        if ( isUseExistingImplementations() ) {
-            results.resolve();
-        }
-
-
-        if ( isGenerateDRL() ) {
-            ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.DRL );
-
-            DRLModel drlModel;
-            drlModel = (DRLModel) compiler.compile( results );
-
-            File dir = new File( target + drlDir );
-            if ( ! dir.exists() ) {
-                dir.mkdirs();
-            }
-
-            try {
-                FileOutputStream fos = new FileOutputStream( dir + slash + getModelName() +"_trait.drl" );
-                drlModel.stream( fos );
-                fos.flush();
-                fos.close();
-            } catch (Exception e) {
-                throw new MojoExecutionException( e.getMessage() );
-            }
-
-        }
-
-
-        if ( isGenerateDefaultImplClasses() && isBuildSpecXSDs() ) {
-
-            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.FLAT;
-            if ( isPreserveInheritanceInImpl() ) {
-                results.elevate();
-            } else {
-                results.flatten();
-            }
-
-
-            File dir = new File( target + metainf );
-            if ( ! dir.exists() ) {
-                dir.mkdirs();
-            }
-
-            ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
-            compiler.setMode( mode );
-            SemanticXSDModel xsdModel;
-
-            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
-            ((XSDModelCompiler) compiler).setUseImplementation( false );
-            ((XSDModelCompiler) compiler).setSchemaMode( "_$spec" );
-            xsdModel = (SemanticXSDModel) compiler.compile( results );
-
-            try {
-                File fos = new File( target + metainf + slash + getModelName() +"_$spec.xsd" );
-                xsdModel.stream( fos );
-            } catch (Exception e) {
-                throw new MojoExecutionException( e.getMessage() );
-            }
-
-
-
-            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
-            ((XSDModelCompiler) compiler).setUseImplementation( true );
-            ((XSDModelCompiler) compiler).setSchemaMode( "_$impl" );
-            xsdModel = (SemanticXSDModel) compiler.compile( results );
-
-            try {
-                File fos = new File( target + metainf + slash + getModelName() +"_$impl.xsd" );
-                xsdModel.stream( fos );
-            } catch (Exception e) {
-                throw new MojoExecutionException( e.getMessage() );
-            }
-
-
-            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
-            ((XSDModelCompiler) compiler).setUseImplementation( false );
-            ((XSDModelCompiler) compiler).setSchemaMode( "_$full" );
-            xsdModel = (SemanticXSDModel) compiler.compile( results );
-
-            try {
-                File fos = new File( target + metainf + slash + getModelName() +"_$full.xsd" );
-                xsdModel.stream( fos );
-            } catch (Exception e) {
-                throw new MojoExecutionException( e.getMessage() );
-            }
-        }
-
-
-
-
-
-
-
-
-        if ( isGenerateInterfaceJar() || isGenerateInterfaces() ) {
-
-            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.VARIANT;
-            if ( isPreserveInheritanceInImpl() ) {
-                results.elevate();
-            } else {
-                results.raze();
-            }
-
-            ModelCompiler jcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
-            jcompiler.setMode( mode );
-            JarModel jarModel = (JarModel) jcompiler.compile( results );
-
-            if ( isGenerateInterfaces() ) {
-                jarModel.save( target + "java" );
-            }
-
-            if ( isGenerateInterfaceJar() ) {
-                try {
-                    FileOutputStream fos = new FileOutputStream( outputDirectory.getAbsolutePath() + slash + getModelName() + ".jar" );
-                    byte[] content = jarModel.buildJar().toByteArray();
-
-                    fos.write( content, 0, content.length );
-                    fos.flush();
-                    fos.close();
-                } catch ( IOException e ) {
-                    throw new MojoExecutionException( e.getMessage() );
-                }
-            }
-        }
-
-        /**************************************************************************************************************/
-
-
-
-
-        if ( isGenerateDefaultImplClasses() ) {
-
-            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.VARIANT;
-            if ( isPreserveInheritanceInImpl() ) {
-                results.elevate();
-            } else {
-                results.raze();
-            }
-
-            if ( ! isBuildSpecXSDs() ) {
-                File dir = new File( target + metainf  );
-                if ( ! dir.exists() ) {
-                    dir.mkdirs();
-                }
-            }
-
-            ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
-            compiler.setMode( mode );
-            SemanticXSDModel xsdModel;
-
-
-
-
-
-            ((XSDModelCompiler) compiler).setUseImplementation( false );
-            ((XSDModelCompiler) compiler).setSchemaMode( "" );
-            xsdModel = (SemanticXSDModel) compiler.compile( results );
-
-
-            try {
-                File fos = new File( target + metainf + slash + getModelName() +".xsd" );
-                xsdModel.stream( fos );
-            } catch (Exception e) {
-                throw new MojoExecutionException( e.getMessage() );
-            }
-
-
-            try {
-                File fos = new File( target + metainf + slash + "bindings.xjb" );
-                xsdModel.streamBindings( fos );
-            } catch (Exception e) {
-                throw new MojoExecutionException( e.getMessage() );
-            }
-
-
-            try {
-                FileOutputStream fos = new FileOutputStream( target + metainf + slash + "empire.annotation.index" );
-                xsdModel.streamIndex( fos );
-                fos.flush();
-                fos.close();
-            } catch (Exception e) {
-                throw new MojoExecutionException( e.getMessage() );
-            }
-
-
-            // namespace fix. For some reason, hj needs the (local) owl package to be assigned to the default namespace
-            try {
-                String classPathTemp = target + "xjc" + slash + Thing.class.getPackage().getName().replace(".", slash);
-                File f2 = new File( classPathTemp );
-                if ( ! f2.exists() ) {
-                    f2.mkdirs();
-                }
-
-                FileOutputStream fos2 = new FileOutputStream(  classPathTemp + slash + "package-info.java" );
-                xsdModel.streamNamespaceFix( fos2 );
-
-                fos2.flush();
-                fos2.close();
-            } catch (Exception e) {
-
-            }
-
-
-
-
-        }
-
-        if ( isGenerateIndividuals() ) {
-            ModelCompiler.Mode mode = isPreserveInheritanceInImpl() ? ModelCompiler.Mode.HIERARCHY : ModelCompiler.Mode.VARIANT;
-            ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
-            compiler.setMode( mode );
-            SemanticXSDModel xsdModel;
-
-
-
-            ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
-            ((XSDModelCompiler) compiler).setUseImplementation( true );
-            xsdModel = (SemanticXSDModel) compiler.compile( results );
-
-            try {
-                String classPath = target + "xjc" + slash + xsdModel.getDefaultPackage().replace(".", slash);
-                File f = new File( classPath );
-                if ( ! f.exists() ) {
-                    f.mkdirs();
-                }
-
-                FileOutputStream fos = new FileOutputStream(  classPath + slash + "IndividualFactory.java" );
-                xsdModel.streamIndividualFactory( fos );
-                fos.flush();
-                fos.close();
-
-
-            } catch (Exception e) {
-                throw new MojoExecutionException( e.getMessage() );
-            }
-
-        }
-
-//        private boolean generateTraitDRL = true;
-
-
-
+        return factory.buildModel( getModelName(), res, mode );
     }
-
-
 
 
 }

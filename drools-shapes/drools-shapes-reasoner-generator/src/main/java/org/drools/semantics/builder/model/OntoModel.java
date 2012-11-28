@@ -23,6 +23,10 @@ import java.util.Set;
 
 public interface OntoModel extends Cloneable {
 
+
+    public static enum Mode  { HIERARCHY, FLAT, VARIANT, HYBRID }
+
+
     public String getDefaultPackage();
         
     public void setDefaultPackage( String pack );
@@ -74,8 +78,6 @@ public interface OntoModel extends Cloneable {
 
     public void sort();
 
-    public void resolve();
-
     
     public void flatten();
 
@@ -83,7 +85,7 @@ public interface OntoModel extends Cloneable {
 
     public void elevate();
 
-    public ModelCompiler.Mode getMode();
+    public Mode getMode();
 
 
 }

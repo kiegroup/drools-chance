@@ -144,10 +144,6 @@ public abstract class ModelImpl implements OntoModel {
         innerModel.sort();
     }
 
-    public void resolve() {
-        innerModel.resolve();
-    }
-
     public void raze() {
         innerModel.raze();
     }
@@ -161,7 +157,10 @@ public abstract class ModelImpl implements OntoModel {
     }
 
 
-    public ModelCompiler.Mode getMode() {
-        return  innerModel.getMode();
+    public Mode getMode() {
+        return innerModel.getMode();
     }
+
+
+
 }

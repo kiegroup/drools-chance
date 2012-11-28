@@ -50,27 +50,20 @@ query subConceptOf( SubConceptOf $link, String $sub, String $sup )
 end
 
 
+query path( String $x, String $y )
+    SubConceptOf( subject == $x, object == $y )
+    or (
+        SubConceptOf( subject == $x, $o : object != $y )
+        and
+        path( $o, $y ; )
+    )
+end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+query indirectPath( String $x, String $y )
+    SubConceptOf( subject == $x, $o : object != $y )
+    path( $o, $y ; )
+end
 
 
 
@@ -80,20 +73,15 @@ end
 rule "Prune"
 salience -10000
 when
-	$l : SubConceptOf( $i : subject, $j : object != "<Thing>" )
-
-	    $x1 : SubConceptOf( subject == $i , $o : object != $j, object != "<Thing>", enabled == true )
-
-		$x2 : SubConceptOf( subject == $o, object == $j, object != "<Thing>", enabled == true )
-
-    not Mark( $l ; )
-    not SubConceptOf( subject == $j, object == $o )
+	$l : SubConceptOf( $i : subject, $j : object )
+	indirectPath( $i, $j ; )
 then
-    System.err.println( " ******************* RETRACT " + $l + " thanks to " + $x1 + " and " + $x2 );
+    System.err.println( " ******************* RETRACT " + $l );
 	Mark m = new Mark( $l );
 
 	insert(m);
 end
+
 
 
 /**
@@ -107,8 +95,8 @@ when
 then
     System.err.println( " ******************* REALLY RETRACT " + $sc );
     latticeModel.removeSubConceptOf( $sc );
-	retract($sc);
-	retract($m1);
+	retract( $sc );
+	retract( $m1 );
 end
 
 

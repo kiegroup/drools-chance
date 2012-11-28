@@ -30,19 +30,17 @@ import java.util.Map;
 public class DRLModelCompilerImpl extends ModelCompilerImpl implements DRLModelCompiler {
 
     private String templateName = "trait.drlt";
-    private TemplateRegistry registry = DLTemplateManager.getDataModelRegistry(ModelFactory.CompileTarget.DRL);
+
+    private TemplateRegistry registry = DLTemplateManager.getDataModelRegistry( ModelFactory.CompileTarget.DRL );
+
+    private CompiledTemplate template = registry.getNamedTemplate( templateName );
 
     public void setModel(OntoModel model) {
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.DRL, model );
     }
 
     public void compile( Concept con, Object context, Map<String, Object> params ) {
-        CompiledTemplate template = registry.getNamedTemplate(templateName);
-        getModel().addTrait( con.getName(), TemplateRuntime.execute(template, context, params).toString().trim());
+        getModel().addTrait( con.getName(), TemplateRuntime.execute( template, context, params ).toString().trim() );
     }
 
-
-    public void setMode(Mode mode) {
-        //TODO
-    }
 }

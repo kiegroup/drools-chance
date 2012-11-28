@@ -28,9 +28,6 @@ import java.util.Map;
 
 public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements JavaInterfaceModelCompiler {
 
-    private Mode currentMode = Mode.FLAT;
-
-
 
     private String templateName = "TraitInterface.template";
 
@@ -42,25 +39,11 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
     }
 
     public void compile( Concept con, Object context, Map<String, Object> params ) {
-//        if ( ! con.isResolved() ) {
 
         if ( "Thing".equals( con.getName() ) && NamespaceUtils.compareNamespaces("http://www.w3.org/2002/07/owl", con.getNamespace()) ) {
             return;
         }
         CompiledTemplate template = registry.getNamedTemplate( templateName );
-
-
-        switch ( getMode() ) {
-            case FLAT:
-                getModel().flatten();
-                break;
-            case HIERARCHY:
-                getModel().elevate();
-                break;
-            case VARIANT:
-                getModel().raze();
-                break;
-        }
 
         String name = con.getFullyQualifiedName();
 
@@ -68,18 +51,7 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
                 TemplateRuntime.execute( template, context, params ).toString().trim(),
                 con.getPackage() ) );
 
-//        }
     }
-
-
-    public void setMode(Mode mode) {
-        currentMode = mode;
-    }
-
-    public Mode getMode() {
-        return currentMode;
-    }
-
 
 
 }
