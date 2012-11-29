@@ -28,7 +28,7 @@ public class DL_3_KMR_Test extends AbstractReasonerTestBase {
 
 
 
-    private String kmrPath = "kmr2/kmr2_mini.owl";
+    private String kmrPath = "ontologies/kmr2/kmr2_mini.owl";
 
 
 

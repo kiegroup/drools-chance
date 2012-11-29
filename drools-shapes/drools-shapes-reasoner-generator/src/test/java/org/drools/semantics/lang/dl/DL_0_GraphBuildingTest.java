@@ -50,7 +50,7 @@ public class DL_0_GraphBuildingTest {
     @Test
     public void testSequentialCreation() {
         KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-            knowledgeBuilder.add( new ClassPathResource( "testLatticeBuilding.drl" ), ResourceType.DRL );
+            knowledgeBuilder.add( new ClassPathResource( "fuzzyDL/testLatticeBuilding.drl" ), ResourceType.DRL );
         if ( knowledgeBuilder.hasErrors() ) {
             fail( knowledgeBuilder.getErrors().toString() );
         }

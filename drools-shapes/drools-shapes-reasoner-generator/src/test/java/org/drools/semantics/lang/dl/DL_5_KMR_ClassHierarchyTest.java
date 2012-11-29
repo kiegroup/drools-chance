@@ -44,7 +44,7 @@ public class DL_5_KMR_ClassHierarchyTest  {
     @Test
     public void testHierarchyFromClassesExternal() {
 
-        String source = "DLex7.manchester";
+        String source = "fuzzyDL/DLex7.manchester";
         Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "ex7", res, OntoModel.Mode.HIERARCHY );

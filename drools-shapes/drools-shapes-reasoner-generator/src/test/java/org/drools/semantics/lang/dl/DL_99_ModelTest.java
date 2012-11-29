@@ -16,22 +16,16 @@
 
 package org.drools.semantics.lang.dl;
 
-import com.clarkparsia.empire.SupportsRdfId;
 import com.clarkparsia.empire.annotation.RdfsClass;
 import org.antlr.runtime.*;
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ByteArrayResource;
-import org.drools.lang.DRLLexer;
-import org.drools.lang.DRLParser;
 import org.drools.rule.builder.dialect.java.parser.JavaLexer;
 import org.drools.rule.builder.dialect.java.parser.JavaParser;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.*;
@@ -68,7 +62,7 @@ public class DL_99_ModelTest {
 
     @Test
     public void testDRLModelGenerationExternal() {
-        String source = "kmr2" + File.separator + "kmr2_mini.owl";
+        String source = "ontologies/kmr2" + File.separator + "kmr2_mini.owl";
         Resource res = ResourceFactory.newClassPathResource(source);
 
         OntoModel results = factory.buildModel( "kmr2mini", res, OntoModel.Mode.HIERARCHY );
@@ -116,9 +110,9 @@ public class DL_99_ModelTest {
     @Ignore //visualization test
     public void testGraphModelGeneration() {
 //        String source = "org/drools/semantics/lang/dl/kmr2_mini.owl";
-        String source = "kmr2" + File.separator + "KMR_OntologySample.manchester.owl";
+        String source = "ontologies/kmr2" + File.separator + "KMR_OntologySample.manchester.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
-        OntoModel results = factory.buildModel( "kmr2", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel("ontologies/kmr2", res, OntoModel.Mode.HIERARCHY );
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.GRAPH );
         GraphModel gModel = (GraphModel) compiler.compile( results );
@@ -144,7 +138,7 @@ public class DL_99_ModelTest {
 
     @Test
     public void testXSDModelGeneration() {
-        String source = "kmr2" + File.separator + "kmr2_mini.owl";
+        String source = "ontologies/kmr2" + File.separator + "kmr2_mini.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "kmr2mini", res, OntoModel.Mode.HIERARCHY );
@@ -159,7 +153,7 @@ public class DL_99_ModelTest {
 
     @Test
     public void testJarModelGeneration() {
-        String source = "kmr2" + File.separator + "kmr2_mini.owl";
+        String source = "ontologies/kmr2" + File.separator + "kmr2_mini.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "kmr2mini", res, OntoModel.Mode.HIERARCHY );
@@ -222,7 +216,7 @@ public class DL_99_ModelTest {
 
     @Test
     public void testWorkingSetModelGeneration() {
-        String source = "kmr2" + File.separator + "kmr2_mini.owl";
+        String source = "ontologies/kmr2" + File.separator + "kmr2_mini.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "kmr2mini", res, OntoModel.Mode.HIERARCHY );
@@ -240,12 +234,12 @@ public class DL_99_ModelTest {
 
     @Test
     public void testFullKMR2XSDModelGeneration() {
-        String source = "kmr2" + File.separator + "kmr2_mini.owl";
+        String source = "ontologies/kmr2" + File.separator + "kmr2_mini.owl";
 //        String source = "kmr2" + File.separator + "KMR_Ontology.ttl";
         Resource res = ResourceFactory.newClassPathResource(source);
 
 
-        OntoModel results = factory.buildModel( "kmr2", res, OntoModel.Mode.FLAT );
+        OntoModel results = factory.buildModel("ontologies/kmr2", res, OntoModel.Mode.FLAT );
 
 
         ModelCompiler jcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
@@ -346,7 +340,7 @@ public class DL_99_ModelTest {
         URI uri = (new File(".")).getAbsoluteFile().toURI();
         System.out.println( uri );
 
-        String source = "rule_merged.owl";
+        String source = "ontologies/rule_merged.owl";
 //        String source = "rules.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
@@ -373,7 +367,7 @@ public class DL_99_ModelTest {
     @Test
     public void testConyardComplexModelGeneration() {
 
-        Resource res = ResourceFactory.newClassPathResource( "conyard.ttl" );
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/conyard.ttl" );
         OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.FLAT );
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
@@ -534,7 +528,7 @@ public class DL_99_ModelTest {
     @Test
     public void testPartiallySpecifiedHierarchicalModelGeneration() {
 
-        Resource res = ResourceFactory.newClassPathResource( "missingDomRanHier.owl" );
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/missingDomRanHier.owl" );
         OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.HIERARCHY );
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );

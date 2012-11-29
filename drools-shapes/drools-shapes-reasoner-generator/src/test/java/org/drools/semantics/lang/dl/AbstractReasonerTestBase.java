@@ -101,7 +101,7 @@ public class AbstractReasonerTestBase {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         kbuilder.add( new ByteArrayResource( tableau.getBytes() ),
                       ResourceType.DRL);
-        kbuilder.add( new ClassPathResource("Main.drl"),
+        kbuilder.add( new ClassPathResource("fuzzyDL/Main.drl"),
                       ResourceType.DRL);
 
         if ( kbuilder.hasErrors() ) {

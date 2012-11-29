@@ -16,10 +16,7 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
 import org.drools.io.ResourceFactory;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.Concept;
@@ -28,7 +25,6 @@ import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -48,7 +44,7 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testLoad() {
-        String source = "kmr2/kmr2_mini.owl";
+        String source = "ontologies/kmr2/kmr2_mini.owl";
 
         org.drools.io.Resource res = ResourceFactory.newClassPathResource(source);
 
@@ -62,7 +58,7 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testDiamondModelGenerationExternal() {
-        String source = "diamond.manchester";
+        String source = "ontologies/diamond.manchester";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results;
@@ -80,7 +76,7 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testPropertiesGenerationExternal() {
-        String source = "DLex6.manchester";
+        String source = "fuzzyDL/DLex6.manchester";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "ex6", res, OntoModel.Mode.HIERARCHY );
@@ -205,7 +201,7 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testComplexAnonymous() {
-        String source = "DLex8.manchester";
+        String source = "fuzzyDL/DLex8.manchester";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "ex8", res, OntoModel.Mode.HIERARCHY );

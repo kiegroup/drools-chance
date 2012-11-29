@@ -1,0 +1,2888 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix sci: <javax:measure:quantity#> .
+@prefix : <http://wwtp.utvalamb.enea.bologna.it#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://wwtp.utvalamb.enea.bologna.it> .
+
+<http://wwtp.utvalamb.enea.bologna.it> rdf:type owl:Ontology .
+
+
+#################################################################
+#
+#    Datatypes
+#
+#################################################################
+
+
+
+
+#################################################################
+#
+#    Object Properties
+#
+#################################################################
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#analyzes
+
+:analyzes rdf:type owl:ObjectProperty ;
+          
+          rdfs:domain :Analysis ;
+          
+          rdfs:range :Sample .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#connectedTo
+
+:connectedTo rdf:type owl:ObjectProperty ,
+                      owl:TransitiveProperty ;
+             
+             rdfs:domain :DeviceEndpoint ;
+             
+             rdfs:range :DeviceEndpoint ;
+             
+             owl:inverseOf :connects .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#connects
+
+:connects rdf:type owl:ObjectProperty ,
+                   owl:TransitiveProperty ;
+          
+          rdfs:domain :DeviceEndpoint ;
+          
+          rdfs:range :DeviceEndpoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#connectsHydraulicEndpoint
+
+:connectsHydraulicEndpoint rdf:type owl:ObjectProperty ;
+                           
+                           rdfs:domain :HydraulicConnection ;
+                           
+                           rdfs:range :HydraulicEndpoint ;
+                           
+                           rdfs:subPropertyOf owl:topObjectProperty .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#dedicatedTo
+
+:dedicatedTo rdf:type owl:ObjectProperty ;
+             
+             rdfs:range :ProcessPhase ;
+             
+             rdfs:domain :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#generates
+
+:generates rdf:type owl:ObjectProperty ;
+           
+           rdfs:range :Sample ;
+           
+           rdfs:domain :SamplingEvent .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasAmount
+
+:hasAmount rdf:type owl:ObjectProperty ;
+           
+           rdfs:range :Amount ;
+           
+           rdfs:domain :Measure .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasCollectionPoint
+
+:hasCollectionPoint rdf:type owl:ObjectProperty ;
+                    
+                    rdfs:range :CollectionPoint ;
+                    
+                    rdfs:domain :Tank ;
+                    
+                    owl:inverseOf :isLocated .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasConcentration
+
+:hasConcentration rdf:type owl:ObjectProperty ;
+                  
+                  rdfs:range :Concentration .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasConnectionEndpoint
+
+:hasConnectionEndpoint rdf:type owl:ObjectProperty ;
+                       
+                       rdfs:domain :AutomableDevice ;
+                       
+                       rdfs:range :DeviceEndpoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasDefaultMU
+
+:hasDefaultMU rdf:type owl:ObjectProperty ;
+              
+              rdfs:domain :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasHydraulicConnection
+
+:hasHydraulicConnection rdf:type owl:ObjectProperty ;
+                        
+                        rdfs:range :HydraulicConnection ;
+                        
+                        rdfs:domain :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasHydraulicEndpoint
+
+:hasHydraulicEndpoint rdf:type owl:ObjectProperty ;
+                      
+                      rdfs:domain :HydraulicDevice ;
+                      
+                      rdfs:range :HydraulicEndpoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasInstalledProbe
+
+:hasInstalledProbe rdf:type owl:ObjectProperty ;
+                   
+                   rdfs:range :Probe ;
+                   
+                   rdfs:domain :Tank ;
+                   
+                   rdfs:subPropertyOf owl:topObjectProperty ;
+                   
+                   owl:propertyChainAxiom ( :hasCollectionPoint
+                                            :hasProbe
+                                          ) .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasLine
+
+:hasLine rdf:type owl:ObjectProperty ;
+         
+         rdfs:domain :Plant ;
+         
+         rdfs:range :PlantLine .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasMaxValueRange
+
+:hasMaxValueRange rdf:type owl:ObjectProperty ;
+                  
+                  rdfs:range :Amount ;
+                  
+                  rdfs:domain :ValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasMeasureType
+
+:hasMeasureType rdf:type owl:ObjectProperty ;
+                
+                rdfs:domain :Measure ;
+                
+                rdfs:range :MeasureType ;
+                
+                rdfs:subPropertyOf owl:topObjectProperty .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasMethod
+
+:hasMethod rdf:type owl:ObjectProperty ;
+           
+           rdfs:domain :Analysis ;
+           
+           rdfs:range :Method .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasMinValueRange
+
+:hasMinValueRange rdf:type owl:ObjectProperty ;
+                  
+                  rdfs:range :Amount ;
+                  
+                  rdfs:domain :ValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasOperatingDevice
+
+:hasOperatingDevice rdf:type owl:ObjectProperty ;
+                    
+                    rdfs:range :Device ;
+                    
+                    rdfs:domain :HydraulicConnection .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasProbe
+
+:hasProbe rdf:type owl:ObjectProperty ;
+          
+          rdfs:domain :CollectionPoint ;
+          
+          rdfs:range :Probe .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasPump
+
+:hasPump rdf:type owl:ObjectProperty ;
+         
+         rdfs:domain :HydraulicConnection ;
+         
+         rdfs:range :Pump .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasQuantity
+
+:hasQuantity rdf:type owl:ObjectProperty ;
+             
+             rdfs:domain :MeasureType ;
+             
+             rdfs:range :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasReactionTank
+
+:hasReactionTank rdf:type owl:ObjectProperty ;
+                 
+                 rdfs:domain :ProcessPhase ;
+                 
+                 rdfs:range :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasRecord
+
+:hasRecord rdf:type owl:ObjectProperty ;
+           
+           rdfs:range :CalibrationRecord ;
+           
+           rdfs:domain :Probe .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasSpecificMU
+
+:hasSpecificMU rdf:type owl:ObjectProperty ;
+               
+               rdfs:domain :Probe .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasSubstance
+
+:hasSubstance rdf:type owl:ObjectProperty ;
+              
+              rdfs:domain :MeasureType ;
+              
+              rdfs:range :Substance .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasTank
+
+:hasTank rdf:type owl:ObjectProperty ;
+         
+         rdfs:domain :PlantLine ;
+         
+         rdfs:range :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasValueRange
+
+:hasValueRange rdf:type owl:ObjectProperty ;
+               
+               rdfs:domain :Probe ;
+               
+               rdfs:range :ValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#involves
+
+:involves rdf:type owl:ObjectProperty ;
+          
+          rdfs:range :Analyzer ;
+          
+          rdfs:domain :Method .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isCollectedFrom
+
+:isCollectedFrom rdf:type owl:ObjectProperty ;
+                 
+                 rdfs:range :CollectionPoint ;
+                 
+                 rdfs:domain :Sample .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isContainedIn
+
+:isContainedIn rdf:type owl:ObjectProperty ;
+               
+               rdfs:range :CollectionPoint ;
+               
+               rdfs:domain :Probe ;
+               
+               owl:inverseOf :hasProbe .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isLocated
+
+:isLocated rdf:type owl:ObjectProperty ;
+           
+           rdfs:domain :CollectionPoint ;
+           
+           rdfs:range :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isMeasuredBy
+
+:isMeasuredBy rdf:type owl:ObjectProperty ;
+              
+              rdfs:domain :Measure ;
+              
+              rdfs:range :Probe ;
+              
+              owl:inverseOf :measures .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isPartOfPlantLine
+
+:isPartOfPlantLine rdf:type owl:ObjectProperty ;
+                   
+                   rdfs:range :PlantLine ;
+                   
+                   rdfs:domain :Tank ;
+                   
+                   owl:inverseOf :hasTank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isRecollected
+
+:isRecollected rdf:type owl:ObjectProperty ;
+               
+               rdfs:domain :Sample ;
+               
+               rdfs:range :Sampler ;
+               
+               owl:inverseOf :recollects .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isReferredTo
+
+:isReferredTo rdf:type owl:ObjectProperty ;
+              
+              rdfs:range :Quantity ;
+              
+              owl:inverseOf :hasDefaultMU .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isSInkedBy
+
+:isSInkedBy rdf:type owl:ObjectProperty ;
+            
+            rdfs:range :HydraulicConnection ;
+            
+            rdfs:domain :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isSourcedBy
+
+:isSourcedBy rdf:type owl:ObjectProperty ;
+             
+             rdfs:range :HydraulicConnection ;
+             
+             rdfs:domain :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isSubstanceOf
+
+:isSubstanceOf rdf:type owl:ObjectProperty ;
+               
+               rdfs:domain :NO3Substance ;
+               
+               rdfs:subPropertyOf owl:topObjectProperty .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isValueQuantityOf
+
+:isValueQuantityOf rdf:type owl:ObjectProperty ;
+                   
+                   rdfs:range :Measure ;
+                   
+                   rdfs:domain :Quantity ;
+                   
+                   owl:inverseOf :hasQuantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#locatedAt
+
+:locatedAt rdf:type owl:ObjectProperty ;
+           
+           rdfs:range :Plant ;
+           
+           rdfs:domain :PlantLine ;
+           
+           owl:inverseOf :hasLine .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#measures
+
+:measures rdf:type owl:ObjectProperty ;
+          
+          rdfs:range :Measure ;
+          
+          rdfs:domain :Probe .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ofQuantity
+
+:ofQuantity rdf:type owl:ObjectProperty ;
+            
+            rdfs:domain :Amount ;
+            
+            rdfs:range :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#performEventAnalysing
+
+:performEventAnalysing rdf:type owl:ObjectProperty ;
+                       
+                       rdfs:range :AnalysingEvent ;
+                       
+                       rdfs:domain :SamplingEvent .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#performedBy
+
+:performedBy rdf:type owl:ObjectProperty ;
+             
+             rdfs:domain :Analysis ;
+             
+             rdfs:range :Analyzer .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#performs
+
+:performs rdf:type owl:ObjectProperty ;
+          
+          rdfs:domain :AnalysingEvent ;
+          
+          rdfs:range :Analysis .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#portRange
+
+:portRange rdf:type owl:ObjectProperty ;
+           
+           rdfs:domain :DeviceEndpoint ;
+           
+           rdfs:range :ValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#produce
+
+:produce rdf:type owl:ObjectProperty ;
+         
+         rdfs:range :Measure ;
+         
+         rdfs:domain :Method .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#readCmdQuantity
+
+:readCmdQuantity rdf:type owl:ObjectProperty ;
+                 
+                 rdfs:range :Quantity ;
+                 
+                 rdfs:domain :ReadCommand .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#recollects
+
+:recollects rdf:type owl:ObjectProperty ;
+            
+            rdfs:range :Sample ;
+            
+            rdfs:domain :Sampler .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#requiredTransformation
+
+:requiredTransformation rdf:type owl:ObjectProperty ;
+                        
+                        rdfs:domain :EndpointInterface ;
+                        
+                        rdfs:range :EndpointTransformation .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#results
+
+:results rdf:type owl:ObjectProperty ;
+         
+         rdfs:range :Amount ;
+         
+         rdfs:domain :Analysis .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#subCommand
+
+:subCommand rdf:type owl:ObjectProperty ;
+            
+            rdfs:domain :BatchCommand ;
+            
+            rdfs:range :Command .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#supportedQuantity
+
+:supportedQuantity rdf:type owl:ObjectProperty ;
+                   
+                   rdfs:domain :EndpointInterface ;
+                   
+                   rdfs:range :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#supportedRange
+
+:supportedRange rdf:type owl:ObjectProperty ;
+                
+                rdfs:domain :EndpointInterface ;
+                
+                rdfs:range :ValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#supportsInterface
+
+:supportsInterface rdf:type owl:ObjectProperty ;
+                   
+                   rdfs:domain :DeviceEndpoint ;
+                   
+                   rdfs:range :EndpointInterface .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#writeCmdValue
+
+:writeCmdValue rdf:type owl:ObjectProperty ;
+               
+               rdfs:range :Amount ;
+               
+               rdfs:domain :WriteCommand .
+
+
+
+
+
+#################################################################
+#
+#    Data properties
+#
+#################################################################
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#cmdDelay
+
+:cmdDelay rdf:type owl:DatatypeProperty ;
+          
+          rdfs:domain :TimedCommand ;
+          
+          rdfs:range xsd:long .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#cmdPeriod
+
+:cmdPeriod rdf:type owl:DatatypeProperty ;
+           
+           rdfs:domain :TimedCommand ;
+           
+           rdfs:range xsd:long .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#cmdRepetitions
+
+:cmdRepetitions rdf:type owl:DatatypeProperty ;
+                
+                rdfs:domain :TimedCommand ;
+                
+                rdfs:range xsd:long .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#collectionMethod
+
+:collectionMethod rdf:type owl:DatatypeProperty ;
+                  
+                  rdfs:domain :Sample ;
+                  
+                  rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#commandID
+
+:commandID rdf:type owl:DatatypeProperty ;
+           
+           rdfs:domain :Command ;
+           
+           rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#connSrcPortID
+
+:connSrcPortID rdf:type owl:DatatypeProperty ;
+               
+               rdfs:domain :DeviceConnection ;
+               
+               rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#connTgtPortID
+
+:connTgtPortID rdf:type owl:DatatypeProperty ;
+               
+               rdfs:domain :DeviceConnection ;
+               
+               rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#devEndPointFormat
+
+:devEndPointFormat rdf:type owl:DatatypeProperty ;
+                   
+                   rdfs:domain :DeviceEndpoint ;
+                   
+                   rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#devEndPointID
+
+:devEndPointID rdf:type owl:DatatypeProperty ;
+               
+               rdfs:domain :DeviceEndpoint ;
+               
+               rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#devEndPointInput
+
+:devEndPointInput rdf:type owl:DatatypeProperty ;
+                  
+                  rdfs:domain :DeviceEndpoint ;
+                  
+                  rdfs:range xsd:boolean .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#devEndPointOutput
+
+:devEndPointOutput rdf:type owl:DatatypeProperty ;
+                   
+                   rdfs:domain :DeviceEndpoint ;
+                   
+                   rdfs:range xsd:boolean .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#filtered
+
+:filtered rdf:type owl:DatatypeProperty ;
+          
+          rdfs:domain :Sample ;
+          
+          rdfs:range xsd:boolean .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasBeenValidated
+
+:hasBeenValidated rdf:type owl:DatatypeProperty ;
+                  
+                  rdfs:domain :Probe ;
+                  
+                  rdfs:range xsd:boolean .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasDateTime
+
+:hasDateTime rdf:type owl:DatatypeProperty ;
+             
+             rdfs:domain :Event ;
+             
+             rdfs:range xsd:dateTime .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasError
+
+:hasError rdf:type owl:DatatypeProperty ;
+          
+          rdfs:domain :Amount ;
+          
+          rdfs:range xsd:float .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasHeightZ
+
+:hasHeightZ rdf:type owl:DatatypeProperty ;
+            
+            rdfs:domain :Tank ;
+            
+            rdfs:range xsd:float .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasLenghtX
+
+:hasLenghtX rdf:type owl:DatatypeProperty ;
+            
+            rdfs:domain :Tank ;
+            
+            rdfs:range xsd:float .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasName
+
+:hasName rdf:type owl:DatatypeProperty ;
+         
+         rdfs:domain :Method ;
+         
+         rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasPlantLineTag
+
+:hasPlantLineTag rdf:type owl:DatatypeProperty ;
+                 
+                 rdfs:domain :PlantLine ;
+                 
+                 rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasPositionX
+
+:hasPositionX rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain :CollectionPoint ;
+              
+              rdfs:range xsd:float .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasPositionY
+
+:hasPositionY rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain :CollectionPoint ;
+              
+              rdfs:range xsd:float .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasPositionZ
+
+:hasPositionZ rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain :CollectionPoint ;
+              
+              rdfs:range xsd:float .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasShape
+
+:hasShape rdf:type owl:DatatypeProperty ;
+          
+          rdfs:domain :Tank ;
+          
+          rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasValue
+
+:hasValue rdf:type owl:DatatypeProperty ;
+          
+          rdfs:domain :Amount ;
+          
+          rdfs:range xsd:double .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasVolume
+
+:hasVolume rdf:type owl:DatatypeProperty ;
+           
+           rdfs:domain :Tank ;
+           
+           rdfs:range xsd:unsignedShort .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#hasWidthY
+
+:hasWidthY rdf:type owl:DatatypeProperty ;
+           
+           rdfs:domain :Tank ;
+           
+           rdfs:range xsd:float .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isInput
+
+:isInput rdf:type owl:DatatypeProperty ;
+         
+         rdfs:domain :HydraulicEndpoint ;
+         
+         rdfs:range xsd:boolean .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#isOpened
+
+:isOpened rdf:type owl:DatatypeProperty ;
+          
+          rdfs:domain :HydraulicEndpoint ;
+          
+          rdfs:range xsd:boolean .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#measurementUnit
+
+:measurementUnit rdf:type owl:DatatypeProperty ;
+                 
+                 rdfs:domain :Amount ;
+                 
+                 rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#populationEquivalent
+
+:populationEquivalent rdf:type owl:DatatypeProperty ;
+                      
+                      rdfs:domain :Plant ;
+                      
+                      rdfs:range xsd:int .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#preferredInterface
+
+:preferredInterface rdf:type owl:DatatypeProperty ;
+                    
+                    rdfs:domain :EndpointInterface ;
+                    
+                    rdfs:range xsd:boolean .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#scalingFactor
+
+:scalingFactor rdf:type owl:DatatypeProperty ;
+               
+               rdfs:domain :ScalingTransformation ;
+               
+               rdfs:range xsd:double .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#scalingOffset
+
+:scalingOffset rdf:type owl:DatatypeProperty ;
+               
+               rdfs:domain :ScalingTransformation ;
+               
+               rdfs:range xsd:double .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#tgtCmdID
+
+:tgtCmdID rdf:type owl:DatatypeProperty ;
+          
+          rdfs:domain :AbortCommand ;
+          
+          rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#tgtDeviceID
+
+:tgtDeviceID rdf:type owl:DatatypeProperty ;
+             
+             rdfs:domain :DeviceCommand ;
+             
+             rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#tgtPortID
+
+:tgtPortID rdf:type owl:DatatypeProperty ;
+           
+           rdfs:domain :PortCommand ;
+           
+           rdfs:range xsd:string .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#timestamp
+
+:timestamp rdf:type owl:DatatypeProperty ;
+           
+           rdfs:domain :Command ;
+           
+           rdfs:range xsd:long .
+
+
+
+
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AbortCommand
+
+:AbortCommand rdf:type owl:Class ;
+              
+              rdfs:subClassOf :SystemCommand ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :tgtCmdID ;
+                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                owl:onDataRange xsd:string
+                              ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AerobicStabilization
+
+:AerobicStabilization rdf:type owl:Class ;
+                      
+                      rdfs:subClassOf :SludgeTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AerobicStabilizationCollectionPoint
+
+:AerobicStabilizationCollectionPoint rdf:type owl:Class ;
+                                     
+                                     rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AerobicTank
+
+:AerobicTank rdf:type owl:Class ;
+             
+             owl:equivalentClass [ rdf:type owl:Class ;
+                                   owl:intersectionOf ( :Tank
+                                                        [ rdf:type owl:Restriction ;
+                                                          owl:onProperty :dedicatedTo ;
+                                                          owl:someValuesFrom :AerobicTreatment
+                                                        ]
+                                                      )
+                                 ] ;
+             
+             rdfs:subClassOf :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AerobicTreatment
+
+:AerobicTreatment rdf:type owl:Class ;
+                  
+                  owl:equivalentClass [ rdf:type owl:Class ;
+                                        owl:intersectionOf ( :SecondaryTreatment
+                                                             [ rdf:type owl:Restriction ;
+                                                               owl:onProperty :hasReactionTank ;
+                                                               owl:someValuesFrom :AerobicTank
+                                                             ]
+                                                           )
+                                      ] ;
+                  
+                  rdfs:subClassOf :SecondaryTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AerobicTreatmentCollectionPoint
+
+:AerobicTreatmentCollectionPoint rdf:type owl:Class ;
+                                 
+                                 owl:equivalentClass [ rdf:type owl:Class ;
+                                                       owl:intersectionOf ( :CollectionPoint
+                                                                            [ rdf:type owl:Restriction ;
+                                                                              owl:onProperty :isLocated ;
+                                                                              owl:someValuesFrom :AerobicTank
+                                                                            ]
+                                                                          )
+                                                     ] ;
+                                 
+                                 rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AgriculturalCollectionPoint
+
+:AgriculturalCollectionPoint rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Agriculture
+
+:Agriculture rdf:type owl:Class ;
+             
+             rdfs:subClassOf :WasteDisposal .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Amount
+
+:Amount rdf:type owl:Class ;
+        
+        rdfs:subClassOf owl:Thing ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :ofQuantity ;
+                          owl:onClass :Quantity ;
+                          owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :hasValue ;
+                          owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:onDataRange xsd:double
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :hasError ;
+                          owl:someValuesFrom xsd:float
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :measurementUnit ;
+                          owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:onDataRange xsd:string
+                        ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AnaerobicDigestion
+
+:AnaerobicDigestion rdf:type owl:Class ;
+                    
+                    rdfs:subClassOf :SludgeTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AnaerobicDigestionCollectionPoint
+
+:AnaerobicDigestionCollectionPoint rdf:type owl:Class ;
+                                   
+                                   rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AnalysingEvent
+
+:AnalysingEvent rdf:type owl:Class ;
+                
+                rdfs:subClassOf :Event ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :performs ;
+                                  owl:someValuesFrom :Analysis
+                                ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Analysis
+
+:Analysis rdf:type owl:Class ;
+          
+          rdfs:subClassOf [ rdf:type owl:Restriction ;
+                            owl:onProperty :hasMethod ;
+                            owl:someValuesFrom :Method
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :analyzes ;
+                            owl:someValuesFrom :Sample
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :performedBy ;
+                            owl:onClass :Analyzer ;
+                            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :results ;
+                            owl:onClass :Amount ;
+                            owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                          ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Analyzer
+
+:Analyzer rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Device .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AnoxTank
+
+:AnoxTank rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AutomableDevice
+
+:AutomableDevice rdf:type owl:Class ;
+                 
+                 owl:equivalentClass [ rdf:type owl:Restriction ;
+                                       owl:onProperty :hasConnectionEndpoint ;
+                                       owl:onClass :DeviceEndpoint ;
+                                       owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                     ] ;
+                 
+                 rdfs:subClassOf :Device .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AutomablePump
+
+:AutomablePump rdf:type owl:Class ;
+               
+               rdfs:subClassOf :AutomableDevice ,
+                               :Pump .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AutomableValve
+
+:AutomableValve rdf:type owl:Class ;
+                
+                rdfs:subClassOf :AutomableDevice ,
+                                :Valve .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AutomaticAnalysis
+
+:AutomaticAnalysis rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf :Analysis ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :performedBy ;
+                                     owl:someValuesFrom :AutomaticAnalyzer
+                                   ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AutomaticAnalyzer
+
+:AutomaticAnalyzer rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf :Analyzer ,
+                                   :AutomableDevice .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#AutomaticSampler
+
+:AutomaticSampler rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf :Sampler .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#BatchCommand
+
+:BatchCommand rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Command ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :subCommand ;
+                                owl:someValuesFrom :Command
+                              ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#CalibrationRecord
+
+:CalibrationRecord rdf:type owl:Class .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#CollectionPoint
+
+:CollectionPoint rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                   owl:onProperty :isLocated ;
+                                   owl:onClass :Tank ;
+                                   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                 ] ,
+                                 [ rdf:type owl:Restriction ;
+                                   owl:onProperty :hasPositionZ ;
+                                   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                   owl:onDataRange xsd:float
+                                 ] ,
+                                 [ rdf:type owl:Restriction ;
+                                   owl:onProperty :hasPositionY ;
+                                   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                   owl:onDataRange xsd:float
+                                 ] ,
+                                 [ rdf:type owl:Restriction ;
+                                   owl:onProperty :hasPositionX ;
+                                   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                   owl:onDataRange xsd:float
+                                 ] ,
+                                 [ rdf:type owl:Restriction ;
+                                   owl:onProperty :hasProbe ;
+                                   owl:someValuesFrom :Probe
+                                 ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Command
+
+:Command rdf:type owl:Class ;
+         
+         rdfs:subClassOf [ rdf:type owl:Restriction ;
+                           owl:onProperty :timestamp ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onDataRange xsd:long
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty :commandID ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onDataRange xsd:string
+                         ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#CompostCollectionPoint
+
+:CompostCollectionPoint rdf:type owl:Class ;
+                        
+                        rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Composting
+
+:Composting rdf:type owl:Class ;
+            
+            rdfs:subClassOf :WasteDisposal .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Concentration
+
+:Concentration rdf:type owl:Class ;
+               
+               rdfs:subClassOf :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ControlEndpoint
+
+:ControlEndpoint rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf :DeviceEndpoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Current
+
+:Current rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DOMeasureType
+
+:DOMeasureType rdf:type owl:Class ;
+               
+               rdfs:subClassOf :MeasureType ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :hasSubstance ;
+                                 owl:onClass :DOSubstance ;
+                                 owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :hasSubstance ;
+                                 owl:allValuesFrom :DOSubstance
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :hasQuantity ;
+                                 owl:onClass :Concentration ;
+                                 owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :hasQuantity ;
+                                 owl:allValuesFrom :Concentration
+                               ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DOProbe
+
+:DOProbe rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Probe ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty :hasValueRange ;
+                           owl:allValuesFrom :DOValueRange
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty :measures ;
+                           owl:allValuesFrom :DOMeasureType
+                         ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DOSubstance
+
+:DOSubstance rdf:type owl:Class ;
+             
+             rdfs:subClassOf :Substance .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DOValueRange
+
+:DOValueRange rdf:type owl:Class ;
+              
+              rdfs:subClassOf :ValueRange ;
+              
+              owl:disjointWith :FlowValueRange ,
+                               :NH4ValueRange ,
+                               :NO3ValueRange ,
+                               :ORPValueRange ,
+                               :PHValueRange ,
+                               :TSSValueRange ,
+                               :TemperatureValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DataTaker
+
+:DataTaker rdf:type owl:Class ;
+           
+           rdfs:subClassOf :AutomableDevice .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Denitrification
+
+:Denitrification rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf :TertiaryTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DenitrificationCollectionPoint
+
+:DenitrificationCollectionPoint rdf:type owl:Class ;
+                                
+                                rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Dephosphatation
+
+:Dephosphatation rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf :AerobicTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Device
+
+:Device rdf:type owl:Class .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DeviceCommand
+
+:DeviceCommand rdf:type owl:Class ;
+               
+               rdfs:subClassOf :Command ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :tgtDeviceID ;
+                                 owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                 owl:onDataRange xsd:string
+                               ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DeviceConnection
+
+:DeviceConnection rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                    owl:onProperty :connSrcPortID ;
+                                    owl:cardinality "1"^^xsd:nonNegativeInteger
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :connTgtPortID ;
+                                    owl:cardinality "1"^^xsd:nonNegativeInteger
+                                  ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DeviceEndpoint
+
+:DeviceEndpoint rdf:type owl:Class ;
+                
+                rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                  owl:onProperty :devEndPointInput ;
+                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                  owl:onDataRange xsd:boolean
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :devEndPointID ;
+                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                  owl:onDataRange xsd:string
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :supportsInterface ;
+                                  owl:onClass :EndpointInterface ;
+                                  owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :devEndPointOutput ;
+                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                  owl:onDataRange xsd:boolean
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :connects ;
+                                  owl:onClass :DeviceEndpoint ;
+                                  owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :connectedTo ;
+                                  owl:onClass :DeviceEndpoint ;
+                                  owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :devEndPointFormat ;
+                                  owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                  owl:onDataRange xsd:string
+                                ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Disidratation
+
+:Disidratation rdf:type owl:Class ;
+               
+               rdfs:subClassOf :SludgeTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DisidratationCollectionPoint
+
+:DisidratationCollectionPoint rdf:type owl:Class ;
+                              
+                              rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Disinfection
+
+:Disinfection rdf:type owl:Class ;
+              
+              rdfs:subClassOf :TertiaryTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DisinfectionCollectionPoint
+
+:DisinfectionCollectionPoint rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#DriverEndpoint
+
+:DriverEndpoint rdf:type owl:Class ;
+                
+                rdfs:subClassOf :DeviceEndpoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ERHydraulicConnection
+
+:ERHydraulicConnection rdf:type owl:Class ;
+                       
+                       rdfs:subClassOf :HydraulicConnection ,
+                                       [ rdf:type owl:Restriction ;
+                                         owl:onProperty :hasPump ;
+                                         owl:onClass :Pump ;
+                                         owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                       ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#EndpointInterface
+
+:EndpointInterface rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                     owl:onProperty :preferredInterface ;
+                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                     owl:onDataRange xsd:boolean
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :supportedRange ;
+                                     owl:onClass :ValueRange ;
+                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :supportedQuantity ;
+                                     owl:onClass :Quantity ;
+                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :requiredTransformation ;
+                                     owl:onClass :EndpointTransformation ;
+                                     owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                   ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#EndpointTransformation
+
+:EndpointTransformation rdf:type owl:Class .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Event
+
+:Event rdf:type owl:Class ;
+       
+       rdfs:subClassOf [ rdf:type owl:Restriction ;
+                         owl:onProperty :hasDateTime ;
+                         owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                         owl:onDataRange xsd:dateTime
+                       ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#FCPlantLine
+
+:FCPlantLine rdf:type owl:Class ;
+             
+             rdfs:subClassOf :PlantLine ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :hasTank ;
+                               owl:onClass :AnoxTank ;
+                               owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :hasTank ;
+                               owl:onClass :AerobicTank ;
+                               owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :hasTank ;
+                               owl:onClass :SettlerTank ;
+                               owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                             ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Flow
+
+:Flow rdf:type owl:Class ;
+      
+      rdfs:subClassOf :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#FlowMeasureType
+
+:FlowMeasureType rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf :MeasureType ,
+                                 [ rdf:type owl:Restriction ;
+                                   owl:onProperty :hasQuantity ;
+                                   owl:onClass :Flow ;
+                                   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                 ] ,
+                                 [ rdf:type owl:Restriction ;
+                                   owl:onProperty :hasQuantity ;
+                                   owl:allValuesFrom :Flow
+                                 ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#FlowProbe
+
+:FlowProbe rdf:type owl:Class ;
+           
+           rdfs:subClassOf :Probe ,
+                           [ rdf:type owl:Restriction ;
+                             owl:onProperty :hasValueRange ;
+                             owl:allValuesFrom :FlowValueRange
+                           ] ,
+                           [ rdf:type owl:Restriction ;
+                             owl:onProperty :measures ;
+                             owl:allValuesFrom :FlowMeasureType
+                           ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#FlowValueRange
+
+:FlowValueRange rdf:type owl:Class ;
+                
+                rdfs:subClassOf :ValueRange ;
+                
+                owl:disjointWith :NH4ValueRange ,
+                                 :NO3ValueRange ,
+                                 :ORPValueRange ,
+                                 :PHValueRange ,
+                                 :TSSValueRange ,
+                                 :TemperatureValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#GridCollectionPoint
+
+:GridCollectionPoint rdf:type owl:Class ;
+                     
+                     rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Gritting
+
+:Gritting rdf:type owl:Class ;
+          
+          rdfs:subClassOf :PreTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#H2OSubstance
+
+:H2OSubstance rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Substance .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#HydraulicConnection
+
+:HydraulicConnection rdf:type owl:Class ;
+                     
+                     rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                       owl:onProperty :connectsHydraulicEndpoint ;
+                                       owl:onClass :HydraulicEndpoint ;
+                                       owl:qualifiedCardinality "2"^^xsd:nonNegativeInteger
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :hasOperatingDevice ;
+                                       owl:onClass :Device ;
+                                       owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                                     ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#HydraulicDevice
+
+:HydraulicDevice rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf :Device ,
+                                 [ rdf:type owl:Restriction ;
+                                   owl:onProperty :hasHydraulicEndpoint ;
+                                   owl:onClass :HydraulicEndpoint ;
+                                   owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                 ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#HydraulicEndpoint
+
+:HydraulicEndpoint rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf owl:Thing ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :isInput ;
+                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                     owl:onDataRange xsd:boolean
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :isOpened ;
+                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                     owl:onDataRange xsd:boolean
+                                   ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#IRHydraulicConnection
+
+:IRHydraulicConnection rdf:type owl:Class ;
+                       
+                       rdfs:subClassOf :HydraulicConnection ,
+                                       [ rdf:type owl:Restriction ;
+                                         owl:onProperty :hasPump ;
+                                         owl:onClass :Pump ;
+                                         owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                       ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Incineration
+
+:Incineration rdf:type owl:Class ;
+              
+              rdfs:subClassOf :WasteDisposal .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#IncinerationCollectionPoint
+
+:IncinerationCollectionPoint rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#InfluentTank
+
+:InfluentTank rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#InstrumentAutAn
+
+:InstrumentAutAn rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf :AutomaticAnalyzer .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#LabOperator
+
+:LabOperator rdf:type owl:Class ;
+             
+             rdfs:subClassOf :ManualAnalyzer .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Landfill
+
+:Landfill rdf:type owl:Class ;
+          
+          rdfs:subClassOf :WasteDisposal .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#LandfillCollectionPoint
+
+:LandfillCollectionPoint rdf:type owl:Class ;
+                         
+                         rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#MBRPlantLine
+
+:MBRPlantLine rdf:type owl:Class ;
+              
+              rdfs:subClassOf :PlantLine ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :hasTank ;
+                                owl:someValuesFrom :AnoxTank
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :hasTank ;
+                                owl:someValuesFrom :MembraneTank
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :hasTank ;
+                                owl:someValuesFrom :AerobicTank
+                              ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ManualAnalysis
+
+:ManualAnalysis rdf:type owl:Class ;
+                
+                rdfs:subClassOf :Analysis ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :performedBy ;
+                                  owl:someValuesFrom :ManualAnalyzer
+                                ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ManualAnalyzer
+
+:ManualAnalyzer rdf:type owl:Class ;
+                
+                rdfs:subClassOf :Analyzer .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ManualSampler
+
+:ManualSampler rdf:type owl:Class ;
+               
+               rdfs:subClassOf :Sampler .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Measure
+
+:Measure rdf:type owl:Class ;
+         
+         rdfs:subClassOf [ rdf:type owl:Restriction ;
+                           owl:onProperty :hasAmount ;
+                           owl:onClass :Amount ;
+                           owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty :hasMeasureType ;
+                           owl:cardinality "1"^^xsd:nonNegativeInteger
+                         ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#MeasureType
+
+:MeasureType rdf:type owl:Class ;
+             
+             rdfs:subClassOf [ rdf:type owl:Restriction ;
+                               owl:onProperty :hasQuantity ;
+                               owl:onClass :Quantity ;
+                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :hasSubstance ;
+                               owl:onClass :Substance ;
+                               owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                             ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#MembraneTank
+
+:MembraneTank rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Method
+
+:Method rdf:type owl:Class ;
+        
+        rdfs:subClassOf [ rdf:type owl:Restriction ;
+                          owl:onProperty :produce ;
+                          owl:onClass :Measure ;
+                          owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :involves ;
+                          owl:someValuesFrom :Analyzer
+                        ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#NH4MeasureType
+
+:NH4MeasureType rdf:type owl:Class ;
+                
+                rdfs:subClassOf :MeasureType ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasSubstance ;
+                                  owl:onClass :NH4Substance ;
+                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasQuantity ;
+                                  owl:allValuesFrom :Concentration
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasSubstance ;
+                                  owl:allValuesFrom :NH4Substance
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasQuantity ;
+                                  owl:onClass :Concentration ;
+                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#NH4Probe
+
+:NH4Probe rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Probe ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :hasValueRange ;
+                            owl:allValuesFrom :NH4ValueRange
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :measures ;
+                            owl:allValuesFrom :NH4MeasureType
+                          ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#NH4Substance
+
+:NH4Substance rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Substance .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#NH4ValueRange
+
+:NH4ValueRange rdf:type owl:Class ;
+               
+               rdfs:subClassOf :ValueRange ;
+               
+               owl:disjointWith :NO3ValueRange ,
+                                :ORPValueRange ,
+                                :PHValueRange ,
+                                :TSSValueRange ,
+                                :TemperatureValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#NO3MeasureType
+
+:NO3MeasureType rdf:type owl:Class ;
+                
+                rdfs:subClassOf :MeasureType ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasSubstance ;
+                                  owl:onClass :NO3Substance ;
+                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasSubstance ;
+                                  owl:allValuesFrom :NO3Substance
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasQuantity ;
+                                  owl:onClass :Concentration ;
+                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasQuantity ;
+                                  owl:allValuesFrom :Concentration
+                                ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#NO3Probe
+
+:NO3Probe rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Probe ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :hasValueRange ;
+                            owl:allValuesFrom :NO3ValueRange
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :measures ;
+                            owl:allValuesFrom :NO3MeasureType
+                          ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#NO3Substance
+
+:NO3Substance rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Substance .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#NO3ValueRange
+
+:NO3ValueRange rdf:type owl:Class ;
+               
+               rdfs:subClassOf :ValueRange ;
+               
+               owl:disjointWith :ORPValueRange ,
+                                :PHValueRange ,
+                                :TSSValueRange ,
+                                :TemperatureValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Nitrification
+
+:Nitrification rdf:type owl:Class ;
+               
+               rdfs:subClassOf :AerobicTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ORP
+
+:ORP rdf:type owl:Class ;
+     
+     rdfs:subClassOf :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ORPMeasureType
+
+:ORPMeasureType rdf:type owl:Class ;
+                
+                rdfs:subClassOf :MeasureType ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasQuantity ;
+                                  owl:allValuesFrom :ORP
+                                ] ,
+                                [ rdf:type owl:Restriction ;
+                                  owl:onProperty :hasQuantity ;
+                                  owl:onClass :ORP ;
+                                  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ORPProbe
+
+:ORPProbe rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Probe ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :hasValueRange ;
+                            owl:allValuesFrom :ORPValueRange
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :measures ;
+                            owl:allValuesFrom :ORPMeasureType
+                          ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ORPValueRange
+
+:ORPValueRange rdf:type owl:Class ;
+               
+               rdfs:subClassOf :ValueRange ;
+               
+               owl:disjointWith :PHValueRange ,
+                                :TSSValueRange ,
+                                :TemperatureValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#OilRemoval
+
+:OilRemoval rdf:type owl:Class ;
+            
+            rdfs:subClassOf :PreTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#OverFlow
+
+:OverFlow rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Device ,
+                          :HydraulicConnection .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Oxidation
+
+:Oxidation rdf:type owl:Class ;
+           
+           rdfs:subClassOf :SecondaryTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PH
+
+:PH rdf:type owl:Class ;
+    
+    rdfs:subClassOf :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PHMeasureType
+
+:PHMeasureType rdf:type owl:Class ;
+               
+               rdfs:subClassOf :MeasureType ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :hasQuantity ;
+                                 owl:allValuesFrom :PH
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :hasQuantity ;
+                                 owl:onClass :PH ;
+                                 owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                               ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PHProbe
+
+:PHProbe rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Probe ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty :measures ;
+                           owl:allValuesFrom :PHMeasureType
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty :hasValueRange ;
+                           owl:allValuesFrom :PHValueRange
+                         ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PHValueRange
+
+:PHValueRange rdf:type owl:Class ;
+              
+              rdfs:subClassOf :ValueRange ;
+              
+              owl:disjointWith :TSSValueRange ,
+                               :TemperatureValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Pipe
+
+:Pipe rdf:type owl:Class ;
+      
+      rdfs:subClassOf :HydraulicConnection .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Plant
+
+:Plant rdf:type owl:Class ;
+       
+       rdfs:subClassOf [ rdf:type owl:Restriction ;
+                         owl:onProperty :populationEquivalent ;
+                         owl:cardinality "1"^^xsd:nonNegativeInteger
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :hasLine ;
+                         owl:someValuesFrom :PlantLine
+                       ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PlantInflowCollectionPoint
+
+:PlantInflowCollectionPoint rdf:type owl:Class ;
+                            
+                            rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PlantLine
+
+:PlantLine rdf:type owl:Class ;
+           
+           rdfs:subClassOf [ rdf:type owl:Restriction ;
+                             owl:onProperty :locatedAt ;
+                             owl:onClass :Plant ;
+                             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                           ] ,
+                           [ rdf:type owl:Restriction ;
+                             owl:onProperty :hasPlantLineTag ;
+                             owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                             owl:onDataRange xsd:string
+                           ] ,
+                           [ rdf:type owl:Restriction ;
+                             owl:onProperty :hasTank ;
+                             owl:someValuesFrom :Tank
+                           ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PlantOutFlowCollectionPoint
+
+:PlantOutFlowCollectionPoint rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PortCommand
+
+:PortCommand rdf:type owl:Class ;
+             
+             rdfs:subClassOf :DeviceCommand ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :tgtPortID ;
+                               owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                               owl:onDataRange xsd:string
+                             ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PortReadCommand
+
+:PortReadCommand rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf :PortCommand ,
+                                 :ReadCommand .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PortWriteCommand
+
+:PortWriteCommand rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf :PortCommand ,
+                                  :WriteCommand .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PreTreatment
+
+:PreTreatment rdf:type owl:Class ;
+              
+              rdfs:subClassOf :ProcessPhase .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PrimarySedimentationCollectionPoint
+
+:PrimarySedimentationCollectionPoint rdf:type owl:Class ;
+                                     
+                                     rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PrimarySettling
+
+:PrimarySettling rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf :PrimaryTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#PrimaryTreatment
+
+:PrimaryTreatment rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf :ProcessPhase .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Probe
+
+:Probe rdf:type owl:Class ;
+       
+       rdfs:subClassOf :AutomaticAnalyzer ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :measures ;
+                         owl:someValuesFrom :MeasureType
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :hasValueRange ;
+                         owl:onClass :ValueRange ;
+                         owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :hasRecord ;
+                         owl:onClass :CalibrationRecord ;
+                         owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                       ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ProcessPhase
+
+:ProcessPhase rdf:type owl:Class .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Pump
+
+:Pump rdf:type owl:Class ;
+      
+      rdfs:subClassOf :HydraulicDevice .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Quantity
+
+:Quantity rdf:type owl:Class ;
+          
+          owl:disjointWith :Substance .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ReadCommand
+
+:ReadCommand rdf:type owl:Class ;
+             
+             rdfs:subClassOf :Command ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :readCmdQuantity ;
+                               owl:onClass :Quantity ;
+                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                             ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Rpm
+
+:Rpm rdf:type owl:Class ;
+     
+     rdfs:subClassOf :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SBRPlantLine
+
+:SBRPlantLine rdf:type owl:Class ;
+              
+              rdfs:subClassOf :PlantLine ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :hasTank ;
+                                owl:onClass :SBRTank ;
+                                owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :hasTank ;
+                                owl:allValuesFrom :SBRTank
+                              ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SBRTank
+
+:SBRTank rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Sample
+
+:Sample rdf:type owl:Class ;
+        
+        rdfs:subClassOf [ rdf:type owl:Restriction ;
+                          owl:onProperty :filtered ;
+                          owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:onDataRange xsd:boolean
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :collectionMethod ;
+                          owl:allValuesFrom xsd:string
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :isCollectedFrom ;
+                          owl:someValuesFrom :CollectionPoint
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :isRecollected ;
+                          owl:someValuesFrom :Sampler
+                        ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Sampler
+
+:Sampler rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Device ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty :recollects ;
+                           owl:someValuesFrom :Sample
+                         ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SamplingEvent
+
+:SamplingEvent rdf:type owl:Class ;
+               
+               rdfs:subClassOf :Event ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :generates ;
+                                 owl:someValuesFrom :Sample
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty :performEventAnalysing ;
+                                 owl:someValuesFrom :AnalysingEvent
+                               ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SandRemoval
+
+:SandRemoval rdf:type owl:Class ;
+             
+             rdfs:subClassOf :PreTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ScalingTransformation
+
+:ScalingTransformation rdf:type owl:Class ;
+                       
+                       rdfs:subClassOf :EndpointTransformation ,
+                                       [ rdf:type owl:Restriction ;
+                                         owl:onProperty :scalingOffset ;
+                                         owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                         owl:onDataRange xsd:double
+                                       ] ,
+                                       [ rdf:type owl:Restriction ;
+                                         owl:onProperty :scalingFactor ;
+                                         owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                         owl:onDataRange xsd:double
+                                       ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SecondarySettling
+
+:SecondarySettling rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf :AerobicTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SecondarySettlingCollectionPoint
+
+:SecondarySettlingCollectionPoint rdf:type owl:Class ;
+                                  
+                                  rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SecondaryTreatment
+
+:SecondaryTreatment rdf:type owl:Class ;
+                    
+                    rdfs:subClassOf :ProcessPhase .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SettlerTank
+
+:SettlerTank rdf:type owl:Class ;
+             
+             rdfs:subClassOf :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SettlingCollectionPoint
+
+:SettlingCollectionPoint rdf:type owl:Class ;
+                         
+                         rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SludgePrimary
+
+:SludgePrimary rdf:type owl:Class ;
+               
+               rdfs:subClassOf :ProcessPhase .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SludgeTank
+
+:SludgeTank rdf:type owl:Class ;
+            
+            rdfs:subClassOf :Tank .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SludgeTreatment
+
+:SludgeTreatment rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf :ProcessPhase .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#StatusCommand
+
+:StatusCommand rdf:type owl:Class ;
+               
+               rdfs:subClassOf :DeviceCommand .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Substance
+
+:Substance rdf:type owl:Class .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#SystemCommand
+
+:SystemCommand rdf:type owl:Class ;
+               
+               rdfs:subClassOf :Command .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#TSSProbe
+
+:TSSProbe rdf:type owl:Class ;
+          
+          rdfs:subClassOf :Probe ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :hasValueRange ;
+                            owl:allValuesFrom :TSSValueRange
+                          ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#TSSValueRange
+
+:TSSValueRange rdf:type owl:Class ;
+               
+               rdfs:subClassOf :ValueRange ;
+               
+               owl:disjointWith :TemperatureValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Tank
+
+:Tank rdf:type owl:Class ;
+      
+      rdfs:subClassOf :HydraulicDevice ,
+                      owl:Thing ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :hasLenghtX ;
+                        owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onDataRange xsd:float
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :hasCollectionPoint ;
+                        owl:someValuesFrom :CollectionPoint
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :hasVolume ;
+                        owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onDataRange xsd:unsignedShort
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :hasShape ;
+                        owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onDataRange xsd:string
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :hasWidthY ;
+                        owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onDataRange xsd:float
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :hasHeightZ ;
+                        owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                        owl:onDataRange xsd:float
+                      ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Temperature
+
+:Temperature rdf:type owl:Class ;
+             
+             rdfs:subClassOf :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#TemperatureMeasureType
+
+:TemperatureMeasureType rdf:type owl:Class ;
+                        
+                        rdfs:subClassOf :MeasureType ,
+                                        [ rdf:type owl:Restriction ;
+                                          owl:onProperty :hasQuantity ;
+                                          owl:onClass :Temperature ;
+                                          owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                        ] ,
+                                        [ rdf:type owl:Restriction ;
+                                          owl:onProperty :hasQuantity ;
+                                          owl:allValuesFrom :Temperature
+                                        ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#TemperatureProbe
+
+:TemperatureProbe rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf :Probe ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :measures ;
+                                    owl:allValuesFrom :TemperatureMeasureType
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :hasValueRange ;
+                                    owl:allValuesFrom :TemperatureValueRange
+                                  ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#TemperatureValueRange
+
+:TemperatureValueRange rdf:type owl:Class ;
+                       
+                       rdfs:subClassOf :ValueRange .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#TertiaryFiltering
+
+:TertiaryFiltering rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf :TertiaryTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#TertiarySettling
+
+:TertiarySettling rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf :TertiaryTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#TertiaryTreatment
+
+:TertiaryTreatment rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf :ProcessPhase .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ThermicTreatment
+
+:ThermicTreatment rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf :SludgeTreatment .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ThermicTreatmentCollectionPoint
+
+:ThermicTreatmentCollectionPoint rdf:type owl:Class ;
+                                 
+                                 rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Thickening
+
+:Thickening rdf:type owl:Class ;
+            
+            rdfs:subClassOf :SludgePrimary .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ThickeningCollectionPoint
+
+:ThickeningCollectionPoint rdf:type owl:Class ;
+                           
+                           rdfs:subClassOf :CollectionPoint .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#TimedCommand
+
+:TimedCommand rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Command ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :cmdPeriod ;
+                                owl:cardinality "1"^^xsd:nonNegativeInteger
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :cmdRepetitions ;
+                                owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :cmdDelay ;
+                                owl:cardinality "1"^^xsd:nonNegativeInteger
+                              ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#ValueRange
+
+:ValueRange rdf:type owl:Class ;
+            
+            rdfs:subClassOf [ rdf:type owl:Restriction ;
+                              owl:onProperty :hasMinValueRange ;
+                              owl:onClass :Amount ;
+                              owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :hasMaxValueRange ;
+                              owl:onClass :Amount ;
+                              owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                            ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Valve
+
+:Valve rdf:type owl:Class ;
+       
+       rdfs:subClassOf :HydraulicDevice ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :hasHydraulicEndpoint ;
+                         owl:onClass :HydraulicEndpoint ;
+                         owl:minQualifiedCardinality "2"^^xsd:nonNegativeInteger
+                       ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#Voltage
+
+:Voltage rdf:type owl:Class ;
+         
+         rdfs:subClassOf :Quantity .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#WasteDisposal
+
+:WasteDisposal rdf:type owl:Class ;
+               
+               rdfs:subClassOf :ProcessPhase .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#WaterTempMeasureType
+
+:WaterTempMeasureType rdf:type owl:Class ;
+                      
+                      rdfs:subClassOf :TemperatureMeasureType ,
+                                      [ rdf:type owl:Restriction ;
+                                        owl:onProperty :hasSubstance ;
+                                        owl:allValuesFrom :H2OSubstance
+                                      ] ,
+                                      [ rdf:type owl:Restriction ;
+                                        owl:onProperty :hasSubstance ;
+                                        owl:onClass :H2OSubstance ;
+                                        owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                      ] .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#WrappingTransformation
+
+:WrappingTransformation rdf:type owl:Class ;
+                        
+                        rdfs:subClassOf :EndpointTransformation .
+
+
+
+###  http://wwtp.utvalamb.enea.bologna.it#WriteCommand
+
+:WriteCommand rdf:type owl:Class ;
+              
+              rdfs:subClassOf :Command ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :writeCmdValue ;
+                                owl:onClass :Amount ;
+                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                              ] .
+
+
+
+
+###  Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net
+

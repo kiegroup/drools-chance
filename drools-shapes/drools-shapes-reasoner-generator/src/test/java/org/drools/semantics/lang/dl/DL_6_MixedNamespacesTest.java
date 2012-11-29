@@ -56,8 +56,8 @@ public class DL_6_MixedNamespacesTest {
 
     @Test
     public void testMixedExternal() {
-        String source1 = "appendix.owl";
-        String source2 = "mixed.owl";
+        String source1 = "ontologies/mixed/appendix.owl";
+        String source2 = "ontologies/mixed/mixed.owl";
         Resource res = ResourceFactory.newClassPathResource(source1);
         Resource res2 = ResourceFactory.newClassPathResource(source2);
 
@@ -78,8 +78,8 @@ public class DL_6_MixedNamespacesTest {
 
     @Test
     public void testWWTPMix() {
-        String source1 = "wwtp_ok.ttl";
-        String source2 = "mulo.ttl";
+        String source1 = "ontologies/wwtp/wwtp_ok.ttl";
+        String source2 = "ontologies/wwtp/mulo.ttl";
         Resource res = ResourceFactory.newClassPathResource(source1);
         Resource res2 = ResourceFactory.newClassPathResource(source2);
 

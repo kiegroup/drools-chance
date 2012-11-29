@@ -33,7 +33,7 @@ public class Concept {
     @Position(6)    private     Set<Concept>                    subConcepts;
     @Position(7)    private     Map<String, PropertyRelation>   shadowProperties;
     @Position(8)    private     String                          chosenSuper;
-    @Position(9)   private     String                          pack;
+    @Position(9)    private     String                          pack;
     @Position(10)   private     String                          namespace;
 
     

@@ -66,7 +66,7 @@ public class OwlAPITest {
 
     @Test
     public void kmr2_ontology() {
-        test_ontology("kmr2/kmr2_mini.owl");
+        test_ontology("ontologies/kmr2/kmr2_mini.owl");
     }
 
     @Test
