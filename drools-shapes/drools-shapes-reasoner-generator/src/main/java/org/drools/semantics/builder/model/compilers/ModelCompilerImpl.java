@@ -55,8 +55,9 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
                 map.put( "properties", con.getProperties() );
                 map.put( "implInterface", con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.IFACE ) ? con.getFullyQualifiedName() : null );
                 map.put( "implClass", con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.CLASS )? con.getFullyQualifiedName() : null );
+                map.put( "implProperties", con.getChosenProperties() );
 
-                map.put( "shadowProperties", con.getShadowProperties() );
+//                map.put( "shadowProperties", con.getShadowProperties() );
                 if ( con.isAbstrakt() ) {
                     map.put( "abstract", con.isAbstrakt() );
                 }

@@ -1,0 +1,1156 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix : <http://www.semanticweb.org/ontologies/2012/1/rule_merged.owl#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/ontologies/2012/1/rule_merged.owl> .
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_merged.owl> rdf:type owl:Ontology .
+
+
+#################################################################
+#
+#    Annotation properties
+#
+#################################################################
+
+
+<http://www.kmr.org/ontology/AboutFactType> rdf:type owl:AnnotationProperty ;
+                                            
+                                            rdfs:label "Fact about Facts" ;
+                                            
+                                            rdfs:range <http://www.kmr.org/ontology/PhysicianFactType> .
+
+
+
+rdfs:label rdf:type owl:AnnotationProperty .
+
+
+
+rdfs:comment rdf:type owl:AnnotationProperty .
+
+
+
+
+
+#################################################################
+#
+#    Datatypes
+#
+#################################################################
+
+
+###  http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral
+
+rdf:PlainLiteral rdf:type rdfs:Datatype .
+
+
+
+###  http://www.w3.org/2001/XMLSchema#dateTime
+
+xsd:dateTime rdf:type rdfs:Datatype .
+
+
+
+###  http://www.w3.org/2001/XMLSchema#string
+
+xsd:string rdf:type rdfs:Datatype .
+
+
+
+
+
+#################################################################
+#
+#    Object Properties
+#
+#################################################################
+
+
+###  http://www.kmr.org/ontology/adverseEventType
+
+<http://www.kmr.org/ontology/adverseEventType> rdf:type owl:ObjectProperty ;
+                                               
+                                               rdfs:label "adverse event type" ;
+                                               
+                                               rdfs:domain <http://www.kmr.org/ontology/AllergyFactType> .
+
+
+
+###  http://www.kmr.org/ontology/allergyFactType
+
+<http://www.kmr.org/ontology/allergyFactType> rdf:type owl:ObjectProperty ;
+                                              
+                                              rdfs:label "allergy fact" ;
+                                              
+                                              rdfs:range <http://www.kmr.org/ontology/AllergyFactType> ;
+                                              
+                                              rdfs:domain <http://www.kmr.org/ontology/ReactionFactType> .
+
+
+
+###  http://www.kmr.org/ontology/assertedBy
+
+<http://www.kmr.org/ontology/assertedBy> rdf:type owl:ObjectProperty ;
+                                         
+                                         rdfs:label "who asserted a Fact." ;
+                                         
+                                         rdfs:domain <http://www.kmr.org/ontology/AboutFactType> ;
+                                         
+                                         rdfs:range <http://www.kmr.org/ontology/PersonFactType> .
+
+
+
+###  http://www.kmr.org/ontology/assertedWhere
+
+<http://www.kmr.org/ontology/assertedWhere> rdf:type owl:ObjectProperty ;
+                                            
+                                            rdfs:label "where a Fact was asserted. (need location fact)" ;
+                                            
+                                            rdfs:domain <http://www.kmr.org/ontology/AboutFactType> ;
+                                            
+                                            rdfs:range <http://www.kmr.org/ontology/Location> .
+
+
+
+###  http://www.kmr.org/ontology/patientFactType
+
+<http://www.kmr.org/ontology/patientFactType> rdf:type owl:ObjectProperty ;
+                                              
+                                              rdfs:label "patient (from patient id)" ;
+                                              
+                                              rdfs:domain <http://www.kmr.org/ontology/ClinicalFactType> ;
+                                              
+                                              rdfs:range <http://www.kmr.org/ontology/PatientFactType> .
+
+
+
+###  http://www.kmr.org/ontology/product
+
+<http://www.kmr.org/ontology/product> rdf:type owl:ObjectProperty ;
+                                      
+                                      rdfs:label "product" ;
+                                      
+                                      rdfs:domain <http://www.kmr.org/ontology/AllergyFactType> .
+
+
+
+###  http://www.kmr.org/ontology/reaction
+
+<http://www.kmr.org/ontology/reaction> rdf:type owl:ObjectProperty ;
+                                       
+                                       rdfs:label "reaction" ;
+                                       
+                                       rdfs:domain <http://www.kmr.org/ontology/ReactionFactType> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_merged.owl#hasFunctorType
+
+:hasFunctorType rdf:type owl:ObjectProperty ;
+                
+                rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> ;
+                
+                rdfs:range owl:Thing .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#aboutRule
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#aboutRule> rdf:type owl:ObjectProperty ;
+                                                                   
+                                                                   rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaRule> ;
+                                                                   
+                                                                   rdfs:range <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ;
+                                                                   
+                                                                   rdfs:subPropertyOf owl:topObjectProperty .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasAction
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasAction> rdf:type owl:ObjectProperty ;
+                                                                   
+                                                                   rdfs:range <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Action> ;
+                                                                   
+                                                                   rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Conclusion> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConclusion
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConclusion> rdf:type owl:ObjectProperty ;
+                                                                       
+                                                                       rdfs:range <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Conclusion> ;
+                                                                       
+                                                                       rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConstraint
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConstraint> rdf:type owl:ObjectProperty ;
+                                                                       
+                                                                       rdfs:range <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ;
+                                                                       
+                                                                       rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasExpectation
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasExpectation> rdf:type owl:ObjectProperty ;
+                                                                        
+                                                                        rdfs:range <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> ;
+                                                                        
+                                                                        rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperand
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperand> rdf:type owl:ObjectProperty ;
+                                                                    
+                                                                    rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#ComplexFormula> ;
+                                                                    
+                                                                    rdfs:range <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPattern> rdf:type owl:ObjectProperty ;
+                                                                    
+                                                                    rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> ;
+                                                                    
+                                                                    rdfs:range <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPrecondition
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPrecondition> rdf:type owl:ObjectProperty ;
+                                                                         
+                                                                         rdfs:range <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> ;
+                                                                         
+                                                                         rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> rdf:type owl:ObjectProperty ;
+                                                                    
+                                                                    rdfs:range <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> ;
+                                                                    
+                                                                    rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasRuleAttribute
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasRuleAttribute> rdf:type owl:ObjectProperty ;
+                                                                          
+                                                                          rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ;
+                                                                          
+                                                                          rdfs:range owl:Thing .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#inserts
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#inserts> rdf:type owl:ObjectProperty ;
+                                                                 
+                                                                 rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Insert> ;
+                                                                 
+                                                                 rdfs:range owl:Thing .
+
+
+
+
+
+#################################################################
+#
+#    Data properties
+#
+#################################################################
+
+
+###  http://kmr2.org/metadata/meta.owl#qualityLevel
+
+<http://kmr2.org/metadata/meta.owl#qualityLevel> rdf:type owl:DatatypeProperty ;
+                                                 
+                                                 rdfs:domain <http://kmr2.org/metadata/meta.owl#Quality> ;
+                                                 
+                                                 rdfs:range xsd:string .
+
+
+
+###  http://www.kmr.org/ontology/adverseEventDate
+
+<http://www.kmr.org/ontology/adverseEventDate> rdf:type owl:DatatypeProperty ;
+                                               
+                                               rdfs:label "adverse event date" ;
+                                               
+                                               rdfs:domain <http://www.kmr.org/ontology/AllergyFactType> ;
+                                               
+                                               rdfs:range xsd:dateTime .
+
+
+
+###  http://www.kmr.org/ontology/assertedWhen
+
+<http://www.kmr.org/ontology/assertedWhen> rdf:type owl:DatatypeProperty ;
+                                           
+                                           rdfs:label "when a Fact was asserted." ;
+                                           
+                                           rdfs:domain <http://www.kmr.org/ontology/AboutFactType> ;
+                                           
+                                           rdfs:range xsd:dateTime .
+
+
+
+###  http://www.kmr.org/ontology/code
+
+<http://www.kmr.org/ontology/code> rdf:type owl:DatatypeProperty ;
+                                   
+                                   rdfs:label "code (from code)" ;
+                                   
+                                   rdfs:range xsd:string .
+
+
+
+###  http://www.kmr.org/ontology/codeSystem
+
+<http://www.kmr.org/ontology/codeSystem> rdf:type owl:DatatypeProperty ;
+                                         
+                                         rdfs:label "code system (from code system)" ;
+                                         
+                                         rdfs:range xsd:string .
+
+
+
+###  http://www.kmr.org/ontology/dateEntered
+
+<http://www.kmr.org/ontology/dateEntered> rdf:type owl:DatatypeProperty ;
+                                          
+                                          rdfs:label "date entered" ;
+                                          
+                                          rdfs:comment "synthesized to gather all similar properties and make VSN map easier" ;
+                                          
+                                          rdfs:domain <http://www.kmr.org/ontology/ClinicalFactType> ;
+                                          
+                                          rdfs:range xsd:dateTime .
+
+
+
+###  http://www.kmr.org/ontology/enteredWhen
+
+<http://www.kmr.org/ontology/enteredWhen> rdf:type owl:DatatypeProperty ;
+                                          
+                                          rdfs:label "when a Fact was entered into an EHR." ;
+                                          
+                                          rdfs:domain <http://www.kmr.org/ontology/AboutFactType> ;
+                                          
+                                          rdfs:range xsd:dateTime .
+
+
+
+###  http://www.kmr.org/ontology/patientName
+
+<http://www.kmr.org/ontology/patientName> rdf:type owl:DatatypeProperty ;
+                                          
+                                          rdfs:label "patient name" ;
+                                          
+                                          rdfs:comment "combination of blank node with family, middle etc. components" ;
+                                          
+                                          rdfs:domain <http://www.kmr.org/ontology/PatientFactType> ;
+                                          
+                                          rdfs:range xsd:string .
+
+
+
+###  http://www.kmr.org/ontology/sourceSystem
+
+<http://www.kmr.org/ontology/sourceSystem> rdf:type owl:DatatypeProperty ;
+                                           
+                                           rdfs:label "what system a fact was taken from (need fact type)" ;
+                                           
+                                           rdfs:domain <http://www.kmr.org/ontology/AboutFactType> ;
+                                           
+                                           rdfs:range xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_merged.owl#functor
+
+:functor rdf:type owl:DatatypeProperty ;
+         
+         rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> ;
+         
+         rdfs:range xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator> rdf:type owl:DatatypeProperty ;
+                                                                     
+                                                                     rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ;
+                                                                     
+                                                                     rdfs:range xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasValue
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasValue> rdf:type owl:DatatypeProperty ;
+                                                                  
+                                                                  rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#ValueConstraint> ;
+                                                                  
+                                                                  rdfs:range xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#lowerThreshold
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#lowerThreshold> rdf:type owl:DatatypeProperty ;
+                                                                        
+                                                                        rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RangeConstraint> ;
+                                                                        
+                                                                        rdfs:range xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> rdf:type owl:DatatypeProperty ;
+                                                                    
+                                                                    rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ;
+                                                                    
+                                                                    rdfs:range xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#upperThreshold
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#upperThreshold> rdf:type owl:DatatypeProperty ;
+                                                                        
+                                                                        rdfs:domain <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RangeConstraint> ;
+                                                                        
+                                                                        rdfs:range xsd:string .
+
+
+
+
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+
+###  http://kmr2.org/metadata/meta.owl#KnowledgeElementFact
+
+<http://kmr2.org/metadata/meta.owl#KnowledgeElementFact> rdf:type owl:Class .
+
+
+
+###  http://kmr2.org/metadata/meta.owl#Quality
+
+<http://kmr2.org/metadata/meta.owl#Quality> rdf:type owl:Class ;
+                                            
+                                            rdfs:subClassOf <http://kmr2.org/metadata/meta.owl#KnowledgeElementFact> .
+
+
+
+###  http://www.kmr.org/ontology/AboutFactType
+
+<http://www.kmr.org/ontology/AboutFactType> rdf:type owl:Class ;
+                                            
+                                            rdfs:label "Fact about Facts" ;
+                                            
+                                            rdfs:subClassOf <http://www.kmr.org/ontology/ClinicalFactType> .
+
+
+
+###  http://www.kmr.org/ontology/AllergyFactType
+
+<http://www.kmr.org/ontology/AllergyFactType> rdf:type owl:Class ;
+                                              
+                                              rdfs:label "Allergy Fact" ;
+                                              
+                                              rdfs:subClassOf <http://www.kmr.org/ontology/PhysicianFactType> .
+
+
+
+###  http://www.kmr.org/ontology/ClinicalFactType
+
+<http://www.kmr.org/ontology/ClinicalFactType> rdf:type owl:Class .
+
+
+
+###  http://www.kmr.org/ontology/Location
+
+<http://www.kmr.org/ontology/Location> rdf:type owl:Class ;
+                                       
+                                       rdfs:subClassOf <http://www.kmr.org/ontology/OrgFactType> .
+
+
+
+###  http://www.kmr.org/ontology/OrgFactType
+
+<http://www.kmr.org/ontology/OrgFactType> rdf:type owl:Class .
+
+
+
+###  http://www.kmr.org/ontology/PatientFactType
+
+<http://www.kmr.org/ontology/PatientFactType> rdf:type owl:Class ;
+                                              
+                                              rdfs:label "Patient Fact" ;
+                                              
+                                              rdfs:subClassOf <http://www.kmr.org/ontology/ClinicalFactType> .
+
+
+
+###  http://www.kmr.org/ontology/PersonFactType
+
+<http://www.kmr.org/ontology/PersonFactType> rdf:type owl:Class ;
+                                             
+                                             rdfs:subClassOf <http://www.kmr.org/ontology/OrgFactType> .
+
+
+
+###  http://www.kmr.org/ontology/PhysicianFactType
+
+<http://www.kmr.org/ontology/PhysicianFactType> rdf:type owl:Class ;
+                                                
+                                                rdfs:label "Physician Fact Type" ;
+                                                
+                                                rdfs:subClassOf <http://www.kmr.org/ontology/ClinicalFactType> .
+
+
+
+###  http://www.kmr.org/ontology/ReactionFactType
+
+<http://www.kmr.org/ontology/ReactionFactType> rdf:type owl:Class ;
+                                               
+                                               rdfs:label "Reaction Fact" ;
+                                               
+                                               rdfs:subClassOf <http://www.kmr.org/ontology/PhysicianFactType> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#AgeDependentRule
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#AgeDependentRule> rdf:type owl:Class ;
+                                                                                 
+                                                                                 owl:equivalentClass [ rdf:type owl:Class ;
+                                                                                                       owl:intersectionOf ( <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule>
+                                                                                                                            [ rdf:type owl:Restriction ;
+                                                                                                                              owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPrecondition> ;
+                                                                                                                              owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#PatientAgeGroupPattern>
+                                                                                                                            ]
+                                                                                                                          )
+                                                                                                     ] ;
+                                                                                 
+                                                                                 rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#ContextualRule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#ClinicalRule
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#ClinicalRule> rdf:type owl:Class ;
+                                                                             
+                                                                             rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#ContextualRule
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#ContextualRule> rdf:type owl:Class ;
+                                                                               
+                                                                               owl:equivalentClass [ rdf:type owl:Class ;
+                                                                                                     owl:intersectionOf ( <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule>
+                                                                                                                          [ rdf:type owl:Restriction ;
+                                                                                                                            owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPrecondition> ;
+                                                                                                                            owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern>
+                                                                                                                          ]
+                                                                                                                        )
+                                                                                                   ] ;
+                                                                               
+                                                                               rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#MetaRuleAboutRuleWithQuality
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#MetaRuleAboutRuleWithQuality> rdf:type owl:Class ;
+                                                                                             
+                                                                                             owl:equivalentClass [ rdf:type owl:Class ;
+                                                                                                                   owl:intersectionOf ( <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaRule>
+                                                                                                                                        [ rdf:type owl:Restriction ;
+                                                                                                                                          owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#aboutRule> ;
+                                                                                                                                          owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                                                                                               owl:intersectionOf ( <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule>
+                                                                                                                                                                                    [ rdf:type owl:Restriction ;
+                                                                                                                                                                                      owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasRuleAttribute> ;
+                                                                                                                                                                                      owl:someValuesFrom <http://kmr2.org/metadata/meta.owl#Quality>
+                                                                                                                                                                                    ]
+                                                                                                                                                                                  )
+                                                                                                                                                             ]
+                                                                                                                                        ]
+                                                                                                                                      )
+                                                                                                                 ] ;
+                                                                                             
+                                                                                             rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaRule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#OrgSpecificRule
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#OrgSpecificRule> rdf:type owl:Class ;
+                                                                                
+                                                                                rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#ContextualRule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#PatientAgeGroupPattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#PatientAgeGroupPattern> rdf:type owl:Class ;
+                                                                                       
+                                                                                       owl:equivalentClass [ rdf:type owl:Class ;
+                                                                                                             owl:intersectionOf ( <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern>
+                                                                                                                                  [ rdf:type owl:Restriction ;
+                                                                                                                                    owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConstraint> ;
+                                                                                                                                    owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                                                                                         owl:intersectionOf ( <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint>
+                                                                                                                                                                              [ rdf:type owl:Restriction ;
+                                                                                                                                                                                owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> ;
+                                                                                                                                                                                owl:hasValue "age"
+                                                                                                                                                                              ]
+                                                                                                                                                                            )
+                                                                                                                                                       ]
+                                                                                                                                  ]
+                                                                                                                                )
+                                                                                                           ] ;
+                                                                                       
+                                                                                       rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#PatientRule
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#PatientRule> rdf:type owl:Class ;
+                                                                            
+                                                                            rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ,
+                                                                                            [ rdf:type owl:Restriction ;
+                                                                                              owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPrecondition> ;
+                                                                                              owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#PatientAgeGroupPattern>
+                                                                                            ] .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#Action
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#Action> rdf:type owl:Class ;
+                                                                
+                                                                rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RuleThing> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#ActivationPattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#ActivationPattern> rdf:type owl:Class ;
+                                                                           
+                                                                           rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaPattern> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#AndFormula
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#AndFormula> rdf:type owl:Class ;
+                                                                    
+                                                                    rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#ComplexFormula> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#ComplexFormula
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#ComplexFormula> rdf:type owl:Class ;
+                                                                        
+                                                                        rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> ,
+                                                                                        [ rdf:type owl:Restriction ;
+                                                                                          owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperand> ;
+                                                                                          owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula>
+                                                                                        ] .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#Conclusion
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#Conclusion> rdf:type owl:Class ;
+                                                                    
+                                                                    rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RuleThing> ,
+                                                                                    [ rdf:type owl:Restriction ;
+                                                                                      owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasAction> ;
+                                                                                      owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Action> ;
+                                                                                      owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                                                                                    ] .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> rdf:type owl:Class ;
+                                                                    
+                                                                    rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RuleThing> ,
+                                                                                    [ rdf:type owl:Restriction ;
+                                                                                      owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator> ;
+                                                                                      owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                      owl:onDataRange xsd:string
+                                                                                    ] .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#FailurePattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#FailurePattern> rdf:type owl:Class ;
+                                                                        
+                                                                        rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#OutcomePattern> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> rdf:type owl:Class ;
+                                                                 
+                                                                 rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RuleThing> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#Insert
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#Insert> rdf:type owl:Class ;
+                                                                
+                                                                rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Action> ,
+                                                                                [ rdf:type owl:Restriction ;
+                                                                                  owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#inserts> ;
+                                                                                  owl:cardinality "1"^^xsd:nonNegativeInteger
+                                                                                ] .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaPattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaPattern> rdf:type owl:Class ;
+                                                                     
+                                                                     rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaRule
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaRule> rdf:type owl:Class ;
+                                                                  
+                                                                  owl:equivalentClass [ rdf:type owl:Class ;
+                                                                                        owl:unionOf ( [ rdf:type owl:Restriction ;
+                                                                                                        owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#aboutRule> ;
+                                                                                                        owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule>
+                                                                                                      ]
+                                                                                                      [ rdf:type owl:Restriction ;
+                                                                                                        owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> ;
+                                                                                                        owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaPattern>
+                                                                                                      ]
+                                                                                                    )
+                                                                                      ] ;
+                                                                  
+                                                                  rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ,
+                                                                                  [ rdf:type owl:Restriction ;
+                                                                                    owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> ;
+                                                                                    owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaPattern>
+                                                                                  ] ,
+                                                                                  [ rdf:type owl:Restriction ;
+                                                                                    owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#aboutRule> ;
+                                                                                    owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ;
+                                                                                    owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger
+                                                                                  ] ,
+                                                                                  [ rdf:type owl:Restriction ;
+                                                                                    owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#aboutRule> ;
+                                                                                    owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ;
+                                                                                    owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                                                  ] .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#OutcomePattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#OutcomePattern> rdf:type owl:Class ;
+                                                                        
+                                                                        rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaPattern> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> rdf:type owl:Class ;
+                                                                 
+                                                                 rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> ,
+                                                                                 [ rdf:type owl:Restriction ;
+                                                                                   owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConstraint> ;
+                                                                                   owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ;
+                                                                                   owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                                                 ] ,
+                                                                                 [ rdf:type owl:Restriction ;
+                                                                                   owl:onProperty :functor ;
+                                                                                   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                   owl:onDataRange xsd:string
+                                                                                 ] .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#ProductionRule
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#ProductionRule> rdf:type owl:Class ;
+                                                                        
+                                                                        owl:equivalentClass [ rdf:type owl:Class ;
+                                                                                              owl:intersectionOf ( <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule>
+                                                                                                                   [ rdf:type owl:Restriction ;
+                                                                                                                     owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConclusion> ;
+                                                                                                                     owl:someValuesFrom [ rdf:type owl:Class ;
+                                                                                                                                          owl:intersectionOf ( <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Conclusion>
+                                                                                                                                                               [ rdf:type owl:Restriction ;
+                                                                                                                                                                 owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasAction> ;
+                                                                                                                                                                 owl:someValuesFrom <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Insert>
+                                                                                                                                                               ]
+                                                                                                                                                             )
+                                                                                                                                        ]
+                                                                                                                   ]
+                                                                                                                 )
+                                                                                            ] ;
+                                                                        
+                                                                        rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#RangeConstraint
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#RangeConstraint> rdf:type owl:Class ;
+                                                                         
+                                                                         rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ,
+                                                                                         [ rdf:type owl:Restriction ;
+                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> ;
+                                                                                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                           owl:onDataRange xsd:string
+                                                                                         ] ,
+                                                                                         [ rdf:type owl:Restriction ;
+                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#upperThreshold> ;
+                                                                                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                           owl:onDataRange xsd:string
+                                                                                         ] ,
+                                                                                         [ rdf:type owl:Restriction ;
+                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator> ;
+                                                                                           owl:hasValue "between"^^xsd:string
+                                                                                         ] ,
+                                                                                         [ rdf:type owl:Restriction ;
+                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#lowerThreshold> ;
+                                                                                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                           owl:onDataRange xsd:string
+                                                                                         ] .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> rdf:type owl:Class ;
+                                                              
+                                                              rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RuleThing> ,
+                                                                              [ rdf:type owl:Restriction ;
+                                                                                owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> ;
+                                                                                owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Formula> ;
+                                                                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                                              ] ,
+                                                                              [ rdf:type owl:Restriction ;
+                                                                                owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConclusion> ;
+                                                                                owl:onClass <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Conclusion> ;
+                                                                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger
+                                                                              ] .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#RuleThing
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#RuleThing> rdf:type owl:Class .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#SuccessPattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#SuccessPattern> rdf:type owl:Class ;
+                                                                        
+                                                                        rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#OutcomePattern> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#TriggerPattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#TriggerPattern> rdf:type owl:Class ;
+                                                                        
+                                                                        rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#MetaPattern> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rules.owl#ValueConstraint
+
+<http://www.semanticweb.org/ontologies/2012/1/rules.owl#ValueConstraint> rdf:type owl:Class ;
+                                                                         
+                                                                         rdfs:subClassOf <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ,
+                                                                                         [ rdf:type owl:Restriction ;
+                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> ;
+                                                                                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                           owl:onDataRange xsd:string
+                                                                                         ] ,
+                                                                                         [ rdf:type owl:Restriction ;
+                                                                                           owl:onProperty <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasValue> ;
+                                                                                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                           owl:onDataRange xsd:string
+                                                                                         ] .
+
+
+
+
+
+#################################################################
+#
+#    Individuals
+#
+#################################################################
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#and_qualityAndFailure
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#and_qualityAndFailure> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#AndFormula> ,
+                                                                                               owl:NamedIndividual ;
+                                                                                      
+                                                                                      <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperand> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#genericFailure> ,
+                                                                                                                                                          <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#meta1_onQualityOfARule> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#conclusion1
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#conclusion1> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Conclusion> ,
+                                                                                     owl:NamedIndividual ;
+                                                                            
+                                                                            <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasAction> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#insert1> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#constraint1
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#constraint1> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ,
+                                                                                     owl:NamedIndividual ;
+                                                                            
+                                                                            <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator> "=="^^xsd:string ;
+                                                                            
+                                                                            <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasValue> "a"^^xsd:string ;
+                                                                            
+                                                                            <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> "field1"^^xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#constraint2
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#constraint2> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Constraint> ,
+                                                                                     owl:NamedIndividual ;
+                                                                            
+                                                                            <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator> "!="^^xsd:string ;
+                                                                            
+                                                                            <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasValue> "b"^^xsd:string ;
+                                                                            
+                                                                            <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> "field2"^^xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#genericFailure
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#genericFailure> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#FailurePattern> ,
+                                                                                        owl:NamedIndividual .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#goalPattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#goalPattern> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> ,
+                                                                                     owl:NamedIndividual ;
+                                                                            
+                                                                            :functor "PatientFactType"^^xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#infantAgeRangeConstraint
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#infantAgeRangeConstraint> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RangeConstraint> ,
+                                                                                                  owl:NamedIndividual ;
+                                                                                         
+                                                                                         <http://www.semanticweb.org/ontologies/2012/1/rules.owl#lowerThreshold> "31"^^xsd:string ;
+                                                                                         
+                                                                                         <http://www.semanticweb.org/ontologies/2012/1/rules.owl#upperThreshold> "365"^^xsd:string ;
+                                                                                         
+                                                                                         <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> "age"^^xsd:string ;
+                                                                                         
+                                                                                         <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator> "between"^^xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#insert1
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#insert1> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Insert> ,
+                                                                                 owl:NamedIndividual ;
+                                                                        
+                                                                        <http://www.semanticweb.org/ontologies/2012/1/rules.owl#inserts> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#x> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#meta1_onQualityOfARule
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#meta1_onQualityOfARule> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#ActivationPattern> ,
+                                                                                                owl:NamedIndividual ;
+                                                                                       
+                                                                                       <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConstraint> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#qualityConstraint> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#mockLocation
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#mockLocation> rdf:type <http://www.kmr.org/ontology/Location> ,
+                                                                                      owl:NamedIndividual .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#mockPatient
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#mockPatient> rdf:type <http://www.kmr.org/ontology/PatientFactType> ,
+                                                                                     owl:NamedIndividual .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#mockQuality
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#mockQuality> rdf:type <http://kmr2.org/metadata/meta.owl#Quality> ,
+                                                                                     owl:NamedIndividual .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#mrule2
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#mrule2> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ,
+                                                                                owl:NamedIndividual ;
+                                                                       
+                                                                       <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#and_qualityAndFailure> ;
+                                                                       
+                                                                       <http://www.semanticweb.org/ontologies/2012/1/rules.owl#aboutRule> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#rule1> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#newBornAgeRangeConstraint
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#newBornAgeRangeConstraint> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#RangeConstraint> ,
+                                                                                                   owl:NamedIndividual ;
+                                                                                          
+                                                                                          <http://www.semanticweb.org/ontologies/2012/1/rules.owl#lowerThreshold> "0"^^xsd:string ;
+                                                                                          
+                                                                                          <http://www.semanticweb.org/ontologies/2012/1/rules.owl#upperThreshold> "30"^^xsd:string ;
+                                                                                          
+                                                                                          <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> "age"^^xsd:string ;
+                                                                                          
+                                                                                          <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator> "between"^^xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#newBornContextPattern
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#newBornContextPattern> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> ,
+                                                                                               owl:NamedIndividual ;
+                                                                                      
+                                                                                      :functor "PatientFactType"^^xsd:string ;
+                                                                                      
+                                                                                      <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConstraint> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#newBornAgeRangeConstraint> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#pattern1
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#pattern1> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Pattern> ,
+                                                                                  owl:NamedIndividual ,
+                                                                                  [ rdf:type owl:Restriction ;
+                                                                                    owl:onProperty :hasFunctorType ;
+                                                                                    owl:someValuesFrom <http://www.kmr.org/ontology/PatientFactType>
+                                                                                  ] ;
+                                                                         
+                                                                         :functor "PatientFactType"^^xsd:string ;
+                                                                         
+                                                                         <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConstraint> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#constraint1> ,
+                                                                                                                                                <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#constraint2> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#qualityConstraint
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#qualityConstraint> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#ValueConstraint> ,
+                                                                                           owl:NamedIndividual ;
+                                                                                  
+                                                                                  <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasValue> "50"^^xsd:string ;
+                                                                                  
+                                                                                  <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasOperator> ">"^^xsd:string ;
+                                                                                  
+                                                                                  <http://www.semanticweb.org/ontologies/2012/1/rules.owl#onProperty> "qualityLevel"^^xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#qualityOfRule1
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#qualityOfRule1> rdf:type <http://kmr2.org/metadata/meta.owl#Quality> ,
+                                                                                        owl:NamedIndividual ;
+                                                                               
+                                                                               <http://kmr2.org/metadata/meta.owl#qualityLevel> "85"^^xsd:string .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#rule1
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#rule1> rdf:type <http://www.semanticweb.org/ontologies/2012/1/rules.owl#Rule> ,
+                                                                               owl:NamedIndividual ;
+                                                                      
+                                                                      <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasConclusion> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#conclusion1> ;
+                                                                      
+                                                                      <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasExpectation> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#goalPattern> ;
+                                                                      
+                                                                      <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPrecondition> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#newBornContextPattern> ;
+                                                                      
+                                                                      <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasPremise> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#pattern1> ;
+                                                                      
+                                                                      <http://www.semanticweb.org/ontologies/2012/1/rules.owl#hasRuleAttribute> <http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#qualityOfRule1> .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#x
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#x> rdf:type owl:NamedIndividual ,
+                                                                           owl:Thing .
+
+
+
+###  http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#y
+
+<http://www.semanticweb.org/ontologies/2012/1/rule_example.owl#y> rdf:type owl:NamedIndividual ,
+                                                                           owl:Thing .
+
+
+
+
+###  Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net
+

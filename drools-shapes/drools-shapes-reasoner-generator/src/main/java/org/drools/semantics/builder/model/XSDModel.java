@@ -41,5 +41,5 @@ public interface XSDModel extends CompiledOntoModel {
 
     public void setNamespace( String ns, String nameSpace );
 
-    public void setSchemaMode( XSDModelCompiler.XSDSchemaMode schemMode );
+//    public void setSchemaMode( XSDModelCompiler.XSDSchemaMode schemMode );
 }

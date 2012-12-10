@@ -251,7 +251,7 @@
           <generateInterfaceJar>true</generateInterfaceJar>
           <generateTraitDRL>true</generateTraitDRL>
           <generateDefaultImplClasses>true</generateDefaultImplClasses>
-          <inheritanceMode>HYBRID</inheritanceMode>
+          <inheritanceMode>OPTIMIZED</inheritanceMode>
           <generateSpecXSDs>false</generateSpecXSDs>
           <generateIndividuals>true</generateIndividuals>
         </configuration>

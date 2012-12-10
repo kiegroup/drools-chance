@@ -16,7 +16,11 @@
 
 package org.drools.semantics.builder.model;
 
-import org.drools.semantics.builder.model.compilers.ModelCompiler;
+import org.drools.semantics.builder.model.hierarchy.FlatModelProcessor;
+import org.drools.semantics.builder.model.hierarchy.HierarchicalModelProcessor;
+import org.drools.semantics.builder.model.hierarchy.ModelHierarchyProcessor;
+import org.drools.semantics.builder.model.hierarchy.OptimizedModelProcessor;
+import org.drools.semantics.builder.model.hierarchy.VariantModelProcessor;
 
 import java.util.List;
 import java.util.Set;
@@ -24,7 +28,22 @@ import java.util.Set;
 public interface OntoModel extends Cloneable {
 
 
-    public static enum Mode  { HIERARCHY, FLAT, VARIANT, HYBRID }
+    public static enum Mode  {
+        HIERARCHY( new HierarchicalModelProcessor() ),
+        FLAT( new FlatModelProcessor() ),
+        VARIANT( new VariantModelProcessor() ),
+        OPTIMIZED( new OptimizedModelProcessor() );
+
+        private ModelHierarchyProcessor processor;
+
+        Mode( ModelHierarchyProcessor prox ) {
+            processor = prox;
+        }
+
+        public ModelHierarchyProcessor getProcessor() {
+            return processor;
+        }
+    }
 
 
     public String getDefaultPackage();
@@ -78,12 +97,7 @@ public interface OntoModel extends Cloneable {
 
     public void sort();
 
-    
-    public void flatten();
-
-    public void raze();
-
-    public void elevate();
+    public boolean isHierarchyConsistent();
 
     public Mode getMode();
 

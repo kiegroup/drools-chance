@@ -1,0 +1,165 @@
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: : <http://jboss.org/drools/semantics/Diamond#>
+Prefix: xml: <http://www.w3.org/XML/1998/namespace>
+Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Prefix: dc: <http://purl.org/dc/elements/1.1/>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+
+
+Ontology: <http://jboss.org/drools/semantics/Diamond>
+
+
+Datatype: xsd:string
+
+    
+ObjectProperty: <http://jboss.org/drools/semantics/Diamond#objProp>
+
+    Domain: 
+        Top
+    
+    Range: 
+        X
+
+DataProperty: <http://jboss.org/drools/semantics/Diamond#c0Prop>
+
+    Domain:
+        C0
+
+    Range:
+        xsd:string
+    
+    
+DataProperty: <http://jboss.org/drools/semantics/Diamond#lowProp>
+
+    Domain: 
+        Low
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://jboss.org/drools/semantics/Diamond#leftProp>
+
+    Domain: 
+        Left
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://jboss.org/drools/semantics/Diamond#c3Prop>
+
+    Domain: 
+        C3
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://jboss.org/drools/semantics/Diamond#bottomProp>
+
+    Domain: 
+        Bottom
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://jboss.org/drools/semantics/Diamond#rightProp>
+
+    Domain: 
+        Right
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://jboss.org/drools/semantics/Diamond#c1Prop>
+
+    Domain: 
+        C1
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://jboss.org/drools/semantics/Diamond#c2Prop>
+
+    Domain: 
+        C2
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://jboss.org/drools/semantics/Diamond#topProp>
+
+    Domain: 
+        Top
+    
+    Range: 
+        xsd:string
+    
+    
+Class: Left
+
+    EquivalentTo: 
+        C1
+         and Top
+
+    SubClassOf:
+        <http://jboss.org/drools/semantics/Diamond#objProp> some X
+
+Class: Right
+
+    EquivalentTo: 
+        C2
+         and Top
+    
+    
+Class: Bottom
+
+    EquivalentTo: 
+        C1
+         and C2
+         and C3
+         and Top
+
+    SubClassOf:
+        <http://jboss.org/drools/semantics/Diamond#objProp> exactly 1 X
+
+    
+Class: C3
+
+    
+Class: C2
+
+    
+Class: Top
+
+    EquivalentTo: 
+        C0
+    
+    
+Class: C1
+
+    
+Class: C0
+
+    EquivalentTo: 
+        Top
+    
+    
+Class: Low
+
+    EquivalentTo: 
+        C1
+         and C2
+         and Top
+
+Class: X
+
+    
+    

@@ -46,9 +46,9 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
 
     @Override
-    public CompiledOntoModel compile(OntoModel model) {
+    public CompiledOntoModel compile( OntoModel model ) {
 
-        SemanticXSDModel sxsdModel = (SemanticXSDModel) super.compile(model);
+        SemanticXSDModel sxsdModel = (SemanticXSDModel) super.compile( model );
 
         for ( Namespace ns : sxsdModel.getNamespaces() ) {
             sxsdModel.setBindings( ns.getURI(), createBindings( ns.getURI(), sxsdModel ) );
@@ -60,7 +60,38 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
         sxsdModel.setNamespaceFix( createNSFix() );
 
+        sxsdModel.setEmpireConfig( createEmpireConfig() );
+
+        sxsdModel.setPersistenceXml( createPersistenceXml( ) );
+
         return sxsdModel;
+    }
+
+    private String createPersistenceXml() {
+        try {
+            String template = readFile( "persistence-template-hibernate.xml.template" );
+            Map<String,Object> vars = new HashMap<String, Object>();
+            String index = TemplateRuntime.eval( template, vars ).toString();
+            return index;
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private String createEmpireConfig( ) {
+        try {
+            String template = readFile( "empire.configuration.file.template" );
+            Map<String,Object> vars = new HashMap<String, Object>();
+            vars.put( "index", "empire.annotation.index" );
+            vars.put( "model", getModel().getName() );
+            vars.put( "datasources", Arrays.asList( "sesame", "jena" ) );
+            String index = TemplateRuntime.eval( template, vars ).toString();
+            return index;
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     private String createNSFix() {

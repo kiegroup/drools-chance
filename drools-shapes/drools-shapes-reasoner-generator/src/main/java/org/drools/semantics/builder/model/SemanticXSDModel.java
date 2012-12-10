@@ -45,4 +45,12 @@ public interface SemanticXSDModel extends XSDModel {
     public void setNamespaceFix( String fix );
 
     public boolean streamNamespaceFix( OutputStream os );
+
+    public void setEmpireConfig( String config );
+
+    public boolean streamEmpireConfig( OutputStream fos );
+
+    public void setPersistenceXml( String config );
+
+    boolean streamPersistenceXml( OutputStream fos );
 }

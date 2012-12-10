@@ -48,7 +48,7 @@
         @if{ concept.fullyQualifiedName == "org.w3._2002._07.owl.Thing" }
             <inheritance:extends>org.drools.semantics.UIdAble</inheritance:extends>
         @else{}
-            <inheritance:extends>@{concept.chosenSuper + "Impl"}</inheritance:extends>
+            <inheritance:extends>@{concept.chosenSuperConcept.fullyQualifiedName + "Impl"}</inheritance:extends>
         @end{}
 
         <con:default/>
@@ -62,7 +62,7 @@
 
 
         <ci:code><![CDATA[
-          @{ extra_code[ concept.name ] }
+          //@{ extra_code[ concept.name ] }
         ]]></ci:code>
 
 

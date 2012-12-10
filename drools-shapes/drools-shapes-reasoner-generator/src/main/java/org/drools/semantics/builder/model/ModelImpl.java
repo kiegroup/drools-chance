@@ -135,8 +135,6 @@ public abstract class ModelImpl implements OntoModel {
     }
 
 
-
-
     protected abstract String traitsToString();
 
 
@@ -144,23 +142,14 @@ public abstract class ModelImpl implements OntoModel {
         innerModel.sort();
     }
 
-    public void raze() {
-        innerModel.raze();
-    }
-
-    public void flatten() {
-        innerModel.flatten();
-    }
-
-    public void elevate() {
-        innerModel.elevate();
-    }
-
 
     public Mode getMode() {
         return innerModel.getMode();
     }
 
+    public boolean isHierarchyConsistent() {
+        return innerModel.isHierarchyConsistent();
+    }
 
 
 }

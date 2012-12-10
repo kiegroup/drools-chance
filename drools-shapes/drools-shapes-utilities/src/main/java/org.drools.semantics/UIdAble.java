@@ -6,6 +6,7 @@ import com.clarkparsia.empire.SupportsRdfId;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 import java.net.URI;
 import java.util.UUID;
 
@@ -72,7 +73,7 @@ public abstract class UIdAble implements SupportsRdfId {
         return result;
     }
 
-    protected static class Key implements RdfKey {
+    protected static class Key implements RdfKey, Serializable {
 
         private URI innerKey;
 

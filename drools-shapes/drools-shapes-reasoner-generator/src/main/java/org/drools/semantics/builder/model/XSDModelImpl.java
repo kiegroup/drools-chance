@@ -33,7 +33,7 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
 
 
     @Override
-    public void initFromBaseModel(OntoModel base) {
+    public void initFromBaseModel( OntoModel base ) {
         super.initFromBaseModel(base);
 
         setNamespace( "xsd", "http://www.w3.org/2001/XMLSchema" );
@@ -65,7 +65,7 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
     public boolean stream( OutputStream os ) {
         try {
             os.write( serialize( getXSDSchema() ).getBytes() );
-            os.write(getOWLSchema().getBytes());
+            os.write( getOWLSchema().getBytes() );
             for ( Document dox : subSchemas.values() ) {
                 os.write( serialize( dox ).getBytes() );
             }
@@ -152,7 +152,6 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
                             String localNs = schema.getRootElement().getAttributeValue( "targetNamespace" );
                             if ( ! localNs.equals( baseNs ) ) {
                                 addImport( schema, namespaces.get( ns ) );
-                                System.out.println( sup );
                             }
 
                         }
@@ -259,9 +258,8 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         outputter.setFormat( Format.getPrettyFormat() );
         try {
             outputter.output( dox, out );
-        }
-            catch (IOException e) {
-        System.err.println(e);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return out.toString();
@@ -280,11 +278,4 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         }
     }
 
-    public XSDModelCompiler.XSDSchemaMode getSchemaMode() {
-        return schemaMode;
-    }
-
-    public void setSchemaMode(XSDModelCompiler.XSDSchemaMode schemaMode) {
-        this.schemaMode = schemaMode;
-    }
 }

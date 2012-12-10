@@ -60,9 +60,7 @@
         
         rdfs:domain :Joint ;
         
-        rdfs:range xsd:double ;
-        
-        rdfs:subPropertyOf owl:topDataProperty .
+        rdfs:range xsd:double .
 
 
 
@@ -161,7 +159,11 @@
 :Joint rdf:type owl:Class ;
        
        rdfs:subClassOf [ rdf:type owl:Restriction ;
-                         owl:onProperty :coordZ ;
+                         owl:onProperty :coordY ;
+                         owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :coordX ;
                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
                        ] ,
                        [ rdf:type owl:Restriction ;
@@ -169,11 +171,7 @@
                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
                        ] ,
                        [ rdf:type owl:Restriction ;
-                         owl:onProperty :coordY ;
-                         owl:maxCardinality "1"^^xsd:nonNegativeInteger
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :coordX ;
+                         owl:onProperty :coordZ ;
                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
                        ] .
 

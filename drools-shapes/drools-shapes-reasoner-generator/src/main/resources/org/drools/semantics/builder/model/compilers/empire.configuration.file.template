@@ -1,0 +1,12 @@
+annotation.index = META-INF/empire.annotation.index
+
+@code{ int j = 0 }
+
+@foreach{ src : datasources }
+
+@{j}.name = @{model}-@{src}-data-source
+@{j}.factory = @{src}
+
+@code{ j++; }
+@end{}
+

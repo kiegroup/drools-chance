@@ -17,7 +17,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private String name;
 
-    private Mode mode = Mode.HIERARCHY;
+    private Mode mode;
     
     private Set<Individual> individuals = new HashSet<Individual>();
 
@@ -214,88 +214,6 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
 
 
-    public void flatten() {
-        if ( mode == Mode.HIERARCHY ) {
-            for ( String conceptName : concepts.keySet() ) {
-                Concept con = concepts.get( conceptName );
-                Map<String, PropertyRelation> baseProps = con.getProperties();
-                Set<Concept> superConcepts = con.getSuperConcepts();
-                for ( Concept sup : superConcepts ) {
-                    Map<String,PropertyRelation> inheritedProperties = sup.getProperties();
-                    for ( String propKey : inheritedProperties.keySet() ) {
-                        if ( ! baseProps.containsKey( propKey ) ) {
-                            baseProps.put( propKey, inheritedProperties.get( propKey ) );
-                        }
-                    }
-                }
-                con.setShadowed( true );
-            }
-            mode = Mode.FLAT;
-        }
-    }
-
-    public void raze() {
-        if ( mode == Mode.HIERARCHY ) {
-            flatten();
-        }
-
-        List<String> cons = new ArrayList( concepts.keySet() );
-        Collections.reverse( cons );
-        for ( String conceptName : cons ) {
-            Concept con = concepts.get( conceptName );
-            for ( String propKey : con.getProperties().keySet() ) {
-                if ( ! con.getShadowProperties().containsKey( propKey ) ) {
-                    con.addShadowProperty( propKey, con.getProperties().get( propKey ) );
-                }
-                for ( Concept sup : con.getSuperConcepts() ) {
-                    if ( ! sup.getFullyQualifiedName().equals( Thing.class.getName() ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
-                        System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
-                        sup.addShadowProperty( propKey, con.getProperties().get( propKey ) );
-                    }
-                }
-            }
-            for ( String propKey : con.getShadowProperties().keySet() ) {
-                for ( Concept sup : con.getSuperConcepts() ) {
-                    if ( ! sup.getFullyQualifiedName().equals( Thing.class.getName() ) && ! sup.getShadowProperties().containsKey( propKey ) ) {
-                        System.err.println( "Getting prop" + propKey + " up from " + con.getName() + " to " + sup.getName() );
-                        sup.addShadowProperty( propKey, con.getShadowProperties().get( propKey ) );
-                    }
-                }
-            }
-        }
-
-        mode = Mode.VARIANT;
-
-    }
-
-
-
-    public void elevate() {
-        if ( mode != Mode.HIERARCHY ) {
-            for ( String conceptName : concepts.keySet() ) {
-                Concept con = concepts.get( conceptName );
-
-                Map<String, PropertyRelation> baseProps = con.getProperties();
-                Set<Concept> superConcepts = con.getSuperConcepts();
-                for ( Concept sup : superConcepts ) {
-                    Map<String,PropertyRelation> inheritedProperties = sup.getProperties();
-                    for ( String propKey : inheritedProperties.keySet() ) {
-                        if ( baseProps.containsKey( propKey ) ) {
-                            if ( baseProps.get( propKey ).equals( inheritedProperties.get( propKey ) ) ) {
-                                baseProps.remove(propKey);
-                            }
-                        }
-                    }
-                }
-
-                con.getShadowProperties().clear();
-                con.setShadowed( false );
-            }
-
-            mode = Mode.HIERARCHY;
-        }
-    }
-
     public Mode getMode() {
         return mode;
     }
@@ -305,7 +223,34 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     }
 
 
+    public boolean isHierarchyConsistent() {
+        for ( Concept con : getConcepts() ) {
+            for ( PropertyRelation rel : con.getProperties().values() ) {
+//                System.out.println( "Looking for property " + rel.getName() + " starting from " + con.getName() );
+                if ( ! isPropertyAvailable( rel, con ) ) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
+    private boolean isPropertyAvailable( PropertyRelation rel, Concept con ) {
+        if ( con == null ) {
+            return false;
+        }
+//        System.out.println( "Is property " + rel.toFullString() + " available to " + con.getName() );
+        if ( con.getChosenProperties().containsKey( rel.getProperty() ) ) {
+            return true;
+        } else {
+            if ( con.getChosenSuperConcept() != con ) {
+                return isPropertyAvailable( rel, con.getChosenSuperConcept() );
+            } else {
+//                System.err.print( "Topp reached looking fir " + rel.getProperty() + " in " + con.getIri() );
+                return false;
+            }
+        }
+    }
 
 
     public void sort() {

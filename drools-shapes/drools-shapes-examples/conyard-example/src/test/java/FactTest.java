@@ -410,8 +410,7 @@ public class FactTest {
         p2.setHasComment(" Change my mind ");
         p2.getRequiresStair().setStairLength(6);
 
-        // hasComment is key --> equality will fail now
-        assertFalse( painting.equals( p2 ) );
+        assertTrue( painting.equals( p2 ) );
         assertNotSame( painting, p2 );
 
         PaintingImpl p3 = new PaintingImpl();

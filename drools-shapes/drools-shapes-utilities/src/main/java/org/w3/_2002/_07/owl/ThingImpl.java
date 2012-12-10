@@ -21,7 +21,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import com.clarkparsia.empire.EmpireGenerated;
 import com.clarkparsia.empire.annotation.Namespaces;
 import com.clarkparsia.empire.annotation.RdfsClass;
 import com.sun.xml.bind.CycleRecoverable;
@@ -36,6 +39,7 @@ import org.jvnet.jaxb2_commons.lang.MergeFrom;
 import org.jvnet.jaxb2_commons.lang.MergeStrategy;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
+import org.openrdf.model.Graph;
 
 
 /**
@@ -76,8 +80,7 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ThingImpl
     extends UIdAble
-    implements Serializable, Cloneable, CycleRecoverable, CopyTo, Equals, HashCode, MergeFrom, Thing
-{
+        implements Serializable, Cloneable, CycleRecoverable, CopyTo, Equals, HashCode, MergeFrom, Thing, EmpireGenerated {
 
     protected String dyEntryType;
     protected boolean dyReference;
@@ -355,4 +358,24 @@ public class ThingImpl
     }
 
 
+    @XmlTransient
+    private Graph allTriples;
+    @XmlTransient
+    private Graph instanceTriples;
+
+    public Graph getAllTriples() {
+        return allTriples;
+    }
+
+    public void setAllTriples(Graph allTriples) {
+        this.allTriples = allTriples;
+    }
+
+    public Graph getInstanceTriples() {
+        return instanceTriples;
+    }
+
+    public void setInstanceTriples(Graph instanceTriples) {
+        this.instanceTriples = instanceTriples;
+    }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solver>
+  <environmentMode>TRACE</environmentMode>
+  <solutionClass>org.drools.semantics.builder.model.hierarchy.opt.OptimalHierarchy</solutionClass>
+  <planningEntityClass>org.drools.semantics.builder.model.hierarchy.opt.Con</planningEntityClass>
+
+  <scoreDirectorFactory>
+    <scoreDefinitionType>HARD_AND_SOFT</scoreDefinitionType>
+    <scoreDrl>/org/drools/semantics/builder/model/hierarchy/hier_joined_constraints.drl</scoreDrl>
+  </scoreDirectorFactory>
+
+  <termination>
+    <maximumSecondsSpend>30</maximumSecondsSpend>
+    <scoreAttained>-0hard/-256soft</scoreAttained>
+  </termination>
+
+
+  <customSolverPhase>
+    <customSolverPhaseCommandClass>org.drools.semantics.builder.model.hierarchy.opt.SolutionInitializer</customSolverPhaseCommandClass>
+  </customSolverPhase>
+
+  <localSearch>
+    <moveListFactory>
+      <moveListFactoryClass>org.drools.semantics.builder.model.hierarchy.opt.AssignSuperMoveFactory</moveListFactoryClass>
+    </moveListFactory>
+    <acceptor>
+      <simulatedAnnealingStartingTemperature>10hard/100soft</simulatedAnnealingStartingTemperature>
+    </acceptor>
+    <forager>
+      <minimalAcceptedSelection>50</minimalAcceptedSelection>
+    </forager>
+    <termination>
+      <maximumUnimprovedStepCount>2</maximumUnimprovedStepCount>
+    </termination>
+  </localSearch>
+
+
+</solver>

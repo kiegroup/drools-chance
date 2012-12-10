@@ -17,10 +17,16 @@
 package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
+import org.drools.planner.api.domain.entity.PlanningEntity;
+import org.drools.planner.api.domain.variable.PlanningVariable;
+import org.drools.planner.api.domain.variable.ValueRange;
+import org.drools.planner.api.domain.variable.ValueRangeType;
+import org.drools.semantics.builder.model.hierarchy.opt.ConceptStrengthEvaluator;
 import org.drools.semantics.utils.NameUtils;
 import org.semanticweb.owlapi.model.IRI;
 
 import java.util.*;
+
 
 public class Concept {
 
@@ -31,11 +37,12 @@ public class Concept {
     @Position(4)    private     Set<Concept>                    equivalentConcepts;    
     @Position(5)    private     List<PropertyRelation>          keys;
     @Position(6)    private     Set<Concept>                    subConcepts;
-    @Position(7)    private     Map<String, PropertyRelation>   shadowProperties;
+    @Position(7)    private     Map<String, PropertyRelation>   chosenProperties;
     @Position(8)    private     String                          chosenSuper;
     @Position(9)    private     String                          pack;
     @Position(10)   private     String                          namespace;
-
+    @Position(11)   private     Concept                         chosenSuperConcept;
+    @Position(12)   private     Set<Concept>                    chosenSubConcepts;
     
 
     public enum Resolution { NONE, CLASS, IFACE, ENUM ; }
@@ -55,27 +62,28 @@ public class Concept {
         this.superConcepts = new HashSet();
         this.subConcepts = new HashSet();
         this.properties = new HashMap();
-        this.shadowProperties = new HashMap();
+        this.chosenProperties = new HashMap();
         this.equivalentConcepts = new HashSet();
         this.keys = new ArrayList<PropertyRelation>();
         this.primitive = primitive;
         this.pack = NameUtils.namespaceURIToPackage( iri.getStart() );
         this.namespace = iri.getStart();
+        this.chosenSubConcepts = new HashSet();
     }
 
-    public Concept( IRI iri, String name, Set superConcepts, Map properties, Set equivalentConcepts, Set subConcepts, Map shadowProperties, boolean primitive ) {
-        this.iri = iri.toQuotedString();
-        this.name = primitive ? name : NameUtils.compactUpperCase( name );
-        this.superConcepts = superConcepts != null ? superConcepts : new HashSet<Concept>();
-        this.properties = properties != null ? properties : new HashMap<String, PropertyRelation>();
-        this.shadowProperties = shadowProperties != null ? shadowProperties : new HashMap<String, PropertyRelation>();
-        this.equivalentConcepts = equivalentConcepts != null ? equivalentConcepts : new HashSet<Concept>();
-        this.subConcepts = subConcepts != null ? subConcepts : new HashSet<Concept>();
-        this.primitive = primitive;
-        this.pack = NameUtils.namespaceURIToPackage( iri.getStart() );
-        this.namespace = iri.getStart();
-
-    }
+//    public Concept( IRI iri, String name, Set superConcepts, Map properties, Set equivalentConcepts, Set subConcepts, Map shadowProperties, boolean primitive ) {
+//        this.iri = iri.toQuotedString();
+//        this.name = primitive ? name : NameUtils.compactUpperCase( name );
+//        this.superConcepts = superConcepts != null ? superConcepts : new HashSet<Concept>();
+//        this.properties = properties != null ? properties : new HashMap<String, PropertyRelation>();
+//        this.shadowProperties = shadowProperties != null ? shadowProperties : new HashMap<String, PropertyRelation>();
+//        this.equivalentConcepts = equivalentConcepts != null ? equivalentConcepts : new HashSet<Concept>();
+//        this.subConcepts = subConcepts != null ? subConcepts : new HashSet<Concept>();
+//        this.primitive = primitive;
+//        this.pack = NameUtils.namespaceURIToPackage( iri.getStart() );
+//        this.namespace = iri.getStart();
+//
+//    }
 
 
     @Override
@@ -171,7 +179,6 @@ public class Concept {
     public void removeProperty( String propIri ) {
         properties.remove( propIri );
     }
-
 
     public Concept getPropertyRange( String propIri ) {
         return ((PropertyRelation) properties.get( propIri )).getTarget();
@@ -278,6 +285,21 @@ public class Concept {
     }
 
 
+
+    public Set<PropertyRelation> getAvailableProperties() {
+        Set<PropertyRelation> ans = new HashSet<PropertyRelation>();
+
+        for ( PropertyRelation prop : getProperties().values() ) {
+            ans.add( prop );
+        }
+        for ( Concept sup : getSuperConcepts() ) {
+            ans.addAll( sup.getAvailableProperties() );
+        }
+
+        return ans;
+    }
+
+
     public String getChosenSuper() {
         return chosenSuper;
     }
@@ -286,21 +308,33 @@ public class Concept {
         this.chosenSuper = chosenSuper;
     }
 
+
+    public Concept getChosenSuperConcept() {
+        return chosenSuperConcept;
+    }
+
+    public void setChosenSuperConcept(Concept chosenSuperConcept) {
+        this.chosenSuperConcept = chosenSuperConcept;
+    }
+
     public boolean isInherited( String propIri ) {
         return properties.containsKey( propIri ) && properties.get( propIri ).getDomain().getIri().equals( this.getIri() );
     }
 
-
-    public Map<String, PropertyRelation> getShadowProperties() {
-        return shadowProperties;
+    public Set<Concept> getChosenSubConcepts() {
+        return chosenSubConcepts;
     }
 
-    public void setShadowProperties(Map<String, PropertyRelation> shadowProperties) {
-        this.shadowProperties = shadowProperties;
+    public void setChosenSubConcepts(Set<Concept> chosenSubConcepts) {
+        this.chosenSubConcepts = chosenSubConcepts;
     }
 
-    public void addShadowProperty( String propIri, PropertyRelation shadow ) {
-        this.shadowProperties.put( propIri, shadow );
+    public Map<String, PropertyRelation> getChosenProperties() {
+        return chosenProperties;
+    }
+
+    public void setChosenProperties(Map<String, PropertyRelation> targetProperties) {
+        this.chosenProperties = targetProperties;
     }
 
     public void setProperties(Map<String, PropertyRelation> properties) {

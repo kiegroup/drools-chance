@@ -1,0 +1,277 @@
+package org.drools.semantics.builder.model.hierarchy.opt;
+
+import org.drools.planner.core.score.buildin.hardandsoft.HardAndSoftScoreHolder;
+import org.drools.planner.core.score.constraint.IntConstraintOccurrence;
+import org.drools.planner.core.score.constraint.ConstraintType;
+
+import org.drools.semantics.builder.model.*;
+import org.drools.semantics.builder.model.hierarchy.opt.*;
+
+
+global HardAndSoftScoreHolder scoreHolder;
+
+
+declare ChildOf
+    child  : String     @key
+    parent : String     @key
+end
+
+declare Has
+    con    : String     @key
+    pro    : String     @key
+end
+
+declare Inherits
+    con    : String     @key
+    pro    : String     @key
+end
+
+declare Needs
+    con    : String     @key
+    pro    : String     @key
+end
+
+declare Redefines
+    con    : String     @key
+    pro    : String     @key
+end
+
+
+
+rule "Con"
+salience 10
+when
+    Con( $child : iri, $super : chosenSuper != null )
+    Con( $i : iri != $child && == $super )
+then
+    insertLogical( new ChildOf( $child, $i ) );
+end
+
+
+rule "Pro"
+salience 10
+when
+    Con( $dom : iri, chosenSuper != null, $propKeys : availablePropertiesVirtual.keySet() )
+    $prop : String() from $propKeys
+then
+    insertLogical( new Has( $dom, $prop ) );
+end
+
+
+//
+//rule "Inherit"
+//salience 5
+//when
+//    Has( $dom, $prop ; )
+//    ChildOf( $child, $dom ; )
+//then
+//    insertLogical( new Inherits( $child, $prop ) );
+//end
+//
+//rule "Inherits so it has"
+//when
+//    Inherits( $dom, $prop ; )
+//then
+//    insertLogical( new Has( $dom, $prop ) );
+//end
+
+
+rule "Redefines"
+salience -1
+when
+            Con( $con : iri, $original : concept.properties.keySet(), $chosen : chosenProperties.keySet() )
+    $prop : String( this not memberOf $original ) from $chosen
+then
+    insertLogical( new Redefines( $con, $prop ) );
+end
+
+rule "Needs"
+when
+    Con( $con : iri, chosenSuper != null, $propKeys : neededProperties )
+    $prop : String() from $propKeys
+then
+    insertLogical( new Needs( $con, $prop ) );
+end
+
+
+
+
+
+// ############################################################################
+// Constraints
+// ############################################################################
+
+
+
+rule "Self"
+salience 10
+when
+    Con( $child : iri != "<http://www.w3.org/2002/07/owl#Thing>", chosenSuper!.iri == $child )
+then
+    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_HARD, 100, $child ) );
+end
+
+rule "Loop"
+salience 10
+when
+    ChildOf( $self, $self ; )
+then
+    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_HARD, 100, $self ) );
+end
+
+
+
+rule "Too little"
+salience -1
+when
+    $n : Needs( $con, $prop ; )
+    not Has( $con, $prop ; )
+then
+    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_HARD, 1, $n ) );
+end
+
+
+rule "Too much"
+salience -1
+when
+    $i : Has( $con, $pro ; )
+    not Needs( $con, $prop ; )
+then
+    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_SOFT, 1, $i ) );
+end
+
+
+rule "Too much 2"
+salience -1
+when
+    $r : Redefines( $con, $pro ; )
+then
+    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_SOFT, 1, $r ) );
+end
+
+
+
+// ############################################################################
+// Calculate score
+// ############################################################################
+
+// Accumulate hard constraints
+rule "hardConstraintsBroken"
+        salience -5 // Do the other rules first (optional, for performance)
+    when
+        $hardTotal : Number() from accumulate(
+            IntConstraintOccurrence(constraintType == ConstraintType.NEGATIVE_HARD, $weight : weight),
+            sum($weight) // Vote for http://jira.jboss.com/jira/browse/JBRULES-1075
+        )
+    then
+        scoreHolder.setHardConstraintsBroken($hardTotal.intValue());
+end
+
+// Accumulate soft constraints
+rule "softConstraintsBroken"
+        salience -5 // Do the other rules first (optional, for performance)
+    when
+        $softTotal : Number() from accumulate(
+            IntConstraintOccurrence(constraintType == ConstraintType.NEGATIVE_SOFT, $weight : weight),
+            sum($weight) // Vote for http://jira.jboss.com/jira/browse/JBRULES-1075
+        )
+    then
+        scoreHolder.setSoftConstraintsBroken($softTotal.intValue());
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ############################################################################
+// Debug Log
+// ############################################################################
+
+//rule "Log 001"
+//salience -10
+//when
+//    $h : Con( $iri : iri )
+//then
+//    System.out.println( "Con is in " + $h );
+//end
+//
+//rule "Log 001_2"
+//salience -10
+//when
+//    $h : Concept( $iri : iri )
+//then
+//    System.out.println( "Concept is in " + $iri );
+//end
+//
+//
+//rule "Log 1"
+//salience -11
+//when
+//    $h : Has()
+//then
+//    System.out.println( "HAS " + $h );
+//end
+//rule "Log 0"
+//salience -12
+//when
+//    $h : ChildOf()
+//then
+//    System.out.println( "CHILDOF " + $h );
+//end
+//rule "Log2"
+//salience -13
+//when
+//    $h : Needs()
+//then
+//    System.out.println( "NEEDS " + $h );
+//end
+//rule "Log3"
+//salience -14
+//when
+//    $h : Inherits()
+//then
+//    System.out.println( "INHERITS " + $h );
+//end
+//rule "Log4"
+//when
+//    $h : IntConstraintOccurrence()
+//then
+//    System.out.println( "@@@@@@@@@@@ " + $h );
+//end
+
+
+//rule "Log56"
+//salience -20000
+//when
+//    exists Object()
+//then
+//    System.out.println( "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n" );
+//end
+//rule "Log57"
+//salience 20000
+//when
+//    exists Object()
+//then
+//    System.out.println( "\n\n******************************************************************" );
+//end
+
+
+//rule "Logx"
+//when
+//    $h : Object()
+//then
+//    System.out.println( $h );
+//end
+
+
+
+
+

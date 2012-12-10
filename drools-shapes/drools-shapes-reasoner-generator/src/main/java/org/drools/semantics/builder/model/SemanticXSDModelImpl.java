@@ -61,6 +61,10 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
 
     private String namespaceFix;
 
+    private String empireConfig;
+
+    private String persistenceXml;
+
     public String getBindings( String namespace ) {
         return this.bindings != null && bindings.containsKey( namespace )? bindings.get( namespace ) : "";
     }
@@ -105,6 +109,15 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
     public boolean streamNamespaceFix( OutputStream os ) {
         try {
             os.write( getNamespaceFix().getBytes() );
+        } catch ( Exception e ) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean streamEmpireConfig( OutputStream os ) {
+        try {
+            os.write( getEmpireConfig().getBytes() );
         } catch ( Exception e ) {
             return false;
         }
@@ -189,11 +202,36 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
         return true;
     }
 
+    public boolean streamPersistenceXml( OutputStream os ) {
+        try {
+            os.write( persistenceXml.getBytes() );
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
     public String getIndividualFactory() {
         return individualFactory;
     }
 
     public void setIndividualFactory(String individualFactory) {
         this.individualFactory = individualFactory;
+    }
+
+    public String getEmpireConfig() {
+        return empireConfig;
+    }
+
+    public void setEmpireConfig(String empireConfig) {
+        this.empireConfig = empireConfig;
+    }
+
+    public String getPersistenceXml() {
+        return persistenceXml;
+    }
+
+    public void setPersistenceXml(String persistenceXml) {
+        this.persistenceXml = persistenceXml;
     }
 }

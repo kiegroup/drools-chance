@@ -1,5 +1,6 @@
 package org.w3._2002._07.owl;
 
+import com.clarkparsia.empire.EmpireGenerated;
 import com.clarkparsia.empire.annotation.RdfsClass;
 import com.clarkparsia.empire.annotation.Namespaces;
 import com.clarkparsia.empire.annotation.RdfProperty;
@@ -13,9 +14,11 @@ import javax.persistence.Basic;
 
 @RdfsClass( value="tns:Thing" )
 @Namespaces({ "tns", "http://www.w3.org/2002/07/owl#" })
-public interface Thing extends org.drools.semantics.Thing  
+public interface Thing extends org.drools.semantics.Thing, EmpireGenerated
                                  
 {
+
+    public static String IRI = "<http://www.w3.org/2002/07/owl#Thing>";
 
     @javax.xml.bind.annotation.XmlID
     public String getDyEntryId();

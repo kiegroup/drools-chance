@@ -51,7 +51,7 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
         StatefulKnowledgeSession kSession = buildKnowledgeSession( theory );
 
-        OntoModel baseModel = ModelFactory.newModel( name, ModelFactory.CompileTarget.BASE );
+        OntoModel baseModel = ModelFactory.newModel( name, mode );
 
         baseModel.setDefaultPackage(NameUtils.namespaceURIToPackage(ontoDescr.getOntologyID().getOntologyIRI().toString()) );
         baseModel.setDefaultNamespace( ontoDescr.getOntologyID().getOntologyIRI().toString() );
@@ -71,19 +71,9 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
         OntoModel populatedModel = buildIndividuals( ontoDescr, kSession, theory, propertyModel );
 
-        reportSessionStatus( kSession );
+        populatedModel.getMode().getProcessor().process( populatedModel );
 
-        switch ( mode ) {
-            case HIERARCHY:
-                break;
-            case FLAT:
-                populatedModel.flatten();
-                break;
-            case HYBRID:
-            case VARIANT:
-                populatedModel.raze();
-                break;
-        }
+        reportSessionStatus( kSession );
 
         return populatedModel;
     }

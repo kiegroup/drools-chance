@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <!--parent>
+    <groupId>org.drools</groupId>
+    <artifactId>drools-shapes</artifactId>
+    <version>5.5.0-SNAPSHOT</version>
+  </parent-->
+
   <groupId>org.drools</groupId>
   <artifactId>drools-shapes-utilities</artifactId>
   <version>5.5.0-SNAPSHOT</version>
@@ -16,17 +22,26 @@
       <artifactId>Empire-core</artifactId>
       <version>0.7.3</version>
     </dependency>
+
     <dependency>
       <groupId>org.jvnet.hyperjaxb3</groupId>
       <artifactId>hyperjaxb3</artifactId>
       <version>0.5.6</version>
       <type>pom</type>
     </dependency>
+
     <dependency>
       <groupId>org.jvnet.hyperjaxb3</groupId>
       <artifactId>maven-hyperjaxb3-plugin</artifactId>
       <version>0.5.6</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.2.4</version>
+    </dependency>
+
     <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>

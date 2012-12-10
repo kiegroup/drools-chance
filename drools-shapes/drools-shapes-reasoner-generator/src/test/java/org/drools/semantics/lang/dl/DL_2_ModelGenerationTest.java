@@ -58,7 +58,7 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testDiamondModelGenerationExternal() {
-        String source = "ontologies/diamond.manchester";
+        String source = "ontologies/diamond.manchester.owl";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results;
@@ -79,7 +79,7 @@ public class DL_2_ModelGenerationTest {
         String source = "fuzzyDL/DLex6.manchester";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "ex6", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "ex6", res, OntoModel.Mode.FLAT );
 
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.DRL);
@@ -204,7 +204,7 @@ public class DL_2_ModelGenerationTest {
         String source = "fuzzyDL/DLex8.manchester";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "ex8", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "ex8", res, OntoModel.Mode.FLAT );
 
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.DRL);

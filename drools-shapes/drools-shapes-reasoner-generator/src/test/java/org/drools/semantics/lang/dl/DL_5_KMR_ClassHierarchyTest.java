@@ -16,16 +16,17 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
-import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.planner.core.solver.DefaultSolver;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3._2002._07.owl.Thing;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -39,7 +40,7 @@ import static junit.framework.Assert.assertTrue;
 public class DL_5_KMR_ClassHierarchyTest  {
 
     protected DLFactory factory = DLFactoryBuilder.newDLFactoryInstance();
-    
+
 
     @Test
     public void testHierarchyFromClassesExternal() {
@@ -47,7 +48,7 @@ public class DL_5_KMR_ClassHierarchyTest  {
         String source = "fuzzyDL/DLex7.manchester";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "ex7", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "ex7", res, OntoModel.Mode.FLAT );
 
         System.out.println(results);
 
@@ -84,8 +85,176 @@ public class DL_5_KMR_ClassHierarchyTest  {
         assertNotNull( results.getSubConceptOf( "<_Fact>", "<http://www.w3.org/2002/07/owl#Thing>" ) );
 
 
+        assertTrue( results.isHierarchyConsistent() );
+
     }
 
+
+
+    @Test
+    public void testBodyHierarchy() {
+        String source = "ontologies/bodyParts.ttl";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.HIERARCHY );
+
+        for( Concept con : results.getConcepts() ) {
+            if ( ! "Thing".equals( con.getName() ) ) {
+                assertEquals( 1, con.getSuperConcepts().size() );
+            }
+            assertNotNull(con.getChosenSuper());
+            if ( ! ( "Human".equals( con.getName() ) || ( "Joint".equals( con.getName() ) ) ) ) {
+                assertEquals( 0, con.getProperties().size() );
+                assertEquals( 0, con.getChosenProperties().size() );
+            }
+        }
+
+        assertEquals( 2, results.getConcept( "<http://depict.lia.deis.unibo.it#Human>" ).getProperties().size() );
+        assertEquals( 2, results.getConcept( "<http://depict.lia.deis.unibo.it#Human>" ).getChosenProperties().size() );
+        assertEquals( 4, results.getConcept( "<http://depict.lia.deis.unibo.it#Joint>" ).getProperties().size() );
+        assertEquals( 4, results.getConcept( "<http://depict.lia.deis.unibo.it#Joint>" ).getChosenProperties().size() );
+
+        System.out.println(results);
+
+    }
+
+    @Test
+    public void testDiamondFlattenedHierarchy() {
+        String source = "ontologies/diamondProp.manchester.owl";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.FLAT );
+
+        for( Concept con : results.getConcepts() ) {
+            assertEquals( Thing.class.getName(), con.getChosenSuper() );
+        }
+
+        assertEquals( 0, results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_Top>" ).getChosenProperties().size() );
+        assertEquals( 2, results.getConcept( "<_C0>" ).getChosenProperties().size() );
+        assertEquals( 1, results.getConcept( "<_C1>" ).getChosenProperties().size() );
+        assertEquals( 1, results.getConcept( "<_C2>" ).getChosenProperties().size() );
+        assertEquals( 1, results.getConcept( "<_C3>" ).getChosenProperties().size() );
+        assertEquals( 4, results.getConcept( "<_Left>" ).getChosenProperties().size() );
+        assertEquals( 4, results.getConcept( "<_Right>" ).getChosenProperties().size() );
+        assertEquals( 7, results.getConcept( "<_Low>" ).getChosenProperties().size() );
+        assertEquals( 9, results.getConcept( "<_Bottom>" ).getChosenProperties().size() );
+
+
+        assertEquals( 0, results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getProperties().size() );
+        assertEquals( 0, results.getConcept( "<_Top>" ).getProperties().size() );
+        assertEquals( 2, results.getConcept( "<_C0>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_C1>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_C2>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_C3>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_Left>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_Right>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_Low>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_Bottom>" ).getProperties().size() );
+
+        System.out.println(results);
+
+        assertTrue( results.isHierarchyConsistent() );
+    }
+
+
+
+    @Test
+    public void testDiamondVariantHierarchy() {
+        String source = "ontologies/diamondProp.manchester.owl";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.VARIANT );
+
+        for( Concept con : results.getConcepts() ) {
+            if ( ! ( "DiamondRoot".equals( con.getName() ) || "Thing".equals( con.getName() ) ) ) {
+                assertEquals( "org.jboss.drools.semantics.diamond.DiamondRoot", con.getChosenSuper() );
+            }
+        }
+        assertEquals( Thing.class.getName(), results.getConcept( "<http://jboss.org/drools/semantics/DiamondDiamondRoot>" ).getChosenSuper() );
+        assertEquals( Thing.class.getName(), results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getChosenSuper() );
+
+
+        assertEquals( 0, results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_Top>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_C0>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_C1>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_C2>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_C3>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_Left>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_Right>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_Low>" ).getChosenProperties().size() );
+        assertEquals( 0, results.getConcept( "<_Bottom>" ).getChosenProperties().size() );
+        assertEquals( 9, results.getConcept( "<http://jboss.org/drools/semantics/DiamondDiamondRoot>" ).getChosenProperties().size() );
+
+
+        assertEquals( 0, results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getProperties().size() );
+        assertEquals( 0, results.getConcept( "<_Top>" ).getProperties().size() );
+        assertEquals( 2, results.getConcept( "<_C0>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_C1>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_C2>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_C3>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_Left>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_Right>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_Low>" ).getProperties().size() );
+        assertEquals( 1, results.getConcept( "<_Bottom>" ).getProperties().size() );
+
+        System.out.println(results);
+
+        assertTrue( results.isHierarchyConsistent() );
+
+    }
+
+
+
+    @Test
+    public void testOptimizedHierarchyOnDiamond() {
+
+        String source = "ontologies/diamondProp.manchester.owl";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.OPTIMIZED );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+    }
+
+
+    @Test
+    public void testOptimizedHierarchyOnConYard() {
+
+        String source = "ontologies/conyard.ttl";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+    }
+
+    @Test
+    public void testOptimizedHierarchyOnRule() {
+
+        String source = "ontologies/rule_merged.owl";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+    }
+
+    @Test
+    public void testOptimizedHierarchyOnRuleWithExample() {
+
+        String source = "ontologies/sem_rules.owl";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+    }
 
 
 }

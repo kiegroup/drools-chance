@@ -309,7 +309,7 @@ public class DL_99_ModelTest {
         //        String source = "kmr2" + File.separator + "KMR_Ontology.ttl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "wwtp", res, OntoModel.Mode.HYBRID );
+        OntoModel results = factory.buildModel( "wwtp", res, OntoModel.Mode.OPTIMIZED );
 
         for ( Concept con : results.getConcepts() ) {
             if ( con.getIri().startsWith( "<java://" ) ) {
