@@ -1,0 +1,271 @@
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+Prefix: kmr: <http://www.kmr.org/ontology/>
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: xml: <http://www.w3.org/XML/1998/namespace>
+Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Prefix: dc: <http://purl.org/dc/elements/1.1/>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+Prefix: skos: <http://www.w3.org/2004/02/skos/core#>
+
+
+
+Ontology: <http://www.kmr.org/ontology/>
+
+
+AnnotationProperty: kmr:AboutFactType
+
+    Annotations: 
+        rdfs:label "Fact about Facts"
+    
+    Annotations: 
+        rdfs:label "Fact about Facts"
+    
+    Range: 
+        <http://www.kmr.org/ontology/PhysicianFactType>
+    
+    
+AnnotationProperty: rdfs:label
+
+    
+AnnotationProperty: rdfs:comment
+
+    
+Datatype: rdf:PlainLiteral
+
+    
+Datatype: xsd:string
+
+    
+Datatype: xsd:dateTime
+
+    
+ObjectProperty: kmr:reaction
+
+    Annotations: 
+        rdfs:label "reaction"
+    
+    Domain: 
+        kmr:ReactionFactType
+    
+    
+ObjectProperty: kmr:assertedBy
+
+    Annotations: 
+        rdfs:label "who asserted a Fact."
+    
+    Domain: 
+        kmr:AboutFactType
+    
+    Range: 
+        kmr:PersonFactType
+    
+    
+ObjectProperty: kmr:assertedWhere
+
+    Annotations: 
+        rdfs:label "where a Fact was asserted. (need location fact)"
+    
+    Domain: 
+        kmr:AboutFactType
+    
+    Range: 
+        kmr:Location
+    
+    
+ObjectProperty: kmr:product
+
+    Annotations: 
+        rdfs:label "product"
+    
+    Domain: 
+        kmr:AllergyFactType
+    
+    
+ObjectProperty: kmr:allergyFactType
+
+    Annotations: 
+        rdfs:label "allergy fact"
+    
+    Domain: 
+        kmr:ReactionFactType
+    
+    Range: 
+        kmr:AllergyFactType
+    
+    
+ObjectProperty: kmr:patientFactType
+
+    Annotations: 
+        rdfs:label "patient (from patient id)"
+    
+    Domain: 
+        kmr:ClinicalFactType
+    
+    Range: 
+        kmr:PatientFactType
+    
+    
+ObjectProperty: kmr:adverseEventType
+
+    Annotations: 
+        rdfs:label "adverse event type"
+    
+    Domain: 
+        kmr:AllergyFactType
+    
+    
+DataProperty: kmr:enteredWhen
+
+    Annotations: 
+        rdfs:label "when a Fact was entered into an EHR."
+    
+    Domain: 
+        kmr:AboutFactType
+    
+    Range: 
+        xsd:dateTime
+    
+    
+DataProperty: kmr:assertedWhen
+
+    Annotations: 
+        rdfs:label "when a Fact was asserted."
+    
+    Domain: 
+        kmr:AboutFactType
+    
+    Range: 
+        xsd:dateTime
+    
+    
+DataProperty: kmr:code
+
+    Annotations: 
+        rdfs:label "code (from code)"
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: kmr:patientName
+
+    Annotations: 
+        rdfs:comment "combination of blank node with family, middle etc. components",
+        rdfs:label "patient name"
+    
+    Domain: 
+        kmr:PatientFactType
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: kmr:sourceSystem
+
+    Annotations: 
+        rdfs:label "what system a fact was taken from (need fact type)"
+    
+    Domain: 
+        kmr:AboutFactType
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: kmr:adverseEventDate
+
+    Annotations: 
+        rdfs:label "adverse event date"
+    
+    Domain: 
+        kmr:AllergyFactType
+    
+    Range: 
+        xsd:dateTime
+    
+    
+DataProperty: kmr:codeSystem
+
+    Annotations: 
+        rdfs:label "code system (from code system)"
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: kmr:dateEntered
+
+    Annotations: 
+        rdfs:comment "synthesized to gather all similar properties and make VSN map easier",
+        rdfs:label "date entered"
+    
+    Domain: 
+        kmr:ClinicalFactType
+    
+    Range: 
+        xsd:dateTime
+    
+    
+Class: kmr:OrgFactType
+
+    
+Class: kmr:ClinicalFactType
+
+    
+Class: kmr:PhysicianFactType
+
+    Annotations: 
+        rdfs:label "Physician Fact Type"
+    
+    SubClassOf: 
+        kmr:ClinicalFactType
+    
+    
+Class: kmr:AboutFactType
+
+    Annotations: 
+        rdfs:label "Fact about Facts"
+    
+    SubClassOf: 
+        kmr:ClinicalFactType
+    
+    
+Class: kmr:AllergyFactType
+
+    Annotations: 
+        rdfs:label "Allergy Fact"
+    
+    SubClassOf: 
+        kmr:PhysicianFactType
+    
+    
+Class: kmr:PersonFactType
+
+    SubClassOf: 
+        kmr:OrgFactType
+    
+    
+Class: kmr:Location
+
+    SubClassOf: 
+        kmr:OrgFactType
+    
+    
+Class: kmr:PatientFactType
+
+    Annotations: 
+        rdfs:label "Patient Fact"
+    
+    SubClassOf: 
+        kmr:ClinicalFactType
+    
+    
+Class: kmr:ReactionFactType
+
+    Annotations: 
+        rdfs:label "Reaction Fact"
+    
+    SubClassOf: 
+        kmr:PhysicianFactType
+    
+    
