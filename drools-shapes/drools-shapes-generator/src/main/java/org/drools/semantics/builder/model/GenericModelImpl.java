@@ -27,6 +27,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private Map<String, Set<PropertyRelation>> properties = new HashMap<String, Set<PropertyRelation>>();
 
+    private Set<String> packageNames = new HashSet<String>();
+
 
     protected GenericModelImpl newInstance() {
         return new GenericModelImpl();
@@ -50,6 +52,10 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     public void setDefaultPackage( String pack ) {
         this.defaultPackage = pack;
+    }
+
+    public Set<String> getAllPackageNames() {
+        return packageNames;
     }
 
     public String getDefaultNamespace() {
@@ -81,7 +87,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     }
 
     public void addConcept( Concept con ) {
-        concepts.put(con.getIri(), con);
+        concepts.put( con.getIri(), con );
+        packageNames.add( con.getPackage() );
     }
 
     public Concept removeConcept( Concept con ) {

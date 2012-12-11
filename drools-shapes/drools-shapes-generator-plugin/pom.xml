@@ -58,7 +58,7 @@
 
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-shapes-reasoner-generator</artifactId>
+      <artifactId>drools-shapes-generator</artifactId>
       <version>${chance.version}</version>
     </dependency>
     <dependency>

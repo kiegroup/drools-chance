@@ -22,15 +22,14 @@ import com.clarkparsia.empire.config.ConfigKeys;
 import com.clarkparsia.empire.config.EmpireConfiguration;
 import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
 import com.clarkparsia.empire.sesametwo.RepositoryDataSourceFactory;
-import com.clarkparsia.empire.util.PropertiesAnnotationProvider;
 import org.apache.commons.lang.StringUtils;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.UIdAble;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.OntoModel;
+import org.drools.shapes.OntoModelCompiler;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,7 +62,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -91,7 +89,7 @@ public class DL_9_CompilationTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    protected Compiler compiler;
+    protected OntoModelCompiler compiler;
 
     @Before
     public void before() {
@@ -112,7 +110,7 @@ public class DL_9_CompilationTest {
 
         assertTrue( results.isHierarchyConsistent() );
 
-        compiler = new Compiler( results, folder.getRoot() );
+        compiler = new OntoModelCompiler( results, folder.getRoot() );
 
         // ****** Stream the java interfaces
         boolean javaOut = compiler.streamJavaInterfaces( true );
@@ -131,7 +129,7 @@ public class DL_9_CompilationTest {
             assertEquals( 10, types.getLength() );
 
             NodeList elements = dox.getElementsByTagName( "xsd:element" );
-            assertEquals( 11 + 14, elements.getLength() );
+            assertEquals( 12 + 14, elements.getLength() );
         } catch ( Exception e ) {
             fail( e.getMessage() );
         }
@@ -145,7 +143,7 @@ public class DL_9_CompilationTest {
             Document dox = parseXML( b, false );
 
             NodeList types = dox.getElementsByTagName( "bindings" );
-            assertEquals( 27, types.getLength() );
+            assertEquals( 28, types.getLength() );
         } catch ( Exception e ) {
             fail( e.getMessage() );
         }
@@ -169,17 +167,18 @@ public class DL_9_CompilationTest {
                             "-Xdefault-constructor",
                             "-Xmetadata",
                             "-Xinject-code"),
-                Compiler.MOJO_VARIANTS.JPA2 );
+                OntoModelCompiler.MOJO_VARIANTS.JPA2 );
 
         assertTrue( mojo );
 
-        File klass = new File( compiler.getXjcDir().getPath()
-                + File.separator
-                + results.getDefaultPackage().replace(".", File.separator)
-                + File.separator
-                + "BottomImpl.java" );
-        printSourceFile( klass, System.out );
+//        File klass = new File( compiler.getXjcDir().getPath()
+//                + File.separator
+//                + results.getDefaultPackage().replace(".", File.separator)
+//                + File.separator
+//                + "BottomImpl.java" );
+//        printSourceFile( klass, System.out );
 
+        showDirContent( folder );
 
         // ****** Do compile sources
         List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler.doCompile();
@@ -194,22 +193,15 @@ public class DL_9_CompilationTest {
         assertTrue( success );
 
 
+
         showDirContent( folder );
 
 
         try {
-             parseXML( new File( compiler.getBinDir() + "/META-INF/" + "persistence.xml" ), true );
-         } catch (IOException e) {
-             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-         } catch (ParserConfigurationException e) {
-             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-         } catch (SAXException e) {
-             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-         } catch (TransformerException e) {
-             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-         }
-//         if ( 1 == 1 ) System.exit(3);
-
+            parseXML( new File( compiler.getBinDir() + "/META-INF/" + "persistence.xml" ), true );
+        } catch ( Exception e ) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
         try {
             ClassLoader urlKL = new URLClassLoader(
@@ -238,7 +230,7 @@ public class DL_9_CompilationTest {
             Thread.currentThread().setContextClassLoader( urlk );
 
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(
-                    "org.jboss.drools.semantics.diamond:org.w3._2002._07.owl"
+                    "org.jboss.drools.semantics.coal:org.jboss.drools.semantics.diamond:org.w3._2002._07.owl"
             );
             EntityManager em = emf.createEntityManager();
 

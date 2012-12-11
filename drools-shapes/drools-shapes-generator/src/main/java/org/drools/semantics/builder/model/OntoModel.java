@@ -50,6 +50,8 @@ public interface OntoModel extends Cloneable {
         
     public void setDefaultPackage( String pack );
 
+    public Set<String> getAllPackageNames();
+
     public String getName();
         
     public void setName( String name );

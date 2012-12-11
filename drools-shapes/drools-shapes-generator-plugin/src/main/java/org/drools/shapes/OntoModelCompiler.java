@@ -1,8 +1,9 @@
-package org.drools.semantics.lang.dl;
+package org.drools.shapes;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.drools.semantics.builder.model.DRLModel;
 import org.drools.semantics.builder.model.JarModel;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
@@ -12,7 +13,6 @@ import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompiler;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
-import org.junit.Assert;
 import org.jvnet.hyperjaxb3.maven2.Hyperjaxb3Mojo;
 import org.w3._2002._07.owl.Thing;
 
@@ -24,7 +24,6 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -32,11 +31,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-
-public class Compiler {
+public class OntoModelCompiler {
 
 
     public List<Diagnostic<? extends JavaFileObject>> compileOnTheFly(List<String> options, MOJO_VARIANTS variant) {
@@ -49,6 +45,7 @@ public class Compiler {
 
         return diagnostics;
     }
+
 
 
     public enum MOJO_VARIANTS {
@@ -97,8 +94,15 @@ public class Compiler {
     private File binDir;
 
 
-    public Compiler( OntoModel model, File rootFolder ) {
+    public OntoModelCompiler( OntoModel model, File rootFolder ) {
 
+        System.out.println("------------------------------------------------------------\n\n\n\n\n");
+        System.out.println( "Start ontoCompiler with root " + rootFolder.getPath() );
+        System.out.println("\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n------------------------------------------------------------");
         if ( ! rootFolder.exists() ) {
             rootFolder.mkdirs();
         }
@@ -106,6 +110,7 @@ public class Compiler {
         initDirectories();
 
         this.model = model;
+        System.out.println( "Done initializing ontoCompiler dirs" );
     }
 
     private void initDirectories() {
@@ -132,16 +137,42 @@ public class Compiler {
         }
     }
 
+    public boolean existsResult() {
+        return javaDir.listFiles().length > 0
+                || xjcDir.listFiles().length > 0
+                || drlDir.listFiles().length > 0;
+
+    }
+
+
+    public boolean streamDRLDeclares() throws MojoExecutionException {
+        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.DRL );
+        boolean success;
+
+        DRLModel drlModel = (DRLModel) compiler.compile( model );
+
+        try {
+            FileOutputStream fos = new FileOutputStream( getDrlDir().getPath() + File.separator + model.getName() + "_declare.drl" );
+            success = drlModel.stream( fos );
+            fos.flush();
+            fos.close();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+            return false;
+        }
+        return success;
+    }
+
 
     public boolean streamJavaInterfaces( boolean includeJar ) {
         ModelCompiler jcompiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.JAR);
         JarModel jarModel = (JarModel) jcompiler.compile( model );
 
-        boolean success = jarModel.save( javaDir.getPath() );
+        boolean success = jarModel.save( getJavaDir().getPath() );
 
         if ( includeJar ) {
             try {
-                FileOutputStream fos = new FileOutputStream( binDir.getPath() + File.separator + model.getName() + ".jar" );
+                FileOutputStream fos = new FileOutputStream( getBinDir().getPath() + File.separator + model.getName() + ".jar" );
                 byte[] content = jarModel.buildJar().toByteArray();
 
                 fos.write( content, 0, content.length );
@@ -161,7 +192,7 @@ public class Compiler {
         XSDModel xModel = (XSDModel) compiler.compile( model );
         boolean success = false;
         try {
-            success = xModel.stream( new File( metaInfDir + File.separator + model.getName() + ".xsd") );
+            success = xModel.stream( new File( getMetaInfDir() + File.separator + model.getName() + ".xsd") );
         } catch ( Exception e ) {
             e.printStackTrace();
         }
@@ -174,7 +205,7 @@ public class Compiler {
 
         boolean success = false;
         try {
-            success = xmlModel.streamBindings( new File( metaInfDir.getPath() + File.separator + "bindings.xjb" ) );
+            success = xmlModel.streamBindings( new File( getMetaInfDir().getPath() + File.separator + "bindings.xjb" ) );
 
             if ( includePersistenceConfiguration ) {
                 success = success && streamPersistenceConfigs( xmlModel );
@@ -189,7 +220,7 @@ public class Compiler {
     protected boolean streamPersistenceConfigs( SemanticXSDModel xmlModel ) throws IOException {
         boolean success;
 
-        String classPathTemp = xjcDir.getPath() + File.separator + Thing.class.getPackage().getName().replace( ".", File.separator );
+        String classPathTemp = getXjcDir().getPath() + File.separator + Thing.class.getPackage().getName().replace( ".", File.separator );
         File f2 = new File( classPathTemp );
         if ( ! f2.exists() ) {
             f2.mkdirs();
@@ -199,17 +230,17 @@ public class Compiler {
         fos2.flush();
         fos2.close();
 
-        FileOutputStream fos = new FileOutputStream( metaInfDir.getPath() + File.separator + "empire.configuration.file" );
+        FileOutputStream fos = new FileOutputStream( getMetaInfDir().getPath() + File.separator + "empire.configuration.file" );
         success = success && xmlModel.streamEmpireConfig(fos);
         fos.flush();
         fos.close();
 
-        FileOutputStream fos3 = new FileOutputStream( metaInfDir.getPath() + File.separator + "empire.annotation.index" );
+        FileOutputStream fos3 = new FileOutputStream( getMetaInfDir().getPath() + File.separator + "empire.annotation.index" );
         success = success && xmlModel.streamIndex( fos3 );
         fos3.flush();
         fos3.close();
 
-        FileOutputStream fos4 = new FileOutputStream( metaInfDir.getPath() + File.separator + "persistence-template-hibernate.xml" );
+        FileOutputStream fos4 = new FileOutputStream( getMetaInfDir().getPath() + File.separator + "persistence-template-hibernate.xml" );
         success = success && xmlModel.streamPersistenceXml(fos4);
         fos4.flush();
         fos4.close();
@@ -218,26 +249,71 @@ public class Compiler {
     }
 
 
+    public boolean streamIndividualFactory() {
+        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+        SemanticXSDModel xsdModel;
+
+        xsdModel = (SemanticXSDModel) compiler.compile( model );
+        boolean success = false;
+
+        try {
+            String classPath = getXjcDir().getPath() + File.separator + xsdModel.getDefaultPackage().replace(".", File.separator);
+            File f = new File( classPath );
+            if ( ! f.exists() ) {
+                f.mkdirs();
+            }
+
+            FileOutputStream fos = new FileOutputStream(  classPath + File.separator + "IndividualFactory.java" );
+            success = xsdModel.streamIndividualFactory( fos );
+            fos.flush();
+            fos.close();
+
+
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            return false;
+        }
+        return success;
+    }
+
+
+
+
+
     public List<Diagnostic<? extends JavaFileObject>> doCompile() {
-        File srcFolder1 = new File( javaDir.getPath() + File.separator + model.getDefaultPackage().replace( ".", File.separator ) );
-        File srcFolder2 = new File( xjcDir.getPath() + File.separator + model.getDefaultPackage().replace(".", File.separator) );
 
-
-        File srcFolder3 = new File( xjcDir.getPath() + File.separator + Thing.class.getPackage().getName().replace(".", File.separator) );
-        File srcFolder4 = new File( xjcDir.getPath() + File.separator + "org.w3._2001.xmlschema".replace(".", File.separator) );
+        List<File> sourceFolders = new LinkedList<File>();
         List<File> list = new LinkedList<File>();
 
-        list.addAll( Arrays.asList( srcFolder1.listFiles( (FilenameFilter) new WildcardFileFilter( "*.java" ) ) ) );
-        list.addAll( Arrays.asList( srcFolder2.listFiles( (FilenameFilter) new WildcardFileFilter( "*.java" ) ) ) );
-        list.addAll( Arrays.asList( srcFolder3.listFiles( (FilenameFilter) new WildcardFileFilter( "*.java" ) ) ) );
-        list.addAll( Arrays.asList( srcFolder4.listFiles( (FilenameFilter) new WildcardFileFilter( "*.java" ) ) ) );
+        for ( String packageName : model.getAllPackageNames() ) {
+            sourceFolders.add(
+                    new File( getXjcDir().getPath() + File.separator + packageName.replace(".", File.separator) )
+            );
+            sourceFolders.add(
+                    new File( getJavaDir().getPath() + File.separator + packageName.replace(".", File.separator) )
+            );
+        }
+
+//        sourceFolders.add(
+//                new File( getXjcDir().getPath() + File.separator + Thing.class.getPackage().getName().replace(".", File.separator) )
+//        );
+        sourceFolders.add(
+            new File( getXjcDir().getPath() + File.separator + "org.w3._2001.xmlschema".replace(".", File.separator) )
+        );
+
+
+        for ( File folder : sourceFolders ) {
+            if ( folder.exists() ) {
+                list.addAll( Arrays.asList( folder.listFiles( (FilenameFilter) new WildcardFileFilter( "*.java" ) ) ) );
+            }
+        }
 
         JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fileManager = jc.getStandardFileManager( diagnostics, null, null );
         Iterable<? extends JavaFileObject> compilationUnits =
                 fileManager.getJavaFileObjectsFromFiles( list );
-        List<String> jcOpts = Arrays.asList( "-d", binDir.getPath() );
+        List<String> jcOpts = Arrays.asList( "-d", getBinDir().getPath() );
         JavaCompiler.CompilationTask task = jc.getTask( null, fileManager, diagnostics, jcOpts, null, compilationUnits );
         task.call();
 
@@ -251,15 +327,15 @@ public class Compiler {
     private boolean copyMetaInfResources() {
         boolean success = true;
 
-        success = success && copyMetaInfResources( metaInfDir );
-        success = success && copyMetaInfResources( new File( xjcDir + File.separator + METAINF ) );
+        success = success && copyMetaInfResources( getMetaInfDir() );
+        success = success && copyMetaInfResources( new File( getXjcDir() + File.separator + METAINF ) );
 
         return success;
     }
 
 
     private boolean copyMetaInfResources( File src ) {
-        File tgt = new File( binDir.getPath() + File.separator + METAINF );
+        File tgt = new File( getBinDir().getPath() + File.separator + METAINF );
         if ( ! tgt.exists() ) {
             tgt.mkdir();
         }
@@ -334,13 +410,13 @@ public class Compiler {
             Hyperjaxb3Mojo mojo = new Hyperjaxb3Mojo();
             mojo.setVerbose( true );
 
-            mojo.setBindingDirectory( metaInfDir );
-            mojo.setSchemaDirectory( metaInfDir );
-            mojo.setGenerateDirectory( xjcDir );
+            mojo.setBindingDirectory( getMetaInfDir() );
+            mojo.setSchemaDirectory( getMetaInfDir() );
+            mojo.setGenerateDirectory( getXjcDir() );
             mojo.setExtension( true );
             mojo.variant = variant.getLabel();
 
-            mojo.persistenceXml = new File( metaInfDir + File.separator + "persistence-template-hibernate.xml" );
+            mojo.persistenceXml = new File( getMetaInfDir() + File.separator + "persistence-template-hibernate.xml" );
 
             mojo.generateEquals = false;
             mojo.generateHashCode = false;
@@ -359,6 +435,7 @@ public class Compiler {
 
 
     public File getMetaInfDir() {
+        if ( ! metaInfDir.exists() ) { metaInfDir.mkdirs(); }
         return metaInfDir;
     }
 
@@ -367,14 +444,17 @@ public class Compiler {
     }
 
     public File getJavaDir() {
+        if ( ! javaDir.exists() ) { javaDir.mkdirs(); }
         return javaDir;
     }
 
     public File getXjcDir() {
+        if ( ! xjcDir.exists() ) { xjcDir.mkdirs(); }
         return xjcDir;
     }
 
     public File getBinDir() {
+        if ( ! binDir.exists() ) { binDir.mkdirs(); }
         return binDir;
     }
 

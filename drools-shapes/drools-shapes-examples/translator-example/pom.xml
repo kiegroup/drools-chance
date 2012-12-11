@@ -43,12 +43,7 @@
 
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-shapes-reasoner-generator</artifactId>
-      <version>${chance.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-shapes-utilities</artifactId>
+      <artifactId>drools-shapes-generator</artifactId>
       <version>${chance.version}</version>
     </dependency>
 
@@ -92,12 +87,6 @@
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.18</version>
-    </dependency>
-
 
 
 
@@ -244,7 +233,7 @@
           </execution>
         </executions>
         <configuration>
-          <outputDirectory>${pom.basedir}/target</outputDirectory>
+          <outputDirectory>${pom.basedir}</outputDirectory>
           <ontology>${pom.basedir}/src/main/resources/sem_rules.owl</ontology>
           <modelName>semrule</modelName>
           <generateInterfaces>true</generateInterfaces>

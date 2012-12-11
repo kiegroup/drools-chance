@@ -1,6 +1,7 @@
 Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
 Prefix: owl: <http://www.w3.org/2002/07/owl#>
 Prefix: : <http://jboss.org/drools/semantics/Diamond#>
+Prefix: koal: <http://jboss.org/drools/semantics/coal#>
 Prefix: xml: <http://www.w3.org/XML/1998/namespace>
 Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 Prefix: dc: <http://purl.org/dc/elements/1.1/>
@@ -21,6 +22,14 @@ ObjectProperty: <http://jboss.org/drools/semantics/Diamond#objProp>
     
     Range: 
         X
+
+ObjectProperty: koal:foreignProp
+
+    Domain:
+        Low
+
+    Range:
+        koal:Y
 
 DataProperty: <http://jboss.org/drools/semantics/Diamond#c0Prop>
 
@@ -160,6 +169,8 @@ Class: Low
          and Top
 
 Class: X
+
+Class: koal:Y
 
     
     

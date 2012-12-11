@@ -51,6 +51,9 @@ public abstract class ModelImpl implements OntoModel {
         innerModel.setDefaultPackage( pack );
     }
 
+    public Set<String> getAllPackageNames() {
+        return innerModel.getAllPackageNames();
+    }
 
     public String getDefaultNamespace() {
         return innerModel.getDefaultNamespace();
