@@ -275,9 +275,10 @@
             </goals>
             <configuration>
               <sources>
-                <source>${pom.basedir}/target/generated-sources/xjc</source>
+                <source>${pom.basedir}/target/generated-sources/DRL</source>
                 <source>${pom.basedir}/target/generated-sources/META-INF</source>
                 <source>${pom.basedir}/target/generated-sources/java</source>
+                <source>${pom.basedir}/target/generated-sources/xjc</source>
               </sources>
             </configuration>
           </execution>

@@ -27,7 +27,7 @@
 
     @{ getter( name, type, max ) }() {
 
-        java.util.List<@{ type }> ans = new java.util.ArrayList<@{ type }>();
+        java.util.List<@{ type }> ans = new java.util.ArrayList<@{ map( type, true ) }>();
 
         java.util.List temp = new java.util.ArrayList();
         java.util.List temp2 = new java.util.ArrayList();
@@ -38,7 +38,7 @@
         temp.add( this );
 
             @foreach{ link : chain }
-                for ( Object o : temp ) {
+                for ( java.lang.Object o : temp ) {
                     temp2.addAll( ((@{ map( link.type, true ) }) o).@{ getter( link.name, link.type ) }() );
                 }
                 temp.clear();

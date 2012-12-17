@@ -22,6 +22,8 @@ import com.clarkparsia.empire.config.ConfigKeys;
 import com.clarkparsia.empire.config.EmpireConfiguration;
 import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
 import com.clarkparsia.empire.sesametwo.RepositoryDataSourceFactory;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.apache.commons.lang.StringUtils;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.UIdAble;
@@ -29,15 +31,13 @@ import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.shapes.OntoModelCompiler;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import thewebsemantic.binding.Jenabean;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -62,6 +62,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -101,12 +103,68 @@ public class DL_9_CompilationTest {
         folder.delete();
     }
 
+
+
     @Test
-    public void testDiamondOptimizedHierarchy() {
+    public void testIncrementalCompilation() {
+        try {
+
+            OntoModel diamond = factory.buildModel( "diamond",
+                    ResourceFactory.newClassPathResource( "ontologies/diamondProp.manchester.owl" ),
+                    OntoModel.Mode.OPTIMIZED );
+
+            compiler = new OntoModelCompiler( diamond, folder.getRoot() );
+
+            List<Diagnostic<? extends JavaFileObject>> diag1 = compiler.compileOnTheFly( OntoModelCompiler.minimalOptions, OntoModelCompiler.MOJO_VARIANTS.JPA2 );
+
+            for ( Diagnostic<?> dx : diag1 ) {
+                System.out.println( dx );
+            }
+
+
+            showDirContent( folder );
+
+            ClassLoader urlKL = new URLClassLoader(
+                    new URL[] { compiler.getBinDir().toURI().toURL() },
+                    Thread.currentThread().getContextClassLoader()
+            );
+
+
+            OntoModel results = factory.buildModel( "diamondInc",
+                    ResourceFactory.newClassPathResource( "ontologies/dependency.test.owl" ),
+                    OntoModel.Mode.OPTIMIZED,
+                    urlKL );
+
+            System.out.println( results );
+
+//            OntoModelCompiler compiler2 = new OntoModelCompiler( results, folder.getRoot() );
+//
+//            compiler2.streamJavaInterfaces( false );
+////             streamXSDs();
+////             streamBindings( true );
+////             mojo( options, variant );
+//            List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler2.doCompile();
+
+            showDirContent( folder );
+
+//            for ( Diagnostic<?> dx : diagnostics ) {
+//                System.out.println( dx );
+//            }
+        } catch ( MalformedURLException e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+
+    }
+
+
+
+    @Test
+    public void testDiamondOptimizedHierarchyCompilation() {
 
         OntoModel results = factory.buildModel( "diamond",
-                                                ResourceFactory.newClassPathResource( "ontologies/diamondProp.manchester.owl" ),
-                                                OntoModel.Mode.OPTIMIZED );
+                ResourceFactory.newClassPathResource( "ontologies/diamondProp.manchester.owl" ),
+                OntoModel.Mode.OPTIMIZED );
 
         assertTrue( results.isHierarchyConsistent() );
 
@@ -153,30 +211,30 @@ public class DL_9_CompilationTest {
 
         // ****** Generate sources
         boolean mojo = compiler.mojo(  Arrays.asList(
-                            "-extension",
-                            "-Xjaxbindex",
-                            "-Xannotate",
-                            "-Xinheritance",
-                            "-XtoString",
-                            "-Xcopyable",
-                            "-Xmergeable",
-                            "-Xvalue-constructor",
-                            "-Xfluent-api",
-                            "-Xkey-equality",
-                            "-Xsem-accessors",
-                            "-Xdefault-constructor",
-                            "-Xmetadata",
-                            "-Xinject-code"),
+                "-extension",
+                "-Xjaxbindex",
+                "-Xannotate",
+                "-Xinheritance",
+                "-XtoString",
+                "-Xcopyable",
+                "-Xmergeable",
+                "-Xvalue-constructor",
+                "-Xfluent-api",
+                "-Xkey-equality",
+                "-Xsem-accessors",
+                "-Xdefault-constructor",
+                "-Xmetadata",
+                "-Xinject-code"),
                 OntoModelCompiler.MOJO_VARIANTS.JPA2 );
 
         assertTrue( mojo );
 
-//        File klass = new File( compiler.getXjcDir().getPath()
-//                + File.separator
-//                + results.getDefaultPackage().replace(".", File.separator)
-//                + File.separator
-//                + "BottomImpl.java" );
-//        printSourceFile( klass, System.out );
+        File klass = new File( compiler.getXjcDir().getPath()
+                + File.separator
+                + results.getDefaultPackage().replace(".", File.separator)
+                + File.separator
+                + "BottomImpl.java" );
+        printSourceFile( klass, System.out );
 
         showDirContent( folder );
 
@@ -200,7 +258,7 @@ public class DL_9_CompilationTest {
         try {
             parseXML( new File( compiler.getBinDir() + "/META-INF/" + "persistence.xml" ), true );
         } catch ( Exception e ) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
         try {
@@ -216,11 +274,39 @@ public class DL_9_CompilationTest {
 
             checkSQLRefresh(bot, urlKL);
 
+            checkJenaBeansRefresh(bot, urlKL);
+
         } catch ( Exception e ) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             fail( e.getMessage() );
         }
 
+
+    }
+
+    private void checkJenaBeansRefresh( Object bot, ClassLoader urlk ) {
+        ClassLoader oldKL = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader( urlk );
+
+            OntModel m = ModelFactory.createOntologyModel();
+            Jenabean.instance().bind(m);
+            Jenabean.instance().writer().saveDeep(bot);
+
+            m.write(System.err);
+
+            Object x = Jenabean.instance().reader().load( bot.getClass(), ((UIdAble) bot).getDyEntryId() );
+
+            try {
+                checkEquality( bot, x );
+            } catch ( Exception e ) {
+                e.printStackTrace();
+                Assert.fail( e.getMessage() );
+            }
+
+        } finally {
+            Thread.currentThread().setContextClassLoader( oldKL );
+        }
 
     }
 
@@ -235,8 +321,8 @@ public class DL_9_CompilationTest {
             EntityManager em = emf.createEntityManager();
 
             checkJPARefresh( obj,
-                             ((UIdAble) obj).getDyEntryId(),
-                             em );
+                    ((UIdAble) obj).getDyEntryId(),
+                    em );
 
         } finally {
             Thread.currentThread().setContextClassLoader( oldKL );
@@ -255,8 +341,8 @@ public class DL_9_CompilationTest {
 
 
             checkJPARefresh( obj,
-                             ((UIdAble) obj).getRdfId(),
-                             initEmpireEM(config, annox, obj.getClass().getPackage().getName()));
+                    ((UIdAble) obj).getRdfId(),
+                    initEmpireEM(config, annox, obj.getClass().getPackage().getName()));
         } finally {
             Thread.currentThread().setContextClassLoader( oldKL );
         }
@@ -273,20 +359,7 @@ public class DL_9_CompilationTest {
         System.out.println( obj2 );
 
         try {
-            Object c0 = obj2.getClass().getMethod( "getC0Prop" ).invoke( obj2 );
-            assertTrue( c0 instanceof List && ((List) c0).size() == 2 );
-
-            Object cX = obj2.getClass().getMethod( "getObjPropX" ).invoke( obj2 );
-            assertNotNull( cX );
-            System.out.println( cX );
-            assertTrue( cX.getClass().getName().endsWith( "XImpl" ) );
-
-            Object c2 = obj2.getClass().getMethod( "getC2Prop" ).invoke( obj2 );
-            assertTrue( c2 instanceof List
-                    && ((List) c2).size() == 1
-                    && ((List) c2).get( 0 ) instanceof String
-            );
-
+            checkEquality( obj, obj2 );
         } catch ( Exception e ) {
             e.printStackTrace();
             fail( e.getMessage() );
@@ -295,6 +368,22 @@ public class DL_9_CompilationTest {
         em.close();
 
 
+    }
+
+    private void checkEquality(Object obj, Object obj2) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Object c0 = obj2.getClass().getMethod( "getC0Prop" ).invoke( obj2 );
+        assertTrue( c0 instanceof List && ((List) c0).size() == 2 );
+
+        Object cX = obj2.getClass().getMethod( "getObjPropX" ).invoke( obj2 );
+        assertNotNull( cX );
+        System.out.println( cX );
+        assertTrue( cX.getClass().getName().endsWith( "XImpl" ) );
+
+        Object c2 = obj2.getClass().getMethod( "getC2Prop" ).invoke( obj2 );
+        assertTrue( c2 instanceof List
+                && ((List) c2).size() == 1
+                && ((List) c2).get( 0 ) instanceof String
+        );
     }
 
     private EntityManager initEmpireEM( File config, File annox, String pack ) {

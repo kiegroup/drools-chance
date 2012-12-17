@@ -37,7 +37,8 @@ public interface ModelInferenceStrategy {
                                  OntoModel.Mode mode,
                                  Map<InferenceTask, Resource> theory,
 //                                 StatefulKnowledgeSession kSession,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens );
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
+                                 ClassLoader classLoader );
 
 
 

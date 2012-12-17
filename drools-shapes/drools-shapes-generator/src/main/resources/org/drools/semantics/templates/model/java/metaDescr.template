@@ -2,27 +2,32 @@
 @declare{'metaDescrTemplate'}
 
     @javax.persistence.Transient
-    public String getSemanticTypeName() {
+    public java.lang.String getSemanticTypeName() {
         return "@{typeName}";
     }
 
     @javax.xml.bind.annotation.XmlTransient
-    private java.util.List<String> propertyNames = java.util.Arrays.asList( @foreach{ prop : propertyNames } "@{prop}" @end{","} );
+    private static java.util.List<java.lang.String> @{typeName}PropertyNames;
+    {
+        @{typeName}PropertyNames = new java.util.LinkedList( java.util.Arrays.asList( @foreach{ prop : propertyNames } "@{prop}" @end{","} ) );
+    }
+
+
 
     @javax.persistence.Transient
-    public java.util.List<String> getPropertyNames() {
-        return propertyNames;
+    public java.util.List<java.lang.String> getPropertyNames() {
+        return @{typeName}PropertyNames;
     }
 
 
     @javax.persistence.Transient
-    public java.util.List get( String name ) {
+    public java.util.List get( java.lang.String name ) {
         return get( name, true );
     }
 
     @javax.persistence.Transient
-    public java.util.List get( String name, boolean inferred ) {
-        int index = propertyNames.indexOf( name );
+    public java.util.List get( java.lang.String name, boolean inferred ) {
+        int index = @{typeName}PropertyNames.indexOf( name );
         @code{ int j = 0; }
         switch ( index ) {
             @foreach{ prop : propertyNames }

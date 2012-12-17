@@ -29,6 +29,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private Set<String> packageNames = new HashSet<String>();
 
+    private ClassLoader classLoader;
+
 
     protected GenericModelImpl newInstance() {
         return new GenericModelImpl();
@@ -87,6 +89,23 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     }
 
     public void addConcept( Concept con ) {
+
+        try {
+            System.out.println( "Trying to resolve " + con.getFullyQualifiedName() );
+            Class klass = Class.forName( con.getFullyQualifiedName(), true, getClassLoader() );
+            con.setResolved( true );
+            if ( klass.isInterface() ) {
+                con.setResolvedAs( Concept.Resolution.IFACE );
+            } else if ( klass.isEnum() ) {
+                con.setResolvedAs( Concept.Resolution.ENUM );
+            } else {
+                con.setResolvedAs( Concept.Resolution.CLASS );
+            }
+        } catch (ClassNotFoundException e) {
+            con.setResolved( false );
+            con.setResolvedAs( Concept.Resolution.NONE );
+        }
+
         concepts.put( con.getIri(), con );
         packageNames.add( con.getPackage() );
     }
@@ -212,7 +231,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     private String conceptsToString() {
         StringBuilder sb = new StringBuilder();
         for ( Concept con : getConcepts() ) {
-            sb.append("\t").append(con.toFullString()).append("\n");
+            sb.append("\t").append( con.toFullString() ).append("\n");
         }
         return sb.toString();
 
@@ -259,6 +278,14 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         }
     }
 
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 
     public void sort() {
         List<Concept> conceptList = new ArrayList<Concept>( getConcepts() );

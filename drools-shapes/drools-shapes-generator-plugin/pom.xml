@@ -98,7 +98,15 @@
       <artifactId>jaxb2-fluent-api</artifactId>
     </dependency>
 
-    <dependency>
+
+      <dependency>
+          <groupId>org.jvnet.hyperjaxb3</groupId>
+          <artifactId>maven-hyperjaxb3-plugin</artifactId>
+      </dependency>
+
+
+
+      <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

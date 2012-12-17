@@ -39,18 +39,44 @@ public interface DLFactory {
                                  OntoModel.Mode mode );
 
     public OntoModel buildModel( String name,
+                                 Resource res,
+                                 OntoModel.Mode mode,
+                                 ClassLoader classLoader );
+
+
+    public OntoModel buildModel( String name,
                                  Resource[] res,
                                  OntoModel.Mode mode );
 
     public OntoModel buildModel( String name,
+                                 Resource[] res,
+                                 OntoModel.Mode mode,
+                                 ClassLoader lodaer );
+
+
+    public OntoModel buildModel( String name,
                                  Resource res,
+                                 OntoModel.Mode mode,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens );
+
+    public OntoModel buildModel( String name,
+                                 Resource res,
+                                 OntoModel.Mode mode,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
+                                 ClassLoader classLoader );
+
+
+    public OntoModel buildModel( String name,
+                                 Resource[] res,
                                  OntoModel.Mode mode,
                                  List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens );
 
     public OntoModel buildModel( String name,
                                  Resource[] res,
                                  OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens );
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
+                                 ClassLoader classLoader );
+
 
     public OntoModel buildModel( String name,
                                  Resource res,
@@ -59,10 +85,25 @@ public interface DLFactory {
                                  List<ModelInferenceStrategy.InferenceTask> tasks );
 
     public OntoModel buildModel( String name,
+                                 Resource res,
+                                 OntoModel.Mode mode,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
+                                 List<ModelInferenceStrategy.InferenceTask> tasks,
+                                 ClassLoader classLoader );
+
+
+    public OntoModel buildModel( String name,
                                  Resource[] res,
                                  OntoModel.Mode mode,
                                  List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
                                  List<ModelInferenceStrategy.InferenceTask> tasks );
+
+   public OntoModel buildModel( String name,
+                                 Resource[] res,
+                                 OntoModel.Mode mode,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
+                                 List<ModelInferenceStrategy.InferenceTask> tasks,
+                                 ClassLoader loader );
 
 
 }

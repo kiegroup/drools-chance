@@ -135,6 +135,10 @@ public class PropertyRelation extends Relation {
         this.restricted = restricted;
     }
 
+    public String getIri() {
+        return property.replace( "<", "" ).replace( ">", "" );
+    }
+
 
     public PropertyRelation getBaseProperty() {
         if ( baseProperty == this ) {

@@ -25,7 +25,7 @@
     public void add@{ compactUpperCase( name ) }( @{ map( type, true ) } x ) {
 
         @if{ ! primitive }
-            add@{ compactUpperCase( base ) }( (Object) x );
+            add@{ compactUpperCase( base ) }( (java.lang.Object) x );
         @else{}
             @{ getter( base, type ) }().add( x );
         @end{}
@@ -33,7 +33,7 @@
     }
 
     @@javax.persistence.Transient
-    public void remove@{ compactUpperCase( name ) }( Object x ) {
+    public void remove@{ compactUpperCase( name ) }( java.lang.Object x ) {
         @{ getter( base, type ) }().remove( x );
     }
 

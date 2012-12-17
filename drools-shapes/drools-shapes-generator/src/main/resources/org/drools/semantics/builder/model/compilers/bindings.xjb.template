@@ -54,8 +54,10 @@
         <con:default/>
 
         <annox:annotate>
-          <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfsClass" value="tns:@{concept.name}" />
+          <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfsClass" value="@{concept.namespace}@{concept.name}" />
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.Namespaces" value="tns @{namespace}" />
+          <annox:annotate annox:class="thewebsemantic.Namespace" value="@{namespace}" />
+          <annox:annotate annox:class="thewebsemantic.RdfType" value="@{concept.namespace}@{concept.name}" />
           <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="@{concept.name}Impl"/>
           <!--annox:annotate annox:class="javax.jdo.annotations.PersistenceCapable" detachable="false" identityType="javax.jdo.annotations.IdentityType.DATASTORE" /-->
         </annox:annotate>
@@ -66,7 +68,7 @@
         ]]></ci:code>
 
 
-        <meta:type name="@{concept.name}">
+        <meta:type name="@{concept.name}" parent="@{concept.chosenSuperConcept.name}">
         @foreach{ prop : concept.effectiveBaseProperties }
             <meta:property name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }">
                 @foreach{ subProp : concept.properties.values }
@@ -135,7 +137,8 @@
 
 
                     <annox:annotate>
-                        <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="tns:@{prop.name}" />
+                        <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="@{prop.iri}" />
+                        <annox:annotate annox:class="thewebsemantic.RdfProperty" value="@{prop.iri}" />
                         <annox:annotate annox:class="javax.persistence.JoinTable" name="@{concept.name.toUpperCase()}IMPL_@{prop.name.toUpperCase()}" />
                     </annox:annotate>
 

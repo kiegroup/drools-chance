@@ -1,7 +1,7 @@
 
 @declare{'equalsTemplate'}
 
-    public boolean equals(Object object) {
+    public boolean equals(java.lang.Object object) {
 
         if ( super.equals( object ) ) {
             return true;
@@ -25,8 +25,8 @@
 
                 @foreach{ k : keys }
                 {
-                    Object lhs@{compactUpperCase(k.name)} = (this.isSet@{compactUpperCase(k.name)}()?this.get@{compactUpperCase(k.name)}():null);
-                    Object rhs@{compactUpperCase(k.name)} = (that.isSet@{compactUpperCase(k.name)}()?that.get@{compactUpperCase(k.name)}():null);
+                    java.lang.Object lhs@{compactUpperCase(k.name)} = (this.isSet@{compactUpperCase(k.name)}()?this.get@{compactUpperCase(k.name)}():null);
+                    java.lang.Object rhs@{compactUpperCase(k.name)} = (that.isSet@{compactUpperCase(k.name)}()?that.get@{compactUpperCase(k.name)}():null);
                     if (!strategy.equals(org.jvnet.jaxb2_commons.locator.util.LocatorUtils.property(thisLocator, "@{k.name}", lhs@{compactUpperCase(k.name)}), org.jvnet.jaxb2_commons.locator.util.LocatorUtils.property(thatLocator, "@{k.name}", rhs@{compactUpperCase(k.name)}), lhs@{compactUpperCase(k.name)}, rhs@{compactUpperCase(k.name)})) {
                         return false;
                     }

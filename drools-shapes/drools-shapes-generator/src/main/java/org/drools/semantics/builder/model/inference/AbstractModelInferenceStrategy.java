@@ -47,11 +47,13 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
                                  OWLOntology ontoDescr,
                                  OntoModel.Mode mode,
                                  Map<InferenceTask, Resource> theory,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens ) {
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
+                                 ClassLoader classLoader ) {
 
         StatefulKnowledgeSession kSession = buildKnowledgeSession( theory );
 
         OntoModel baseModel = ModelFactory.newModel( name, mode );
+        baseModel.setClassLoader( classLoader );
 
         baseModel.setDefaultPackage(NameUtils.namespaceURIToPackage(ontoDescr.getOntologyID().getOntologyIRI().toString()) );
         baseModel.setDefaultNamespace( ontoDescr.getOntologyID().getOntologyIRI().toString() );

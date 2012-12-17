@@ -40,6 +40,8 @@ import org.jvnet.jaxb2_commons.lang.MergeStrategy;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
 import org.openrdf.model.Graph;
+import thewebsemantic.Namespace;
+import thewebsemantic.RdfType;
 
 
 /**
@@ -74,6 +76,8 @@ import org.openrdf.model.Graph;
     "tns",
     "http://www.w3.org/2002/07/owl"
 })
+@Namespace( "http://www.w3.org/2002/07/owl" )
+@RdfType( "http://www.w3.org/2002/07/owl/Thing" )
 @XmlRootElement(name = "ThingImpl")
 @Entity(name = "ThingImpl")
 @Table(name = "THINGIMPL")
@@ -158,6 +162,7 @@ public class ThingImpl
      *     
      */
     @Id
+    @thewebsemantic.Id
     @Column(name = "DYENTRYID")
     public String getDyEntryId() {
         return dyEntryId;
@@ -334,11 +339,11 @@ public class ThingImpl
     }
 
     @javax.xml.bind.annotation.XmlTransient
-    private java.util.List<String> propertyNames = java.util.Arrays.asList(  );
+    protected static java.util.List<String> ThingPropertyNames = java.util.Arrays.asList(  );
 
     @javax.persistence.Transient
     public java.util.List<String> getPropertyNames() {
-        return propertyNames;
+        return ThingPropertyNames;
     }
 
 
@@ -349,7 +354,7 @@ public class ThingImpl
 
     @javax.persistence.Transient
     public java.util.List get( String name, boolean inferred ) {
-        int index = propertyNames.indexOf( name );
+        int index = ThingPropertyNames.indexOf( name );
         
         switch ( index ) {
             

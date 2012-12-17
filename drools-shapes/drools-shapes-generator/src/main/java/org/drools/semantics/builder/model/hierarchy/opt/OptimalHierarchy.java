@@ -125,7 +125,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
             Concept x = con.getConcept();
             Concept sup = con.getChosenSuper().getConcept();
             x.setChosenSuperConcept( sup );
-            x.setChosenSuper( sup.getIri() );
+//            x.setChosenSuper( sup.getIri() );
             sup.getChosenSubConcepts().add( x );
             x.setChosenProperties( con.getChosenProperties() );
         }

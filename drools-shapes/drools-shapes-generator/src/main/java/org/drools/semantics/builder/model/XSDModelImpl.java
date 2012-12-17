@@ -245,7 +245,6 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
     }
 
 
-
     @Override
     protected String traitsToString() {
         return serialize( getXSDSchema() );

@@ -35,16 +35,57 @@ import java.util.List;
 public class OntoModelCompiler {
 
 
-    public List<Diagnostic<? extends JavaFileObject>> compileOnTheFly(List<String> options, MOJO_VARIANTS variant) {
+    public static final List<String> defaultOptions = Arrays.asList(
+                                        "-extension",
+                                        "-Xjaxbindex",
+                                        "-Xannotate",
+                                        "-Xinheritance",
+//                                        "-XtoString",
+                                        "-Xcopyable",
+                                        "-Xmergeable",
+//                                        "-Xvalue-constructor",
+                                        "-Xfluent-api",
+                                        "-Xkey-equality",
+                                        "-Xsem-accessors",
+                                        "-Xdefault-constructor",
+                                        "-Xmetadata",
+                                        "-Xinject-code"
+    );
 
-        streamJavaInterfaces( false );
-        streamXSDs();
-        streamBindings( true );
-        mojo( options, variant );
-        List<Diagnostic<? extends JavaFileObject>> diagnostics = doCompile();
+    public static final List<String> fullOptions = Arrays.asList(
+                                        "-extension",
+                                        "-Xjaxbindex",
+                                        "-Xannotate",
+                                        "-Xinheritance",
+                                        "-XtoString",
+                                        "-Xcopyable",
+                                        "-Xmergeable",
+                                        "-Xvalue-constructor",
+                                        "-Xfluent-api",
+                                        "-Xkey-equality",
+                                        "-Xsem-accessors",
+                                        "-Xdefault-constructor",
+                                        "-Xmetadata",
+                                        "-Xinject-code"
+    );
 
-        return diagnostics;
-    }
+    public static final List<String> minimalOptions = Arrays.asList(
+                                        "-extension",
+                                        "-Xjaxbindex",
+                                        "-Xannotate",
+                                        "-Xinheritance",
+//                                        "-XtoString",
+//                                        "-Xcopyable",
+//                                        "-Xmergeable",
+//                                        "-Xvalue-constructor",
+//                                        "-Xfluent-api",
+                                        "-Xkey-equality",
+                                        "-Xsem-accessors",
+                                        "-Xdefault-constructor",
+                                        "-Xmetadata",
+                                        "-Xinject-code"
+    );
+
 
 
 
@@ -95,22 +136,13 @@ public class OntoModelCompiler {
 
 
     public OntoModelCompiler( OntoModel model, File rootFolder ) {
-
-        System.out.println("------------------------------------------------------------\n\n\n\n\n");
-        System.out.println( "Start ontoCompiler with root " + rootFolder.getPath() );
-        System.out.println("\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "\n------------------------------------------------------------");
-        if ( ! rootFolder.exists() ) {
+      if ( ! rootFolder.exists() ) {
             rootFolder.mkdirs();
         }
         this.folder = rootFolder;
         initDirectories();
 
         this.model = model;
-        System.out.println( "Done initializing ontoCompiler dirs" );
     }
 
     private void initDirectories() {
@@ -143,6 +175,21 @@ public class OntoModelCompiler {
                 || drlDir.listFiles().length > 0;
 
     }
+
+
+
+    public List<Diagnostic<? extends JavaFileObject>> compileOnTheFly(List<String> options, MOJO_VARIANTS variant) {
+
+          streamJavaInterfaces( false );
+          streamXSDs();
+          streamBindings( true );
+          mojo( options, variant );
+          List<Diagnostic<? extends JavaFileObject>> diagnostics = doCompile();
+
+          return diagnostics;
+      }
+
+
 
 
     public boolean streamDRLDeclares() throws MojoExecutionException {

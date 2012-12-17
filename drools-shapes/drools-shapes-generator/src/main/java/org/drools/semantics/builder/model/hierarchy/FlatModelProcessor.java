@@ -29,7 +29,7 @@ public class FlatModelProcessor implements ModelHierarchyProcessor {
                 }
             }
             con.setShadowed( true );
-            con.setChosenSuper( Thing.class.getName() );
+//            con.setChosenSuper( Thing.class.getName() );
             con.setChosenSuperConcept( thing );
             thing.getChosenSubConcepts().add( con );
         }

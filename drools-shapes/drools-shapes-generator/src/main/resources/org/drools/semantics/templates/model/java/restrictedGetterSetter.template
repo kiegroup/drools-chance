@@ -26,8 +26,8 @@
         @if{ max == null || max > 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
         x
     ) {
-        List<@{map( type, true )}> removals = new java.util.ArrayList<@{map( type, true )}>();
-        for ( Object o : @{ getter( base, type ) }() ) {
+        java.util.List<@{map( type, true )}> removals = new java.util.ArrayList<@{map( type, true )}>();
+        for ( java.lang.Object o : @{ getter( base, type ) }() ) {
             if ( o instanceof @{map( type, true )} ) {
                 removals.add( (@{map( type, true )}) o );
             }
@@ -37,7 +37,7 @@
 
         @if{ max == null || max > 1 }
             @if{ ! primitive }
-                for ( Object y : x ) {
+                for ( java.lang.Object y : x ) {
                     add@{ compactUpperCase( base ) }( y );
                 }
             @else{}
@@ -45,7 +45,7 @@
             @end{}
         @else{}
             @if{ ! primitive }
-                add@{ compactUpperCase( base ) }( (Object) x );
+                add@{ compactUpperCase( base ) }( (java.lang.Object) x );
             @else{}
                 @{ getter( base, type  ) }().add( x );
             @end{}

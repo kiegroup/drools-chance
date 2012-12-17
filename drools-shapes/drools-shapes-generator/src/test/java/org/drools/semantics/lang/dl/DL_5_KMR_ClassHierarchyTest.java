@@ -102,7 +102,7 @@ public class DL_5_KMR_ClassHierarchyTest  {
             if ( ! "Thing".equals( con.getName() ) ) {
                 assertEquals( 1, con.getSuperConcepts().size() );
             }
-            assertNotNull(con.getChosenSuper());
+            assertNotNull(con.getChosenSuperConcept());
             if ( ! ( "Human".equals( con.getName() ) || ( "Joint".equals( con.getName() ) ) ) ) {
                 assertEquals( 0, con.getProperties().size() );
                 assertEquals( 0, con.getChosenProperties().size() );
@@ -126,7 +126,7 @@ public class DL_5_KMR_ClassHierarchyTest  {
         OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.FLAT );
 
         for( Concept con : results.getConcepts() ) {
-            assertEquals( Thing.class.getName(), con.getChosenSuper() );
+            assertEquals( Thing.class.getName(), con.getChosenSuperConcept().getFullyQualifiedName() );
         }
 
         assertEquals( 0, results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getChosenProperties().size() );
@@ -168,11 +168,11 @@ public class DL_5_KMR_ClassHierarchyTest  {
 
         for( Concept con : results.getConcepts() ) {
             if ( ! ( "DiamondRoot".equals( con.getName() ) || "Thing".equals( con.getName() ) ) ) {
-                assertEquals( "org.jboss.drools.semantics.diamond.DiamondRoot", con.getChosenSuper() );
+                assertEquals( "org.jboss.drools.semantics.diamond.DiamondRoot", con.getChosenSuperConcept().getFullyQualifiedName() );
             }
         }
-        assertEquals( Thing.class.getName(), results.getConcept( "<http://jboss.org/drools/semantics/DiamondDiamondRoot>" ).getChosenSuper() );
-        assertEquals( Thing.class.getName(), results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getChosenSuper() );
+        assertEquals( Thing.class.getName(), results.getConcept( "<http://jboss.org/drools/semantics/DiamondDiamondRoot>" ).getChosenSuperConcept().getFullyQualifiedName() );
+        assertEquals( Thing.class.getName(), results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getChosenSuperConcept().getFullyQualifiedName() );
 
 
         assertEquals( 0, results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getChosenProperties().size() );

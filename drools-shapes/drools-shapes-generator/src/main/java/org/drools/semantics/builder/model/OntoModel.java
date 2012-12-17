@@ -104,4 +104,8 @@ public interface OntoModel extends Cloneable {
     public Mode getMode();
 
 
+    public ClassLoader getClassLoader();
+
+    public void setClassLoader( ClassLoader classLoader );
+
 }

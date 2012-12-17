@@ -72,6 +72,11 @@
         <updatePolicy>never</updatePolicy>
       </snapshots>
     </repository>
+
+    <repository>
+      <id>Jenabean</id>
+      <url>http://jenabean.googlecode.com/svn/repo</url>
+    </repository>
   </repositories>
 
 
@@ -181,6 +186,12 @@
         <version>1.1.1</version>
       </dependency>
 
+
+      <dependency>
+        <groupId>thewebsemantic</groupId>
+        <artifactId>jenabean</artifactId>
+        <version>1.0.6</version>
+      </dependency>
 
 
       <dependency>

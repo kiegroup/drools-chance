@@ -154,5 +154,14 @@ public abstract class ModelImpl implements OntoModel {
         return innerModel.isHierarchyConsistent();
     }
 
+    public ClassLoader getClassLoader() {
+        return innerModel.getClassLoader();
+    }
+
+    public void setClassLoader( ClassLoader classLoader ) {
+        innerModel.setClassLoader( classLoader );
+    }
+
+
 
 }

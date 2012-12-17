@@ -29,8 +29,10 @@ public abstract class UIdAble implements SupportsRdfId {
     }
 
     public void setRdfId( RdfKey theId ) {
-        key = new Key( theId.value() );
-        setDyEntryId( theId.toString() );
+        if ( theId != null && theId.value() != null ) {
+            key = new Key( theId.value() );
+            setDyEntryId( theId.toString() );
+        }
     }
 
     @XmlTransient

@@ -38,7 +38,6 @@ public class Concept {
     @Position(5)    private     List<PropertyRelation>          keys;
     @Position(6)    private     Set<Concept>                    subConcepts;
     @Position(7)    private     Map<String, PropertyRelation>   chosenProperties;
-    @Position(8)    private     String                          chosenSuper;
     @Position(9)    private     String                          pack;
     @Position(10)   private     String                          namespace;
     @Position(11)   private     Concept                         chosenSuperConcept;
@@ -99,7 +98,7 @@ public class Concept {
             supers += con.iri + ",";
         }
         supers += "]";
-        return "Concept{" +
+        return "Concept{" + ( resolved ? " --- " : " +++ " ) +
                 "iri='" + iri + '\'' +
                 ", name='" + name + '\'' +
                 ", pack='" + pack + '\'' +
@@ -275,7 +274,7 @@ public class Concept {
 
     public Set<PropertyRelation> getEffectiveBaseProperties() {
         Set<PropertyRelation> ans = new HashSet<PropertyRelation>();
-        Set<PropertyRelation> eff = getEffectiveProperties();
+        Set<PropertyRelation> eff = getAvailableProperties();
 
         for ( PropertyRelation prop : eff ) {
             ans.add( prop.getBaseProperty() );
@@ -297,15 +296,6 @@ public class Concept {
         }
 
         return ans;
-    }
-
-
-    public String getChosenSuper() {
-        return chosenSuper;
-    }
-
-    public void setChosenSuper(String chosenSuper) {
-        this.chosenSuper = chosenSuper;
     }
 
 

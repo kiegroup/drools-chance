@@ -25,14 +25,14 @@
         @if{ simple }
             @{ name } = x;
         @elseif{ ! primitive }
-            add@{ compactUpperCase( name ) }( (Object) x );
+            add@{ compactUpperCase( name ) }( (java.lang.Object) x );
         @else{}
             @{ getter( name, type, max ) }().add( x );
         @end{}
     }
 
     @@javax.persistence.Transient
-    public void remove@{ compactUpperCase( name ) }( Object x ) {
+    public void remove@{ compactUpperCase( name ) }( java.lang.Object x ) {
         @if{ simple }
             if ( @{ name }.equals( x ) ) {
                 @{ name } = null;

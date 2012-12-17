@@ -42,6 +42,10 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
 
         if ( getModel() != null ) {
             for ( Concept con : getModel().getConcepts() ) {
+                if ( con.isPrimitive() || con.isResolved() ) {
+                    continue;
+                }
+
                 String name = NameUtils.compactUpperCase( con.getName() );
 
                 Map map = new HashMap();

@@ -31,20 +31,22 @@ import javax.persistence.Basic;
 
 // @{iri}
 
-@RdfsClass( value="tns:@{name}" )
+@RdfsClass( value="@{namespace}@{name}" )
 @Namespaces({ "tns", "@{namespace}" })
+@thewebsemantic.Namespace( "@{namespace}" )
+@thewebsemantic.RdfType( "@{namespace}@{name}" )
 public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface != null} , @{ implInterface } @end{}
                                  @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{sup.package}.@{compactUpperCase( sup.name ) } @end{','} @end{}
 {
 
     @javax.xml.bind.annotation.XmlID
-    public String getDyEntryId();
+    public java.lang.String getDyEntryId();
 
-    public void setDyEntryId( String id );
+    public void setDyEntryId( java.lang.String id );
 
-    public String getDyEntryType();
+    public java.lang.String getDyEntryType();
 
-    public void setDyEntryType(String dyEntryType);
+    public void setDyEntryType(java.lang.String dyEntryType);
 
     public boolean isDyReference();
 
@@ -58,7 +60,7 @@ public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface 
 
 
     // @{prop.property}   --    @{prop.maxCard}   --- @{prop.name}
-    @if{ ! prop.restricted && ! prop.transient } @RdfProperty("tns:@{prop.name}") @if{ ! prop.simple } @OneToMany( cascade = CascadeType.PERSIST ) @else{} @Basic( ) @end{} @end{}
+    @if{ ! prop.restricted && ! prop.transient } @RdfProperty("@{prop.iri}") @thewebsemantic.RdfProperty("@{prop.iri}") @if{ ! prop.simple } @OneToMany( cascade = CascadeType.PERSIST ) @else{} @Basic( ) @end{} @end{}
     public
         @if{ prop.maxCard == 1 }
             @{ map( prop.target.fullyQualifiedName, true ) }@if{ !prop.target.primitive }@end{}

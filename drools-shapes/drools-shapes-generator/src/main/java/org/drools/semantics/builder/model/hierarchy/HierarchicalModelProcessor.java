@@ -12,13 +12,13 @@ public class HierarchicalModelProcessor implements ModelHierarchyProcessor {
         for ( Concept con : model.getConcepts() ) {
             switch ( con.getSuperConcepts().size() ) {
                 case 0 :
-                    con.setChosenSuper( Thing.class.getName() );
+//                    con.setChosenSuper( Thing.class.getName() );
                     con.setChosenSuperConcept( thing );
                     thing.getChosenSubConcepts().add( con );
                     break;
                 case 1 :
                     Concept sup = con.getSuperConcepts().iterator().next();
-                    con.setChosenSuper( sup.getFullyQualifiedName() );
+//                    con.setChosenSuper( sup.getFullyQualifiedName() );
                     con.setChosenSuperConcept( sup );
                     sup.getChosenSubConcepts().add( con );
                     break;

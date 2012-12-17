@@ -22,7 +22,7 @@
 
     @if{ ! primitive }
         @@javax.persistence.Transient
-        public void add@{ compactUpperCase(name) }( Object x ) {
+        public void add@{ compactUpperCase(name) }( java.lang.Object x ) {
             if ( x instanceof @{map( type, true ) } ) {
                 @{ getter( name, type, max ) }().add( ( @{ map( type, true ) } ) x );
             } else {

@@ -17,7 +17,7 @@ public class VariantModelProcessor implements ModelHierarchyProcessor {
         Concept localRoot = new Concept( IRI.create( model.getDefaultNamespace(), rootName ),
                 rootName,
                 false );
-        localRoot.setChosenSuper( Thing.class.getName() );
+//        localRoot.setChosenSuper( Thing.class.getName() );
         localRoot.setChosenSuperConcept( thing );
         thing.getChosenSubConcepts().add( localRoot );
 
@@ -30,12 +30,12 @@ public class VariantModelProcessor implements ModelHierarchyProcessor {
             }
             con.getChosenProperties().clear();
             if ( ! Thing.class.getName().equals( con.getFullyQualifiedName() ) ) {
-                con.setChosenSuper( localRoot.getFullyQualifiedName() );
+//                con.setChosenSuper( localRoot.getFullyQualifiedName() );
                 con.setChosenSuperConcept( localRoot );
                 localRoot.getChosenSubConcepts().add( con );
             } else {
                 con.setChosenSuperConcept( con );
-                con.setChosenSuper( con.getFullyQualifiedName() );
+//                con.setChosenSuper( con.getFullyQualifiedName() );
             }
         }
 

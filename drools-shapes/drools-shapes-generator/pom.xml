@@ -92,6 +92,11 @@
     </dependency>
 
 
+    <dependency>
+      <groupId>com.clarkparsia</groupId>
+      <artifactId>Empire-core</artifactId>
+    </dependency>
+
 
     <dependency>
       <groupId>net.sourceforge.owlapi</groupId>
@@ -114,6 +119,16 @@
           <artifactId>owlapi</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>thewebsemantic</groupId>
+      <artifactId>jenabean</artifactId>
     </dependency>
 
     <!--dependency>
