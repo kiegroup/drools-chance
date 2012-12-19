@@ -30,6 +30,7 @@ import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 import org.drools.runtime.rule.QueryResults;
+import org.drools.runtime.rule.Variable;
 
 import java.io.*;
 import java.util.Arrays;
@@ -269,40 +270,40 @@ public abstract class DroolsAbstractPMMLTest {
     }
 
 
-    protected double queryDoubleField(String target, String modelName) {
-        QueryResults results = getKSession().getQueryResults( target, modelName );
+    protected double queryDoubleField( String target, String modelName ) {
+        QueryResults results = getKSession().getQueryResults( target, modelName, Variable.v );
         assertEquals( 1, results.size() );
 
-        return (Double) results.iterator().next().get( "result" );
+        return (Double) results.iterator().next().get( "$result" );
     }
 
 
-    protected double queryIntegerField(String target, String modelName) {
-        QueryResults results = getKSession().getQueryResults(target,modelName);
-        assertEquals(1, results.size());
+    protected double queryIntegerField( String target, String modelName ) {
+        QueryResults results = getKSession().getQueryResults( target, modelName, Variable.v );
+        assertEquals( 1, results.size() );
 
-        return (Integer) results.iterator().next().get("result");
+        return (Integer) results.iterator().next().get( "$result" );
     }
 
 
-    protected String queryStringField(String target, String modelName) {
-        QueryResults results = getKSession().getQueryResults(target,modelName);
-        assertEquals(1, results.size());
+    protected String queryStringField( String target, String modelName ) {
+        QueryResults results = getKSession().getQueryResults( target, modelName, Variable.v );
+        assertEquals( 1, results.size() );
 
-        return (String) results.iterator().next().get("result");
+        return (String) results.iterator().next().get( "$result" );
     }
 
 
     public Double getDoubleFieldValue( FactType type ) {
         Class<?> klass = type.getFactClass();
-        Iterator iter = getKSession().getObjects(new ClassObjectFilter(klass)).iterator();
+        Iterator iter = getKSession().getObjects( new ClassObjectFilter( klass ) ).iterator();
         Object obj = iter.next();
         return (Double) type.get( obj, "value" );
     }
 
     public Object getFieldValue( FactType type ) {
         Class<?> klass = type.getFactClass();
-        Iterator iter = getKSession().getObjects(new ClassObjectFilter(klass)).iterator();
+        Iterator iter = getKSession().getObjects( new ClassObjectFilter( klass ) ).iterator();
         Object obj = iter.next();
         return type.get( obj, "value" );
     }

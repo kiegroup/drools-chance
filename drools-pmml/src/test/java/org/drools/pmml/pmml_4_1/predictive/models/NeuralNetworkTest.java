@@ -127,7 +127,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
 
 
-        Assert.assertEquals(828.0, Math.floor(queryDoubleField("OutAmOfClaims", "NeuralInsurance")));
+        Assert.assertEquals( 828.0, Math.floor( queryDoubleField( "OutAmOfClaims", "NeuralInsurance" ) ) );
 
     }
 

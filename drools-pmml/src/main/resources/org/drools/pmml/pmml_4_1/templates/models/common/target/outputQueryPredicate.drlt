@@ -20,15 +20,15 @@
 
 
 @comment{
-        Propagates stymuli along synapses
+
 }
 
 @declare{'outputQueryPredicate'}
 
 
 
-query "@{field}_@{label}" (String ctx)
-    @{field}( context == ctx , result : value == @{target} )
+query "@{ compactUpperCase( field ) }_@{label}" ( String ctx,  @{ mapDatatype( type, true ) } $result )
+    @{ compactUpperCase( field ) }( context == ctx , $result := value, value == @{target} )
 end
 
 @end{}

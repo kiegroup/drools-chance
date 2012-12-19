@@ -291,11 +291,11 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
         visitorSession.insert( pmml );
             visitorSession.fireAllRules();
 
-        String ans = sb.toString();
+        String modelEvaluatingRules = sb.toString();
 
         visitorSession.dispose();
 
-        return ans;
+        return modelEvaluatingRules;
 	}
 
 

@@ -31,12 +31,12 @@
  when
     @{context}Input(
        @foreach{ fldName : fields.keySet }
-          @{fldName}   :  @{fldName}
+          _@{fldName}   :  @{fldName}
        @end{','}
     )
  then
     @foreach{ fldName : fields.keySet }
-        drools.getEntryPoint("in_@{compactUpperCase(fldName)}").insert(@{fldName});
+        drools.getEntryPoint("in_@{compactUpperCase(fldName)}").insert(_@{fldName});
     @end{}
  end
 

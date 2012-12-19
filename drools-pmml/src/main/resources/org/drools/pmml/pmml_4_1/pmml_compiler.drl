@@ -1616,14 +1616,17 @@ end
 
 
 rule "BuildQuery"
+salience -1
 when
     // can't use assertBehaviour.EQUALITY because of poorly formed PMML Descr
-    $q: QueryMarker( $name : name, $context : context)
+    $q: QueryMarker( $name : name, $context : context )
+    TypeOfField( name == $name, $type : dataType )
     not QueryMarker( this != $q, name == $name, context == $context )
 then
     HashMap map = new HashMap( 7 );
              map.put( "model", $context );
-             map.put( "field", $name);
+             map.put( "field", $name );
+             map.put( "type", $type );
     applyTemplate( "outputQuery.drlt", utils, registry, map, theory );
 end
 
@@ -1761,7 +1764,7 @@ rule "Output_Expose"
 when
     $of : OutputField( $name : name, targetField != null )
 then
-    insert( new QueryMarker( utils.compactUpperCase( $name ), utils.context ) );
+    insert( new QueryMarker( $name, utils.context ) );
 end
 
 
@@ -2127,7 +2130,8 @@ then
         map.put( "model", utils.context );
         map.put( "field", utils.compactUpperCase($field) );
         map.put( "label", $val );
-        map.put( "target", utils.format($type,utils.compactUpperCase( $val ) ) );
+        map.put( "type", $type );
+        map.put( "target", utils.format( $type,utils.compactUpperCase( $val ) ) );
     applyTemplate( "outputQueryPredicate.drlt", utils, registry, map, theory );
 
     map = new HashMap( 7 );
