@@ -92,6 +92,13 @@ public class DiscreteDistributionTreeSet<T> implements Distribution<T> {
         return true;
     }
 
+    public boolean isNormalized() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setNormalized( boolean norm ) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 
     public T sample() {
         double p = Math.random();

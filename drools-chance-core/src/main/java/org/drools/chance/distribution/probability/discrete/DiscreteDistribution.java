@@ -29,6 +29,7 @@ public class DiscreteDistribution<T> implements DiscreteProbabilityDistribution<
 
     private ValueSortedMap<T, Degree> valueSorMap = new ValueSortedMap<T, Degree>();
     private Degree falze;
+    private boolean normalized;
 
     public DiscreteDistribution() {
         super();
@@ -47,7 +48,7 @@ public class DiscreteDistribution<T> implements DiscreteProbabilityDistribution<
     }
 
     public void put(T value, Degree prob) {
-        valueSorMap.put(value, prob);
+        valueSorMap.put( value, prob );
 
         if ( falze == null ) {
             falze = prob.False();
@@ -64,8 +65,11 @@ public class DiscreteDistribution<T> implements DiscreteProbabilityDistribution<
     }
 
     public Degree get(T value) {
-        return getDegree( value );
+        Degree deg =  valueSorMap.get(value);
+
+        return deg != null ? deg : falze;
     }
+
 
     public Number domainSize() {
         return valueSorMap.size();
@@ -104,6 +108,30 @@ public class DiscreteDistribution<T> implements DiscreteProbabilityDistribution<
     public boolean isDiscrete() {
         return true;
     }
+
+    public boolean isNormalized() {
+        return normalized;
+    }
+
+    public void setNormalized(boolean normalized) {
+        this.normalized = normalized;
+    }
+
+//    private void normalize() {
+    //        System.out.println( "Normalizeing");
+    //        Degree den = null;
+    //        for ( T key : valueSorMap.keySet() ) {
+    //            if ( den == null ) {
+    //                den = valueSorMap.get( key );
+    //            } else {
+    //                den.sum( valueSorMap.get( key ) );
+    //            }
+    //        }
+    //
+    //        for ( Map.Entry<T,Degree> entry : valueSorMap.entrySet() ) {
+    //            entry.setValue( entry.getValue().div( den ) );
+    //        }
+    //    }
 
 
     public Iterator<T> iterator() {

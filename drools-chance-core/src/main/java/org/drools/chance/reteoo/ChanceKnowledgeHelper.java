@@ -6,7 +6,7 @@ import org.drools.chance.ChanceHelper;
 import org.drools.chance.factmodel.ImperfectTraitProxy;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.evaluation.Evaluation;
-import org.drools.factmodel.traits.LogicalTypeInconsistencyException;
+//import org.drools.factmodel.traits.LogicalTypeInconsistencyException;
 import org.drools.factmodel.traits.Thing;
 
 
@@ -53,7 +53,7 @@ public class ChanceKnowledgeHelper extends DefaultKnowledgeHelper implements Cha
             ((ImperfectTraitProxy) thing).setDegree( deg );
 
             return doInsertTrait( thing, false );
-        } catch (LogicalTypeInconsistencyException e) {
+        } catch ( Exception e ) {
             e.printStackTrace();
             return null;
         }

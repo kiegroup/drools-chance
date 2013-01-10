@@ -29,6 +29,7 @@ public class LinguisticPossibilityDistribution<T extends Number>
 
     private FuzzyAlphaCutPartition cutPart;
     private Degree master;
+    private boolean normalized;
 
     public LinguisticPossibilityDistribution(Map<Linguistic<Number>,Degree> map) {
         UniqueFuzzyPartition.clearPartitionNames();
@@ -70,5 +71,11 @@ public class LinguisticPossibilityDistribution<T extends Number>
         return true;
     }
 
+    public boolean isNormalized() {
+        return normalized;
+    }
 
+    public void setNormalized(boolean normalized) {
+        this.normalized = normalized;
+    }
 }

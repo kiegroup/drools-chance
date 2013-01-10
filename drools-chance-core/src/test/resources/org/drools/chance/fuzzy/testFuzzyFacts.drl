@@ -66,6 +66,36 @@ declare Imperson
 
 end
 
+rule "Init"
+when
+then
+    insert( new Imperson( ) );
+end
+
+
+
+rule "Fuzzy Rule with Facts"
+salience 100
+dialect "mvel"
+when
+    $b : Imperson( name == "philip", body ~is Weight.FAT, body ~is Weight.SLIM )
+            @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, family=MvlFamilies.LUKAS, degree=DegreeType.SIMPLE )
+then
+    System.err.println(">>> " + drools);
+    Degree x = chance.degree;
+    System.out.println( "X " + x );  // 0.15
+    map.put( "X", x.getValue() );
+end
+
+
+
+
+
+
+
+
+
+
 
 declare CoreX
 
@@ -88,13 +118,9 @@ declare trait ImpersonTrait
 
 end
 
-
-
-
-rule "Init"
+rule "Init2"
 when
 then
-    insert( new Imperson( ) );
     insert( new CoreX() );
 end
 
@@ -106,19 +132,6 @@ then
     don( $c, ImpersonTrait.class );
 end
 
-
-rule "Fuzzy Rule with Facts"
-salience 100
-dialect "mvel"
-when
-    $b : Imperson( name == "philip", body ~is Weight.FAT, body ~is Weight.SLIM )
-            @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, family=MvlFamilies.LUKAS, degree=DegreeType.SIMPLE )
-then
-    System.err.println(">>> " + drools);
-    Degree x = chance.degree;
-    System.out.println( "X " + x );  // 0.15
-    map.put( "X", x.getValue() );
-end
 
 
 rule "Fuzzy Rule with Traits"

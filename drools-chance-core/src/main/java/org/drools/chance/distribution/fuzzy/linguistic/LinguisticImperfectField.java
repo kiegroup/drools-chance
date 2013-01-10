@@ -95,6 +95,14 @@ public class LinguisticImperfectField<T extends Linguistic, K extends Number> im
         throw new UnsupportedOperationException("TODO");
     }
 
+    public boolean isNormalized() {
+        return innerField.isNormalized();
+    }
+
+    public void normalize() {
+        innerField.normalize();
+    }
+
 
     public String toString() {
         return "(L)" + innerField.toString();

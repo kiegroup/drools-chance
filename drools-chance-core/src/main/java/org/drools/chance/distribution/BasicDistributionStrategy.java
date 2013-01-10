@@ -323,4 +323,8 @@ public class BasicDistributionStrategy<T>  implements DistributionStrategies<T> 
     public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public void normalize(Distribution<T> distr) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

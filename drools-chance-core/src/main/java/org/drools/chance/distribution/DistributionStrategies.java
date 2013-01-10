@@ -166,5 +166,5 @@ public interface DistributionStrategies<T> {
     Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params);
 
 
-
+    void normalize(Distribution<T> distr);
 }

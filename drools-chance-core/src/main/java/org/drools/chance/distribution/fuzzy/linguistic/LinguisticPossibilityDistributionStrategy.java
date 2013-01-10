@@ -151,4 +151,8 @@ public class LinguisticPossibilityDistributionStrategy<T extends Number> impleme
     public Distribution<Number> removeAsNew(Distribution<Number> current, Distribution<Number> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public void normalize(Distribution<Number> distr) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

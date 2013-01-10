@@ -97,6 +97,14 @@ public class BasicDistribution<T> implements DiscretePossibilityDistribution<T>,
         return true;
     }
 
+    public boolean isNormalized() {
+        return true;
+    }
+
+    public void setNormalized( boolean norm ) {
+
+    }
+
     public Map<T, Degree> getDistribution() {
         return new MicroMap<T,Degree>( value, degree );
     }

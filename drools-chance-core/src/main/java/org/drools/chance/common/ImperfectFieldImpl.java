@@ -106,6 +106,13 @@ public class ImperfectFieldImpl<T> extends AbstractImperfectField<T> {
     }
 
 
+    public boolean isNormalized() {
+        return distr.isNormalized();
+    }
+
+    public void normalize() {
+        getStrategies().normalize( distr );
+    }
 
 
 

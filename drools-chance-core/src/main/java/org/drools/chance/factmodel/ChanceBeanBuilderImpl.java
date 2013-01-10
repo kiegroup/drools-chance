@@ -1716,7 +1716,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             if ( field.getName().endsWith( "Distr" ) && classDef.getField( field.getName().replace( "Distr", "" ) ) != null ) {
                 continue;
             }
-            previous = buildFieldToString( field, classDef, mv, previous );
+            buildFieldToString( field, classDef, mv, previous );
         }
         return previous;
     }

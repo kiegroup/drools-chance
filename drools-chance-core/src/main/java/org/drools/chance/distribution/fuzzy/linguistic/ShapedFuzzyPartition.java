@@ -29,7 +29,7 @@ import java.util.Set;
 public class ShapedFuzzyPartition<T extends Linguistic<Number>> implements DiscretePossibilityDistribution<Linguistic<Number>> {
 
     private ValueSortedMap<Linguistic<Number>,Degree> map;
-
+    private boolean normalized;
 
 
     public ShapedFuzzyPartition(Linguistic[] values) {
@@ -151,4 +151,11 @@ public class ShapedFuzzyPartition<T extends Linguistic<Number>> implements Discr
         return true;
     }
 
+    public boolean isNormalized() {
+        return normalized;
+    }
+
+    public void setNormalized(boolean normalized) {
+        this.normalized = normalized;
+    }
 }

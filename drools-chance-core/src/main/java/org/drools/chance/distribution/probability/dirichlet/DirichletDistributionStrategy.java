@@ -34,7 +34,7 @@ import java.util.*;
  * Strategy and level III factory for Dirichlet probability distributions
  * @param <T>
  */
-public class DirichletDistributionStrategy<T>  implements DistributionStrategies<T> {
+public class DirichletDistributionStrategy<T> implements DistributionStrategies<T> {
 
 
 
@@ -246,6 +246,10 @@ public class DirichletDistributionStrategy<T>  implements DistributionStrategies
 
     public Distribution<T> removeAsNew(Distribution<T> current, Distribution<T> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void normalize(Distribution<T> distr) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
 

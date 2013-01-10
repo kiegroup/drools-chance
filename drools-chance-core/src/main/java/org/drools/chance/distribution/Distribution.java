@@ -52,7 +52,9 @@ public interface Distribution<T>  {
     public boolean isDiscrete();
 
 
+    public boolean isNormalized();
 
+    public void setNormalized( boolean normalized );
 
 
 

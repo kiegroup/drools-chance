@@ -257,4 +257,8 @@ public class ShapedFuzzyPartitionStrategy<T extends Linguistic> implements Distr
     public Distribution<Linguistic> removeAsNew(Distribution<Linguistic> current, Distribution<Linguistic> newBit, Object... params) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public void normalize(Distribution<Linguistic> distr) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

@@ -116,4 +116,9 @@ public interface ImperfectField<T> {
      */
     public void remove( T value, Degree deg, String... params );
 
+
+    public boolean isNormalized();
+
+    public void normalize();
+
 }

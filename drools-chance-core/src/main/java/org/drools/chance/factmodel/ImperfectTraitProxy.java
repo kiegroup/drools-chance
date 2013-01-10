@@ -48,7 +48,7 @@ public abstract class ImperfectTraitProxy extends TraitProxy implements External
     }
 
     public void setDegree( Degree deg ) {
-        getHolds().update(true, deg);
+        getHolds().setValue(true, deg);
     }
     
     public Degree isA() {

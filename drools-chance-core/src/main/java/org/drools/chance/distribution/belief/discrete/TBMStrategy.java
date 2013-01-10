@@ -136,6 +136,10 @@ public class TBMStrategy<T>  implements DistributionStrategies<T> {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public void normalize(Distribution<T> distr) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
     public Distribution<T> newDistribution() {
         //TODO

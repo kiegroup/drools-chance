@@ -64,6 +64,7 @@ public class DiscreteDistributionStrategy<T>  implements DistributionStrategies<
     public Distribution<T> merge(Distribution<T> current,
                                   Distribution<T> newBit) {
         //ToDo iterare sull indice piu corto
+
     	DiscreteProbabilityDistribution<T> currentDD= (DiscreteProbabilityDistribution<T>) current;
     	DiscreteProbabilityDistribution<T> newBitDD= (DiscreteProbabilityDistribution<T>) newBit;
         Map<T,Degree> map = new HashMap<T,Degree>();
@@ -84,10 +85,6 @@ public class DiscreteDistributionStrategy<T>  implements DistributionStrategies<
                    denominator=denominator.sum(newBitDD.getDegree(tempT).mul(current.getDegree(tempT)));
                 }
             }
-
-
-
-
 
         for( Iterator<T> currIt = currentDD.getSupport().iterator(); currIt.hasNext() ;){
                 T tempT = currIt.next();
@@ -111,12 +108,27 @@ public class DiscreteDistributionStrategy<T>  implements DistributionStrategies<
 
 	public Distribution<T> merge(Distribution<T> current,
 			Distribution<T> newBit, Object... params) {
-		  return merge(current,newBit);
+        if ( ((DiscreteProbabilityDistribution) newBit).size() == 1 ) {
+            return mergeFocal(current, newBit);
+        } else {
+            return merge( current, newBit );
+        }
 	}
 
+    private Distribution<T> mergeFocal(Distribution<T> current, Distribution<T> newBit) {
+        DiscreteProbabilityDistribution<T> currentDD = (DiscreteProbabilityDistribution<T>) current;
+        DiscreteProbabilityDistribution<T> newBitDD = (DiscreteProbabilityDistribution<T>) newBit;
 
+        T target = newBitDD.getDistribution().keySet().iterator().next();
 
+        if ( currentDD.getDistribution().containsKey( target ) ) {
+            currentDD.getDistribution().put( target, currentDD.getDegree(target).mul( newBitDD.getDegree(target) ) );
+        } else {
+            //
+        }
 
+        return currentDD;
+    }
 
 
     public Distribution<T> mergeAsNew(Distribution<T> current,
@@ -213,6 +225,22 @@ public class DiscreteDistributionStrategy<T>  implements DistributionStrategies<
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public void normalize(Distribution<T> distr) {
+        Degree deg;
+        Iterator<Map.Entry<T,Degree>> iter = ((DiscreteDistribution) distr).getDistribution().entrySet().iterator();
+        deg = iter.next().getValue();
+        while ( iter.hasNext() ) {
+            deg = deg.sum( iter.next().getValue() );
+        }
+
+        iter = ((DiscreteDistribution) distr).getDistribution().entrySet().iterator();
+        while ( iter.hasNext() ) {
+            Map.Entry<T,Degree> entry = iter.next();
+            entry.setValue( entry.getValue().div( deg ) );
+        }
+        distr.setNormalized( true );
+    }
+
 
     public Distribution<T> newDistribution() {
         if ( Boolean.class.equals( domainType ) ) {
@@ -296,9 +324,15 @@ public class DiscreteDistributionStrategy<T>  implements DistributionStrategies<
 		return dist;
 	}
 
+
 	public Distribution<T> toDistribution(T value, Object... params) {
 		DiscreteDistribution<T> dist = new DiscreteDistribution<T>();
-        dist.put(value, new SimpleDegree(1.0));
+        if ( params.length > 0 && params[0] instanceof Degree ) {
+            dist.put( value, (Degree) params[0] );
+        } else {
+            dist.put( value, new SimpleDegree(1.0) );
+        }
+
 		return dist;
 	}
 

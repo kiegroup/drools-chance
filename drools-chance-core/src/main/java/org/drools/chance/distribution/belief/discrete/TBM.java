@@ -36,7 +36,7 @@ public class TBM<T> implements DiscreteProbabilityDistribution<Set<T>> {
 
     List<T> singletons = new ArrayList<T>();
     Map<BitSet, Degree> massDegreeMap = new HashMap<BitSet, Degree>();
-
+    private boolean normalized;
 
 
 
@@ -165,25 +165,13 @@ public class TBM<T> implements DiscreteProbabilityDistribution<Set<T>> {
     }
 
 
+    public boolean isNormalized() {
+        return normalized;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public void setNormalized(boolean normalized) {
+        this.normalized = normalized;
+    }
 
     public Number domainSize(){
         return Math.pow(2, singletons.size());

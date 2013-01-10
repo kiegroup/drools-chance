@@ -46,6 +46,10 @@
             <artifactId>drools-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-pmml</artifactId>
+        </dependency>
+        <dependency>
             <groupId>de.lab4inf</groupId>
             <artifactId>Lab4Jefis</artifactId>
         </dependency>
@@ -67,9 +71,23 @@
             <artifactId>log4j</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.uncertweb</groupId>
+            <artifactId>uncertml-x-api</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
 
+
+    <repositories>
+        <repository>
+            <id>UncertWebMavenRepository</id>
+            <name>UncertWeb Maven Repository</name>
+            <url>http://giv-uw.uni-muenster.de/m2/repo</url>
+        </repository>
+    </repositories>
 
 
 </project>

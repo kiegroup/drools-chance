@@ -38,6 +38,8 @@ public class DirichletDistribution<T> implements DiscreteProbabilityDistribution
     private ValueSortedMap<T,Double> alphaWeightMap = new ValueSortedMap<T,Double>();
     private double mass = 0;
 
+    private boolean normalized;
+
 
     public Degree getDegree(T value) {
         return new SimpleDegree(getExpectation(value));
@@ -177,23 +179,13 @@ public class DirichletDistribution<T> implements DiscreteProbabilityDistribution
         return true;
     }
 
+    public boolean isNormalized() {
+        return normalized;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public void setNormalized(boolean normalized) {
+        this.normalized = normalized;
+    }
 
     /**
      * Uses Lanczos' approx to compute logGamma(x)
