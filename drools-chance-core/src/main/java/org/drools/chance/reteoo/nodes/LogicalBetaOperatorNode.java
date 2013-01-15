@@ -94,6 +94,18 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
         }
     }
 
+    @Override
+    protected void doCollectAncestors( NodeSet baseNodes ) {
+        this.leftInput.collectAncestors( baseNodes );
+    }
+
+    @Override
+    protected void doRemove( RuleRemovalContext ruleRemovalContext, ReteooBuilder reteooBuilder, InternalWorkingMemory[] internalWorkingMemories ) {
+        this.leftInput.remove( ruleRemovalContext,
+                reteooBuilder,
+                internalWorkingMemories );
+    }
+
     public void attach( BuildContext context ) {
         attach();
 
@@ -125,7 +137,6 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
         }
         this.leftInput.remove( context,
                 builder,
-                this,
                 workingMemories );
     }
 
