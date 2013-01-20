@@ -29,14 +29,14 @@
 @declare{'neuralWireInputRule'}
 rule "NeuralWireInput_@{name}"
 when
- $x : @{name}( $v : valid == true, $m : missing == false,
-               $model : context == @{format("string",context)},
-               $val : value)
+    $x : @{name}( $v : valid == true, $m : missing == false,
+                  $model : context == @{format("string",context)},
+                  $val : value )
 then
-    Stym x = new Stym();
-    x.setContext($model);
-    x.setIndex(@{format("string",index)});
-    x.setValue($val);
+    Stym x = new Stym( $model,
+                       @{ format( "string", index ) },
+                       $val,
+                       false );
     insertLogical(x);
 end
 @end{}

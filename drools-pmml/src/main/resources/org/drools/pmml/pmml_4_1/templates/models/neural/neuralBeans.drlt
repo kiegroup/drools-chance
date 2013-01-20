@@ -26,28 +26,37 @@
 
 declare Stym
     @@role(event)
-    //@@expires(1s)
-    context : String
-    index : String = "-1"
-    value : double
-    normalized : boolean = false
+    context     : String
+    index       : String = "-1"
+    value       : double
+    normalized  : boolean = false
 end
 
 declare Synapse
-    context : String        @key
-    source : String = "-1"  @key
-    target : String = "-1"  @key
-    weight : double
+    context     : String            @key
+    source      : String = "-1"     @key
+    target      : String = "-1"     @key
+    weight      : double
 end
 
 
 declare Charge
-    @@role(event)
-    //@@expires(1s)
-    context : String
-    index : String = "-1"
-    source : String = "-1"
-    value : double
+    @@role( event )
+    context     : String
+    index       : String = "-1"
+    source      : String = "-1"
+    value       : double
+end
+
+declare Neuron
+@propertyReactive
+    context     : String            @key
+	id          : String            @key
+	layerIndex  : int
+	bias        : double
+	fanIn       : int
+	value       : double
+    dvalue      : double
 end
 
 @end{}

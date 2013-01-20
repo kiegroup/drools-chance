@@ -43,11 +43,11 @@ when
             sum( $in )
         )
 then
-    System.out.println(">>>>>>>>>>>>>>  MAX LAYER SUM " + $den );
+    //System.out.println(">>>>>>>>>>>>>>  MAX LAYER SUM " + $den );
     java.util.List list = new java.util.ArrayList( $list );
     for (int j = 0; j < list.size(); j++) {
         Stym s = (Stym) list.get(j);
-        System.out.println(">>>>>>>>>>>>>>  MAX LAYER MODIFY " + s );
+        //System.out.println(">>>>>>>>>>>>>>  MAX LAYER MODIFY " + s );
         modify ( s ) {
             setNormalized( true ),
             setValue( s.getValue() / $den );

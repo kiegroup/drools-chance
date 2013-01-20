@@ -1962,7 +1962,7 @@ then
     }
 end
 
-rule "Synapses"
+rule "Build Synapses"
 salience -10
 when
     $n : Neuron( $links : cons, $index : id )
@@ -1975,22 +1975,43 @@ then
 end
 
 
+rule "Build Neurons"
+salience -9
+when
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs )
+    accumulate ( $nl : NeuralLayer() from $info,
+                 $layers : collectList( $nl ) )
+    $layer : NeuralLayer( this memberOf $info, $neurs : neurons, $act : activationFunction != null,
+                 $norm : normalizationMethod )
+then
+    HashMap map = new HashMap( 7 );
+        map.put( "model", utils.context );
+        map.put( "layerIndex", $layers.indexOf( $layer ) );
+        map.put( "neurs", $neurs );
+    applyTemplate( "neuralBuildNeurons.drlt", utils, registry, map, theory );
+end
+
 rule "Neuron"
 salience -9
 when
-    NeuralLayer( $ns : neurons, $act : activationFunction != null, $thold : threshold != null, $norm : normalizationMethod )
-    $n : Neuron( this memberOf $ns, $index : id, $bias : bias != null, $in : cons )
+    NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs )
+    accumulate ( $nl : NeuralLayer() from $info,
+                 $layers : collectList( $nl ) )
+    $layer : NeuralLayer( $ns : neurons, $act : activationFunction != null,
+                          $thold : threshold != null, $norm : normalizationMethod )
+//    $n : Neuron( this memberOf $ns, $index : id, $bias : bias != null, $in : cons )
 then
     //System.err.println("CREATE NEURON RULE FOR " + $index + " >> " + $act + "  " + $bias + "  " + $thold);
 
      HashMap map = new HashMap( 7 );
         map.put( "model", utils.context );
-        map.put( "index", $index );
+        map.put( "layerIndex", $layers.indexOf( $layer ) );
+//        map.put( "index", $index );
         map.put( "actFun", $act );
         map.put( "needsNormal", $norm != null );
-        map.put( "bias", $bias );
+//        map.put( "bias", $bias );
         map.put( "thold", $thold );
-        map.put( "inLink", $in.size() );
+//        map.put( "inLink", $in.size() );
     applyTemplate( "neuralFire.drlt", utils, registry, map, theory );
 end
 

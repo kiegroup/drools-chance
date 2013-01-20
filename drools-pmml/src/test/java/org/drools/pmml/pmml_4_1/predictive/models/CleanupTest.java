@@ -111,7 +111,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         Assert.assertEquals(24.0, queryIntegerField("OutSepLen", "Neuiris"));
 
-        assertEquals( 60, getKSession().getObjects().size() );
+        assertEquals( 61, getKSession().getObjects().size() );
 
     }
 

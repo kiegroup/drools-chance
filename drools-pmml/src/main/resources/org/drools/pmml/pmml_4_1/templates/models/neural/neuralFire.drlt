@@ -26,29 +26,28 @@
 @declare{'neuralFireRule'}
 
 
-@code{ String ctx = format("string",model); }
-rule "NeuralFire_@{model}_@{index}"
+@code{ String ctx = format( "string", model ); }
+rule "NeuralFire_@{ model }_Layer@{ layerIndex }"
 salience -100
 when
-    java.util.List( size == @{inLink} ) from collect ( Charge( context == @{ctx}, index == @{format("string",index)}) )
-    Number( $val : doubleValue ) from accumulate (
-            Charge( context == @{ctx}, index == @{format("string",index)}, $in : value ),
-            init( double act = @{bias} ),
-            action( act += $in; ),
-            reverse( act -= $in; )
-            result( act )
-        )
+    $neur : Neuron( context == @{ ctx }, layerIndex == @{ layerIndex },
+                    $index : id, $bias : bias, $fanIn : fanIn, $cur : value )
+    accumulate( $c : Charge( context == @{ ctx }, index == $index, $in : value ),
+                $list : collectList( $c ),
+                $val : sum( $in );
+                $list.size == $fanIn )
 then
     Stym y = new Stym();
-        y.setContext(@{ctx});
-        y.setIndex(@{format("string",index)});
-        double x = $val;
-        x = @{ mapNeuralActivation(actFun.value,thold) };
-        y.setValue(x);
-        y.setNormalized( ! @{needsNormal} );
+        y.setContext( @{ctx} );
+        y.setIndex( $index );
+        double x = $bias + $val.doubleValue();
+        x = @{ mapNeuralActivation( actFun.value, thold ) };
+        y.setValue( x );
+        y.setNormalized( ! @{ needsNormal } );
 
-    //System.out.println(">>>>>>>>>>>>>>  NEURON FIRED " + y);
-    insertLogical(y);
+    System.out.println( "Firing neur " + $neur );
+
+    insertLogical( y );
 end
 
 @end{}

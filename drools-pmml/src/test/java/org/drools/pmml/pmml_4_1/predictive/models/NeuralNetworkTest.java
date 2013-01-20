@@ -25,6 +25,7 @@ import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.definition.type.FactType;
+import org.drools.event.rule.DebugAgendaEventListener;
 import org.drools.informer.Answer;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ClassPathResource;
@@ -136,30 +137,28 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testANNCompilation() throws Exception {
-        setKSession(getModelSession(source3,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
-
-
+        setKSession( getModelSession( source3, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
     }
 
 
 
     @Test
     public void testCold() throws Exception {
-        setKSession(getModelSession(source7,true));
-        setKbase(getKSession().getKnowledgeBase());
+        setKSession( getModelSession( source7, true ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+//        getKSession().addEventListener( new DebugAgendaEventListener(  ) );
 
         getKSession().fireAllRules();  //init model
 
-        getKSession().getWorkingMemoryEntryPoint("in_Temp").insert(28.0);
+        getKSession().getWorkingMemoryEntryPoint( "in_Temp" ).insert( 28.0 );
 
         getKSession().fireAllRules();
 
-        Thread.sleep(200);
-        System.err.println(reportWMObjects(getKSession()));
+        System.err.println( reportWMObjects( getKSession() ) );
 
-        Assert.assertEquals( 0.44, queryDoubleField("Cold", "MockCold" ), 1e-6 );
-
+        Assert.assertEquals( 0.44, queryDoubleField( "Cold", "MockCold" ), 1e-6 );
     }
 
 
@@ -370,20 +369,20 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSimpleANN() throws Exception {
         // from mining schema test, simple network with fieldRef as output
-        setKSession(getModelSession(source3,VERBOSE));
+        setKSession( getModelSession( source3, VERBOSE ) );
         setKbase(getKSession().getKnowledgeBase());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(4);
-        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(3.5);
+        getKSession().getWorkingMemoryEntryPoint( "in_Feat2" ).insert( 4 );
+        getKSession().getWorkingMemoryEntryPoint( "in_Feat1" ).insert( 3.5 );
         getKSession().fireAllRules();
 
-        System.err.println(reportWMObjects(getKSession()));
+        System.err.println( reportWMObjects( getKSession() ) );
 
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"MockOutput2"),
-                true, false,"Test_MLP",1.0);
-        checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"MockOutput1"),
-                true, false,"Test_MLP",0.0);
+        checkFirstDataFieldOfTypeStatus( getKbase().getFactType( packageName, "MockOutput2" ),
+                true, false, "Test_MLP",1.0 );
+        checkFirstDataFieldOfTypeStatus( getKbase().getFactType( packageName, "MockOutput1" ),
+                true, false, "Test_MLP",0.0 );
 
     }
 
@@ -480,8 +479,8 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testSmartVent() throws Exception {
-        setKSession(getModelSession(smartVent,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKSession( getModelSession( smartVent, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
 
         getKSession().fireAllRules();  //init model
 
@@ -497,8 +496,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        Thread.sleep(200);
-        System.err.println(reportWMObjects(getKSession()));
+        System.err.println( reportWMObjects( getKSession() ) );
 
 
         assertEquals( 24.0, queryDoubleField("Out_sPIP", "SmartVent"), 0.5 );
@@ -520,8 +518,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        Thread.sleep(200);
-        System.err.println(reportWMObjects(getKSession()));
+        System.err.println( reportWMObjects( getKSession() ) );
 
 
         assertEquals( 18, queryDoubleField("Out_sPIP", "SmartVent"), 0.5 );

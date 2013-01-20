@@ -135,6 +135,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "models/neural/neuralBeans.drlt",
             "models/neural/neuralWireInput.drlt",
             "models/neural/neuralBuildSynapses.drlt",
+            "models/neural/neuralBuildNeurons.drlt",
             "models/neural/neuralLinkSynapses.drlt",
             "models/neural/neuralFire.drlt",
             "models/neural/neuralLayerMaxNormalization.drlt",
@@ -288,8 +289,11 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
         visitorSession.setGlobal( "theory", sb );
 
+        long now = System.currentTimeMillis();
         visitorSession.insert( pmml );
             visitorSession.fireAllRules();
+        long delta = System.currentTimeMillis() - now;
+//        System.out.println( "PMML compiled in " + delta );
 
         String modelEvaluatingRules = sb.toString();
 

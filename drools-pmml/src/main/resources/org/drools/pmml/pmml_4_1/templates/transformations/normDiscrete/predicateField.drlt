@@ -34,7 +34,6 @@ when
  $src : @{origField}( missing == false, valid == true, $val : value , $ctx : context
                       @if{ context != null } , context == @{format("string",context)} @end{})
 then
-    System.err.println( "BINSING + " + "@{name}" );
   @{name} x = new @{name}();
     x.setValue( @{ format( type, target ) } );
     x.setMissing( false );
