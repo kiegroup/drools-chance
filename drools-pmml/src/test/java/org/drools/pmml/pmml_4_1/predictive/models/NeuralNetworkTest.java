@@ -25,7 +25,6 @@ import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.definition.type.FactType;
-import org.drools.event.rule.DebugAgendaEventListener;
 import org.drools.informer.Answer;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ClassPathResource;
@@ -33,11 +32,9 @@ import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.pmml.pmml_4_1.ModelMarker;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.Variable;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
@@ -145,10 +142,8 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testCold() throws Exception {
-        setKSession( getModelSession( source7, true ) );
+        setKSession( getModelSession( source7, VERBOSE ) );
         setKbase( getKSession().getKnowledgeBase() );
-
-//        getKSession().addEventListener( new DebugAgendaEventListener(  ) );
 
         getKSession().fireAllRules();  //init model
 
@@ -242,8 +237,8 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testIris() throws Exception {
-        setKSession(getModelSession(source2,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKSession( getModelSession( source2, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
 
 
         getKSession().fireAllRules();  //init model

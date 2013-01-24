@@ -29,11 +29,11 @@
 
 rule "NeuralOutput_@{model}_@{index}"
 when
-    Stym( context == @{ctx} , index == @{ format( "string", index ) }, $val : value, $normal : normalized )
+    Stym( context == @{ctx} , index == @{ format( "string", index ) }, $val : value )
 then
-    @{name} x = new @{name}();
+    @{name} x = new @{ name }();
         x.setContext( @{ctx} );
-        x.setValid( $normal );
+        x.setValid( true );
         x.setMissing( false );
         x.setValue( $val );
     insertLogical( x );

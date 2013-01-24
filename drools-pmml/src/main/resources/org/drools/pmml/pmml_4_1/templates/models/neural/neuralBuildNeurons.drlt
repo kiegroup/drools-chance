@@ -32,8 +32,9 @@ then
                                @{ layerIndex },
                                @{ neuron.bias != null ? neuron.bias : 0.0 },
                                @{ neuron.cons.size },
-                               0.0,
-                               0.0
+                               null,
+                               null,
+                               false
                              ) );
 @end{}
 end

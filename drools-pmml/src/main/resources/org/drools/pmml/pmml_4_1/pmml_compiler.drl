@@ -1988,6 +1988,7 @@ then
         map.put( "model", utils.context );
         map.put( "layerIndex", $layers.indexOf( $layer ) );
         map.put( "neurs", $neurs );
+        map.put( "needsNormal", $norm != null );
     applyTemplate( "neuralBuildNeurons.drlt", utils, registry, map, theory );
 end
 
@@ -2006,9 +2007,9 @@ then
      HashMap map = new HashMap( 7 );
         map.put( "model", utils.context );
         map.put( "layerIndex", $layers.indexOf( $layer ) );
+        map.put( "needsNormal", $norm != null );
 //        map.put( "index", $index );
         map.put( "actFun", $act );
-        map.put( "needsNormal", $norm != null );
 //        map.put( "bias", $bias );
         map.put( "thold", $thold );
 //        map.put( "inLink", $in.size() );
@@ -2020,13 +2021,15 @@ rule "Neural_Layer_Max_Normalization"
 salience -9
 when
     NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
+    accumulate ( $nl : NeuralLayer() from $info,
+                 $layers : collectList( $nl ) )
     $nl : NeuralLayer( this memberOf $info, $ns : neurons,
                  normalizationMethod != null && normalizationMethod == NNNORMALIZATIONMETHOD.SIMPLEMAX )
 then
     HashMap map = new HashMap( 7 );
         map.put( "model", utils.context );
         map.put( "neurons", $ns );
-        map.put( "j", utils.nextCount() );
+        map.put( "layerIndex", $layers.indexOf( $nl ) );
     applyTemplate( "neuralLayerMaxNormalization.drlt", utils, registry, map, theory );
 end
 
@@ -2035,13 +2038,15 @@ rule "Neural_Layer_Max_SoftNormalization"
 salience -9
 when
     NeuralNetwork( $info : extensionsAndNeuralLayersAndNeuralInputs , $nn : modelName )
+    accumulate ( $nl : NeuralLayer() from $info,
+                 $layers : collectList( $nl ) )
     $nl : NeuralLayer( this memberOf $info, $ns : neurons,
                  normalizationMethod != null && normalizationMethod == NNNORMALIZATIONMETHOD.SOFTMAX )
 then
     HashMap map = new HashMap( 7 );
         map.put( "model", utils.context );
         map.put( "neurons", $ns );
-        map.put( "j", utils.nextCount() );
+        map.put( "layerIndex", $layers.indexOf( $nl ) );
     applyTemplate( "neuralLayerSoftMaxNormalization.drlt", utils, registry, map, theory );
 end
 

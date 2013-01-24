@@ -29,7 +29,6 @@ declare Stym
     context     : String
     index       : String = "-1"
     value       : double
-    normalized  : boolean = false
 end
 
 declare Synapse
@@ -51,12 +50,13 @@ end
 declare Neuron
 @propertyReactive
     context     : String            @key
-	id          : String            @key
-	layerIndex  : int
+	index       : String            @key
+	layerIndex  : int               @key
 	bias        : double
 	fanIn       : int
-	value       : double
-    dvalue      : double
+	value       : Double
+    dvalue      : Double
+    normalized  : boolean
 end
 
 @end{}

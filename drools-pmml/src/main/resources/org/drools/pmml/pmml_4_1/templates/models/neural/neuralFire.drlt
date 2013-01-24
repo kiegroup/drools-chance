@@ -27,30 +27,46 @@
 
 
 @code{ String ctx = format( "string", model ); }
-rule "NeuralFire_@{ model }_Layer@{ layerIndex }"
-salience -100
+rule "Neural Fire_@{ model }_Layer@{ layerIndex }"
 when
-    $neur : Neuron( context == @{ ctx }, layerIndex == @{ layerIndex },
-                    $index : id, $bias : bias, $fanIn : fanIn, $cur : value )
-    accumulate( $c : Charge( context == @{ ctx }, index == $index, $in : value ),
+    $neur : Neuron( context == @{ ctx },
+                    layerIndex == @{ layerIndex }
+                  )
+    accumulate( $c : Charge( context == @{ ctx }, index == $neur.index, $in : value ),
                 $list : collectList( $c ),
                 $val : sum( $in );
-                $list.size == $fanIn )
+                $list.size() == $neur.fanIn )
+then
+    double x = $neur.getBias() + $val.doubleValue();
+    x = @{ mapNeuralActivation( actFun.value, thold ) };
+
+    modify ( $neur ) {
+        @if{ needsNormal } setNormalized( false ), @end{}
+        setValue( x );
+    }
+end
+
+
+rule "Neural Flare @{ model }_Layer@{ layerIndex }"
+when
+    $neur : Neuron( context == @{ ctx },
+                    layerIndex == @{ layerIndex },
+                    @if{ needsNormal } normalized == true, @end{}
+                    $index : index,
+                    $val : value != null )
 then
     Stym y = new Stym();
         y.setContext( @{ctx} );
         y.setIndex( $index );
-        double x = $bias + $val.doubleValue();
-        x = @{ mapNeuralActivation( actFun.value, thold ) };
-        y.setValue( x );
-        y.setNormalized( ! @{ needsNormal } );
-
-    System.out.println( "Firing neur " + $neur );
+        y.setValue( $val );
 
     insertLogical( y );
 end
 
 @end{}
+
+
+
 
 
 @includeNamed{'neuralFireRule'}

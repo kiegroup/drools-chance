@@ -27,31 +27,26 @@
 
 @code{ String ctx = format("string",model); }
 
-rule "LayerNormalization_@{model}_@{j}"
+rule "LayerNormalization_@{model}_@{layerIndex}"
 salience 100
 when
-    $list : java.util.List( size == @{neurons.size} )
-        from collect ( Stym( context == @{ctx},
-                            index in ( @foreach{ neur : neurons } @{format("string",neur.id)} @end{','} ),
-                            normalized == false )
-                     )
-    Number( $den : doubleValue ) from accumulate (
-            Stym( context == @{ctx},
-                    index in ( @foreach{ neur : neurons } @{format("string",neur.id)} @end{','} ),
-                    normalized == false, $in : value
-                ),
-            init( double d = 0 ),
-            action( d += Math.exp($in); )
-            result( d )
+    accumulate (
+            $neur : Neuron( context == @{ctx},
+                    layerIndex == @{ layerIndex },
+                    normalized == false,
+                    $in : value != null
+                ) @watch( normalized, ! value ),
+            $list : collectList( $neur ),
+            $den  : sum( Math.exp( $in ) );
+            $list.size == @{ neurons.size }
         )
 then
-    // System.out.println(">>>>>>>>>>>>>>  SOFTMAX LAYER SUM " + $den );
     java.util.List list = new java.util.ArrayList( $list );
     for ( int j = 0; j < list.size(); j++ ) {
-        Stym s = (Stym) list.get(j);
+        Neuron s = (Neuron) list.get(j);
         modify ( s ) {
             setNormalized( true ),
-            setValue( Math.exp( s.getValue() ) / $den );
+            setValue( Math.exp( s.getValue() ) / $den.doubleValue() );
         }
     }
 end
