@@ -39,6 +39,21 @@
   </properties>
 
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>DataNucleus_2</id>
+      <url>http://www.datanucleus.org/downloads/maven2/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>EmpireRDF</id>
+      <url>https://github.com/EmpireRDF/mavenRepo/raw/master/releases</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>EmpireRDF-snapshot</id>
+      <url>https://github.com/EmpireRDF/mavenRepo/raw/master/snapshots</url>
+    </pluginRepository>
+  </pluginRepositories>
+
   <dependencies>
 
     <dependency>
@@ -195,47 +210,6 @@
     -->
 
   </dependencies>
-
-
-  <repositories>
-    <repository>
-      <id>repo1</id>
-      <name>Maven2 Repo 1</name>
-      <url>http://repo1.maven.org/maven2/</url>
-    </repository>
-
-    <repository>
-      <id>aduna</id>
-      <name>Aduna Software</name>
-      <url>http://repo.aduna-software.org/maven2/releases/</url>
-    </repository>
-
-    <repository>
-      <id>jboss</id>
-      <name>JBoss repository</name>
-      <url>http://repository.jboss.org/maven2</url>
-    </repository>
-
-    <repository>
-      <id>DataNucleus_Repos2</id>
-      <name>DataNucleus Repository</name>
-      <url>http://www.datanucleus.org/downloads/maven2</url>
-      <releases>
-        <updatePolicy>always</updatePolicy>
-      </releases>
-      <snapshots>
-        <updatePolicy>never</updatePolicy>
-      </snapshots>
-    </repository>
-
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>DataNucleus_2</id>
-      <url>http://www.datanucleus.org/downloads/maven2/</url>
-    </pluginRepository>
-  </pluginRepositories>
 
 
   <build>

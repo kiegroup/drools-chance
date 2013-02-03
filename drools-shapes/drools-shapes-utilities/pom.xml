@@ -55,9 +55,9 @@
 
     <dependency>
       <groupId>thewebsemantic</groupId>
-        <artifactId>jenabean</artifactId>
-        <version>1.0.6</version>
-        <scope>provided</scope>
+      <artifactId>jenabean</artifactId>
+      <version>1.0.6</version>
+      <scope>provided</scope>
     </dependency>
 
 
@@ -70,11 +70,19 @@
   </dependencies>
 
 
-    <repositories>
-        <repository>
-            <id>Jenabean</id>
-            <url>http://jenabean.googlecode.com/svn/repo</url>
-        </repository>
-    </repositories>
+  <repositories>
+    <repository>
+      <id>Jenabean</id>
+      <url>http://jenabean.googlecode.com/svn/repo</url>
+    </repository>
+    <repository>
+      <id>EmpireRDF</id>
+      <url>https://github.com/EmpireRDF/mavenRepo/raw/master/releases</url>
+    </repository>
+    <repository>
+      <id>EmpireRDF-snapshot</id>
+      <url>https://github.com/EmpireRDF/mavenRepo/raw/master/snapshots</url>
+    </repository>
+  </repositories>
 
 </project>
