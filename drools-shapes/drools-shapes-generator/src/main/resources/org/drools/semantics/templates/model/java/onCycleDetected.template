@@ -25,7 +25,6 @@
 
            @{ name + "Impl"} x = new @{ name + "Impl"}();
                x.setDyEntryId( this.getDyEntryId() );
-               x.setDyEntryType( "@{ name }" );
            return x;
     }
 

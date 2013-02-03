@@ -3,18 +3,27 @@ package org.drools.shapes;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.drools.rule.builder.dialect.asm.ClassGenerator;
+import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.DRLModel;
 import org.drools.semantics.builder.model.JarModel;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.SemanticXSDModel;
+import org.drools.semantics.builder.model.SubConceptOf;
 import org.drools.semantics.builder.model.XSDModel;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompiler;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
+import org.drools.semantics.utils.NameUtils;
+import org.drools.semantics.utils.NamespaceUtils;
 import org.jvnet.hyperjaxb3.maven2.Hyperjaxb3Mojo;
+import org.semanticweb.owlapi.model.IRI;
 import org.w3._2002._07.owl.Thing;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -22,71 +31,84 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 
 public class OntoModelCompiler {
 
 
     public static final List<String> defaultOptions = Arrays.asList(
-                                        "-extension",
-                                        "-Xjaxbindex",
-                                        "-Xannotate",
-                                        "-Xinheritance",
+            "-extension",
+            "-Xjaxbindex",
+            "-Xannotate",
+            "-Xinheritance",
 //                                        "-XtoString",
-                                        "-Xcopyable",
-                                        "-Xmergeable",
+            "-Xcopyable",
+            "-Xmergeable",
 //                                        "-Xvalue-constructor",
-                                        "-Xfluent-api",
-                                        "-Xkey-equality",
-                                        "-Xsem-accessors",
-                                        "-Xdefault-constructor",
-                                        "-Xmetadata",
-                                        "-Xinject-code"
+            "-Xfluent-api",
+            "-Xkey-equality",
+            "-Xsem-accessors",
+            "-Xdefault-constructor",
+            "-Xmetadata",
+            "-XxcludeResolved",
+            "-Xinject-code"
     );
 
     public static final List<String> fullOptions = Arrays.asList(
-                                        "-extension",
-                                        "-Xjaxbindex",
-                                        "-Xannotate",
-                                        "-Xinheritance",
-                                        "-XtoString",
-                                        "-Xcopyable",
-                                        "-Xmergeable",
-                                        "-Xvalue-constructor",
-                                        "-Xfluent-api",
-                                        "-Xkey-equality",
-                                        "-Xsem-accessors",
-                                        "-Xdefault-constructor",
-                                        "-Xmetadata",
-                                        "-Xinject-code"
+            "-extension",
+            "-Xjaxbindex",
+            "-Xannotate",
+            "-Xinheritance",
+            "-XtoString",
+            "-Xcopyable",
+            "-Xmergeable",
+            "-Xvalue-constructor",
+            "-Xfluent-api",
+            "-Xkey-equality",
+            "-Xsem-accessors",
+            "-Xdefault-constructor",
+            "-Xmetadata",
+            "-XxcludeResolved",
+            "-Xinject-code"
     );
 
     public static final List<String> minimalOptions = Arrays.asList(
-                                        "-extension",
-                                        "-Xjaxbindex",
-                                        "-Xannotate",
-                                        "-Xinheritance",
+            "-extension",
+            "-Xjaxbindex",
+            "-Xannotate",
+            "-Xinheritance",
 //                                        "-XtoString",
 //                                        "-Xcopyable",
 //                                        "-Xmergeable",
 //                                        "-Xvalue-constructor",
 //                                        "-Xfluent-api",
-                                        "-Xkey-equality",
-                                        "-Xsem-accessors",
-                                        "-Xdefault-constructor",
-                                        "-Xmetadata",
-                                        "-Xinject-code"
+            "-Xkey-equality",
+            "-Xsem-accessors",
+            "-Xdefault-constructor",
+            "-Xmetadata",
+            "-XxcludeResolved",
+            "-Xinject-code"
     );
-
-
 
 
     public enum MOJO_VARIANTS {
@@ -134,15 +156,40 @@ public class OntoModelCompiler {
 
     private File binDir;
 
+    private List<File> preexistingSchemas = new ArrayList<File>();
+    private List<File> preesistingBindings = new ArrayList<File>();
+
+
 
     public OntoModelCompiler( OntoModel model, File rootFolder ) {
-      if ( ! rootFolder.exists() ) {
+        if ( ! rootFolder.exists() ) {
             rootFolder.mkdirs();
         }
         this.folder = rootFolder;
         initDirectories();
 
         this.model = model;
+
+        lookupExistingSchemas();
+    }
+
+    private void lookupExistingSchemas() {
+        File folder = getMetaInfDir();
+        for ( File f : folder.listFiles( new FilenameFilter() {
+            public boolean accept( File dir, String name ) {
+                return name.endsWith( ".xsd" ) && ! "owlThing.xsd".equals( name );
+            }
+        } ) ) {
+            preexistingSchemas.add( f );
+        }
+        for ( File f : folder.listFiles( new FilenameFilter() {
+            public boolean accept( File dir, String name ) {
+                return name.endsWith( ".xjb" ) && ! "global.xjb".equals( name );
+            }
+        } ) ) {
+            preesistingBindings.add( f );
+        }
+
     }
 
     private void initDirectories() {
@@ -169,6 +216,14 @@ public class OntoModelCompiler {
         }
     }
 
+    public void clearSources() {
+        for ( File f : metaInfDir.listFiles() ) {
+            f.delete();
+        }
+    }
+
+
+
     public boolean existsResult() {
         return javaDir.listFiles().length > 0
                 || xjcDir.listFiles().length > 0
@@ -180,15 +235,45 @@ public class OntoModelCompiler {
 
     public List<Diagnostic<? extends JavaFileObject>> compileOnTheFly(List<String> options, MOJO_VARIANTS variant) {
 
-          streamJavaInterfaces( false );
-          streamXSDs();
-          streamBindings( true );
-          mojo( options, variant );
-          List<Diagnostic<? extends JavaFileObject>> diagnostics = doCompile();
+        streamJavaInterfaces( false );
 
-          return diagnostics;
-      }
+        streamXSDsWithBindings( true );
+        mojo( options, variant );
 
+        List<Diagnostic<? extends JavaFileObject>> diagnostics = doCompile();
+
+        return diagnostics;
+    }
+
+
+
+
+    public void fixResolvedClasses() {
+        for ( Concept con : model.getConcepts() ) {
+            if ( con.getResolvedAs() != Concept.Resolution.NONE ) {
+                if ( con.getChosenProperties().size() > 0 ) {
+                    // This is very likely an extension/restriction of the original concept, so we need to redefine it
+                    String extPack = model.getDefaultPackage() + "." + con.getPackage();
+                    model.removeConcept( con );
+                    Concept original = con.clone();
+                    original.getSubConcepts().clear();
+                    original.getSubConcepts().add( con );
+                    con.getSuperConcepts().clear();
+                    con.addSuperConcept( original );
+                    con.setChosenSuperConcept( original );
+                    con.setPackage( extPack );
+
+                    URI xuri = NameUtils.packageToNamespaceURI( extPack );
+                    con.setNamespace( xuri.toASCIIString() );
+                    con.setIri( IRI.create( NameUtils.separatingName( xuri.toASCIIString() ) + con.getName() ) );
+
+                    model.addConcept( con );
+                    model.addConcept( original );
+
+                }
+            }
+        }
+    }
 
 
 
@@ -234,61 +319,64 @@ public class OntoModelCompiler {
     }
 
 
-    public boolean streamXSDs() {
-        XSDModelCompiler compiler = (XSDModelCompiler) ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSD );
-        XSDModel xModel = (XSDModel) compiler.compile( model );
-        boolean success = false;
-        try {
-            success = xModel.stream( new File( getMetaInfDir() + File.separator + model.getName() + ".xsd") );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-        return success;
-    }
 
-    public boolean streamBindings( boolean includePersistenceConfiguration ) {
+
+    public boolean streamXSDsWithBindings( boolean includePersistenceConfiguration ) {
         SemanticXSDModelCompiler xcompiler = (SemanticXSDModelCompiler) ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
         SemanticXSDModel xmlModel = (SemanticXSDModel) xcompiler.compile( model );
 
         boolean success = false;
         try {
-            success = xmlModel.streamBindings( new File( getMetaInfDir().getPath() + File.separator + "bindings.xjb" ) );
+            success = xmlModel.stream( getMetaInfDir() );
+            success = xmlModel.streamBindings( getMetaInfDir() );
 
             if ( includePersistenceConfiguration ) {
-                success = success && streamPersistenceConfigs( xmlModel );
+                success = success && streamPersistenceConfigs( xcompiler, xmlModel );
             }
+
         } catch ( Exception e ) {
             e.printStackTrace();
         }
-
         return success;
     }
 
-    protected boolean streamPersistenceConfigs( SemanticXSDModel xmlModel ) throws IOException {
+
+
+
+    protected boolean streamPersistenceConfigs( SemanticXSDModelCompiler xcompiler, SemanticXSDModel xmlModel ) throws IOException {
         boolean success;
 
-        String classPathTemp = getXjcDir().getPath() + File.separator + Thing.class.getPackage().getName().replace( ".", File.separator );
-        File f2 = new File( classPathTemp );
-        if ( ! f2.exists() ) {
-            f2.mkdirs();
+        xcompiler.mergeNamespacedPackageInfo( xmlModel );
+        success = xmlModel.streamNamespacedPackageInfos( getXjcDir() );
+
+
+        File f2 = new File( getMetaInfDir().getPath() + File.separator + "empire.configuration.file" );
+        if ( f2.exists() ) {
+            xcompiler.mergeEmpireConfig( f2, xmlModel );
         }
-        FileOutputStream fos2 = new FileOutputStream( classPathTemp + File.separator + "package-info.java" );
-        success = xmlModel.streamNamespaceFix(fos2);
+        FileOutputStream fos2 = new FileOutputStream( f2 );
+        success = success && xmlModel.streamEmpireConfig( fos2 );
         fos2.flush();
         fos2.close();
 
-        FileOutputStream fos = new FileOutputStream( getMetaInfDir().getPath() + File.separator + "empire.configuration.file" );
-        success = success && xmlModel.streamEmpireConfig(fos);
-        fos.flush();
-        fos.close();
 
-        FileOutputStream fos3 = new FileOutputStream( getMetaInfDir().getPath() + File.separator + "empire.annotation.index" );
+        File f3 = new File( getMetaInfDir().getPath() + File.separator + "empire.annotation.index" );
+        if ( f3.exists() ) {
+            xcompiler.mergeIndex( f3, xmlModel );
+        }
+        FileOutputStream fos3 = new FileOutputStream( f3 );
         success = success && xmlModel.streamIndex( fos3 );
         fos3.flush();
         fos3.close();
 
-        FileOutputStream fos4 = new FileOutputStream( getMetaInfDir().getPath() + File.separator + "persistence-template-hibernate.xml" );
-        success = success && xmlModel.streamPersistenceXml(fos4);
+
+        File f4 = new File( getMetaInfDir().getPath() + File.separator + "persistence-template-hibernate.xml" );
+//        File f4 = new File( getXjcDir().getPath() + File.separator + "META-INF" + File.separator + "persistence.xml" );
+//        if ( f4.exists() ) {
+//            xcompiler.mergePersistenceXml( f4, xmlModel );
+//        }
+        FileOutputStream fos4 = new FileOutputStream( f4 );
+        success = success && xmlModel.streamPersistenceXml( fos4 );
         fos4.flush();
         fos4.close();
 
@@ -328,32 +416,42 @@ public class OntoModelCompiler {
 
 
     public List<Diagnostic<? extends JavaFileObject>> doCompile() {
-
-        List<File> sourceFolders = new LinkedList<File>();
         List<File> list = new LinkedList<File>();
 
-        for ( String packageName : model.getAllPackageNames() ) {
-            sourceFolders.add(
-                    new File( getXjcDir().getPath() + File.separator + packageName.replace(".", File.separator) )
-            );
-            sourceFolders.add(
-                    new File( getJavaDir().getPath() + File.separator + packageName.replace(".", File.separator) )
-            );
-        }
-
+//        Set<File> sourceFolders = new HashSet<File>();
+//
+//
+//        for ( String packageName : model.getAllPackageNames() ) {
+//            sourceFolders.add(
+//                    new File( getXjcDir().getPath() + File.separator + packageName.replace(".", File.separator) )
+//            );
+//            sourceFolders.add(
+//                    new File( getJavaDir().getPath() + File.separator + packageName.replace(".", File.separator) )
+//            );
+//        }
+//
+//        for ( File f : sourceFolders ) {
+//            System.out.println( "************** COMPILER USING SRC FOLDERS AS " + f.getPath() );
+//        }
+//
 //        sourceFolders.add(
-//                new File( getXjcDir().getPath() + File.separator + Thing.class.getPackage().getName().replace(".", File.separator) )
+//                new File( getXjcDir().getPath() + File.separator + "org.w3._2001.xmlschema".replace(".", File.separator) )
 //        );
-        sourceFolders.add(
-            new File( getXjcDir().getPath() + File.separator + "org.w3._2001.xmlschema".replace(".", File.separator) )
-        );
+//
+//
+//        for ( File folder : sourceFolders ) {
+//            if ( folder.exists() ) {
+//                list.addAll( Arrays.asList( folder.listFiles( (FilenameFilter) new WildcardFileFilter( "*.java" ) ) ) );
+//            }
+//        }
 
 
-        for ( File folder : sourceFolders ) {
-            if ( folder.exists() ) {
-                list.addAll( Arrays.asList( folder.listFiles( (FilenameFilter) new WildcardFileFilter( "*.java" ) ) ) );
-            }
-        }
+        explore( getJavaDir(), list );
+        explore( getXjcDir(), list );
+
+//        for ( File f : list ) {
+//            System.out.println( "************** COMPILER USING SRC FILE AS " + f.getPath() );
+//        }
 
         JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -369,6 +467,17 @@ public class OntoModelCompiler {
         return diagnostics.getDiagnostics();
     }
 
+    private void explore( File dir, List<File> files ) {
+        for ( File f : dir.listFiles() ) {
+            if ( f.getName().endsWith( ".java" ) ) {
+                files.add( f );
+            }
+            if ( f.isDirectory() ) {
+                System.out.println( "Looking for java in " + f.getPath() );
+                explore( f, files );
+            }
+        }
+    }
 
 
     private boolean copyMetaInfResources() {
@@ -459,11 +568,46 @@ public class OntoModelCompiler {
 
             mojo.setBindingDirectory( getMetaInfDir() );
             mojo.setSchemaDirectory( getMetaInfDir() );
+
+            int j = 0;
+            String[] excludedSchemas = new String[ preexistingSchemas.size() ];
+            for ( File f : preexistingSchemas ) {
+                excludedSchemas[ j++ ] = f.getName();
+            }
+            mojo.setSchemaExcludes( excludedSchemas );
+
+            int k = 0;
+            String[] excludedBindings = new String[ preesistingBindings.size() ];
+            for ( File f : preesistingBindings ) {
+                excludedBindings[ k++ ] = f.getName();
+            }
+            mojo.setBindingExcludes( excludedBindings );
+
+
+
             mojo.setGenerateDirectory( getXjcDir() );
             mojo.setExtension( true );
             mojo.variant = variant.getLabel();
 
-            mojo.persistenceXml = new File( getMetaInfDir() + File.separator + "persistence-template-hibernate.xml" );
+            File perx = new File( getBinDir().getPath() + File.separator + "META-INF" + File.separator + "persistence.xml" );
+            if ( perx.exists() ) {
+                mojo.persistenceXml = perx;
+                try {
+                    Document dox = parseXML( perx );
+
+                    XPath xpath = XPathFactory.newInstance().newXPath();
+                    XPathExpression expr = xpath.compile( "//persistence-unit/@name" );
+
+                    mojo.persistenceUnitName = (String) expr.evaluate( dox, XPathConstants.STRING );
+
+                } catch ( Exception e ) {
+                    mojo.persistenceXml = new File( getMetaInfDir() + File.separator + "persistence-template-hibernate.xml" );
+                    mojo.persistenceUnitName = model.getName();
+                }
+            } else {
+                mojo.persistenceXml = new File( getMetaInfDir() + File.separator + "persistence-template-hibernate.xml" );
+                mojo.persistenceUnitName = model.getName();
+            }
 
             mojo.generateEquals = false;
             mojo.generateHashCode = false;
@@ -505,6 +649,14 @@ public class OntoModelCompiler {
         return binDir;
     }
 
+
+
+    private Document parseXML( File f ) throws IOException, ParserConfigurationException, SAXException, TransformerException {
+        InputSource xSource = new InputSource( new FileInputStream( f ) );
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = dbf.newDocumentBuilder();
+        return builder.parse( xSource );
+    }
 
 
 }

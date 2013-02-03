@@ -25,21 +25,27 @@
           xmlns:dsp="http://jboss.org/drools/drools-chance/drools-shapes/plugins/accessor"
           xmlns:con="http://jboss.org/drools/drools-chance/drools-shapes/plugins/constructor"
           xmlns:meta="http://jboss.org/drools/drools-chance/drools-shapes/plugins/metadata"
+          xmlns:xclude="http://jboss.org/drools/drools-chance/drools-shapes/plugins/exclude"
           xmlns:annox="http://annox.dev.java.net"
           xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
+          xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
           xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
           xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
           version="2.1"
-          extensionBindingPrefixes="xjc annox inheritance ci dsk dsp hj con meta" >
+          extensionBindingPrefixes="xjc orm annox inheritance ci dsk dsp hj con meta xclude" >
 
 
   <bindings schemaLocation="@{schemaLocation}.xsd" node="/xsd:schema">
 
     @code{ targetElement = ''; if (flat) targetElement='complexType'; else targetElement='complexType'; }
 
-    @foreach{ concept : concepts }
+    @foreach{ concept : concepts } @if{ ! concept.resolved }
     <bindings node="//xsd:@{targetElement}[@name='@{concept.name}']">
         <class name="@{concept.name}Impl"/>
+
+        <hj:entity name="@{ (concept.package + "." + concept.name +"Impl").replace( ".", "_" ) }">
+            <orm:table name="@{ (concept.package + "." + concept.name +"Impl").replace( ".", "_" ).toUpperCase() }" />
+        </hj:entity>
 
         <inheritance:implements>@{concept.fullyQualifiedName}</inheritance:implements>
         <inheritance:implements>com.sun.xml.bind.CycleRecoverable</inheritance:implements>
@@ -58,7 +64,7 @@
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.Namespaces" value="tns @{namespace}" />
           <annox:annotate annox:class="thewebsemantic.Namespace" value="@{namespace}" />
           <annox:annotate annox:class="thewebsemantic.RdfType" value="@{concept.namespace}@{concept.name}" />
-          <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="@{concept.name}Impl"/>
+          <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="@{concept.name}"/>
           <!--annox:annotate annox:class="javax.jdo.annotations.PersistenceCapable" detachable="false" identityType="javax.jdo.annotations.IdentityType.DATASTORE" /-->
         </annox:annotate>
 
@@ -159,6 +165,14 @@
         @end{}
 
     </bindings>
+
+    @else{}
+        <bindings node="//xsd:@{targetElement}[@name='@{concept.name}']">
+            <class name="@{concept.name}Impl" />
+            <xclude:xclude/>
+        </bindings>
+    @end{}
+
     @end{}
 
 

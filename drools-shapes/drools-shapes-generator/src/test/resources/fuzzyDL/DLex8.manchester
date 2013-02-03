@@ -1,0 +1,164 @@
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: xml: <http://www.w3.org/XML/1998/namespace>
+Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Prefix: dc: <http://apurl.org/dc/elements/1.1/>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+
+
+Ontology: <http://a>
+
+
+Datatype: xsd:int
+
+    
+Datatype: xsd:long
+
+    
+Datatype: xsd:string
+
+    
+Datatype: owl:real
+
+    
+Datatype: xsd:double
+
+    
+Datatype: xsd:integer
+
+    
+Datatype: rdfs:Literal
+
+    
+ObjectProperty: <http://a#hasQI>
+
+    Domain: 
+        <http://a#Rock>
+         or <http://a#Student>,
+        <http://a#Car>
+    
+    Range: 
+        <http://a#Measure>
+    
+    
+ObjectProperty: <http://a#owns>
+
+    Domain: 
+        <http://a#Human>
+         or <http://a#Rock>
+    
+    Range: 
+        <http://a#Bike>
+         or <http://a#Car>
+    
+    
+DataProperty: <http://a#hasValue>
+
+    Domain: 
+        <http://a#Measure>
+    
+    Range: 
+        xsd:integer
+    
+    
+DataProperty: <http://a#hasAliasProp>
+
+    Domain: 
+        <http://a#Alias>
+    
+    Range: 
+        xsd:string
+    
+    
+DataProperty: <http://a#hasLiquidViscosity>
+
+    Domain: 
+        <http://a#Liquid>
+    
+    Range: 
+        xsd:double
+    
+    
+Class: <http://a#Scooter>
+
+    SubClassOf: 
+        <http://a#Vehicle>
+    
+    
+Class: <http://a#Measure>
+
+    
+Class: <http://a#Car>
+
+    SubClassOf: 
+        <http://a#Vehicle>
+    
+    
+Class: <http://a#Human>
+
+    SubClassOf: 
+        <http://a#owns> only <http://a#Car>,
+        <http://a#owns> min 0 <http://a#Car>
+    
+    
+Class: <http://a#Bike>
+
+    SubClassOf: 
+        <http://a#Vehicle>
+    
+    
+Class: <http://a#Rock>
+
+    
+Class: <http://a#Slave>
+
+    
+Class: <http://a#Student>
+
+    EquivalentTo: 
+        <http://a#Rock>
+         and (<http://a#hasQI> only 
+            (<http://a#Measure>
+             and (<http://a#hasValue> value 34))),
+        <http://a#Liquid>
+         or <http://a#Slave>
+    
+    SubClassOf: 
+        <http://a#owns> only <http://a#CheapCar>,
+        (<http://a#hasQI> some 
+            (<http://a#Measure>
+             and (<http://a#hasValue> value 34)))
+         and (<http://a#owns> max 5 <http://a#Car>),
+        <http://a#Human>
+    
+    
+Class: <http://a#Liquid>
+
+    EquivalentTo: 
+        <http://a#Alias>
+    
+    SubClassOf: 
+        <http://a#hasLiquidViscosity> only xsd:double,
+        <http://a#hasLiquidViscosity> exactly 1 rdfs:Literal
+    
+    
+Class: <http://a#Alias>
+
+    EquivalentTo: 
+        <http://a#Liquid>
+    
+    SubClassOf: 
+        <http://a#hasAliasProp> only xsd:string,
+        <http://a#hasAliasProp> min 0 rdfs:Literal
+    
+    
+Class: <http://a#Vehicle>
+
+    
+Class: <http://a#CheapCar>
+
+    SubClassOf: 
+        <http://a#Car>
+    
+    

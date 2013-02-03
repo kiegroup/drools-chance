@@ -44,10 +44,6 @@ public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface 
 
     public void setDyEntryId( java.lang.String id );
 
-    public java.lang.String getDyEntryType();
-
-    public void setDyEntryType(java.lang.String dyEntryType);
-
     public boolean isDyReference();
 
     public void setDyReference(boolean dyReference);

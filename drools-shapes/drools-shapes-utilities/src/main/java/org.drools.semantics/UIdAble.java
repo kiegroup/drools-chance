@@ -44,9 +44,9 @@ public abstract class UIdAble implements SupportsRdfId {
         setDyEntryId( "http://" + UUID.randomUUID().toString() );
     }
 
-    @XmlTransient
-    public abstract String getDyEntryType();
-    public abstract void setDyEntryType(String dyEntryType);
+//    @XmlTransient
+//    public abstract String getDyEntryType();
+//    public abstract void setDyEntryType(String dyEntryType);
 
     @XmlTransient
     public abstract boolean isDyReference();

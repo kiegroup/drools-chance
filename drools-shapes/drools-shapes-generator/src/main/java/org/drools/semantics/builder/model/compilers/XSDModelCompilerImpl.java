@@ -25,6 +25,7 @@ import org.jdom.Namespace;
 import org.w3._2002._07.owl.Thing;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +34,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
     protected Map<String,Map<String,PropertyRelation>> propCache = new HashMap<String, Map<String, PropertyRelation>>();
 
-    protected Map<String,String> reverseNamespaces = new HashMap<String,String>();
+
 
     private XSDSchemaMode schemaMode = XSDSchemaMode.JAXB;
 
@@ -64,15 +65,13 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     public void setModel( OntoModel model ) {
         this.model = (CompiledOntoModel) ModelFactory.newModel( getCompileTarget(), model );
 
-
-        reverseNamespaces.clear();
         ((XSDModel) getModel()).setNamespace("tns", model.getDefaultNamespace());
     }
 
 
     public void compile( Concept con, Object context, Map<String, Object> params ) {
 
-        String name = con.getName().substring(con.getName().lastIndexOf(".") + 1);
+        String name = con.getName().substring( con.getName().lastIndexOf( "." ) + 1 );
 
 //        if ( "Thing".equals( con.getName() ) && NamespaceUtils.compareNamespaces( "http://www.w3.org/2002/07/owl", con.getNamespace() ) ) {
 //            return;
@@ -81,32 +80,48 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             return;
         }
 
-        Element element = new Element( "element", ((XSDModel) getModel()).getNamespace("xsd") );
-            element.setAttribute( "name", isUseImplementation() ? name + "Impl" : name );
-            element.setAttribute( "type", mapNamespace( con.getNamespace() ) + name );
-        getModel().addTrait( name, element );
 
+        String effectiveName = isUseImplementation() ? name + "Impl" : name;
+        String effectiveType = ( (XSDModel) getModel() ).mapNamespaceToPrefix( con.getNamespace() ) + ":" + name;
+        String namespace = NamespaceUtils.removeLastSeparator( con.getNamespace() );
+
+        Element element = new Element( "element", ((XSDModel) getModel()).getNamespace("xsd") );
+        element.setAttribute( "name", effectiveName );
+        element.setAttribute( "type", effectiveType );
 
         Element el = buildType( con, params, isTransientPropertiesEnabled() );
-        getModel().addTrait( name, el );
+
+        Set<String> dependencies = new HashSet<String>();
+        dependencies.add( NamespaceUtils.removeLastSeparator( con.getChosenSuperConcept().getNamespace() ) );
+        for ( PropertyRelation prop : con.getEffectiveProperties() ) {
+            if ( ! prop.getTarget().isPrimitive() ) {
+                dependencies.add( NamespaceUtils.removeLastSeparator( prop.getTarget().getNamespace() ) );
+            }
+        }
+        if ( dependencies.contains( namespace ) ) {
+            dependencies.remove( namespace );
+        }
+
+        XSDModelImpl.XSDTypeDescr descr = new XSDModelImpl.XSDTypeDescr( name,
+                namespace,
+                effectiveName,
+                effectiveType,
+                element,
+                el,
+                dependencies );
+        getModel().addTrait( name, descr );
+
+
+
+//
+//            getModel().addTrait( name, el );
+
 //        if ( ((List) params.get( "keys" )).size() > 0 ) {
 //            element.addContent( buildKeys( params ) );
 //        }
 
 
 
-//        switch( model.getMode() ) {
-//            case FLAT:
-//                getModel().addTrait( name, buildTypeAsFlat( con, params, isTransientPropertiesEnabled() ) );
-//                break;
-//            case HIERARCHY:
-//                getModel().addTrait( name, buildTypeAsHierarchy( con, params, isTransientPropertiesEnabled() ) );
-//                break;
-//            case VARIANT:
-//                getModel().addTrait( name, buildTypeAsLevelled( con, params, isTransientPropertiesEnabled() ) );
-//                break;
-//        }
-//
     }
 
     private Element buildKeys(Map<String, Object> params) {
@@ -191,6 +206,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             prop.setAttribute( "name", rel.getName() );
             prop.setAttribute( "type", map( tgt ) );
 
+
             Integer minCard = rel.getMinCard();
             if (minCard == null) {
                 minCard = 0;
@@ -223,28 +239,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
             return tgt.getName();
         }
 
-        return mapNamespace( tgt.getNamespace() ) + name ;
-    }
-
-    private String mapNamespace( String namespace ) {
-        namespace = NamespaceUtils.removeLastSeparator( namespace );
-        String prefix;
-        if ( StringUtils.isEmpty( namespace ) ) {
-            prefix = "tns";
-        } else if ( NamespaceUtils.compareNamespaces( model.getDefaultNamespace(), namespace ) ) {
-            prefix = "tns";
-        } else if ( reverseNamespaces.containsKey( namespace ) ) {
-            prefix = reverseNamespaces.get( namespace );
-        } else if ( NamespaceUtils.isKnownSchema(namespace) ) {
-            prefix = NamespaceUtils.getPrefix( namespace );
-            reverseNamespaces.put( namespace, prefix );
-            ((XSDModel)model).setNamespace( prefix, namespace );
-        } else {
-            prefix = "ns" + ( reverseNamespaces.size() + 1 );
-            reverseNamespaces.put( namespace, prefix );
-            ((XSDModel)model).setNamespace( prefix, namespace );
-        }
-        return prefix + ":";
+        return ( (XSDModel) getModel() ).mapNamespaceToPrefix( tgt.getNamespace() ) + ":" + name ;
     }
 
 
@@ -263,9 +258,11 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
         Element complex = new Element( "complexContent", xsdNs );
 
         Element ext = new Element( "extension", xsdNs );
-        ext.setAttribute( "base", mapNamespace( sup.getNamespace() ) + sup.getName() );
+        ext.setAttribute( "base", ( (XSDModel) getModel() ).mapNamespaceToPrefix( sup.getNamespace() ) + ":" + sup.getName() );
 
-        buildProperties( con, (Map<String, PropertyRelation>) params.get( "implProperties" ), ext, includeTransient, true );
+        if ( ! con.isResolved() ) {
+            buildProperties( con, (Map<String, PropertyRelation>) params.get( "implProperties" ), ext, includeTransient, true );
+        }
 
         complex.setContent( ext );
         type.setContent( complex );

@@ -31,7 +31,7 @@
           version="2.1"
           xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
 
-<globalBindings localScoping="toplevel">
+<globalBindings localScoping="toplevel" underscoreBinding="asCharInWord" enableJavaNamingConventions="true" >
 <serializable/>
 <xjc:simple/>
 <javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:date"/>

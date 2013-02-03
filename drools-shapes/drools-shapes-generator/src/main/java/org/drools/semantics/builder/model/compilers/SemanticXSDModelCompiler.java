@@ -16,9 +16,16 @@
 
 package org.drools.semantics.builder.model.compilers;
 
-import java.util.Map;
+import org.drools.semantics.builder.model.SemanticXSDModel;
+
+import java.io.File;
 
 public interface SemanticXSDModelCompiler extends XSDModelCompiler {
 
+    void mergeEmpireConfig( File preexistingEmpireConfig, SemanticXSDModel model );
+
+    void mergeIndex( File preexistingIndex, SemanticXSDModel model );
+
+    void mergeNamespacedPackageInfo( SemanticXSDModel model );
 
 }

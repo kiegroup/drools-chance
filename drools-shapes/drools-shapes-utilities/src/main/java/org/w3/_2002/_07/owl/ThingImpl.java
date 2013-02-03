@@ -18,6 +18,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -67,7 +68,7 @@ import thewebsemantic.RdfType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Thing", propOrder = {
-    "dyEntryType",
+//    "dyEntryType",
     "dyReference",
     "dyEntryId"
 })
@@ -86,9 +87,9 @@ public class ThingImpl
     extends UIdAble
         implements Serializable, Cloneable, CycleRecoverable, CopyTo, Equals, HashCode, MergeFrom, Thing, EmpireGenerated {
 
-    protected String dyEntryType;
+//    protected String dyEntryType;
     protected boolean dyReference;
-    @XmlElement(required = true)
+    @XmlAttribute( required = true, name = "id", namespace = "http://www.w3.org/2001/XMLSchema" )
     protected String dyEntryId;
 
     /**
@@ -104,24 +105,24 @@ public class ThingImpl
      * 
      */
     public ThingImpl(final String dyEntryType, final boolean dyReference, final String dyEntryId) {
-        this.dyEntryType = dyEntryType;
+//        this.dyEntryType = dyEntryType;
         this.dyReference = dyReference;
         this.dyEntryId = dyEntryId;
     }
 
-    /**
-     * Gets the value of the dyEntryType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    @Basic
-    @Column(name = "DYENTRYTYPE", length = 255)
-    public String getDyEntryType() {
-        return dyEntryType;
-    }
+//    /**
+//     * Gets the value of the dyEntryType property.
+//     *
+//     * @return
+//     *     possible object is
+//     *     {@link String }
+//     *
+//     */
+//    @Basic
+//    @Column(name = "DYENTRYTYPE", length = 255)
+//    public String getDyEntryType() {
+//        return dyEntryType;
+//    }
 
     /**
      * Sets the value of the dyEntryType property.
@@ -131,9 +132,9 @@ public class ThingImpl
      *     {@link String }
      *     
      */
-    public void setDyEntryType(String value) {
-        this.dyEntryType = value;
-    }
+//    public void setDyEntryType(String value) {
+//        this.dyEntryType = value;
+//    }
 
     /**
      * Gets the value of the dyReference property.
@@ -193,14 +194,14 @@ public class ThingImpl
         final Object draftCopy = ((target == null)?createNewInstance():target);
         if (draftCopy instanceof ThingImpl) {
             final ThingImpl copy = ((ThingImpl) draftCopy);
-            if (this.dyEntryType!= null) {
-                String sourceDyEntryType;
-                sourceDyEntryType = this.getDyEntryType();
-                String copyDyEntryType = ((String) strategy.copy(LocatorUtils.property(locator, "dyEntryType", sourceDyEntryType), sourceDyEntryType));
-                copy.setDyEntryType(copyDyEntryType);
-            } else {
-                copy.dyEntryType = null;
-            }
+//            if (this.dyEntryType!= null) {
+//                String sourceDyEntryType;
+//                sourceDyEntryType = this.getDyEntryType();
+//                String copyDyEntryType = ((String) strategy.copy(LocatorUtils.property(locator, "dyEntryType", sourceDyEntryType), sourceDyEntryType));
+//                copy.setDyEntryType(copyDyEntryType);
+//            } else {
+//                copy.dyEntryType = null;
+//            }
             boolean sourceDyReference;
             sourceDyReference = (true?this.isDyReference():false);
             boolean copyDyReference = strategy.copy(LocatorUtils.property(locator, "dyReference", sourceDyReference), sourceDyReference);
@@ -231,14 +232,14 @@ public class ThingImpl
             final ThingImpl target = this;
             final ThingImpl leftObject = ((ThingImpl) left);
             final ThingImpl rightObject = ((ThingImpl) right);
-            {
-                String lhsDyEntryType;
-                lhsDyEntryType = leftObject.getDyEntryType();
-                String rhsDyEntryType;
-                rhsDyEntryType = rightObject.getDyEntryType();
-                String mergedDyEntryType = ((String) strategy.merge(LocatorUtils.property(leftLocator, "dyEntryType", lhsDyEntryType), LocatorUtils.property(rightLocator, "dyEntryType", rhsDyEntryType), lhsDyEntryType, rhsDyEntryType));
-                target.setDyEntryType(mergedDyEntryType);
-            }
+//            {
+//                String lhsDyEntryType;
+//                lhsDyEntryType = leftObject.getDyEntryType();
+//                String rhsDyEntryType;
+//                rhsDyEntryType = rightObject.getDyEntryType();
+//                String mergedDyEntryType = ((String) strategy.merge(LocatorUtils.property(leftLocator, "dyEntryType", lhsDyEntryType), LocatorUtils.property(rightLocator, "dyEntryType", rhsDyEntryType), lhsDyEntryType, rhsDyEntryType));
+//                target.setDyEntryType(mergedDyEntryType);
+//            }
             {
                 boolean lhsDyReference;
                 lhsDyReference = (true?leftObject.isDyReference():false);
@@ -258,10 +259,10 @@ public class ThingImpl
         }
     }
 
-    public ThingImpl withDyEntryType(String value) {
-        setDyEntryType(value);
-        return this;
-    }
+//    public ThingImpl withDyEntryType(String value) {
+//        setDyEntryType(value);
+//        return this;
+//    }
 
     public ThingImpl withDyReference(boolean value) {
         setDyReference(value);
@@ -328,7 +329,7 @@ public class ThingImpl
 
            ThingImpl x = new ThingImpl();
                x.setDyEntryId( this.getDyEntryId() );
-               x.setDyEntryType( "Thing" );
+//               x.setDyEntryType( "Thing" );
            return x;
     }
 

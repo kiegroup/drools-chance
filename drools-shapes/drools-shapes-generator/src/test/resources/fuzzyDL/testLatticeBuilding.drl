@@ -1,0 +1,178 @@
+/*
+ * Copyright 2011 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ package org.drools.semantics.test;
+
+import java.util.*;
+import org.drools.base.DroolsQuery;
+
+declare Relation
+	subject		    : String		@key    @position(0)
+	object		    : String		@key    @position(2)
+end
+
+declare SubConceptOf extends Relation
+end
+
+declare PropertyRelation extends Relation
+    iri             : String        @key    @position(1)
+    predicate       : String
+end
+
+
+declare Concept
+    iri             : String        @key
+    name            : String
+    superConcepts   : Set
+    properties      : Map
+end
+
+
+declare Mark
+	arg			: SubConceptOf	@key
+end
+
+
+declare Explore
+    sub         : String
+    sup         : String
+end
+
+
+query subConceptOf( SubConceptOf $link, String $sub, String $sup )
+    $link := SubConceptOf( $sub, $sup ; )
+end
+
+
+rule "Init"
+when
+then
+    insert( Arrays.asList( new Concept[] {
+        new Concept( "A", "A", new HashSet( Arrays.asList( new String[] {"B","C","E"} ) ), new HashMap() ),
+        new Concept( "B", "B", new HashSet( Arrays.asList( new String[] {"E"} ) ), new HashMap() ),
+        new Concept( "C", "C", new HashSet( Arrays.asList( new String[] {"E"} ) ), new HashMap() ),
+        new Concept( "D", "D", new HashSet( Arrays.asList( new String[] {"B","E"} ) ), new HashMap() ),
+        new Concept( "E", "E", new HashSet( Arrays.asList( new String[] {} ) ), new HashMap() ),
+        new Concept( "F", "F", new HashSet( Arrays.asList( new String[] {"A","D","B","E"} ) ), new HashMap() ),
+        new Concept( "G", "G", new HashSet( Arrays.asList( new String[] {"C","B","E"} ) ), new HashMap() ),
+        new Concept( "H", "H", new HashSet( Arrays.asList( new String[] {"G","C","B","E"} ) ), new HashMap() ),
+        new Concept( "I", "I", new HashSet( Arrays.asList( new String[] {} ) ), new HashMap() )
+        } ) );
+
+end;
+
+
+rule "Dose"
+salience -100
+when
+    $l : List( )
+    $con : Concept( $iri : iri ) from $l
+then
+    System.out.println( " ------------------------------------------ Working with " + $iri + " ------------------------------------- ");
+    insert( new SubConceptOf( $iri, "All" ) );
+    insert( $con );
+    insert( new Explore( "All", $iri) );
+end
+
+
+rule "Explore Down"
+when
+    $x : Explore( $father, $new ; )
+    $s : SubConceptOf( $child := subject != $new, $father := object )
+    subConceptOf( $link, $new, $child ; )
+    exists SubConceptOf( $foo, $child ; )
+then
+    System.out.println( "DOWN : Binding "+ $new + " to " + $child );
+    retract( $x );
+    insert( new Explore( $child, $new ) );
+end
+
+
+rule "Explore Up 2"
+when
+    Explore( $father, $new ; )
+    $x : SubConceptOf( $child := subject != $new, $father := object )
+    not subConceptOf( $link, $child, $new ; )
+    exists SubConceptOf( $foo, $child ; )
+then
+    System.out.println( "NOT UP : Binding "+ $child + " to " + $new  );
+    insert( new Explore( $child, $new ) );
+end
+
+
+rule "Opportunistic"
+salience 9999
+when
+    $q : DroolsQuery( name == "subConceptOf", $args : elements )
+    Concept( iri == $args[1], superConcepts contains $args[2] )
+then
+    System.out.println( "Query successful !" + $args[1] + " in " + $args[2] );
+    insert( new SubConceptOf( (String) $args[1], (String) $args[2] ) );
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+    Remove redundancies, marking useless edges
+*/
+rule "Prune"
+salience 10
+when
+	$l : SubConceptOf( $i : subject, $j : object )
+	exists (
+		SubConceptOf( subject == $i , $o : object != $j)
+		and
+		SubConceptOf( subject == $o, object == $j )
+	)
+then
+    System.out.println( "Marking : "+ $l + " for deletion " );
+	Mark m = new Mark();
+		m.setArg($l);
+	insert(m);
+end
+
+/**
+    Clear marked edges
+*/
+rule "Clear"
+when
+	$sc : SubConceptOf()
+	$m : Mark( arg == $sc )
+then
+	retract($sc);
+	retract($m);
+end
+

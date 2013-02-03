@@ -54,7 +54,7 @@ public class IndividualFactory {
     }
 
 
-    private static Date parse( String date ) {
+    private static Date parse( java.lang.String date ) {
         try {
             return formatter.parse( date );
         } catch (ParseException e) {

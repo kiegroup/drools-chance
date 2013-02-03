@@ -271,8 +271,7 @@ public class ShapeCaster
 
 
         if ( isGenerateDefaultImplClasses() ) {
-            compiler.streamXSDs();
-            compiler.streamBindings( true );
+            compiler.streamXSDsWithBindings( true );
         }
 
         if ( isGenerateIndividuals() ) {

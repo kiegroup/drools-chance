@@ -101,7 +101,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
             } else {
                 con.setResolvedAs( Concept.Resolution.CLASS );
             }
-        } catch (ClassNotFoundException e) {
+        } catch ( ClassNotFoundException e ) {
             con.setResolved( false );
             con.setResolvedAs( Concept.Resolution.NONE );
         }
@@ -159,6 +159,10 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         this.subConcepts = subConcepts;
     }
 
+
+    public Set<PropertyRelation> getProperties( String domainIri ) {
+        return properties.get( domainIri );
+    }
 
     public Set<PropertyRelation> getProperties() {
         HashSet<PropertyRelation> set = new HashSet<PropertyRelation>();
@@ -316,8 +320,11 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                         map.put( superKey,
                                 superNode );
                     }
-                    superNode.addChild( node );
+                    if ( ! superNode.children.contains( node ) ) {
+                        superNode.addChild( node );
+                    }
                 }
+
             }
 
         }
@@ -387,8 +394,33 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                 list.add( this.data );
             }
 
-            for ( int j = 0; j < children.size(); j++ )
-                children.get( j ).accept( list );
+            for ( int j = 0; j < children.size(); j++ ) {
+                    children.get( j ).accept( list );
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "key='" + key + '\'' +
+                    '}';
+        }
+
+        @Override
+        public boolean equals( Object o ) {
+            if ( this == o ) return true;
+            if ( o == null || getClass() != o.getClass() ) return false;
+
+            Node node = (Node) o;
+
+            if ( !key.equals( node.key ) ) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return key.hashCode();
         }
     }
 

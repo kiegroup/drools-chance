@@ -68,7 +68,7 @@ public class DL_6_MixedNamespacesTest {
         ModelCompiler compiler =  ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.XSDX);
         SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-        assertEquals( 4, xsdModel.getNamespaces().size() );
+        assertEquals( 5, xsdModel.getNamespaces().size() );
         assertEquals( 5, xsdModel.getConcepts().size() );
 
     }

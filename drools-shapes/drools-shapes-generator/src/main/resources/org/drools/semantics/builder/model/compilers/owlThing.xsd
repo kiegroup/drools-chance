@@ -10,7 +10,7 @@
   <xsd:element name="Thing" type="owl:Thing" />
   <xsd:complexType name="Thing">
     <xsd:sequence>
-      <xsd:element name="dyEntryType" type="xsd:string" maxOccurs="1" minOccurs="0" />
+      <!--xsd:element name="dyEntryType" type="xsd:string" maxOccurs="1" minOccurs="0" /-->
       <xsd:element name="dyReference" type="xsd:boolean" maxOccurs="1" minOccurs="1" />
       <xsd:element name="dyEntryId" type="xsd:string" maxOccurs="1" minOccurs="1" />
     </xsd:sequence>

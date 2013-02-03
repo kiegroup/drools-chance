@@ -87,21 +87,21 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
             return (Thing) ( cache.get( v.getDyEntryId() ) );
         } else {
             UIdAble reborn = v;
-            String baseType = v.getClass().getPackage().getName() + "." + v.getDyEntryType();
-            String actualClass = baseType + "Impl";
-            if ( ! v.getClass().getName().equals( actualClass ) ) {
-
-                Class k = Class.forName( actualClass );
-                throw new UnsupportedOperationException( "Used to call a shadow constructor..." );
-//                if ( k != null ) {
-//                    String desiredClass = baseType + "$$Shadow";
-//                    Class shadowInterface = Class.forName(desiredClass );
-//                    if ( shadowInterface != null ) {
-//                        Constructor con = k.getConstructor( shadowInterface );
-//                        reborn = (UIdAble) con.newInstance( v );
-//                    }
-//                }
-            }
+//            String baseType = v.getClass().getPackage().getName() + "." + v.getDyEntryType();
+//            String actualClass = baseType + "Impl";
+//            if ( ! v.getClass().getName().equals( actualClass ) ) {
+//
+//                Class k = Class.forName( actualClass );
+//                throw new UnsupportedOperationException( "Used to call a shadow constructor..." );
+////                if ( k != null ) {
+////                    String desiredClass = baseType + "$$Shadow";
+////                    Class shadowInterface = Class.forName(desiredClass );
+////                    if ( shadowInterface != null ) {
+////                        Constructor con = k.getConstructor( shadowInterface );
+////                        reborn = (UIdAble) con.newInstance( v );
+////                    }
+////                }
+//            }
 
             cache.put( reborn.getDyEntryId(), reborn );
             return (Thing) reborn;
@@ -114,7 +114,7 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
         if ( v instanceof UIdAble) {
             UIdAble x = (UIdAble) v;
             
-            x.setDyEntryType( x.getClass().getSimpleName().substring(0, x.getClass().getSimpleName().lastIndexOf("Impl")));
+//            x.setDyEntryType( x.getClass().getSimpleName().substring(0, x.getClass().getSimpleName().lastIndexOf("Impl")));
             
             if ( ! cache.containsKey(x.getDyEntryId()) ) {
                 cache.put( x.getDyEntryId(), x );
@@ -123,7 +123,7 @@ public class ReferenceAdapter extends XmlAdapter<UIdAble,Thing> {
                 Class k = x.getClass();
                 UIdAble alter = (UIdAble) k.newInstance();
                 alter.setDyEntryId( x.getDyEntryId() );
-                alter.setDyEntryType( x.getDyEntryType() );
+//                alter.setDyEntryType( x.getDyEntryType() );
                 alter.setDyReference( true );
                 return alter;
             }

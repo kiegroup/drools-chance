@@ -3,42 +3,52 @@ import com.clarkparsia.empire.EmpireOptions;
 import com.clarkparsia.empire.config.ConfigKeys;
 import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
 import com.clarkparsia.empire.sesametwo.RepositoryDataSourceFactory;
-import com.sun.xml.bind.v2.runtime.JAXBContextImpl;
-import com.sun.xml.bind.v2.runtime.NameList;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.impl.ClassPathResource;
+import org.drools.owl.conyard.Equipment;
+import org.drools.owl.conyard.EquipmentImpl;
+import org.drools.owl.conyard.Guest;
+import org.drools.owl.conyard.GuestImpl;
+import org.drools.owl.conyard.IronInstallation;
+import org.drools.owl.conyard.IronInstallationImpl;
+import org.drools.owl.conyard.Labourer;
+import org.drools.owl.conyard.LabourerImpl;
+import org.drools.owl.conyard.ObjectFactory;
+import org.drools.owl.conyard.Paint;
+import org.drools.owl.conyard.PaintImpl;
+import org.drools.owl.conyard.Painting;
+import org.drools.owl.conyard.PaintingImpl;
+import org.drools.owl.conyard.Person;
+import org.drools.owl.conyard.PersonImpl;
+import org.drools.owl.conyard.Site;
+import org.drools.owl.conyard.SiteImpl;
+import org.drools.owl.conyard.Smith;
+import org.drools.owl.conyard.SmithImpl;
+import org.drools.owl.conyard.Stair;
+import org.drools.owl.conyard.StairImpl;
 import org.drools.runtime.StatefulKnowledgeSession;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.w3._2002._07.owl.ThingImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.drools.owl.conyard.*;
-
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.spi.PersistenceProvider;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -48,12 +58,21 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import java.io.*;
-import java.lang.reflect.Method;
-import java.text.ParseException;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FactTest {
 
@@ -65,8 +84,6 @@ public class FactTest {
 
 
     private static ObjectFactory factory = new ObjectFactory();
-    private static Marshaller marshaller;
-    private static Unmarshaller unmarshaller;
 
     private static Painting painting;
     private static Person pers;
@@ -76,20 +93,7 @@ public class FactTest {
 
 
     @BeforeClass
-    public static void init() throws ParseException, JAXBException, IOException {
-
-
-
-
-        JAXBContext jaxbContext = JAXBContext.newInstance( factory.getClass().getPackage().getName() );
-
-        marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty( Marshaller.JAXB_ENCODING, "UTF-8" );
-        marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
-
-
-        unmarshaller = jaxbContext.createUnmarshaller();
-
+    public static void init() {
 
     }
 
@@ -110,6 +114,7 @@ public class FactTest {
         Stair stair = new StairImpl();
 
         stair.setStairLength(10);
+        stair.setOid( "stairId" );
 
         painting.setRequiresStair( stair );
 
@@ -117,24 +122,34 @@ public class FactTest {
 
         painting.addRequiresAlso( stair );
 
-        painting.addInvolves( new PersonImpl() );
+        Person px = new PersonImpl();
+            px.setOid( "aGuy" );
+        painting.addInvolves( px );
 
-        painting.addInvolves( new LabourerImpl() );
+        Labourer lab = new LabourerImpl();
+            lab.setOid( "123456x" );
+        painting.addInvolves( lab  );
 
         Paint paint = new PaintImpl();
+        paint.setOid( "R0_G0_B0" );
 
 
         site = new SiteImpl();
+        site.setOid( "siteId" );
 
         site.setCenterX(10.0f);
         site.setCenterY(20.0f);
         site.setRadius(100.0f);
-        paint.setStoredInSite(site);
-        painting.addRequires(paint);
-        painting.addRequires( new EquipmentImpl() );
+        paint.setStoredInSite( site );
+        painting.addRequires( paint );
+
+        Equipment equip = new EquipmentImpl();
+            equip.setOid( "ekwip1" );
+        painting.addRequires( equip );
 
 
         pers = new LabourerImpl();
+        pers.setOid( "pers2" );
 
 
         pers.addParticipatesIn( painting );
@@ -189,12 +204,6 @@ public class FactTest {
 
     }
 
-    @Test
-    public void testIdRef() throws JAXBException {
-        StringWriter writer = new StringWriter();
-        marshaller.marshal( painting, writer );
-        System.err.println( writer.toString() );
-    }
 
     @Test
     public void testSemanticAccessors() {
@@ -250,23 +259,54 @@ public class FactTest {
 
 
 
+    private Marshaller createMarshaller() {
+        JAXBContext jaxbContext = null;
+        try {
+            jaxbContext = JAXBContext.newInstance( factory.getClass().getPackage().getName() );
+            Marshaller marsh = jaxbContext.createMarshaller();
+                marsh.setProperty( Marshaller.JAXB_ENCODING, "UTF-8" );
+                marsh.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+            return marsh;
+        } catch ( JAXBException e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+        return null;
+    }
+
+    private Unmarshaller createUnMarshaller() {
+        JAXBContext jaxbContext = null;
+        try {
+            jaxbContext = JAXBContext.newInstance( factory.getClass().getPackage().getName() );
+            Unmarshaller unmarsh = jaxbContext.createUnmarshaller();
+            return unmarsh;
+        } catch ( JAXBException e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+        return null;
+    }
+
 
     private Object refreshOnJaxb( Object o ) throws JAXBException {
         StringWriter writer;
 
         writer = new StringWriter();
-        marshaller.marshal( o, writer );
-        System.err.println( writer.toString() );
+        createMarshaller().marshal( o, writer );
+        String initial = writer.toString();
+        System.err.println( initial );
 
         System.err.println( "------------------------------------------" );
 
+        Object ret = createUnMarshaller().unmarshal( new StringReader( writer.toString() ) );
 
-        Object ret = unmarshaller.unmarshal( new StringReader( writer.toString() ) );
 
         writer = new StringWriter();
-        marshaller.marshal( ret, writer );
-        System.err.println( writer.toString() );
+        createMarshaller().marshal( ret, writer );
+        String fineal = writer.toString();
+        System.err.println( fineal );
 
+        assertEquals( initial, fineal );
         return ret;
     }
 
@@ -499,30 +539,33 @@ public class FactTest {
         StringWriter writer = new StringWriter();
 
         try {
-            marshaller.marshal( painting, writer );
+            createMarshaller().marshal( painting, writer );
         } catch (JAXBException e) {
             fail( e.getMessage() );
         }
 
-        String inXSD = "conyard_$impl.xsd";
-        String xml = writer.toString();
-        System.out.println( xml );
+        String inXSD = "org.drools.owl.conyard.xsd";
+        String global = "owlThing.xsd";
 
         SchemaFactory factory =
-                SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-
+                SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
 
         Source schemaFile = null;
+        Source globalFile = null;
         try {
+            globalFile = new StreamSource( new ClassPathResource( global ).getInputStream() );
             schemaFile = new StreamSource( new ClassPathResource( inXSD ).getInputStream() );
         } catch ( IOException e ) {
             fail( e.getMessage() );
         }
-        Schema schema = factory.newSchema( schemaFile );
+        Schema schema = factory.newSchema( new Source[] { globalFile, schemaFile } );
+
+
+        System.out.println( writer.toString() );
 
         Validator validator = schema.newValidator();
 
-        Source source = new StreamSource( new ByteArrayInputStream( xml.getBytes() ) );
+        Source source = new StreamSource( new ByteArrayInputStream( writer.toString().getBytes() ) );
 
         try {
             validator.validate(source);
@@ -592,12 +635,13 @@ public class FactTest {
 
         writer = new StringWriter();
         try {
-            marshaller.marshal( painting, writer );
+            createMarshaller().marshal( painting, writer );
         } catch (JAXBException e) {
             fail( e.getMessage() );
         }
 
         try {
+            System.out.println( writer.toString() );
             Document dox = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new ByteArrayInputStream( writer.toString().getBytes() ) );
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xPath = xPathFactory.newXPath();
@@ -611,6 +655,8 @@ public class FactTest {
                     assertEquals( "http://www.w3.org/XML/1998/namespace", n.getNodeValue() );
                 } else if ( n.getNodeName().equals( "xmlns:xsi" ) ) {
                     assertEquals( "http://www.w3.org/2001/XMLSchema-instance", n.getNodeValue() );
+                } else if ( n.getNodeName().equals( "xmlns:xs" ) ) {
+                    assertEquals( "http://www.w3.org/2001/XMLSchema", n.getNodeValue() );
                 } else {
                     fail( "Unexpected namespace " + n.getNodeName() + " :: " + n.getNodeValue() );
                 }
@@ -626,66 +672,54 @@ public class FactTest {
     @Test
     public void testJaxbFromStringEmptyContext() {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                "<PaintingImpl xmlns=\"http://owl.drools.org/conyard\">\n" +
-                "    <dyReference>false</dyReference>\n" +
-                "    <dyEntryId>http://ed4355f5-35ab-43e5-8527-c0e49fd555e4</dyEntryId>\n" +
-                "    <involves>\n" +
-                "        <dyEntryType>Person</dyEntryType>\n" +
-                "        <dyReference>false</dyReference>\n" +
-                "        <dyEntryId>http://dc04373e-ac52-41ed-8ab2-165c3642bce8</dyEntryId>\n" +
-                "    </involves>\n" +
-                "    <involves xsi:type=\"Labourer\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-                "        <dyEntryType>Labourer</dyEntryType>\n" +
-                "        <dyReference>false</dyReference>\n" +
-                "        <dyEntryId>http://c33f8564-9fbf-4366-be28-f4f7a28b7eb5</dyEntryId>\n" +
-                "    </involves>\n" +
-                "    <involves xsi:type=\"Labourer\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-                "        <dyEntryType>Labourer</dyEntryType>\n" +
-                "        <dyReference>false</dyReference>\n" +
-                "        <dyEntryId>http://1df5204c-52cf-44e3-9c20-9c0c230ac776</dyEntryId>\n" +
-                "        <participatesIn xsi:type=\"Painting\">\n" +
-                "            <dyEntryType>Painting</dyEntryType>\n" +
-                "            <dyReference>true</dyReference>\n" +
-                "            <dyEntryId>http://ed4355f5-35ab-43e5-8527-c0e49fd555e4</dyEntryId>\n" +
-                "        </participatesIn>\n" +
-                "    </involves>\n" +
-                "    <hasComment>Some comment on this object</hasComment>\n" +
-                "    <startsOn>2012-11-26T18:48:04Z</startsOn>\n" +
-                "    <requires xsi:type=\"Stair\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-                "        <dyEntryType>Stair</dyEntryType>\n" +
-                "        <dyReference>false</dyReference>\n" +
-                "        <dyEntryId>http://72eea3a5-f5a1-44b6-879d-df64559b9f92</dyEntryId>\n" +
-                "        <stairLength>10</stairLength>\n" +
-                "    </requires>\n" +
-                "    <requires xsi:type=\"Paint\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-                "        <dyEntryType>Paint</dyEntryType>\n" +
-                "        <dyReference>false</dyReference>\n" +
-                "        <dyEntryId>http://92c40710-2fee-4185-8657-42b1c12b70e2</dyEntryId>\n" +
-                "        <storedIn>\n" +
-                "            <dyEntryType>Site</dyEntryType>\n" +
-                "            <dyReference>false</dyReference>\n" +
-                "            <dyEntryId>http://b923f025-57ff-47d5-890c-4be3171822c7</dyEntryId>\n" +
-                "            <centerY>20.0</centerY>\n" +
-                "            <radius>100.0</radius>\n" +
-                "            <centerX>10.0</centerX>\n" +
-                "        </storedIn>\n" +
-                "    </requires>\n" +
-                "    <requires>\n" +
-                "        <dyEntryType>Equipment</dyEntryType>\n" +
-                "        <dyReference>false</dyReference>\n" +
-                "        <dyEntryId>http://5b8edc25-0ffe-403a-b91b-797a857c5f36</dyEntryId>\n" +
-                "    </requires>\n" +
-                "    <oid>oidX</oid>\n" +
-                "    <endsOn>2012-11-26T18:48:04Z</endsOn>\n" +
-                "    <requiresAlso xsi:type=\"Stair\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-                "        <dyEntryType>Stair</dyEntryType>\n" +
-                "        <dyReference>true</dyReference>\n" +
-                "        <dyEntryId>http://72eea3a5-f5a1-44b6-879d-df64559b9f92</dyEntryId>\n" +
-                "    </requiresAlso>\n" +
-                "</PaintingImpl>\n";
+                "<tns:Painting xs:id=\"http://0e1dfb13-3828-4922-be3d-d4a6fde37233\" xmlns:tns=\"http://owl.drools.org/conyard\" xmlns:owl=\"http://www.w3.org/2002/07/owl\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                "    <owl:dyReference>false</owl:dyReference>\n" +
+                "    <tns:oid>oidX</tns:oid>\n" +
+                "    <tns:endsOn>2013-02-02T18:51:03Z</tns:endsOn>\n" +
+                "    <tns:requires xsi:type=\"tns:Stair\" xs:id=\"http://4feb2921-4375-4a46-8eff-63811154a34b\">\n" +
+                "        <owl:dyReference>false</owl:dyReference>\n" +
+                "        <tns:oid>stairId</tns:oid>\n" +
+                "        <tns:stairLength>10</tns:stairLength>\n" +
+                "    </tns:requires>\n" +
+                "    <tns:requires xsi:type=\"tns:Paint\" xs:id=\"http://586f2d5f-156b-40b2-bef4-cfcd8f399a9a\">\n" +
+                "        <owl:dyReference>false</owl:dyReference>\n" +
+                "        <tns:oid>R0_G0_B0</tns:oid>\n" +
+                "        <tns:storedIn xs:id=\"http://eea048dd-a152-4e54-b6b9-6d916edc3b60\">\n" +
+                "            <owl:dyReference>false</owl:dyReference>\n" +
+                "            <tns:oid>siteId</tns:oid>\n" +
+                "            <tns:radius>100.0</tns:radius>\n" +
+                "            <tns:centerY>20.0</tns:centerY>\n" +
+                "            <tns:centerX>10.0</tns:centerX>\n" +
+                "        </tns:storedIn>\n" +
+                "    </tns:requires>\n" +
+                "    <tns:requires xs:id=\"http://e1c736d6-3fe5-4538-97c7-c4ab678adf4b\">\n" +
+                "        <owl:dyReference>false</owl:dyReference>\n" +
+                "        <tns:oid>ekwip1</tns:oid>\n" +
+                "    </tns:requires>\n" +
+                "    <tns:involves xs:id=\"http://6a37da4c-bf8f-434d-bcd2-5e7583f88c83\">\n" +
+                "        <owl:dyReference>false</owl:dyReference>\n" +
+                "        <tns:oid>aGuy</tns:oid>\n" +
+                "    </tns:involves>\n" +
+                "    <tns:involves xsi:type=\"tns:Labourer\" xs:id=\"http://9f7ab849-7b9b-4910-947d-c786ae08273a\">\n" +
+                "        <owl:dyReference>false</owl:dyReference>\n" +
+                "        <tns:oid>123456x</tns:oid>\n" +
+                "    </tns:involves>\n" +
+                "    <tns:involves xsi:type=\"tns:Labourer\" xs:id=\"http://81fdbed7-3d37-41e2-a1d4-10583ee1c851\">\n" +
+                "        <owl:dyReference>false</owl:dyReference>\n" +
+                "        <tns:oid>pers2</tns:oid>\n" +
+                "        <tns:participatesIn xsi:type=\"tns:Painting\" xs:id=\"http://0e1dfb13-3828-4922-be3d-d4a6fde37233\">\n" +
+                "            <owl:dyReference>false</owl:dyReference>\n" +
+                "        </tns:participatesIn>\n" +
+                "    </tns:involves>\n" +
+                "    <tns:requiresAlso xsi:type=\"tns:Stair\" xs:id=\"http://4feb2921-4375-4a46-8eff-63811154a34b\">\n" +
+                "        <owl:dyReference>true</owl:dyReference>\n" +
+                "    </tns:requiresAlso>\n" +
+                "    <tns:startsOn>2013-02-02T18:51:03Z</tns:startsOn>\n" +
+                "    <tns:hasComment>Some comment on this object</tns:hasComment>\n" +
+                "</tns:Painting>";
 
         try {
-            Object paint2 = unmarshaller.unmarshal( new StringReader( xml ) );
+            Object paint2 = createUnMarshaller().unmarshal( new StringReader( xml ) );
             checkPainting( (Painting) paint2 );
         } catch ( JAXBException jxe ) {
             jxe.printStackTrace();

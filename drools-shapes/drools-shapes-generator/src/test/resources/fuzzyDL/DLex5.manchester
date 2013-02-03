@@ -1,0 +1,80 @@
+Prefix: : <_>
+
+Ontology: <http://jboss.org/drools/semantics/Example5>
+
+
+Class:  Klass
+	EquivalentTo:  not Alias
+
+
+	
+
+Class:  Klass2
+	EquivalentTo:   (C1
+		 and
+		 not C2)
+
+
+Class:  Klass3
+	EquivalentTo:   not C2
+
+
+
+Class:  Klass4
+	EquivalentTo:   not (C1
+		 and
+		 not C2)
+
+
+Class:  Klass5
+	EquivalentTo:   C2
+
+
+Class:  Being
+	EquivalentTo:  not ( Robot and Human )
+
+Class:  Cyborg
+	EquivalentTo:  Robot and Human
+
+Class:  Slave
+	EquivalentTo:  not ( not Robot and not Golem )
+
+Class:  Worker
+	EquivalentTo:  Human and Employee
+
+
+Class:  WorkForce
+	EquivalentTo:  Robot or Golem
+
+
+Class:  SuperMan
+	EquivalentTo:  Human or Golem
+
+
+Class:  Automa
+	EquivalentTo:  Robot and Golem
+
+Class: Maiden
+    EquivalentTo:  not ( not Male or ( Robot and Human ) )
+
+
+Class:  GeneralWorker
+	EquivalentTo:  ( Human and Employee )
+	or Robot
+
+
+
+Class:  Professor
+	EquivalentTo:  Human and HasStudent some Male
+
+
+ObjectProperty: HasStudent
+
+Class: C1
+Class: C2
+Class: Human
+Class: Robot
+Class: Golem
+Class: Employee
+Class: Male
+Class: Alias

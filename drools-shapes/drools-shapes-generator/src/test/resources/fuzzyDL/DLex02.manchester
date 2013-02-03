@@ -1,0 +1,27 @@
+Prefix: : <_>
+
+
+Ontology: <http://jboss.org/drools/semantics/Example02>
+
+
+Class: Man
+    EquivalentTo: Human and Living
+
+Class: Superman
+    EquivalentTo: Man and Alien
+
+Class: Earthling
+    EquivalentTo: Man and not Alien
+
+Class: Inhuman
+    EquivalentTo: not Man
+
+Class: Monster
+    EquivalentTo: not ( Human and Living )
+
+Class: Alive
+    EquivalentTo: not ( not Human and not Living )
+
+Class: Human
+Class: Living
+Class: Alien

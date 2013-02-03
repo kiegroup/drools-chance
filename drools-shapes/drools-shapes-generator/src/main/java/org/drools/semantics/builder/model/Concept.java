@@ -28,9 +28,9 @@ import org.semanticweb.owlapi.model.IRI;
 import java.util.*;
 
 
-public class Concept {
+public class Concept implements Cloneable {
 
-    @Position(0)    private     String                          iri;
+    @Position(0)    private     IRI                             iri;
     @Position(1)    private     String                          name;
     @Position(2)    private     Set<Concept>                    superConcepts;
     @Position(3)    private     Map<String, PropertyRelation>   properties;
@@ -42,7 +42,7 @@ public class Concept {
     @Position(10)   private     String                          namespace;
     @Position(11)   private     Concept                         chosenSuperConcept;
     @Position(12)   private     Set<Concept>                    chosenSubConcepts;
-    
+
 
     public enum Resolution { NONE, CLASS, IFACE, ENUM ; }
 
@@ -56,7 +56,7 @@ public class Concept {
 
 
     public Concept( IRI iri, String name, boolean primitive ) {
-        this.iri = iri.toQuotedString();
+        this.iri = iri;
         this.name = primitive ? name : NameUtils.compactUpperCase( name );
         this.superConcepts = new HashSet();
         this.subConcepts = new HashSet();
@@ -126,12 +126,17 @@ public class Concept {
 
 
     public String getIri() {
-        return iri;
+        return iri.toQuotedString();
     }
 
-    public void setIri(String iri) {
+    public void setIri( String iri ) {
+        this.iri = IRI.create( iri );
+    }
+
+    public void setIri( IRI iri ) {
         this.iri = iri;
     }
+
 
     public String getName() {
         return name;
@@ -377,6 +382,23 @@ public class Concept {
         } else {
             return name;
         }
+    }
+
+    public Concept clone() {
+        Concept con = new Concept( iri, name, primitive );
+
+        con.getSuperConcepts().addAll( getSuperConcepts() );
+        con.getProperties().putAll( getProperties() );
+        con.getEquivalentConcepts().addAll( getEquivalentConcepts() );
+        con.getKeys().addAll( getKeys() );
+        con.getSubConcepts().addAll( getSubConcepts() );
+        con.getChosenProperties().putAll( getChosenProperties() );
+        con.setPackage( getPackage() );
+        con.setNamespace( getNamespace() );
+        con.setChosenSuperConcept( getChosenSuperConcept() );
+        con.getChosenSubConcepts().addAll( getChosenSubConcepts() );
+
+        return con;
     }
 
     public static class Range {

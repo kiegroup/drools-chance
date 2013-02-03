@@ -25,14 +25,18 @@ import org.drools.reteoo.builder.BuildContext;
 import org.drools.reteoo.builder.DefaultNodeFactory;
 import org.drools.reteoo.builder.NodeFactory;
 import org.drools.semantics.builder.DLTemplateManager;
+import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompilerImpl;
+import org.drools.semantics.utils.NameUtils;
 import org.drools.spi.AlphaNodeFieldConstraint;
 import org.jdom.Namespace;
 import org.mvel2.templates.CompiledTemplate;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import sun.misc.Regexp;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,26 +51,30 @@ import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDModel {
 
 
     private String index;
 
-    private Map<String,String> bindings;
+    private Map<String,Document> bindings = new HashMap<String, Document>(  );
     
     private String individualFactory;
 
-    private String namespaceFix;
+    private Map<Namespace,String> packageInfos;
 
     private String empireConfig;
 
     private String persistenceXml;
 
-    public String getBindings( String namespace ) {
-        return this.bindings != null && bindings.containsKey( namespace )? bindings.get( namespace ) : "";
+    public Document getBindings( String namespace ) {
+        return bindings.containsKey( namespace )? bindings.get( namespace ) : null;
     }
 
     public boolean streamIndividualFactory( OutputStream os ) {
@@ -80,19 +88,22 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
 
 
 
-    public void setBindings( String namespace, String bindings ) {
+    public void setBindings( String namespace, Document bindings ) {
         if ( this.bindings == null ) {
-            this.bindings = new HashMap<String,String>();
+            this.bindings = new HashMap<String,Document>( 3 );
         }
         this.bindings.put( namespace, bindings );
     }
 
-    public String getNamespaceFix() {
-        return namespaceFix;
+    public String getNamespacedPackageInfo( Namespace ns ) {
+        return packageInfos.get( ns );
     }
 
-    public void setNamespaceFix(String namespaceFix) {
-        this.namespaceFix = namespaceFix;
+    public void addNamespacedPackageInfo( Namespace ns, String namespaceFix ) {
+        if ( packageInfos == null ) {
+            packageInfos = new HashMap<Namespace, String>( 3 );
+        }
+        this.packageInfos.put( ns, namespaceFix );
     }
 
     public boolean streamBindings( OutputStream os ) {
@@ -106,10 +117,27 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
         return true;
     }
 
-    public boolean streamNamespaceFix( OutputStream os ) {
+
+
+    public boolean streamNamespacedPackageInfos( File folder ) {
         try {
-            os.write( getNamespaceFix().getBytes() );
+            for ( Namespace ns : packageInfos.keySet() ) {
+                String packageName = NameUtils.namespaceURIToPackage( ns.getURI() );
+                File out = new File( folder.getPath() + File.separator + packageName.replace( '.', File.separatorChar ) + File.separator + "package-info.java" );
+                if ( ! out.exists() ) {
+                    String fix = packageInfos.get( ns );
+                    if ( ! out.getParentFile().exists() ) {
+                        out.getParentFile().mkdirs();
+                    }
+                    FileOutputStream fos = new FileOutputStream( out );
+                    fos.write( fix.getBytes() );
+                    fos.flush();
+                    fos.close();
+                }
+            }
+
         } catch ( Exception e ) {
+            e.printStackTrace();
             return false;
         }
         return true;
@@ -117,6 +145,7 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
 
     public boolean streamEmpireConfig( OutputStream os ) {
         try {
+            System.out.println(" EMPIRE CONFIG" + getEmpireConfig() );
             os.write( getEmpireConfig().getBytes() );
         } catch ( Exception e ) {
             return false;
@@ -125,12 +154,12 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
     }
 
 
-    private String compactXML( String source ) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, TransformerException {
-        DocumentBuilderFactory doxFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = doxFactory.newDocumentBuilder();
-        InputSource is = new InputSource( new StringReader( source ) );
-        Document dox = builder.parse( is );
-        dox.normalize();
+    private String compactXML( Document dox ) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, TransformerException {
+//        DocumentBuilderFactory doxFactory = DocumentBuilderFactory.newInstance();
+//        DocumentBuilder builder = doxFactory.newDocumentBuilder();
+//        InputSource is = new InputSource( new StringReader( source ) );
+//        Document dox = builder.parse( is );
+//        dox.normalize();
 
         XPathFactory xpathFactory = XPathFactory.newInstance();
         XPathExpression xpathExp = xpathFactory.newXPath().compile(
@@ -145,7 +174,7 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
         }
 
         TransformerFactory tFactory = TransformerFactory.newInstance();
-        tFactory.setAttribute( "indent-number", new Integer(2) );
+        tFactory.setAttribute( "indent-number", new Integer( 2 ) );
         Transformer transformer = tFactory.newTransformer();
         transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
         DOMSource domSrc = new DOMSource( dox );
@@ -157,23 +186,33 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
         return new String( baos.toByteArray() );
     }
 
-    public boolean streamBindings( File file ) {
+    public boolean streamBindings( File folder ) {
         try {
-            for ( String ns : namespaces.keySet() ) {
+            for ( String ns : prefixMap.keySet() ) {
                 FileOutputStream os = null;
-                if ( "xsd".equals( ns ) ) {
+                Namespace namespace = prefixMap.get( ns );
+                if ( "xsd".equals( ns ) || "xsi".equals( ns ) ) {
                     continue;
                 }
                 if ( "owl".equals( ns ) ) {
-                    os = new FileOutputStream( file.getParent() + "/global.xjb" );
-                } else if ( "tns".equals( ns ) ) {
-                    os = new FileOutputStream( file );
+                    os = new FileOutputStream( folder + File.separator + "global.xjb" );
                 } else {
-                    os = new FileOutputStream( file.getAbsolutePath().replace( ".xjb", "_" + ns + ".xjb" ) );
+                    String path = folder.getPath() + File.separator + NameUtils.namespaceURIToPackage( namespace.getURI() ) + ".xjb";
+                    File target = new File( path );
+                    target = checkForBindingOverride( namespace, target );
+
+                    os = new FileOutputStream( target );
                 }
 
                 if ( os != null ) {
-                    os.write( compactXML( getBindings( namespaces.get( ns ).getURI() ) ).getBytes() );
+                    Document bindings = getBindings( prefixMap.get( ns ).getURI() );
+                    System.out.println( compactXML( bindings ) );
+
+                    String tgtSchemaLoc = schemaLocations.get( namespace );
+
+                    checkSchemaLocationOverride( bindings, tgtSchemaLoc );
+
+                    os.write( compactXML( bindings ).getBytes() );
                     os.flush();
                     os.close();
                 }
@@ -183,6 +222,37 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
             return false;
         }
         return true;
+    }
+
+    private void checkSchemaLocationOverride( Document bindings, String tgtSchemaLoc ) {
+        if ( tgtSchemaLoc != null ) {
+            tgtSchemaLoc = tgtSchemaLoc.substring( tgtSchemaLoc.lastIndexOf( File.separator ) + 1 );
+            NodeList bx = bindings.getElementsByTagName( "bindings" );
+            for ( int j = 0; j < bx.getLength(); j++ ) {
+                Element bind = (Element) bx.item( j );
+//                        if ( "/xsd:schema".equals( bind.getAttribute( "node" ) ) ) {
+                if ( bind.hasAttribute( "schemaLocation" ) ) {
+                    String currSchemaLoc = bind.getAttribute( "schemaLocation" );
+
+                    if ( ! currSchemaLoc.equals( tgtSchemaLoc ) ) {
+                        bind.setAttribute( "schemaLocation", tgtSchemaLoc );
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    private File checkForBindingOverride( Namespace ns, File tgt ) {
+        int j = 0;
+        File target = tgt;
+        String path = target.getPath();
+
+        while ( target.exists() ) {
+            target = new File( path.replace( ".xjb", "_" + ( j++ ) + ".xjb" ) );
+        }
+
+        return target;
     }
 
     public String getIndex() {
@@ -211,6 +281,9 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
         return true;
     }
 
+
+
+
     public String getIndividualFactory() {
         return individualFactory;
     }
@@ -223,7 +296,7 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
         return empireConfig;
     }
 
-    public void setEmpireConfig(String empireConfig) {
+    public void setEmpireConfig( String empireConfig ) {
         this.empireConfig = empireConfig;
     }
 

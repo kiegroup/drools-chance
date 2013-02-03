@@ -43,6 +43,10 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
         if ( "Thing".equals( con.getName() ) && NamespaceUtils.compareNamespaces("http://www.w3.org/2002/07/owl", con.getNamespace()) ) {
             return;
         }
+        if ( con.isResolved() ) {
+            return;
+        }
+
         CompiledTemplate template = registry.getNamedTemplate( templateName );
 
         String name = con.getFullyQualifiedName();

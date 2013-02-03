@@ -147,7 +147,7 @@ public class DL_99_ModelTest {
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSD );
         XSDModel xsdModel = (XSDModel) compiler.compile( results );
 
-        xsdModel.stream( System.out );
+        xsdModel.streamAll( System.out );
 
     }
 
@@ -262,14 +262,14 @@ public class DL_99_ModelTest {
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
         SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-        xsdModel.stream( System.out );
+        xsdModel.streamAll( System.out );
 //        xsdModel.streamBindings( System.out );
 
 
 
         try {
             FileOutputStream fos = new FileOutputStream( folder.newFile( "kmr2.xsd" ) );
-            xsdModel.stream( fos );
+            xsdModel.streamAll( fos );
             fos.flush();
             fos.close();
         } catch (Exception e) {
@@ -328,7 +328,7 @@ public class DL_99_ModelTest {
         ModelCompiler xcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
         XSDModel xsdModel = (XSDModel) xcompiler.compile( results );
 
-        xsdModel.stream( System.out );
+        xsdModel.streamAll( System.out );
 
     }
 
@@ -377,18 +377,18 @@ public class DL_99_ModelTest {
         ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
         xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-        xsdModel.stream( System.out );
+        xsdModel.streamAll( System.out );
 
 
         ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
         xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-        xsdModel.stream( System.out );
+        xsdModel.streamAll( System.out );
 
         ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
         xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-        xsdModel.stream( System.out );
+        xsdModel.streamAll( System.out );
 //                xsdModel.streamBindings( System.out );
 
 
@@ -489,7 +489,7 @@ public class DL_99_ModelTest {
             }
         }
 
-        assertEquals( 2, wallRais.getEffectiveBaseProperties().size() );
+        assertEquals( 6, wallRais.getEffectiveProperties().size() );
 
         Set<PropertyRelation> wrEffectiveBaseProperties = wallRais.getEffectiveBaseProperties();
         for ( PropertyRelation p : wrEffectiveBaseProperties ) {
@@ -537,7 +537,7 @@ public class DL_99_ModelTest {
         ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
         xsdModel = (SemanticXSDModel) compiler.compile( results );
 
-        xsdModel.stream( System.out );
+        xsdModel.streamAll( System.out );
 
         ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
         xsdModel = (SemanticXSDModel) compiler.compile( results );

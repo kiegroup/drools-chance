@@ -50,7 +50,7 @@ public final class NameUtils {
             /* dot                          */ '\u00B7',
             /* greek ano teleia             */ '\u0387',
             /* arabic end of ayah           */ '\u06DD',
-            /* arabic start of rub el hizb  */'\u06DE',
+            /* arabic start of rub el hizb  */ '\u06DE',
             /* underscore                   */ '\u005F',
     };
 
@@ -189,6 +189,9 @@ public final class NameUtils {
     }
 
 
+    public static URI packageToNamespaceURI( String pack ) {
+        return URI.create( "http://" + pack.replace( ".", "/" ) );
+    }
 
 
     /**
@@ -539,7 +542,14 @@ public final class NameUtils {
     }
 
     public static String compactUpperCase( String name ) {
-        return nameToIdentifier( name, IdentifierType.CLASS );
+        String idName = nameToIdentifier( name, IdentifierType.CLASS );
+        StringTokenizer tok = new StringTokenizer( idName, "_" );
+        String upName = tok.nextToken();
+        while ( tok.hasMoreTokens() ) {
+            String word = tok.nextToken();
+            upName += "_" + word.substring( 0, 1 ).toUpperCase() + word.substring( 1 );
+        }
+        return upName;
     }
 
     public static String getter( String name, String type ) {
@@ -738,7 +748,7 @@ public final class NameUtils {
 
 
 
-    private static DateFormat formatter = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ss'Z'");
+    private static DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     public static void setDateFormatter( DateFormat format ) {
         formatter = format;

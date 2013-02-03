@@ -25,9 +25,9 @@ public interface Thing extends org.drools.semantics.Thing, EmpireGenerated
 
     public void setDyEntryId( String id );
 
-    public String getDyEntryType();
-
-    public void setDyEntryType(String dyEntryType);
+//    public String getDyEntryType();
+//
+//    public void setDyEntryType(String dyEntryType);
 
     public boolean isDyReference();
 

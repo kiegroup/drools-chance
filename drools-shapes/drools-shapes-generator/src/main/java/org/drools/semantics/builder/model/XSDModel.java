@@ -24,6 +24,7 @@ import org.jdom.Namespace;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.Map;
 
 
 public interface XSDModel extends CompiledOntoModel {
@@ -31,15 +32,19 @@ public interface XSDModel extends CompiledOntoModel {
 
     public Document getXSDSchema();
 
-    public boolean stream( OutputStream os );
+    public boolean streamAll( OutputStream os );
 
-    public boolean stream( File file );
+    public boolean stream( File folder );
 
     public Namespace getNamespace( String ns );
 
     public Collection<Namespace> getNamespaces( );
 
     public void setNamespace( String ns, String nameSpace );
+
+    public String mapNamespaceToPrefix( String ns );
+
+    public Map<String,Namespace> getAssignedPrefixes();
 
 //    public void setSchemaMode( XSDModelCompiler.XSDSchemaMode schemMode );
 }

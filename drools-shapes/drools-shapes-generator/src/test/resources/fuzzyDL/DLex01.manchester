@@ -1,0 +1,12 @@
+Prefix: : <_>
+
+Ontology: <http://jboss.org/drools/semantics/Example01>
+
+Class: Man
+    EquivalentTo: Human
+
+Class: Human
+
+Class: Robot
+    EquivalentTo: not Human
+

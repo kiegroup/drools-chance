@@ -25,11 +25,27 @@ import org.jdom.Namespace;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implements SemanticXSDModelCompiler {
 
@@ -54,18 +70,21 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             sxsdModel.setBindings( ns.getURI(), createBindings( ns.getURI(), sxsdModel ) );
         }
 
+        mergeNamespacedPackageInfo( sxsdModel );
+
         sxsdModel.setIndex( createIndex( sxsdModel ) );
 
         sxsdModel.setIndividualFactory( compileIntoFactory( sxsdModel ) );
 
-        sxsdModel.setNamespaceFix( createNSFix() );
+        sxsdModel.setEmpireConfig( createEmpireConfig( Arrays.asList( sxsdModel.getName() ) ) );
 
-        sxsdModel.setEmpireConfig( createEmpireConfig() );
-
-        sxsdModel.setPersistenceXml( createPersistenceXml( ) );
+        sxsdModel.setPersistenceXml( createPersistenceXml() );
 
         return sxsdModel;
     }
+
+
+
 
     private String createPersistenceXml() {
         try {
@@ -79,12 +98,12 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
         }
     }
 
-    private String createEmpireConfig( ) {
+    private String createEmpireConfig( Collection<String> models ) {
         try {
             String template = readFile( "empire.configuration.file.template" );
             Map<String,Object> vars = new HashMap<String, Object>();
             vars.put( "index", "empire.annotation.index" );
-            vars.put( "model", getModel().getName() );
+            vars.put( "models", models );
             vars.put( "datasources", Arrays.asList( "sesame", "jena" ) );
             String index = TemplateRuntime.eval( template, vars ).toString();
             return index;
@@ -94,14 +113,34 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
         }
     }
 
-    private String createNSFix() {
+
+    private String createIndex( SemanticXSDModel sxsdModel ) {
+        try {
+            String template = readFile( "empire.annotation.index.template" );
+            Map<String,Object> vars = new HashMap<String, Object>();
+            vars.put( "klasses", sxsdModel.getConcepts() );
+            String index = TemplateRuntime.eval( template, vars ).toString();
+            return index;
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            return "";
+        }
+
+    }
+
+    private String createNamespacedPackageInfo( Namespace ns, String packageName, Map<String,Namespace> prefixMap ) {
         HashMap map = new HashMap();
-        map.put( "namespace", getModel().getDefaultNamespace() );
-        return getTemplatedCode( "package-info.java", map, ModelFactory.CompileTarget.JAVA );
+        map.put( "namespace", ns.getURI() );
+        map.put( "pack", packageName );
+        map.put( "prefixMap", prefixMap );
+        String fix = SemanticXSDModelCompilerImpl.getTemplatedCode( "package-info.java", map, ModelFactory.CompileTarget.JAVA );
+        return fix;
     }
 
 
-    private String compileIntoFactory(SemanticXSDModel sxsdModel) {
+
+
+    private String compileIntoFactory( SemanticXSDModel sxsdModel ) {
         try {
             Map<String,Object> vars = new HashMap<String, Object>();
             vars.put( "package", sxsdModel.getDefaultPackage() );
@@ -115,33 +154,17 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     }
 
 
-    private String createIndex( SemanticXSDModel sxsdModel ) {
-        try {
-            String template = readFile( "empire.annotation.index.template" );
-            Map<String,Object> vars = new HashMap<String, Object>();
-            vars.put( "package", sxsdModel.getDefaultPackage() );
-            vars.put( "klasses", sxsdModel.getConcepts() );
-            String index = TemplateRuntime.eval( template, vars ).toString();
-            return index;
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            return "";
-        }
-
-    }
-
-
     public ModelFactory.CompileTarget getCompileTarget() {
         return ModelFactory.CompileTarget.XSDX;
     }
 
-    private String createBindings( String ns, SemanticXSDModel sxsdModel ) {
+    private Document createBindings( String ns, SemanticXSDModel sxsdModel ) {
 
         if ( "http://www.w3.org/2002/07/owl".equals( ns ) ) {
             return getGlobalBindings();
         }
 
-        String prefix = reverseNamespaces.get( ns );
+        String prefix = ((XSDModel) getModel()).mapNamespaceToPrefix( ns );
         try {
             String template = readFile( "bindings.xjb.template" );
             Map<String,Object> vars = new HashMap<String,Object>();
@@ -151,18 +174,126 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             vars.put( "flat", getModel().getMode() != OntoModel.Mode.HIERARCHY );
             vars.put( "properties", propCache );
             vars.put( "modelName", getModel().getName() );
-            vars.put( "schemaLocation", getModel().getName() + ( prefix == null ? "" : ( "_" + prefix ) ) );
+            vars.put( "schemaLocation", NameUtils.namespaceURIToPackage( ns ) );
+//            vars.put( "schemaLocation", getModel().getName() + ( prefix == null ? "" : ( "_" + prefix ) ) );
             vars.put( "extra_code", prepareCodeExtensions( sxsdModel ) );
+
             String bindings = TemplateRuntime.eval( template, NameUtils.getInstance(), vars ).toString();
 
+            DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+            Document dox = df.newDocumentBuilder().parse( new InputSource( new StringReader( bindings ) ) );
+            dox.normalizeDocument();
 
-//            System.out.println( vars.get("extra_code") );
-            return bindings;
-        } catch ( IOException ioe ) {
+            return dox;
+        } catch ( Exception ioe ) {
             ioe.printStackTrace();
-            return "";
+            return null;
+        }
+
+    }
+
+
+    public void mergeNamespacedPackageInfo( SemanticXSDModel model ) {
+        for ( Namespace ns : model.getNamespaces() ) {
+            String info = createNamespacedPackageInfo( ns, NameUtils.namespaceURIToPackage( ns.getURI() ), model.getAssignedPrefixes() );
+            model.addNamespacedPackageInfo( ns, info );
         }
     }
+
+    public void mergeEmpireConfig( File preexistingEmpireConfig, SemanticXSDModel model )  {
+        try {
+            FileInputStream bis = new FileInputStream( preexistingEmpireConfig );
+            byte[] an = new byte[ bis.available() ];
+            bis.read(  an  );
+
+
+            Set<String> matchSet = new HashSet<String>();
+            Pattern regex = Pattern.compile( "\\d.name = (.+)-sesame-data-source", Pattern.MULTILINE );
+
+            Matcher regexMatcher;
+            regexMatcher = regex.matcher( new String( an ) );
+            while ( regexMatcher.find() ) {
+                matchSet.add( regexMatcher.group( 1 ) );
+            }
+            regexMatcher = regex.matcher( model.getEmpireConfig() );
+            while ( regexMatcher.find() ) {
+                matchSet.add( regexMatcher.group( 1 ) );
+            }
+
+            String config = createEmpireConfig( matchSet );
+
+            model.setEmpireConfig( config );
+
+        } catch ( FileNotFoundException e ) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch ( IOException e ) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void mergeIndex( File preexistingIndex, SemanticXSDModel model ) {
+        FileInputStream bis = null;
+        try {
+            bis = new FileInputStream( preexistingIndex );
+            byte[] an = new byte[ bis.available() ];
+            bis.read(  an  );
+
+            String old = new String( an );
+            String nju = model.getIndex();
+            Set<String> oldTypes = new HashSet<String>();
+            int j = old.indexOf( "javax.persistence.NamedQuery=" ) -1;
+
+            StringBuilder newIndex = new StringBuilder();
+            newIndex.append( old.substring( 0, j ) );
+
+            StringTokenizer tok = new StringTokenizer( old, "=,\n" );
+            while ( tok.hasMoreTokens() ) {
+                oldTypes.add( tok.nextToken() );
+            }
+            tok = new StringTokenizer( nju, "=,\n" );
+            while ( tok.hasMoreTokens() ) {
+                String t = tok.nextToken();
+                if ( ! oldTypes.contains( t ) ) {
+                    newIndex.append( "," ).append( tok.nextToken() );
+                }
+            }
+
+            newIndex.append( old.substring( j ) );
+
+//            System.out.println( "OLD INDEX " + old );
+//            System.out.println( "NEW INDEX " + newIndex );
+
+            model.setIndex( newIndex.toString() );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+   }
+
+//    public void mergePersistenceXml( File preexistingPersistenceXml, SemanticXSDModel model ) {
+//        FileInputStream bis = null;
+//        try {
+//            bis = new FileInputStream( preexistingPersistenceXml );
+//            byte[] an = new byte[ bis.available() ];
+//            bis.read(  an  );
+//
+//            String old = new String( an );
+//
+//            System.out.println( "OLD PERX " + old );
+//            System.out.println( "NEW PERX " + model.getPersistenceXml() );
+//        } catch ( Exception e ) {
+//            e.printStackTrace();
+//        }
+//
+//        throw new UnsupportedOperationException( "TODO" );
+//    }
+
+
+
+
+
+
+
+
 
     private Object filterConceptsByNS( List<Concept> concepts, String ns ) {
         List<Concept> filtered = new ArrayList<Concept>();
@@ -309,13 +440,14 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
     }
 
-    public String getGlobalBindings() {
+    public Document getGlobalBindings() {
         InputStream bindingsIS = null;
         try {
             bindingsIS = ResourceFactory.newClassPathResource("org/drools/semantics/builder/model/compilers/global.xjb").getInputStream();
             byte[] data = new byte[ bindingsIS.available() ];
             bindingsIS.read( data );
-            return new String( data );
+            DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+            return df.newDocumentBuilder().parse( new ByteArrayInputStream( data ) );
         } catch ( Exception e ) {
             e.printStackTrace();
             return null;

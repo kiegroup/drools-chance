@@ -1,0 +1,45 @@
+Prefix: : <_>
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+
+Ontology: <http://jboss.org/drools/semantics/Example6>
+
+
+Class: A
+
+Class: B
+
+Class: C
+
+Class: D
+
+
+
+DataProperty: zimple
+
+    Domain: D or B
+
+    Range: xsd:int
+
+
+
+Datatype: xsd:int
+
+
+
+
+ObjectProperty: myProp
+
+    Domain:
+        A
+
+    Range:
+        C or D
+
+
+ObjectProperty: yourProp
+
+    Domain:
+        B and C
+
+    Range:
+        D

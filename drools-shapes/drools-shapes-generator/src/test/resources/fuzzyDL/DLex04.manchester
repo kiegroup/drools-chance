@@ -1,0 +1,32 @@
+Prefix: : <_>
+
+
+Ontology: <http://jboss.org/drools/semantics/Example04>
+
+
+
+Class:  Professor
+	EquivalentTo:  Human and HasStudent some Male
+
+Class:  Master
+	EquivalentTo:  HasStudent only Male
+
+
+Class:  BeastMaster
+	EquivalentTo:  Human and HasStudent some ( Robot or Golem )
+
+
+Class:  Educatrix
+    EquivalentTo:  Human and not ( HasStudent some ( Male ) )
+
+Class:  Maestro
+    EquivalentTo: not ( HasStudent some ( not Male ) )
+
+
+ObjectProperty: HasStudent
+
+
+Class:  Human
+Class:  Male
+Class:  Robot
+Class:  Golem

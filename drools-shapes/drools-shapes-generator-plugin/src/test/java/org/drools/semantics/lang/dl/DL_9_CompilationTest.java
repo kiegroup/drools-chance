@@ -22,6 +22,7 @@ import com.clarkparsia.empire.config.ConfigKeys;
 import com.clarkparsia.empire.config.EmpireConfiguration;
 import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
 import com.clarkparsia.empire.sesametwo.RepositoryDataSourceFactory;
+import com.clarkparsia.empire.util.BeanReflectUtil;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.apache.commons.lang.StringUtils;
@@ -31,7 +32,12 @@ import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.shapes.OntoModelCompiler;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -46,7 +52,9 @@ import javax.persistence.spi.PersistenceProvider;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -56,6 +64,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -63,20 +75,22 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
 
 
 /**
@@ -93,77 +107,12 @@ public class DL_9_CompilationTest {
 
     protected OntoModelCompiler compiler;
 
-    @Before
-    public void before() {
-
-    }
-
-    @After
-    public void after() {
-        folder.delete();
-    }
-
-
-
-    @Test
-    public void testIncrementalCompilation() {
-        try {
-
-            OntoModel diamond = factory.buildModel( "diamond",
-                    ResourceFactory.newClassPathResource( "ontologies/diamondProp.manchester.owl" ),
-                    OntoModel.Mode.OPTIMIZED );
-
-            compiler = new OntoModelCompiler( diamond, folder.getRoot() );
-
-            List<Diagnostic<? extends JavaFileObject>> diag1 = compiler.compileOnTheFly( OntoModelCompiler.minimalOptions, OntoModelCompiler.MOJO_VARIANTS.JPA2 );
-
-            for ( Diagnostic<?> dx : diag1 ) {
-                System.out.println( dx );
-            }
-
-
-            showDirContent( folder );
-
-            ClassLoader urlKL = new URLClassLoader(
-                    new URL[] { compiler.getBinDir().toURI().toURL() },
-                    Thread.currentThread().getContextClassLoader()
-            );
-
-
-            OntoModel results = factory.buildModel( "diamondInc",
-                    ResourceFactory.newClassPathResource( "ontologies/dependency.test.owl" ),
-                    OntoModel.Mode.OPTIMIZED,
-                    urlKL );
-
-            System.out.println( results );
-
-//            OntoModelCompiler compiler2 = new OntoModelCompiler( results, folder.getRoot() );
-//
-//            compiler2.streamJavaInterfaces( false );
-////             streamXSDs();
-////             streamBindings( true );
-////             mojo( options, variant );
-//            List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler2.doCompile();
-
-            showDirContent( folder );
-
-//            for ( Diagnostic<?> dx : diagnostics ) {
-//                System.out.println( dx );
-//            }
-        } catch ( MalformedURLException e ) {
-            e.printStackTrace();
-            fail( e.getMessage() );
-        }
-
-    }
-
-
 
     @Test
     public void testDiamondOptimizedHierarchyCompilation() {
 
         OntoModel results = factory.buildModel( "diamond",
-                ResourceFactory.newClassPathResource( "ontologies/diamondProp.manchester.owl" ),
+                ResourceFactory.newClassPathResource( "ontologies/diamondProp2.manchester.owl" ),
                 OntoModel.Mode.OPTIMIZED );
 
         assertTrue( results.isHierarchyConsistent() );
@@ -175,11 +124,11 @@ public class DL_9_CompilationTest {
 
         assertTrue( javaOut );
 
-        // ****** Stream the XSDs
-        boolean xsdOut = compiler.streamXSDs();
+        // ****** Stream the XSDs, the JaxB customizations abd the persistence configuration
+        boolean xsdOut = compiler.streamXSDsWithBindings( true );
 
-        assertTrue(xsdOut);
-        File f = new File( compiler.getMetaInfDir() + File.separator + results.getName() + ".xsd" );
+        assertTrue( xsdOut );
+        File f = new File( compiler.getMetaInfDir() + File.separator + results.getDefaultPackage() + ".xsd" );
         try {
             Document dox = parseXML( f, true );
 
@@ -192,11 +141,9 @@ public class DL_9_CompilationTest {
             fail( e.getMessage() );
         }
 
-        // ****** Stream the JaxB customizations abd the persistence configuration
-        boolean xjbOut = compiler.streamBindings( true );
+        showDirContent( folder );
 
-        assertTrue( xjbOut );
-        File b = new File( compiler.getMetaInfDir() + File.separator + "bindings.xjb" );
+        File b = new File( compiler.getMetaInfDir() + File.separator + results.getDefaultPackage() + ".xjb" );
         try {
             Document dox = parseXML( b, false );
 
@@ -266,15 +213,8 @@ public class DL_9_CompilationTest {
                     new URL[] { compiler.getBinDir().toURI().toURL() },
                     Thread.currentThread().getContextClassLoader()
             );
-            Object bot = createTestFact( results, urlKL );
 
-            checkJaxbRefresh( bot, urlKL );
-
-            checkEmpireRefresh( bot, urlKL );
-
-            checkSQLRefresh(bot, urlKL);
-
-            checkJenaBeansRefresh(bot, urlKL);
+            testPersistenceWithInstance( urlKL, "org.jboss.drools.semantics.diamond2.Bottom", results.getName() );
 
         } catch ( Exception e ) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -282,6 +222,207 @@ public class DL_9_CompilationTest {
         }
 
 
+    }
+
+
+    @Test
+    public void testIncrementalCompilation() {
+        try {
+
+            OntoModel diamond = factory.buildModel( "diamondX",
+                    ResourceFactory.newClassPathResource( "ontologies/diamondProp.manchester.owl" ),
+                    OntoModel.Mode.OPTIMIZED );
+
+            compiler = new OntoModelCompiler( diamond, folder.getRoot() );
+
+            List<Diagnostic<? extends JavaFileObject>> diag1 = compiler.compileOnTheFly( OntoModelCompiler.minimalOptions, OntoModelCompiler.MOJO_VARIANTS.JPA2 );
+
+            for ( Diagnostic<?> dx : diag1 ) {
+                System.out.println( dx );
+                assertFalse( dx.getKind() == Diagnostic.Kind.ERROR );
+            }
+
+
+            showDirContent( folder );
+
+            ClassLoader urlKL = new URLClassLoader(
+                    new URL[] { compiler.getBinDir().toURI().toURL() },
+                    Thread.currentThread().getContextClassLoader()
+            );
+
+
+            OntoModel results = factory.buildModel( "diamondInc",
+                    ResourceFactory.newClassPathResource( "ontologies/dependency.test.owl" ),
+                    OntoModel.Mode.OPTIMIZED,
+                    urlKL );
+
+            System.out.println( results );
+
+            Class bot = Class.forName( "org.jboss.drools.semantics.diamond.BottomImpl", true, urlKL );
+            Class botIF = Class.forName( "org.jboss.drools.semantics.diamond.Bottom", true, urlKL );
+            Assert.assertNotNull( bot );
+            Assert.assertNotNull( botIF );
+            Object botInst = bot.newInstance();
+            Assert.assertNotNull( botInst );
+
+
+
+
+
+            OntoModelCompiler compiler2 = new OntoModelCompiler( results, folder.getRoot() );
+
+            compiler2.fixResolvedClasses();
+
+            compiler2.streamJavaInterfaces( false );
+            compiler2.streamXSDsWithBindings( true );
+
+            compiler2.mojo( OntoModelCompiler.defaultOptions, OntoModelCompiler.MOJO_VARIANTS.JPA2 );
+
+            showDirContent( folder );
+
+            File unImplBoundLeft = new File( compiler2.getXjcDir() + File.separator +
+                                        "org.jboss.drools.semantics.diamond".replace( ".", File.separator ) +
+                                        File.separator + "Left.java" );
+            assertFalse( unImplBoundLeft.exists() );
+            File implBoundLeft = new File( compiler2.getXjcDir() + File.separator +
+                                        "org.jboss.drools.semantics.diamond".replace( ".", File.separator ) +
+                                        File.separator + "LeftImpl.java" );
+            assertTrue( implBoundLeft.exists() );
+
+            File leftInterface = new File( compiler2.getJavaDir() + File.separator +
+                    "org.jboss.drools.semantics.diamond".replace( ".", File.separator ) +
+                    File.separator + "Left.java" );
+
+            assertTrue( leftInterface.exists() );
+
+            List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler2.doCompile();
+
+
+            for ( Diagnostic<?> dx : diagnostics ) {
+                System.out.println( dx );
+                assertFalse( dx.getKind() == Diagnostic.Kind.ERROR );
+            }
+
+            showDirContent( folder );
+
+            Document dox = parseXML( new File( compiler2.getBinDir().getPath() + "/META-INF/persistence.xml" ), false );
+                XPath xpath = XPathFactory.newInstance().newXPath();
+                XPathExpression expr = xpath.compile( "//persistence-unit/@name" );
+            assertEquals( "diamondX", (String) expr.evaluate( dox, XPathConstants.STRING ) );
+
+
+            File YInterface = new File( compiler2.getJavaDir() + File.separator +
+                    "org.jboss.drools.semantics.diamond".replace( ".", File.separator ) +
+                    File.separator + "X.java" );
+            assertTrue( YInterface.exists() );
+
+
+            Class colf = Class.forName( "some.dependency.test.ChildOfLeftImpl", true, urlKL );
+            Assert.assertNotNull( colf );
+            Object colfInst = colf.newInstance();
+
+                    List<String> hierarchy = getHierarchy( colf );
+            assertTrue( hierarchy.contains( "some.dependency.test.ChildOfLeftImpl" ) );
+            assertTrue( hierarchy.contains( "some.dependency.test.org.jboss.drools.semantics.diamond.LeftImpl" ) );
+            assertTrue( hierarchy.contains( "org.jboss.drools.semantics.diamond.LeftImpl" ) );
+            assertTrue( hierarchy.contains( "org.jboss.drools.semantics.diamond.C0Impl" ) );
+            assertTrue( hierarchy.contains( "org.jboss.drools.semantics.diamond.TopImpl" ) );
+            assertTrue( hierarchy.contains( "org.w3._2002._07.owl.ThingImpl" ) );
+
+            Set<String> itfHierarchy = getIFHierarchy( colf );
+
+            System.err.println( itfHierarchy.containsAll( Arrays.asList(
+                    "org.jboss.drools.semantics.diamond.C1",
+                    "org.jboss.drools.semantics.diamond.C0",
+                    "some.dependency.test.org.jboss.drools.semantics.diamond.Left",
+                    "some.dependency.test.ChildOfLeft",
+                    "org.jboss.drools.semantics.diamond.Left",
+                    "org.jboss.drools.semantics.diamond.Top",
+                    "com.clarkparsia.empire.EmpireGenerated",
+                    "org.w3._2002._07.owl.Thing",
+                    "java.io.Serializable",
+                    "org.drools.semantics.Thing",
+                    "com.clarkparsia.empire.SupportsRdfId" ) ) );
+
+            Method getter1 = colf.getMethod( "getAnotherLeftProp" );
+                assertNotNull( getter1 );
+            Method getter2 = colf.getMethod( "getImportantProp");
+                assertNotNull( getter2 );
+
+            for ( Method m : colf.getMethods() ) {
+                if ( m.getName().equals( "addImportantProp" ) ) {
+                    m.getName();
+                }
+            }
+
+            Method adder = colf.getMethod( "addImportantProp", botIF );
+                assertNotNull( adder );
+            adder.invoke( colfInst, botInst );
+            List l = (List) getter2.invoke( colfInst );
+            assertEquals( 1, l.size() );
+
+
+
+            File off = new File( compiler2.getXjcDir() + File.separator +
+                    "org.jboss.drools.semantics.diamond".replace( ".", File.separator ) +
+                    File.separator + "Left_Off.java" );
+            assertFalse( off.exists() );
+
+
+            testPersistenceWithInstance( urlKL, "org.jboss.drools.semantics.diamond.Bottom", diamond.getName() );
+            System.out.println(" Done" );
+
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+
+    }
+
+    private Set<String> getIFHierarchy( Class x ) {
+        Set<String> l = new HashSet<String>();
+        extractInterfaces( x, l );
+        return l;
+    }
+
+    private void extractInterfaces( Class x, Set<String> l ) {
+        for ( Class itf : x.getInterfaces() ) {
+            l.add( itf.getName() );
+            extractInterfaces( itf, l );
+        }
+    }
+
+    private List<String> getHierarchy( Class x ) {
+        List<String> l = new LinkedList<String>();
+        Class k = x;
+        while ( ! k.equals( Object.class ) ) {
+            l.add( k.getName() );
+            k = k.getSuperclass();
+        }
+        return l;
+    }
+
+
+
+
+    private void testPersistenceWithInstance( ClassLoader urlKL, String cName, String pUnit ) {
+        Object bot = null;
+
+        try {
+            bot = createTestFact( urlKL, cName );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+        if ( bot != null ) {
+            checkJaxbRefresh( bot, urlKL );
+
+            checkEmpireRefresh( bot, urlKL );
+
+            checkSQLRefresh( bot, urlKL, pUnit );
+
+            checkJenaBeansRefresh( bot, urlKL );
+        }
     }
 
     private void checkJenaBeansRefresh( Object bot, ClassLoader urlk ) {
@@ -310,15 +451,20 @@ public class DL_9_CompilationTest {
 
     }
 
-    private void checkSQLRefresh( Object obj, ClassLoader urlk ) {
+    private void checkSQLRefresh( Object obj, ClassLoader urlk, String punit ) {
         ClassLoader oldKL = Thread.currentThread().getContextClassLoader();
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
         try {
             Thread.currentThread().setContextClassLoader( urlk );
 
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(
-                    "org.jboss.drools.semantics.coal:org.jboss.drools.semantics.diamond:org.w3._2002._07.owl"
+            HashMap props = new HashMap();
+            props.put( "hibernate.hbm2ddl.auto", "create-drop" );
+            emf = Persistence.createEntityManagerFactory(
+                    punit, props
             );
-            EntityManager em = emf.createEntityManager();
+
+            em = emf.createEntityManager();
 
             checkJPARefresh( obj,
                     ((UIdAble) obj).getDyEntryId(),
@@ -326,6 +472,13 @@ public class DL_9_CompilationTest {
 
         } finally {
             Thread.currentThread().setContextClassLoader( oldKL );
+            if ( em != null && em.isOpen() ) {
+                em.clear();
+                em.close();
+            }
+            if ( emf != null && emf.isOpen() ) {
+                emf.close();
+            }
         }
 
     }
@@ -350,7 +503,7 @@ public class DL_9_CompilationTest {
     }
 
 
-    private void checkJPARefresh(Object obj, Object key, EntityManager em) {
+    private void checkJPARefresh(  Object obj, Object key, EntityManager em ) {
 
         persist( obj, em );
 
@@ -364,9 +517,6 @@ public class DL_9_CompilationTest {
             e.printStackTrace();
             fail( e.getMessage() );
         }
-
-        em.close();
-
 
     }
 
@@ -429,10 +579,9 @@ public class DL_9_CompilationTest {
 
 
 
-    private Object createTestFact( OntoModel results, ClassLoader urlKL ) throws Exception {
-        Class bottom = Class.forName( results.getDefaultPackage() + ".Bottom", true, urlKL );
-        Class bottomImpl = Class.forName( results.getDefaultPackage() + ".BottomImpl", true, urlKL );
-//        Class oFact = Class.forName( results.getDefaultPackage() + ".ObjectFactory", true, urlKL );
+    private Object createTestFact( ClassLoader urlKL, String cName ) throws Exception {
+        Class bottom = Class.forName( cName, true, urlKL );
+        Class bottomImpl = Class.forName( cName + "Impl", true, urlKL );
 
         Object bot = bottomImpl.newInstance();
         assertTrue( bottom.isAssignableFrom( bot.getClass() ) );
@@ -453,31 +602,38 @@ public class DL_9_CompilationTest {
         return bot;
     }
 
-    private void checkJaxbRefresh( Object obj, ClassLoader urlKL ) throws Exception {
-        JAXBContext jaxbContext;
-        jaxbContext = JAXBContext.newInstance( obj.getClass().getPackage().getName(), urlKL );
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty( Marshaller.JAXB_ENCODING, "UTF-8" );
-        marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+    private void checkJaxbRefresh( Object obj, ClassLoader urlKL ) {
+        try {
+            JAXBContext jaxbContext;
+            jaxbContext = JAXBContext.newInstance( obj.getClass().getPackage().getName(), urlKL );
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty( Marshaller.JAXB_ENCODING, "UTF-8" );
+            marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
 
-        StringWriter sw = new StringWriter();
-        marshaller.marshal( obj, sw );
+            StringWriter sw = new StringWriter();
+            marshaller.marshal( obj, sw );
 
-        System.out.println( sw.toString() );
+            System.out.println( sw.toString() );
 
-        jaxbContext = JAXBContext.newInstance( obj.getClass().getPackage().getName(), urlKL );
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        Marshaller marshaller2 = jaxbContext.createMarshaller();
-        marshaller2.setProperty( Marshaller.JAXB_ENCODING, "UTF-8" );
-        marshaller2.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+            jaxbContext = JAXBContext.newInstance( obj.getClass().getPackage().getName(), urlKL );
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            Marshaller marshaller2 = jaxbContext.createMarshaller();
+            marshaller2.setProperty( Marshaller.JAXB_ENCODING, "UTF-8" );
+            marshaller2.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
 
-        Object clone = unmarshaller.unmarshal( new StringReader( sw.toString() ) );
+            Object clone = unmarshaller.unmarshal( new StringReader( sw.toString() ) );
 
-        StringWriter sw2 = new StringWriter();
-        marshaller2.marshal( clone, sw2 );
-        System.err.println( sw2.toString() );
+            StringWriter sw2 = new StringWriter();
+            marshaller2.marshal( clone, sw2 );
+            System.err.println( sw2.toString() );
 
-        assertEquals( sw.toString(), sw2.toString() );
+            assertEquals( sw.toString(), sw2.toString() );
+        } catch ( PropertyException e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        } catch ( JAXBException e ) {
+            fail( e.getMessage() );
+        }
     }
 
     private void printSourceFile( File f, PrintStream out  ) {

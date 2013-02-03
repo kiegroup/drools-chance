@@ -18,6 +18,7 @@ package org.drools.semantics.builder.model;
 
 
 import org.jdom.Namespace;
+import org.w3c.dom.Document;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,31 +27,47 @@ import java.io.OutputStream;
 
 public interface SemanticXSDModel extends XSDModel {
 
-    public String getBindings( String namespace );
+    public Document getBindings( String namespace );
 
-    public void setBindings( String namespace, String bindings );
+    public void setBindings( String namespace, Document bindings );
 
     public boolean streamBindings( OutputStream os );
 
     public boolean streamBindings( File file );
 
+
     public void setIndex( String index );
 
     public boolean streamIndex( OutputStream fos);
+
+    public String getIndex();
+
 
     public void setIndividualFactory( String factory );
     
     public boolean streamIndividualFactory( OutputStream os );
 
-    public void setNamespaceFix( String fix );
+    public String getIndividualFactory();
 
-    public boolean streamNamespaceFix( OutputStream os );
+
+    public void addNamespacedPackageInfo( Namespace ns, String fix );
+
+    public boolean streamNamespacedPackageInfos( File folder );
+
+    public String getNamespacedPackageInfo( Namespace ns );
+
 
     public void setEmpireConfig( String config );
 
     public boolean streamEmpireConfig( OutputStream fos );
 
+    public String getEmpireConfig();
+
+
     public void setPersistenceXml( String config );
 
-    boolean streamPersistenceXml( OutputStream fos );
+    public boolean streamPersistenceXml( OutputStream fos );
+
+    public String getPersistenceXml();
+
 }

@@ -1,6 +1,7 @@
 
 package org.drools.semantics.builder.model;
 
+import org.drools.core.util.StringUtils;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.drools.semantics.utils.NameUtils;
@@ -18,11 +19,19 @@ import java.util.*;
 public class XSDModelImpl extends ModelImpl implements XSDModel {
 
 
-    private Document schema;
+//    private Document schema;
 
-    private Map<Namespace, Document> subSchemas = new HashMap<Namespace, Document>();
+    // map : namespace --> schema
+    private Map<Namespace, Document> schemas = new HashMap<Namespace, Document>();
 
-    protected Map<String,Namespace> namespaces = new HashMap<String,Namespace>();
+    // map : prefix --> namespace
+    protected Map<String,Namespace> prefixMap = new HashMap<String,Namespace>();
+
+    // map : namespace (String) --> prefix
+    protected Map<String,String> reversePrefixMap = new HashMap<String,String>();
+
+    // map : namespace --> schema file
+    protected Map<Namespace, String> schemaLocations = new HashMap<Namespace,String>();
 
     private XSDModelCompiler.XSDSchemaMode schemaMode = XSDModelCompiler.XSDSchemaMode.JAXB;
 
@@ -37,36 +46,35 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         super.initFromBaseModel(base);
 
         setNamespace( "xsd", "http://www.w3.org/2001/XMLSchema" );
+        setNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        setNamespace( "tns", base.getDefaultNamespace() );
 //        setNamespace( "xjc", "http://java.sun.com/xml/ns/jaxb/xjc" );
 
-        schema = initDocument( this.getDefaultNamespace() );
+        schemas.put( getNamespace( "tns" ), initDocument( this.getDefaultNamespace() ) );
     }
 
     private Document initDocument( String tgtNamespace ) {
         Document dox = new Document();
 
-        Element root = new Element("schema", getNamespace("xsd") );
+        Element root = new Element( "schema", getNamespace( "xsd" ) );
 
         root.setAttribute( "elementFormDefault", "qualified" );
         root.setAttribute( "targetNamespace", tgtNamespace );
 
-        for ( Namespace ns : namespaces.values() ) {
+        for ( Namespace ns : prefixMap.values() ) {
             root.addNamespaceDeclaration( ns );
         }
 
-        dox.addContent(root);
+        dox.addContent( root );
         return dox;
     }
 
-    public Document getXSDSchema() {
-        return schema;
-    }
 
-    public boolean stream( OutputStream os ) {
+    public boolean streamAll( OutputStream os ) {
         try {
-            os.write( serialize( getXSDSchema() ).getBytes() );
+//            os.write( serialize( getXSDSchema() ).getBytes() );
             os.write( getOWLSchema().getBytes() );
-            for ( Document dox : subSchemas.values() ) {
+            for ( Document dox : schemas.values() ) {
                 os.write( serialize( dox ).getBytes() );
             }
         } catch (IOException e) {
@@ -76,133 +84,186 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         return true;
     }
 
-    public boolean stream( File file ) {
+    public boolean stream( File folder ) {
         try {
-            FileOutputStream fos = new FileOutputStream( file );
-            fos.write( serialize( getXSDSchema() ).getBytes() );
-            fos.flush();
-            fos.close();
 
-            FileOutputStream owl = new FileOutputStream( file.getParent() + "/owlThing.xsd" );
-            owl.write(getOWLSchema().getBytes());
-            owl.flush();
-            owl.close();
+            for ( String ns : prefixMap.keySet() ) {
+                FileOutputStream os = null;
+                File target = null;
+                byte[] schemaBytes = null;
+
+                if ( "xsd".equals( ns ) || "xsi".equals( ns ) ) {
+                    continue;
+                } else if ( "tns".equals( ns ) ) {
+                    target = new File( folder.getPath() + File.separator + getDefaultPackage() + ".xsd" );
+                    target = checkForSchemaOverride( target, prefixMap.get( ns ) );
+
+                    os = new FileOutputStream( target );
+                    schemaBytes = serialize( getXSDSchema( prefixMap.get( "tns" ) ) ).getBytes();
+                } else if ( "owl".equals( ns ) ) {
+                    target = new File( folder.getPath() + File.separator + "owlThing.xsd" );
+                    if ( ! target.exists() ) {
+                        os = new FileOutputStream( target );
+                        schemaBytes = getOWLSchema().getBytes();
+                    }
+                } else {
+                    String path = folder.getPath() + File.separator + NameUtils.namespaceURIToPackage( prefixMap.get( ns ).getURI() ) + ".xsd";
+                    target = new File( path );
+                    target = checkForSchemaOverride( target, prefixMap.get( ns ) );
 
 
-            for ( Namespace ns : subSchemas.keySet() ) {
-                String subFileName = file.getAbsolutePath().replace( ".xsd", "_" + ns.getPrefix() + ".xsd" );
-                FileOutputStream subFos = new FileOutputStream( subFileName );
-                subFos.write( serialize( subSchemas.get( ns ) ).getBytes() );
-                subFos.flush();
-                subFos.close();
+                    if ( schemas.containsKey( prefixMap.get( ns ) ) ) {
+                        os = new FileOutputStream( target );
+                        schemaBytes = serialize( schemas.get( prefixMap.get( ns ) ) ).getBytes();
+                    } else {
+                        throw new IllegalStateException( "XSD Model stream : unrecognized namespace " + ns );
+//                        os = new FileOutputStream( path );
+//                        schemaBytes = serialize( initDocument( namespaces.get( ns ).getURI() ) ).getBytes();
+                    }
+                }
+
+                if ( os != null ) {
+                    schemaLocations.put( prefixMap.get( ns ), target.getPath() );
+                    System.out.println( new String( schemaBytes ) );
+                    os.write( schemaBytes );
+                    os.flush();
+                    os.close();
+                }
             }
+
+//            FileOutputStream fos = new FileOutputStream( folder.getPath() + File.separator + getDefaultPackage() + ".xsd" );
+//            fos.write( serialize( getXSDSchema() ).getBytes() );
+//            fos.flush();
+//            fos.close();
+//
+//            FileOutputStream owl = new FileOutputStream( folder.getPath() + File.separator + "owlThing.xsd" );
+//            owl.write( getOWLSchema().getBytes() );
+//            owl.flush();
+//            owl.close();
+//
+//
+//            for ( Namespace ns : subSchemas.keySet() ) {
+//                String subFileName = folder.getPath() + File.separator + NameUtils.namespaceURIToPackage( ns.getURI() ) + ".xsd" ;
+//                FileOutputStream subFos = new FileOutputStream( subFileName );
+//                subFos.write( serialize( subSchemas.get( ns ) ).getBytes() );
+//                subFos.flush();
+//                subFos.close();
+//            }
+
+
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
             return false;
         }
         return true;
     }
 
+    private File checkForSchemaOverride( File tgt, Namespace namespace ) {
+        int j = 0;
+        File target = tgt;
+        String path = target.getPath();
+        String ns = namespace.getURI();
+
+        while ( target.exists() ) {
+            target = new File( path.replace( ".xsd", "_" + ( j++ ) + ".xsd" ) );
+            System.out.println( "OVERRIDING SCHEMA FILE " + target.getPath() );
+            for ( Document dox : schemas.values() ) {
+                List<Element> imports = dox.getRootElement().getChildren( "import", NamespaceUtils.getNamespaceByPrefix( "xsd" ) );
+                for ( Element el : imports ) {
+                    if ( el.getAttributeValue( "namespace" ).equals( ns ) ) {
+                        el.setAttribute( "schemaLocation", target.getName() );
+                    }
+                }
+            }
+        }
+
+        return target;
+    }
+
+    public Map<String, Namespace> getAssignedPrefixes() {
+        return prefixMap;
+    }
+
     public Namespace getNamespace(String ns) {
-        return namespaces.get( ns );
+        return prefixMap.get( ns );
     }
 
     public Collection<Namespace> getNamespaces() {
-        return namespaces.values();
+        return prefixMap.values();
     }
 
 
     public void setNamespace( String prefix, String namespace ) {
-        Namespace ns = Namespace.getNamespace( prefix, namespace );
-        namespaces.put( prefix, ns );
+        namespace = NamespaceUtils.removeLastSeparator( namespace );
 
-        if ( schema != null ) {
-            schema.getRootElement().addNamespaceDeclaration( ns );
-        }
-        for ( Document dox : subSchemas.values() ) {
+        Namespace ns = Namespace.getNamespace( prefix, namespace );
+        prefixMap.put( prefix, ns );
+        reversePrefixMap.put( namespace, prefix );
+
+        for ( Document dox : schemas.values() ) {
             dox.getRootElement().addNamespaceDeclaration( ns );
         }
     }
 
 
     public void addTrait( String name, Object trait ) {
-        Element elx = (Element) trait;
-        String type = elx.getAttributeValue( "type" );
-        if ( type != null ) {
-            boolean mainNamespace = type.startsWith( "tns:" );
-            if ( mainNamespace ) {
-                getXSDSchema().getRootElement().addContent( (Element) trait );
-            } else {
-                Namespace altNamespace = namespaces.get( type.substring( 0, type.indexOf( ":" ) ) );
-                getXSDSchema( altNamespace ).getRootElement().addContent( (Element) trait );
-            }
-        } else {
-            Element typeDef = (Element) trait;
-            Document schema = getXSDSchema( name );
-            schema.getRootElement().addContent( typeDef );
-            if ( typeDef.getName().equals( "complexType" ) ) {
-                Element complexContent = typeDef.getChild( "complexContent", namespaces.get( "xsd" ) );
-                if ( complexContent != null ) {
-                    Element base = complexContent.getChild( "extension", namespaces.get( "xsd" ) );
-                    if ( base != null ) {
-                        String sup =  base.getAttributeValue( "base" );
-                        if ( sup.indexOf( ":" ) >= 0 ) {
-                            String ns = sup.substring( 0, sup.indexOf( ":" ) );
-                            String baseNs = namespaces.get( ns ).getURI();
-                            String localNs = schema.getRootElement().getAttributeValue( "targetNamespace" );
-                            if ( ! localNs.equals( baseNs ) ) {
-                                addImport( schema, namespaces.get( ns ) );
-                            }
 
-                        }
-                    }
-                }
+        XSDTypeDescr descr = (XSDTypeDescr) trait;
 
+        String prefix = reversePrefixMap.get( descr.getNamespace() );
+        Document schema = getXSDSchema( prefixMap.get( prefix ) );
+
+        schema.getRootElement().addContent( descr.getDeclaration() );
+        schema.getRootElement().addContent( descr.getDefinition() );
+
+        // now resolve required imports
+        for ( String depNs : descr.getDependencies() ) {
+            if ( ! reversePrefixMap.containsKey( depNs ) ) {
+                String px = mapNamespaceToPrefix( depNs );
+                createXSDSchema( Namespace.getNamespace( px, depNs ) );
             }
+            addImport( schema, prefixMap.get( reversePrefixMap.get( depNs ) ) );
         }
 
     }
 
-    private Document getXSDSchema( String type ) {
-        if ( type.indexOf( ":" ) >= 0 ) {
-            return getXSDSchema();
-        }
-        if ( definesType( getXSDSchema(), type ) ) {
-            return getXSDSchema();
-        }
-        for ( Document sub : subSchemas.values() ) {
-            if ( definesType(sub, type) ) {
-                return sub;
-            }
-        }
-        return getXSDSchema();
-//        throw new IllegalStateException( "No schema has been initialized for type " + type );
+    @Deprecated
+    public Document getXSDSchema() {
+        return schemas.get( getNamespace( "tns" ) );
     }
 
-    private boolean definesType( Document dox, String name ) {
-        Element schema = dox.getRootElement();
-        List<Element> types = schema.getChildren( "element", Namespace.getNamespace( "xsd", "http://www.w3.org/2001/XMLSchema" ) );
-        for ( Element ct : types ) {
-            String declaredName = ct.getAttributeValue( "name" );
-            if ( declaredName != null && declaredName.equals( name ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private Document getXSDSchema( String type ) {
+//        if ( type.indexOf( ":" ) >= 0 ) {
+//            return getXSDSchema();
+//        }
+//        if ( definesType( getXSDSchema(), type ) ) {
+//            return getXSDSchema();
+//        }
+//        for ( Document sub : subSchemas.values() ) {
+//            if ( definesType(sub, type) ) {
+//                return sub;
+//            }
+//        }
+//        return getXSDSchema();
+//    }
 
     private Document getXSDSchema( Namespace altNamespace ) {
-        if ( subSchemas.containsKey( altNamespace ) ) {
-            return subSchemas.get( altNamespace );
+        if ( schemas.containsKey( altNamespace ) ) {
+            return schemas.get( altNamespace );
         } else {
-                System.out.println( "Need to create a new schema on the fly " + altNamespace );
-            Document dox = initDocument( altNamespace.getURI() );
-            subSchemas.put( altNamespace, dox );
-
-            addImport( getXSDSchema(), altNamespace );
+            Document dox = createXSDSchema( altNamespace );
             return dox;
         }
     }
+
+    private Document createXSDSchema( Namespace altNamespace ) {
+        Document dox = initDocument( altNamespace.getURI() );
+        schemas.put( altNamespace, dox );
+        return dox;
+    }
+
+
+
 
     private void addImport( Document dox, Namespace altNamespace ) {
         List<Element> imports = dox.getRootElement().getChildren( "import", NamespaceUtils.getNamespaceByPrefix( "xsd" ) );
@@ -215,7 +276,6 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         Element imp = new Element( "import", getNamespace( "xsd" ) );
             imp.setAttribute( "namespace", altNamespace.getURI() );
             imp.setAttribute( "schemaLocation", getSchemaName( altNamespace ) );
-        System.err.println( "Adding import " + altNamespace + " , just to be sure" );
 
         dox.getRootElement().addContent( 0, imp );
     }
@@ -224,12 +284,42 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         if ( NamespaceUtils.getNamespaceByPrefix( "owl" ).getURI().equals( altNamespace.getURI() ) ) {
             return "owlThing.xsd";
         } else {
-            String prefix = NamespaceUtils.compareNamespaces( altNamespace.getURI(), getDefaultNamespace() )
-                    ? ""
-                    : ( "_" + altNamespace.getPrefix() );
-            return getName() + prefix + ".xsd";
+//            String prefix = NamespaceUtils.compareNamespaces( altNamespace.getURI(), getDefaultNamespace() )
+//                    ? ""
+//                    : ( "_" + altNamespace.getPrefix() );
+//            return getName() + prefix + ".xsd";
+            return NameUtils.namespaceURIToPackage( altNamespace.getURI() ) + ".xsd";
         }
     }
+
+
+    public String mapNamespaceToPrefix( String namespace ) {
+        namespace = NamespaceUtils.removeLastSeparator( namespace );
+        String prefix;
+        if ( StringUtils.isEmpty( namespace ) ) {
+            prefix = "tns";
+        } else if ( NamespaceUtils.compareNamespaces( getDefaultNamespace(), namespace ) ) {
+            prefix = "tns";
+        } else if ( reversePrefixMap.containsKey( namespace ) ) {
+            prefix = reversePrefixMap.get( namespace );
+        } else if ( NamespaceUtils.isKnownSchema(namespace) ) {
+            prefix = NamespaceUtils.getPrefix( namespace );
+            reversePrefixMap.put( namespace, prefix );
+            setNamespace( prefix, namespace );
+        } else {
+            prefix = "ns" + ( reversePrefixMap.size() + 1 );
+            reversePrefixMap.put( namespace, prefix );
+            setNamespace( prefix, namespace );
+        }
+        return prefix;
+    }
+
+
+
+
+
+
+
 
 
     public Object getTrait(String name) {
@@ -274,6 +364,64 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         } catch ( Exception e ) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+
+
+
+
+
+
+
+    public static class XSDTypeDescr {
+
+        private String name;
+        private String namespace;
+        private String effectiveName;
+        private String effectiveType;
+
+        private Element declaration;
+        private Element definition;
+
+        private Set<String> dependencies;
+
+        public XSDTypeDescr( String name, String namespace, String effectiveName, String effectiveType, Element declaration, Element definition, Set<String> dependencies ) {
+            this.name = name;
+            this.namespace = namespace;
+            this.effectiveName = effectiveName;
+            this.effectiveType = effectiveType;
+            this.declaration = declaration;
+            this.definition = definition;
+            this.dependencies = dependencies;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getNamespace() {
+            return namespace;
+        }
+
+        public String getEffectiveName() {
+            return effectiveName;
+        }
+
+        public String getEffectiveType() {
+            return effectiveType;
+        }
+
+        public Element getDeclaration() {
+            return declaration;
+        }
+
+        public Element getDefinition() {
+            return definition;
+        }
+
+        public Set<String> getDependencies() {
+            return dependencies;
         }
     }
 

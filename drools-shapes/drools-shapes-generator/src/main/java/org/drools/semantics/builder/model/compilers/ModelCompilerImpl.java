@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright 2011 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,39 +38,41 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
 
     public CompiledOntoModel compile( OntoModel model ) {
 
-        setModel( model );
+        if ( getModel() == null ) {
+            setModel( model );
+        }
 
-        if ( getModel() != null ) {
-            for ( Concept con : getModel().getConcepts() ) {
-                if ( con.isPrimitive() || con.isResolved() ) {
-                    continue;
-                }
+        for ( Concept con : getModel().getConcepts() ) {
+            if ( con.isPrimitive() ) {
+                continue;
+            }
 
-                String name = NameUtils.compactUpperCase( con.getName() );
+            String name = NameUtils.compactUpperCase( con.getName() );
+            System.out.println( "Compiling concept " + name );
 
-                Map map = new HashMap();
-                map.put( "package", con.getPackage() );
-                map.put( "namespace", con.getNamespace() );
-                map.put( "iri", con.getIri() );
-                map.put( "name", con.getName().substring( con.getName().lastIndexOf(".") + 1 ) );
-                map.put( "fullyQualifiedName", con.getFullyQualifiedName() );
-                map.put( "superConcepts", con.getSuperConcepts() );
-                map.put( "subConcepts", con.getSubConcepts() );
-                map.put( "properties", con.getProperties() );
-                map.put( "implInterface", con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.IFACE ) ? con.getFullyQualifiedName() : null );
-                map.put( "implClass", con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.CLASS )? con.getFullyQualifiedName() : null );
-                map.put( "implProperties", con.getChosenProperties() );
+            Map map = new HashMap();
+            map.put( "package", con.getPackage() );
+            map.put( "namespace", con.getNamespace() );
+            map.put( "iri", con.getIri() );
+            map.put( "name", con.getName().substring( con.getName().lastIndexOf(".") + 1 ) );
+            map.put( "fullyQualifiedName", con.getFullyQualifiedName() );
+            map.put( "superConcepts", con.getSuperConcepts() );
+            map.put( "subConcepts", con.getSubConcepts() );
+            map.put( "properties", con.getProperties() );
+            map.put( "implInterface", con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.IFACE ) ? con.getFullyQualifiedName() : null );
+            map.put( "implClass", con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.CLASS )? con.getFullyQualifiedName() : null );
+            map.put( "implProperties", con.getChosenProperties() );
 
 //                map.put( "shadowProperties", con.getShadowProperties() );
-                if ( con.isAbstrakt() ) {
-                    map.put( "abstract", con.isAbstrakt() );
-                }
-                map.put( "keys", con.getKeys() );
-                map.put( "shadowed", con.isShadowed() );
-
-                compile( con, NameUtils.getInstance(), map );
+            if ( con.isAbstrakt() ) {
+                map.put( "abstract", con.isAbstrakt() );
             }
+            map.put( "keys", con.getKeys() );
+            map.put( "shadowed", con.isShadowed() );
+
+            compile( con, NameUtils.getInstance(), map );
         }
+
         return getModel();
     }
 

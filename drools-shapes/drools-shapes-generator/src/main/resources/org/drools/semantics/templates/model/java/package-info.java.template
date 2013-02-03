@@ -1,3 +1,14 @@
-@javax.xml.bind.annotation.XmlSchema(namespace = "@{namespace}", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package org.w3._2002._07.owl;
+@javax.xml.bind.annotation.XmlSchema(
+    xmlns = {
+        @foreach{ pref : prefixMap.keySet }
+          @javax.xml.bind.annotation.XmlNs(
+                     prefix = "@{ pref }",
+                     namespaceURI = "@{ prefixMap[ pref ].URI }"
+          )
+        @end{ ',' }
+    },
+    namespace = "@{ namespace }",
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
+    )
+package @{pack};
 
