@@ -6,13 +6,14 @@ import com.clarkparsia.empire.SupportsRdfId;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.UUID;
 
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public abstract class UIdAble implements SupportsRdfId {
+public abstract class UIdAble implements SupportsRdfId, org.w3._2002._07.owl.Thing {
 
     private Key key;
 
@@ -23,7 +24,7 @@ public abstract class UIdAble implements SupportsRdfId {
     @XmlTransient
     public RdfKey getRdfId() {
         if ( key == null && getDyEntryId() != null ) {
-            key = new Key( getDyEntryId() );
+            key = new Key( "http://" + getDyEntryId() );
         }
         return key;
     }
@@ -31,7 +32,7 @@ public abstract class UIdAble implements SupportsRdfId {
     public void setRdfId( RdfKey theId ) {
         if ( theId != null && theId.value() != null ) {
             key = new Key( theId.value() );
-            setDyEntryId( theId.toString() );
+            setDyEntryId( theId.toString().replace( "http://", "" ) );
         }
     }
 
@@ -41,7 +42,7 @@ public abstract class UIdAble implements SupportsRdfId {
 
 
     public UIdAble() {
-        setDyEntryId( "http://" + UUID.randomUUID().toString() );
+        setDyEntryId( "id" + UUID.randomUUID().toString() );
     }
 
 //    @XmlTransient
@@ -49,8 +50,8 @@ public abstract class UIdAble implements SupportsRdfId {
 //    public abstract void setDyEntryType(String dyEntryType);
 
     @XmlTransient
-    public abstract boolean isDyReference();
-    public abstract void setDyReference(boolean dyReference);
+    public abstract String getDyReference();
+    public abstract void setDyReference(String dyReference);
 
     @Override
     public boolean equals(Object o) {
@@ -59,20 +60,20 @@ public abstract class UIdAble implements SupportsRdfId {
 
         UIdAble uIdAble = (UIdAble) o;
 
-        if (isDyReference() != uIdAble.isDyReference()) return false;
-        
-        if ( this.getDyEntryId() != null ) {
-            return getDyEntryId().equals( uIdAble.getDyEntryId() );
+        if ( getDyReference() == null && uIdAble.getDyReference() == null ) {
+            return this.getDyEntryId() != null && getDyEntryId().equals( uIdAble.getDyEntryId() );
         } else {
-            return false;
+            return this.getDyReference() != null && getDyReference().equals( uIdAble.getDyReference() );
         }
     }
 
     @Override
     public int hashCode() {
-        int result = getDyEntryId() != null ? getDyEntryId().hashCode() : 0;
-        result = 31 * result + (isDyReference() ? 1 : 0);
-        return result;
+        if ( getDyEntryId() != null ) {
+            return getDyEntryId().hashCode();
+        } else {
+            return 31 + ( getDyReference() != null ? getDyReference().hashCode() : 1 );
+        }
     }
 
     protected static class Key implements RdfKey, Serializable {

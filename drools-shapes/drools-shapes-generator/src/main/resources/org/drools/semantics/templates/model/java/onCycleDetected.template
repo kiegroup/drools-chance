@@ -24,7 +24,8 @@
     public Object onCycleDetected( com.sun.xml.bind.CycleRecoverable.Context context ) {
 
            @{ name + "Impl"} x = new @{ name + "Impl"}();
-               x.setDyEntryId( this.getDyEntryId() );
+               x.setDyEntryId( null );
+               x.setDyReference( this.getDyEntryId() );
            return x;
     }
 

@@ -9,10 +9,7 @@
             targetNamespace="http://www.w3.org/2002/07/owl">
   <xsd:element name="Thing" type="owl:Thing" />
   <xsd:complexType name="Thing">
-    <xsd:sequence>
-      <!--xsd:element name="dyEntryType" type="xsd:string" maxOccurs="1" minOccurs="0" /-->
-      <xsd:element name="dyReference" type="xsd:boolean" maxOccurs="1" minOccurs="1" />
-      <xsd:element name="dyEntryId" type="xsd:string" maxOccurs="1" minOccurs="1" />
-    </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+      <xsd:attribute name="idref" type="xsd:IDREF"  use="optional"/>
   </xsd:complexType>
 </xsd:schema>

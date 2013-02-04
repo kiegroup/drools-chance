@@ -19,9 +19,8 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -88,8 +87,10 @@ public class ThingImpl
         implements Serializable, Cloneable, CycleRecoverable, CopyTo, Equals, HashCode, MergeFrom, Thing, EmpireGenerated {
 
 //    protected String dyEntryType;
-    protected boolean dyReference;
-    @XmlAttribute( required = true, name = "id", namespace = "http://www.w3.org/2001/XMLSchema" )
+    @XmlAttribute( required = false, name = "idref" )
+    protected String dyReference;
+    @XmlID
+    @XmlAttribute( required = true, name = "id" )
     protected String dyEntryId;
 
     /**
@@ -100,15 +101,6 @@ public class ThingImpl
         super();
     }
 
-    /**
-     * Fully-initialising value constructor
-     * 
-     */
-    public ThingImpl(final String dyEntryType, final boolean dyReference, final String dyEntryId) {
-//        this.dyEntryType = dyEntryType;
-        this.dyReference = dyReference;
-        this.dyEntryId = dyEntryId;
-    }
 
 //    /**
 //     * Gets the value of the dyEntryType property.
@@ -142,7 +134,7 @@ public class ThingImpl
      */
     @Basic
     @Column(name = "DYREFERENCE")
-    public boolean isDyReference() {
+    public String getDyReference() {
         return dyReference;
     }
 
@@ -150,7 +142,7 @@ public class ThingImpl
      * Sets the value of the dyReference property.
      * 
      */
-    public void setDyReference(boolean value) {
+    public void setDyReference(String value) {
         this.dyReference = value;
     }
 
@@ -202,10 +194,15 @@ public class ThingImpl
 //            } else {
 //                copy.dyEntryType = null;
 //            }
-            boolean sourceDyReference;
-            sourceDyReference = (true?this.isDyReference():false);
-            boolean copyDyReference = strategy.copy(LocatorUtils.property(locator, "dyReference", sourceDyReference), sourceDyReference);
-            copy.setDyReference(copyDyReference);
+            if ( this.dyReference != null ) {
+                String sourceDyReference;
+                sourceDyReference = this.getDyReference();
+                String copyDyReference = ((String) strategy.copy(LocatorUtils.property(locator, "dyReference", sourceDyReference), sourceDyReference) );
+                copy.setDyReference( copyDyReference );
+            } else {
+                copy.dyReference = null;
+            }
+
             if (this.dyEntryId!= null) {
                 String sourceDyEntryId;
                 sourceDyEntryId = this.getDyEntryId();
@@ -232,20 +229,12 @@ public class ThingImpl
             final ThingImpl target = this;
             final ThingImpl leftObject = ((ThingImpl) left);
             final ThingImpl rightObject = ((ThingImpl) right);
-//            {
-//                String lhsDyEntryType;
-//                lhsDyEntryType = leftObject.getDyEntryType();
-//                String rhsDyEntryType;
-//                rhsDyEntryType = rightObject.getDyEntryType();
-//                String mergedDyEntryType = ((String) strategy.merge(LocatorUtils.property(leftLocator, "dyEntryType", lhsDyEntryType), LocatorUtils.property(rightLocator, "dyEntryType", rhsDyEntryType), lhsDyEntryType, rhsDyEntryType));
-//                target.setDyEntryType(mergedDyEntryType);
-//            }
             {
-                boolean lhsDyReference;
-                lhsDyReference = (true?leftObject.isDyReference():false);
-                boolean rhsDyReference;
-                rhsDyReference = (true?rightObject.isDyReference():false);
-                boolean mergedDyReference = ((boolean) strategy.merge(LocatorUtils.property(leftLocator, "dyReference", lhsDyReference), LocatorUtils.property(rightLocator, "dyReference", rhsDyReference), lhsDyReference, rhsDyReference));
+                String lhsDyReference;
+                lhsDyReference = leftObject.getDyReference();
+                String rhsDyReference;
+                rhsDyReference = rightObject.getDyReference();
+                String mergedDyReference = ((String) strategy.merge(LocatorUtils.property(leftLocator, "dyReference", lhsDyReference), LocatorUtils.property(rightLocator, "dyReference", rhsDyReference), lhsDyReference, rhsDyReference));
                 target.setDyReference(mergedDyReference);
             }
             {
@@ -259,12 +248,8 @@ public class ThingImpl
         }
     }
 
-//    public ThingImpl withDyEntryType(String value) {
-//        setDyEntryType(value);
-//        return this;
-//    }
 
-    public ThingImpl withDyReference(boolean value) {
+    public ThingImpl withDyReference(String value) {
         setDyReference(value);
         return this;
     }

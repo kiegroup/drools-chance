@@ -141,7 +141,6 @@
                 </jxb:property>
 
 
-
                     <annox:annotate>
                         <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="@{prop.iri}" />
                         <annox:annotate annox:class="thewebsemantic.RdfProperty" value="@{prop.iri}" />
@@ -150,10 +149,14 @@
 
 
                 @if{ ! prop.target.primitive }
+
+                    <hj:many-to-many/>
+
                     <annox:annotate target="field">
                             <annox:annotate target="field"
                                         annox:class="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter"
-                                        value="org.drools.semantics.ReferenceAdapter" />
+                                        value="org.drools.semantics.XMLSerializationHelper" />
+                            <!-- annox:annotate target="field" annox:class="javax.xml.bind.annotation.XmlIDREF" /-->
                     </annox:annotate>
                 @end{}
 

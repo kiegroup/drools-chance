@@ -71,7 +71,7 @@ public class IndividualFactory {
 
         @foreach{ ind : individuals }
             @{ind.type} @{ind.name} = new @{ind.type}Impl();
-            @{ind.name}.setDyEntryId( "@{ind.name}" );
+            ( (@{ind.type}Impl) @{ind.name} ).setDyEntryId( "@{ind.name}" );
             individuals.put( "@{ind.name}", @{ind.name} );
         @end{}
 

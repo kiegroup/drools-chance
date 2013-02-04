@@ -44,9 +44,9 @@ public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface 
 
     public void setDyEntryId( java.lang.String id );
 
-    public boolean isDyReference();
+    public String getDyReference();
 
-    public void setDyReference(boolean dyReference);
+    public void setDyReference(String dyReference);
 
 
 @if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }

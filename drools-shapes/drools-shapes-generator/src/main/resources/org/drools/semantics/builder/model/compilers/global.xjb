@@ -31,18 +31,18 @@
           version="2.1"
           xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
 
-<globalBindings localScoping="toplevel" underscoreBinding="asCharInWord" enableJavaNamingConventions="true" >
-<serializable/>
-<xjc:simple/>
-<javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:date"/>
-<javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:dateTime"/>
-<javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:time"/>
-</globalBindings>
+  <globalBindings localScoping="toplevel" underscoreBinding="asCharInWord" enableJavaNamingConventions="true" >
+    <serializable/>
+    <xjc:simple/>
+    <javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:date"/>
+    <javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:dateTime"/>
+    <javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:time"/>
+  </globalBindings>
 
-<bindings node="/xsd:schema" schemaLocation="owlThing.xsd">
-<bindings node="//xsd:complexType[@name='Thing']">
-    <jxb:class ref="org.w3._2002._07.owl.ThingImpl"/>
-</bindings>
-</bindings>
+  <bindings node="/xsd:schema" schemaLocation="owlThing.xsd">
+    <bindings node="//xsd:complexType[@name='Thing']">
+      <jxb:class ref="org.w3._2002._07.owl.ThingImpl"/>
+    </bindings>
+  </bindings>
 
 </bindings>
