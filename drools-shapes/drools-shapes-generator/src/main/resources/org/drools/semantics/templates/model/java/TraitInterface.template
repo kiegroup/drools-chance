@@ -39,6 +39,7 @@ public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface 
                                  @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{sup.package}.@{compactUpperCase( sup.name ) } @end{','} @end{}
 {
 
+    /*
     @javax.xml.bind.annotation.XmlID
     public java.lang.String getDyEntryId();
 
@@ -46,8 +47,8 @@ public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface 
 
     public String getDyReference();
 
-    public void setDyReference(String dyReference);
-
+    public void setDyReference( java.lang.String dyReference );
+    */
 
 @if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }
     @code{ prop = properties[ propKey ] }
