@@ -511,7 +511,7 @@ public class FactTest {
     public void testJPA() throws ClassNotFoundException {
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(
-                "org.drools.owl.conyard:org.w3._2002._07.owl"
+                "conyard"
         );
         EntityManager em = emf.createEntityManager();
 

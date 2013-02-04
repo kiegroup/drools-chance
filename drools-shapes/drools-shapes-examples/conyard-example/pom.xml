@@ -233,6 +233,12 @@
           <include>**/*.*</include>
         </includes>
       </resource>
+      <resource>
+        <directory>${pom.basedir}/target/generated-sources/xjc</directory>
+        <includes>
+          <include>**/*.*</include>
+        </includes>
+      </resource>
     </resources>
 
     <plugins>
@@ -274,9 +280,7 @@
         <configuration>
           <outputDirectory>${pom.basedir}</outputDirectory>
           <ontology>${pom.basedir}/src/main/resources/conyard.ttl</ontology>
-          <!--
-       <ontology>${pom.basedir}/src/main/resources/mini.ttl</ontology>
-          -->
+
           <modelName>conyard</modelName>
           <generateInterfaces>true</generateInterfaces>
           <generateInterfaceJar>true</generateInterfaceJar>
@@ -284,98 +288,8 @@
           <generateDefaultImplClasses>true</generateDefaultImplClasses>
           <inheritanceMode>OPTIMIZED</inheritanceMode>
           <generateSpecXSDs>true</generateSpecXSDs>
+          <compilationOptionsPackage>default</compilationOptionsPackage>
         </configuration>
-      </plugin>
-
-
-
-
-      <plugin>
-        <groupId>org.jvnet.hyperjaxb3</groupId>
-        <artifactId>maven-hyperjaxb3-plugin</artifactId>
-        <version>0.5.6</version>
-        <configuration>
-          <variant>jpa2</variant>
-          <extension>true</extension>
-          <args>
-            <arg>-extension</arg>
-            <arg>-Xjaxbindex</arg>
-            <arg>-Xannotate</arg>
-            <arg>-Xinheritance</arg>
-            <!--arg>-XtoString</arg-->
-            <arg>-Xcopyable</arg>
-            <arg>-Xmergeable</arg>
-            <arg>-Xvalue-constructor</arg>
-            <arg>-Xfluent-api</arg>
-            <arg>-Xinject-code</arg>
-            <arg>-Xkey-equality</arg>
-            <arg>-Xsem-accessors</arg>
-            <arg>-Xdefault-constructor</arg>
-            <arg>-Xmetadata</arg>
-          </args>
-          <removeOldOutput>false</removeOldOutput>
-
-          <bindingDirectory>${pom.basedir}/target/generated-sources/META-INF</bindingDirectory>
-
-          <schemaDirectory>${pom.basedir}/target/generated-sources/META-INF</schemaDirectory>
-          <schemaExcludes>
-            <exclude>**/*_$full.xsd</exclude>
-            <exclude>**/*_$spec.xsd</exclude>
-            <exclude>**/*_$impl.xsd</exclude>
-          </schemaExcludes>
-
-          <persistenceXml>src/main/resources/persistence-template-hibernate.xml</persistenceXml>
-
-          <generateEquals>false</generateEquals>
-          <generateHashCode>false</generateHashCode>
-
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>com.clarkparsia</groupId>
-            <artifactId>Empire-core</artifactId>
-            <version>0.7.3</version>
-          </dependency>
-          <dependency>
-            <groupId>org.jvnet.jaxb2_commons</groupId>
-            <artifactId>jaxb2-value-constructor</artifactId>
-            <version>3.0</version>
-          </dependency>
-          <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-shapes-generator-plugin</artifactId>
-            <version>${chance.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>javax.jdo</groupId>
-            <artifactId>jdo-api</artifactId>
-            <version>3.0</version>
-          </dependency>
-
-
-          <dependency>
-            <groupId>org.jvnet.jaxb2_commons</groupId>
-            <artifactId>jaxb2-fluent-api</artifactId>
-            <version>3.0</version>
-          </dependency>
-          <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.6.4</version>
-          </dependency>
-          <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.4</version>
-          </dependency>
-        </dependencies>
       </plugin>
 
       <!--plugin>

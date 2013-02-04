@@ -16,47 +16,32 @@
 
 package org.drools.semantics.builder.model;
 
-import org.drools.KnowledgeBaseConfiguration;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuleBaseConfiguration;
-import org.drools.reteoo.AlphaNode;
-import org.drools.reteoo.ObjectSource;
-import org.drools.reteoo.builder.BuildContext;
-import org.drools.reteoo.builder.DefaultNodeFactory;
-import org.drools.reteoo.builder.NodeFactory;
-import org.drools.semantics.builder.DLTemplateManager;
-import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompilerImpl;
 import org.drools.semantics.utils.NameUtils;
-import org.drools.spi.AlphaNodeFieldConstraint;
 import org.jdom.Namespace;
-import org.mvel2.templates.CompiledTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import sun.misc.Regexp;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.*;
-import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDModel {
 
@@ -145,7 +130,7 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
 
     public boolean streamEmpireConfig( OutputStream os ) {
         try {
-            System.out.println(" EMPIRE CONFIG" + getEmpireConfig() );
+//            System.out.println(" EMPIRE CONFIG" + getEmpireConfig() );
             os.write( getEmpireConfig().getBytes() );
         } catch ( Exception e ) {
             return false;
@@ -206,7 +191,7 @@ public class SemanticXSDModelImpl extends XSDModelImpl implements SemanticXSDMod
 
                 if ( os != null ) {
                     Document bindings = getBindings( prefixMap.get( ns ).getURI() );
-                    System.out.println( compactXML( bindings ) );
+//                    System.out.println( compactXML( bindings ) );
 
                     String tgtSchemaLoc = schemaLocations.get( namespace );
 

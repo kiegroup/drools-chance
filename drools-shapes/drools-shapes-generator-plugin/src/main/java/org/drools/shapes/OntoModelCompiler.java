@@ -124,6 +124,19 @@ public class OntoModelCompiler {
         }
     }
 
+    public enum COMPILATION_OPTIONS {
+        DEFAULT( defaultOptions ), MINIMAL( minimalOptions ), FULL( fullOptions );
+
+        private List<String> options;
+        COMPILATION_OPTIONS( List<String> opts ) {
+            options = opts;
+        }
+
+        public List<String> getOptions() {
+            return options;
+        }
+    }
+
     private File folder;
     private OntoModel model;
 
@@ -473,7 +486,7 @@ public class OntoModelCompiler {
                 files.add( f );
             }
             if ( f.isDirectory() ) {
-                System.out.println( "Looking for java in " + f.getPath() );
+//                System.out.println( "Looking for java in " + f.getPath() );
                 explore( f, files );
             }
         }
@@ -512,7 +525,7 @@ public class OntoModelCompiler {
     }
 
     private void copyFile( File f, File tgtDir ) throws IOException {
-        System.out.println(" Trying to copy " + f.getName() + " into >>> " + tgtDir.getPath() );
+//        System.out.println(" Trying to copy " + f.getName() + " into >>> " + tgtDir.getPath() );
         FileInputStream fis = new FileInputStream( f );
         byte[] buf = new byte[ fis.available() ];
         fis.read( buf );
@@ -527,10 +540,8 @@ public class OntoModelCompiler {
     }
 
 
-    protected boolean streamMockPOM() {
+    protected boolean streamMockPOM( File pom, String name ) {
         boolean success = false;
-
-        File pom = new File( folder.getPath() + File.separator + "pom.xml" );
         try {
             FileOutputStream fos = new FileOutputStream( pom );
             byte[] content = ( "" +
@@ -540,7 +551,7 @@ public class OntoModelCompiler {
                     "         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n" +
                     "  <modelVersion>4.0.0</modelVersion>\n" +
                     "  <groupId>org.test</groupId>\n" +
-                    "  <artifactId>diamond</artifactId>\n" +
+                    "  <artifactId>" + name + "</artifactId>\n" +
                     "</project>\n" +
                     "" ).getBytes();
 
@@ -559,7 +570,11 @@ public class OntoModelCompiler {
     public boolean mojo( List<String> args, MOJO_VARIANTS variant ) {
         boolean success = false;
         try {
-            success = streamMockPOM();
+            File pom = new File( folder.getPath() + File.separator + "pom.xml" );
+            if ( ! pom.exists() ) {
+                success = streamMockPOM( pom, model.getName() );
+            }
+
 
             MavenProject mp = new MavenProject();
 

@@ -1,4 +1,4 @@
-package org.drools.translators;
+package translators;
 
 import org.w3._2002._07.owl.Thing;
 import org.semanticweb.ontologies._2012._1.rule_merged.*;
@@ -30,7 +30,7 @@ end
 
 rule "Process Rule"
 when
-    $r : Rule( $uid : dyEntryId )
+    $r : Rule( $uid : this.dyEntryId )
 then
     RuleDescr rd = new RuleDescr();
         rd.setName( $uid );
@@ -43,9 +43,9 @@ rule "Process Simple Premise"
 no-loop
 dialect "mvel"
 when
-    $r : Rule( $uid : dyEntryId, $lhs : hasPremiseFormula )
+    $r : Rule( $uid : this.dyEntryId, $lhs : hasPremiseFormula )
     not  MetaRule ( this == $r )  //MVEL bug with instanceof... TODO
-    $f : Pattern( $pid : dyEntryId, this == $lhs, $fct : get( "hasFunctorType" ), $fct != null && $fct.size() > 0 )
+    $f : Pattern( $pid : this.dyEntryId, this == $lhs, $fct : get( "hasFunctorType" ), $fct != null && $fct.size() > 0 )
     $t : Thing( $type : this.semanticTypeName ) from $fct.get(0)
     $x : RuleDescr( name == $uid )
 then
@@ -69,10 +69,10 @@ end
 
 rule "Add value constraint to pattern"
 when
-    $r : Pattern( $uid : dyEntryId, $cons : hasConstraint )
+    $r : Pattern( $uid : this.dyEntryId, $cons : hasConstraint )
     not  ActivationPattern( this == $r )
     $x : PatternDescr( identifier == $uid )
-    ValueConstraint( $cid : dyEntryId, // this memberOf $cons,       bug in equals?
+    ValueConstraint( $cid : this.dyEntryId, // this memberOf $cons,       bug in equals?
                      $field : onPropertyString, $op : hasOperator, $val : hasValue )  from $cons
 then
     FieldConstraintDescr fcd = new FieldConstraintDescr( $field );
@@ -87,7 +87,7 @@ end
 
 rule "Process MetaRule"
 when
-    $r : MetaRule( $uid : dyEntryId, $meta : hasPremiseMetaPatterns )
+    $r : MetaRule( $uid : this.dyEntryId, $meta : hasPremiseMetaPatterns )
     $d : RuleDescr( name == $uid, lhs == null )
     $f : AndFormula( ) from $meta
 then
@@ -101,10 +101,10 @@ end
 
 rule "Process MetaRule Patterns"
 when
-    $r : MetaRule( $uid : dyEntryId, $meta : hasPremiseMetaPatterns, $about : aboutRuleRule.dyEntryId )
+    $r : MetaRule( $uid : this.dyEntryId, $meta : hasPremiseMetaPatterns, $about : aboutRuleRule.dyEntryId )
     $d : RuleDescr( name == $uid, $and : lhs != null )
     $f : AndFormula( $ops : hasOperand ) from $meta
-    $p : ActivationPattern( $aid : dyEntryId ) from $ops
+    $p : ActivationPattern( $aid : this.dyEntryId ) from $ops
 then
     PatternDescr act = new PatternDescr();
         act.setObjectType( "Activation" );
@@ -119,7 +119,7 @@ end
 
 rule "Process MetaRule Patterns : Add constraints "
 when
-    $p : ActivationPattern( $aid : dyEntryId, $ctx : hasConstraint )
+    $p : ActivationPattern( $aid : this.dyEntryId, $ctx : hasConstraint )
     $d : PatternDescr( identifier == $aid )
     $c : ValueConstraint( $prop : onProperty, $op : hasOperator, $val : hasValue ) from $ctx
 then
@@ -131,10 +131,10 @@ end
 
 rule "Process Outcome Patterns"
 when
-    $r : MetaRule( $uid : dyEntryId, $meta : hasPremiseMetaPatterns, $about : aboutRuleRule.dyEntryId )
+    $r : MetaRule( $uid : this.dyEntryId, $meta : hasPremiseMetaPatterns, $about : aboutRuleRule.dyEntryId )
     $d : RuleDescr( name == $uid, $and : lhs != null )
     $f : AndFormula( $ops : hasOperand ) from $meta
-    $p : FailurePattern( $aid : dyEntryId ) from $ops
+    $p : FailurePattern( $aid : this.dyEntryId ) from $ops
 then
     PatternDescr act = new PatternDescr();
         act.setObjectType( "Failure" );
@@ -155,8 +155,8 @@ end
 rule "Add rule attributes"
 no-loop
 when
-    $r : Rule( $uid : dyEntryId, $att : hasRuleAttribute )
-    $o : Thing( $aid : dyEntryId, $t : this.actualType, $keys : this.properties, $values : this.propertyValues ) from $att
+    $r : Rule( $uid : this.dyEntryId, $att : hasRuleAttribute )
+    $o : Thing( $aid : this.dyEntryId, $t : this.actualType, $keys : this.properties, $values : this.propertyValues ) from $att
     $x : RuleDescr( name == $uid )
 then
     AnnotationDescr ad = new AnnotationDescr( "TODO_" + $o.getClass().getSimpleName() );
@@ -171,8 +171,8 @@ end
 rule "Preconditions"
 no-loop
 when
-    $r   : Rule( $uid : dyEntryId, $prex : hasPrecondition )
-    $pre : UIdAble( $x : dyEntryId ) from $prex
+    $r   : Rule( $uid : this.dyEntryId, $prex : hasPrecondition )
+    $pre : UIdAble( $x : this.dyEntryId ) from $prex
 then
      RuleDescr rd = new RuleDescr();
         rd.setName( $uid + " defeater " + $x  );
@@ -183,8 +183,8 @@ end
 rule "Goals"
 no-loop
 when
-    $r   : Rule( $uid : dyEntryId, $exx : hasExpectation, $t : this.semanticTypeName )
-    $exp : UIdAble( $x : dyEntryId ) from $exx
+    $r   : Rule( $uid : this.dyEntryId, $exx : hasExpectation, $t : this.semanticTypeName )
+    $exp : UIdAble( $x : this.dyEntryId ) from $exx
 then
     RuleDescr rd = new RuleDescr();
         rd.setName( $uid + " expectation " + $x  );

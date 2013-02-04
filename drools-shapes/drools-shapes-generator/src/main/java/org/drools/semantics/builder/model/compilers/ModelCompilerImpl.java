@@ -48,7 +48,7 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
             }
 
             String name = NameUtils.compactUpperCase( con.getName() );
-            System.out.println( "Compiling concept " + name );
+//            System.out.println( "Compiling concept " + name );
 
             Map map = new HashMap();
             map.put( "package", con.getPackage() );

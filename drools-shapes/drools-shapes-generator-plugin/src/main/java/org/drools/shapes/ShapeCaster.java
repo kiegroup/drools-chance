@@ -35,8 +35,11 @@ import org.w3._2002._07.owl.Thing;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Goal which creates various possible fact model representations from an ontology
@@ -234,7 +237,31 @@ public class ShapeCaster
     }
 
 
+    /**
+     * @parameter default-value="default"
+     */
+    private String compilationOptionsPackage = "default";
 
+    public String getCompilationOptionsPackage() {
+        return compilationOptionsPackage;
+    }
+
+    public void setCompilationOptionsPackage( String compilationOptionsPackage ) {
+        this.compilationOptionsPackage = compilationOptionsPackage;
+    }
+
+    /**
+     * @parameter
+     */
+    private List<String> compilationOptions;
+
+    public List<String> getCompilationOptions() {
+        return compilationOptions;
+    }
+
+    public void setCompilationOptions( List<String> compilationOptions ) {
+        this.compilationOptions = compilationOptions;
+    }
 
 
 
@@ -277,6 +304,19 @@ public class ShapeCaster
         if ( isGenerateIndividuals() ) {
             compiler.streamIndividualFactory();
         }
+
+
+        OntoModelCompiler.COMPILATION_OPTIONS opts = OntoModelCompiler.COMPILATION_OPTIONS.valueOf( getCompilationOptionsPackage().toUpperCase() );
+        if ( opts == null ) {
+            opts = OntoModelCompiler.COMPILATION_OPTIONS.DEFAULT;
+        }
+        Set<String> mergedOptions = new HashSet( opts.getOptions() );
+        if ( compilationOptions != null && compilationOptions.size() > 0 ) {
+            mergedOptions.addAll( compilationOptions );
+        }
+
+        compiler.mojo( new ArrayList( mergedOptions ),
+                OntoModelCompiler.MOJO_VARIANTS.JPA2 );
 
     }
 

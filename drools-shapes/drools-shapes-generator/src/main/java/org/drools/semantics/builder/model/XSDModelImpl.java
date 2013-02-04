@@ -124,7 +124,6 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
 
                 if ( os != null ) {
                     schemaLocations.put( prefixMap.get( ns ), target.getPath() );
-                    System.out.println( new String( schemaBytes ) );
                     os.write( schemaBytes );
                     os.flush();
                     os.close();
@@ -166,7 +165,6 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
 
         while ( target.exists() ) {
             target = new File( path.replace( ".xsd", "_" + ( j++ ) + ".xsd" ) );
-            System.out.println( "OVERRIDING SCHEMA FILE " + target.getPath() );
             for ( Document dox : schemas.values() ) {
                 List<Element> imports = dox.getRootElement().getChildren( "import", NamespaceUtils.getNamespaceByPrefix( "xsd" ) );
                 for ( Element el : imports ) {
