@@ -14,16 +14,16 @@ import java.util.Map;
 import java.util.Set;
 
 @PlanningEntity
-public class Con implements Cloneable {
+public class ConProxy implements Cloneable {
 
     private String iri;
     private Concept concept;
-    private Con     chosenSuper;
+    private ConProxy chosenSuper;
     private Map<String, PropertyRelation> chosenProperties;
     private Set<String> neededProperties;
 
 
-    protected Con( Concept con, Con sup ) {
+    protected ConProxy( Concept con, ConProxy sup ) {
         this.iri = con.getIri();
         this.chosenSuper = sup;
         this.concept = con;
@@ -36,7 +36,7 @@ public class Con implements Cloneable {
         }
     }
 
-    protected Con( Con con ) {
+    protected ConProxy( ConProxy con ) {
         this.iri = con.getIri();
         this.chosenSuper = con.getChosenSuper();
         this.concept = con.getConcept();
@@ -54,11 +54,11 @@ public class Con implements Cloneable {
 
     @PlanningVariable( strengthComparatorClass = ConceptStrengthEvaluator.class )
     @ValueRange( type = ValueRangeType.FROM_SOLUTION_PROPERTY, solutionProperty = "cons" )
-    public Con getChosenSuper() {
+    public ConProxy getChosenSuper() {
         return chosenSuper;
     }
 
-    public void setChosenSuper(Con dom) {
+    public void setChosenSuper(ConProxy dom) {
         this.chosenSuper = dom;
     }
 
@@ -68,7 +68,7 @@ public class Con implements Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Con con = (Con) o;
+        ConProxy con = (ConProxy) o;
 
         if (iri != null ? !iri.equals(con.iri) : con.iri != null) return false;
 
@@ -96,13 +96,13 @@ public class Con implements Cloneable {
         this.chosenProperties = chosenProperties;
     }
 
-    public Con clone() {
-        return new Con( this );
+    public ConProxy clone() {
+        return new ConProxy( this );
     }
 
     @Override
     public String toString() {
-        String s = "Con{ iri='" + iri + "\' child of " + chosenSuper.getIri() + "\n";
+        String s = "ConProxy{ iri='" + iri + "\' child of " + chosenSuper.getIri() + "\n";
         s += "\t\t chosen " + chosenProperties.size() + "\t" + chosenProperties.keySet() + "\n";
         s += "\t\t  avail " + getAvailablePropertiesVirtual().size() + "\t" + getAvailablePropertiesVirtual().keySet() + "\n";
         s += "\t\t needed " + neededProperties.size() + "\t" + neededProperties;

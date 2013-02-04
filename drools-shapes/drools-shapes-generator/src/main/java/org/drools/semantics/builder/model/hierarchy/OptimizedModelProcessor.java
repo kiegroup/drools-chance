@@ -6,7 +6,7 @@ import org.drools.planner.config.XmlSolverFactory;
 import org.drools.planner.core.Solver;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
-import org.drools.semantics.builder.model.hierarchy.opt.Con;
+import org.drools.semantics.builder.model.hierarchy.opt.ConProxy;
 import org.drools.semantics.builder.model.hierarchy.opt.ConceptStrengthEvaluator;
 import org.drools.semantics.builder.model.hierarchy.opt.OptimalHierarchy;
 

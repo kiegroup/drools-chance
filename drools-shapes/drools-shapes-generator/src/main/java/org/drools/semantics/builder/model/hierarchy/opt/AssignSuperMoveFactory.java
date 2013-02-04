@@ -28,10 +28,10 @@ public class AssignSuperMoveFactory implements MoveListFactory {
 
         thing = hier.getTop();
 
-        for ( Con con : hier.getCons() ) {
+        for ( ConProxy con : hier.getCons() ) {
 
 //            if ( !Thing.IRI.equals( con.getIri() ) ) {
-//                for ( Con candidate : hier.getInheritances() ) {
+//                for ( ConProxy candidate : hier.getInheritances() ) {
 //                    if ( con != candidate ) {
 //                        moveSet.add( new AssignDomainMove( con, candidate ) );
 //                    }
@@ -50,7 +50,7 @@ public class AssignSuperMoveFactory implements MoveListFactory {
         return new ArrayList( moveSet );
     }
 
-    private void addSuperConcepts( Con base, Concept con, Set<Move> moveList, OptimalHierarchy hier ) {
+    private void addSuperConcepts( ConProxy base, Concept con, Set<Move> moveList, OptimalHierarchy hier ) {
         for ( Concept x : con.getSuperConcepts() ) {
             AssignDomainMove move = new AssignDomainMove( base, hier.getCon( x.getIri() ) );
 //                move.setVerbose( true );
@@ -62,8 +62,8 @@ public class AssignSuperMoveFactory implements MoveListFactory {
 
     public static class AssignDomainMove implements Move {
 
-        private Con con;
-        private Con next;
+        private ConProxy con;
+        private ConProxy next;
 
         private boolean verbose = false;
 
@@ -75,7 +75,7 @@ public class AssignSuperMoveFactory implements MoveListFactory {
             this.verbose = verbose;
         }
 
-        public AssignDomainMove( Con con, Con next ) {
+        public AssignDomainMove( ConProxy con, ConProxy next ) {
             this.con = con;
             this.next = next;
         }
@@ -111,7 +111,7 @@ public class AssignSuperMoveFactory implements MoveListFactory {
         public void doMove( ScoreDirector scoreDirector ) {
             scoreDirector.beforeVariableChanged( con, "chosenSuper" );
             OptimalHierarchy hier = (OptimalHierarchy) scoreDirector.getWorkingSolution();
-            Con prev = hier.getCon( con.getChosenSuper().getIri() );
+            ConProxy prev = hier.getCon( con.getChosenSuper().getIri() );
 
             if ( verbose ) {
                 System.out.println( "Setting " + next.getIri() + " as super of " + con.getIri() + ( con.getChosenSuper() != null ? " in place of " + con.getChosenSuper().getIri() : " " ) );

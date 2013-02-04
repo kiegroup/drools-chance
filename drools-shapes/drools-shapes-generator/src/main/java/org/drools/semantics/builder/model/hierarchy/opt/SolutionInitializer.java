@@ -23,9 +23,9 @@ public class SolutionInitializer implements CustomSolverPhaseCommand {
     }
 
 
-    private void initialize( LinkedHashMap<String, Con> inheritances, ScoreDirector scoreDirector ) {
+    private void initialize( LinkedHashMap<String, ConProxy> inheritances, ScoreDirector scoreDirector ) {
 
-        for ( Con con : inheritances.values() ) {
+        for ( ConProxy con : inheritances.values() ) {
             con.getChosenProperties().putAll( con.getConcept().getProperties() );
 
             for ( Concept sup : con.getConcept().getSuperConcepts() ) {
@@ -35,7 +35,7 @@ public class SolutionInitializer implements CustomSolverPhaseCommand {
             }
         }
 
-        for ( Con con : inheritances.values() ) {
+        for ( ConProxy con : inheritances.values() ) {
             if ( ! con.getConcept().getSuperConcepts().isEmpty() ) {
 
                 Iterator<Concept> iter = con.getConcept().getSuperConcepts().iterator();
@@ -57,7 +57,7 @@ public class SolutionInitializer implements CustomSolverPhaseCommand {
                 scoreDirector.afterEntityAdded( con );
 
                 if ( inheritances.containsKey( next.getIri() ) ) {
-                    Con supCon = inheritances.get( next.getIri() );
+                    ConProxy supCon = inheritances.get( next.getIri() );
                     for ( String key : supCon.getAvailablePropertiesVirtual().keySet() ) {
                         if ( con.getChosenProperties().containsKey( key ) ) {
                             con.getChosenProperties().remove( key );

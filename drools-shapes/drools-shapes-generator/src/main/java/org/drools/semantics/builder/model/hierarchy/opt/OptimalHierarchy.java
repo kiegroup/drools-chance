@@ -24,7 +24,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
     private Concept top;
 
-    private LinkedHashMap<String, Con> inheritances;
+    private LinkedHashMap<String, ConProxy> inheritances;
 
     private HardAndSoftScore score;
 
@@ -35,10 +35,10 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
         top = model.getConcept( Thing.IRI );
 
-        inheritances = new LinkedHashMap<String, Con>( availableConcepts.size() );
+        inheritances = new LinkedHashMap<String, ConProxy>( availableConcepts.size() );
 
         for ( Concept c  : availableConcepts ) {
-            Con x = new Con( c, null );
+            ConProxy x = new ConProxy( c, null );
             inheritances.put(x.getIri(), x);
         }
     }
@@ -48,7 +48,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
         this.availableConcepts = opt.availableConcepts;
         this.availableProperties = opt.availableProperties;
 
-        inheritances = new LinkedHashMap<String, Con>();
+        inheritances = new LinkedHashMap<String, ConProxy>();
         for ( String key : opt.inheritances.keySet() ) {
             inheritances.put( key, opt.inheritances.get( key ).clone() );
         }
@@ -58,11 +58,11 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
 
     @PlanningEntityCollectionProperty
-    public Collection<Con> getCons() {
+    public Collection<ConProxy> getCons() {
         return inheritances.values();
     }
 
-    public LinkedHashMap<String, Con> getInheritances() {
+    public LinkedHashMap<String, ConProxy> getInheritances() {
         return inheritances;
     }
 
@@ -103,7 +103,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
         this.top = top;
     }
 
-    public Con getCon( String iri ) {
+    public ConProxy getCon( String iri ) {
         return inheritances.get( iri );
     }
 
@@ -111,7 +111,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
     @Override
     public String toString() {
         String s = "Optimized Hierarchy ( " + score + " ) \n";
-        for ( Con con : inheritances.values() ) {
+        for ( ConProxy con : inheritances.values() ) {
             s += "\t " + con + "\n";
         }
         return s;
@@ -121,7 +121,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
     public void updateModel( OntoModel model ) {
 
-        for ( Con con : getCons() ) {
+        for ( ConProxy con : getCons() ) {
             Concept x = con.getConcept();
             Concept sup = con.getChosenSuper().getConcept();
             x.setChosenSuperConcept( sup );

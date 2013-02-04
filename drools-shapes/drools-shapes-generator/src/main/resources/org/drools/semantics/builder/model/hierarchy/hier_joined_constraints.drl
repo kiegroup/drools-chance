@@ -38,11 +38,11 @@ end
 
 
 
-rule "Con"
+rule "ConProxy"
 salience 10
 when
-    Con( $child : iri, $super : chosenSuper != null )
-    Con( $i : iri != $child && == $super )
+    ConProxy( $child : iri, $super : chosenSuper != null )
+    ConProxy( $i : iri != $child && == $super )
 then
     insertLogical( new ChildOf( $child, $i ) );
 end
@@ -51,7 +51,7 @@ end
 rule "Pro"
 salience 10
 when
-    Con( $dom : iri, chosenSuper != null, $propKeys : availablePropertiesVirtual.keySet() )
+    ConProxy( $dom : iri, chosenSuper != null, $propKeys : availablePropertiesVirtual.keySet() )
     $prop : String() from $propKeys
 then
     insertLogical( new Has( $dom, $prop ) );
@@ -79,7 +79,7 @@ end
 rule "Redefines"
 salience -1
 when
-            Con( $con : iri, $original : concept.properties.keySet(), $chosen : chosenProperties.keySet() )
+            ConProxy( $con : iri, $original : concept.properties.keySet(), $chosen : chosenProperties.keySet() )
     $prop : String( this not memberOf $original ) from $chosen
 then
     insertLogical( new Redefines( $con, $prop ) );
@@ -87,7 +87,7 @@ end
 
 rule "Needs"
 when
-    Con( $con : iri, chosenSuper != null, $propKeys : neededProperties )
+    ConProxy( $con : iri, chosenSuper != null, $propKeys : neededProperties )
     $prop : String() from $propKeys
 then
     insertLogical( new Needs( $con, $prop ) );
@@ -106,7 +106,7 @@ end
 rule "Self"
 salience 10
 when
-    Con( $child : iri != "<http://www.w3.org/2002/07/owl#Thing>", chosenSuper!.iri == $child )
+    ConProxy( $child : iri != "<http://www.w3.org/2002/07/owl#Thing>", chosenSuper!.iri == $child )
 then
     insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_HARD, 100, $child ) );
 end
@@ -198,9 +198,9 @@ end
 //rule "Log 001"
 //salience -10
 //when
-//    $h : Con( $iri : iri )
+//    $h : ConProxy( $iri : iri )
 //then
-//    System.out.println( "Con is in " + $h );
+//    System.out.println( "ConProxy is in " + $h );
 //end
 //
 //rule "Log 001_2"
