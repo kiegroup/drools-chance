@@ -942,7 +942,7 @@ when
     accumulate (
         $res : FunctionResult( father == $a, $x : expr ),
         $args : collectList( $x );
-        $args.size == $arity
+        $args.size() == $arity
     )
     $deps : List() from accumulate (
         $res : FunctionResult( father == $a, $x : expr, $fs : fields, $anc : parents != null, simple == false ),
@@ -1011,7 +1011,7 @@ when
     accumulate (
         $res : FunctionResult( father == $a2, $x : expr, $fs : fields ),
         $args : collectList( $x );
-        $args.size == $arity
+        $args.size() == $arity
     )
     $deps : List() from accumulate (
         $res : FunctionResult( father == $a2, $x : expr, $fs : fields, $anc : parents != null, simple == false ),

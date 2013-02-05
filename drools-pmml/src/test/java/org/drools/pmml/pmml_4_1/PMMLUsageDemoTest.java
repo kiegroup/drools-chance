@@ -87,9 +87,7 @@ public class PMMLUsageDemoTest {
 
 
     @Test
-    @Ignore( "Broken due a bug in 5.5.0-Final. Works without the incremental kb construction " )
     public void invokePmmlWithTrait() {
-
 
         String extraDrl = "package org.drools.pmml.pmml_4_1.test;" +
                 "" +
@@ -112,7 +110,9 @@ public class PMMLUsageDemoTest {
                 "end " +
                 "" +
                 "" +
-                "rule Log when $x : MockColdInput() then System.out.println( $x ); end ";
+                "rule Log when $x : MockColdInput() then System.out.println( \"IN \" + $x ); end " +
+                "rule Log2 when $x : Cold() then System.out.println( \"OUT \" + $x ); end "
+                ;
 
 
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder( kSession.getKnowledgeBase() );
@@ -126,7 +126,6 @@ public class PMMLUsageDemoTest {
 
         kSession.insert( "trigger" );
         kSession.fireAllRules();
-
 
         QueryResults qrs = kSession.getQueryResults( "Cold", "MockCold", Variable.v );
         assertTrue( qrs.iterator().hasNext() );
