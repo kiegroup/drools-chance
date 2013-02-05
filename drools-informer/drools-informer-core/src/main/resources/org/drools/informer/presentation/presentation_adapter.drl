@@ -123,7 +123,7 @@ then
     insert( qga );
 
     modify( $sga ) {
-        getSurveyQuestions().add(qga);
+        getSurveyQuestions().add( qga );
     }
 end
 
@@ -132,12 +132,15 @@ end
 rule "Valid_GUI_Questions"
 when
     $sga : SurveyGUIAdapter( $sid : itemId, $guiQuestions : surveyQuestions)
-    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type, $last : lastAnswer != null )
+    $q : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required,
+                   $type : answerType, $qName : type, $last : lastAnswer != null ) @watch( * )
     Questionnaire( id == $sid, itemList contains $qid ) @watch( items )
     $qga : QuestionGUIAdapter( itemId == $qid )
     not InvalidAnswer( questionId == $qid )
 then
-    $qga.setSuccessType( "valid" );
+    modify ( $qga ) {
+        setSuccessType( "valid" );
+    }
 end
 
 //rule "Missing_GUI_Questions"
@@ -159,7 +162,9 @@ when
     $qga : QuestionGUIAdapter( itemId == $qid )
     InvalidAnswer( questionId == $qid, $failType : type )
 then
-    $qga.setSuccessType( $failType );
+    modify ( $qga ) {
+        setSuccessType( $failType );
+    }
 end
 
 rule "Final_GUI_Questions"
@@ -169,7 +174,9 @@ when
     Questionnaire( id == $sid, itemList contains $qid ) @watch( items )
     $qga : QuestionGUIAdapter( itemId == $qid )
 then
-    $qga.setAction( "disable" );
+    modify ( $qga ) {
+        setAction( "disable" );
+    }
 end
 
 
@@ -195,11 +202,13 @@ end
 rule "Synch_GUI_Questions"
 
 when
-    $q   : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type )
+    $q   : Question( $qid : id, $qLab : preLabel, $post : postLabel, $req : required, $type : answerType, $qName : type ) @watch( * )
     $qga : QuestionGUIAdapter( itemId == $qid )
 then
-    $qga.setCurrentAnswer( $q.getLastAnswer() );
-    $qga.setValidationMessage( $q.getPostLabel() );
+    modify ( $qga ) {
+        setCurrentAnswer( $q.getLastAnswer() ),
+        setValidationMessage( $q.getPostLabel() );
+    }
 end
 
 rule "Init_MultipleChoice"
@@ -226,7 +235,9 @@ when
     $qga : QuestionGUIAdapter( itemId == $qid, $possAnswers : possibleAnswers != null )
     $pa  : MultipleChoiceQuestion.PossibleAnswer( $key : label, $val : value, this not memberOf $possAnswers ) from $poss
 then
-    $qga.setSingleAnswer( "" + $single );
+    modify ( $qga ) {
+        setSingleAnswer( "" + $single );
+    }
     // possibleAnswers are read-only, so let's just add them directly
     $possAnswers.add( $pa );
 end
@@ -302,7 +313,7 @@ when
     ProgressStatus( $sid, $perc ; )
     $cga : ChangeGUIAdapter( $sid == itemId, progress != $perc )
 then
-    modify ($cga) {
+    modify ( $cga ) {
         setProgress( $perc ),
         setDirty( true );
     }
@@ -314,7 +325,7 @@ when
     $s : SurveyGUIAdapter( itemId == $formId, progress != $percentage )
 then
     System.out.println("SETTING GUI PROGRESS TO " + $percentage );
-    modify ($s) {
+    modify ( $s ) {
         setProgress( $percentage );
     }
 end

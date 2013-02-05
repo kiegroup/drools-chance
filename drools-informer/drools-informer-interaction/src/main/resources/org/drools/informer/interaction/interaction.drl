@@ -79,14 +79,14 @@ query ticket( String $className, String $formId, InteractionTicket $ticket )
 end
 
      //TODO : Check that it works!
-//query conversationAlerts( String $ticketId, String $actorId, List $formIds, List $bodies, List $channels )
-//    accumulate (
-//                 Alert( $ticketId, $actorId, $formId, $body, $channel; ),
-//                 $formIds  : collectList( $formId ),
-//                 $bodies   : collectList( $body ),
-//                 $channels : collectList( $channel )
-//               )
-//end
+query conversationAlerts( String $ticketId, String $actorId, List $formIds, List $bodies, List $channels )
+    accumulate (
+                 Alert( $ticketId, $actorId, $formId, $body, $channel; ),
+                 $formIds  : collectList( $formId ),
+                 $bodies   : collectList( $body ),
+                 $channels : collectList( $channel )
+               )
+end
 
 rule "Open interaction"
 salience 999
@@ -204,7 +204,7 @@ timer( expr: $timeout ;  )
 when
     $ticket : InteractionTicket( $id : id,
                                  $inters : interactions )
-    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $bodies, $receivers, $channels, $timeouts ; this memberOf $inters, $receivers.size() > 1 )
+    $inter  : Interaction( $type, $bodies, $receivers, $channels, $timeouts ; type == InteractionTypes.NOTIFICATION, this memberOf $inters, $receivers.size() > 1 )
     $task   : InteractiveTask( $tid : taskId, args contains $inter )
     $alert  : Alert( $id, $dest, $formId, $templ, $channel, $timeout ; destination memberOf $receivers )
     not       TaskStateTransition( $tid ; )
@@ -227,7 +227,7 @@ timer( expr: $timeout ;  )
 when
     $ticket : InteractionTicket( $id : id,
                                  $inters : interactions )
-    $inter  : Interaction( $type == InteractionTypes.NOTIFICATION, $body, $receivers, $channels ; this memberOf $inters, $receivers.size() <= 1 )
+    $inter  : Interaction( $type, $body, $receivers, $channels ; type == InteractionTypes.NOTIFICATION, this memberOf $inters, $receivers.size() <= 1 )
     $task   : InteractiveTask( $tid : taskId, args contains $inter )
     $alert  : Alert( $id, $dest, $formId, $templ, $channel; $timeout : timeout != null, destination memberOf $receivers )
     not       TaskStateTransition( $tid ; )

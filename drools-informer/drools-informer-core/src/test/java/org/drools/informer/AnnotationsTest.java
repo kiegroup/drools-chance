@@ -22,13 +22,10 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentConfiguration;
 import org.drools.agent.KnowledgeAgentFactory;
-import org.drools.agent.impl.PrintStreamSystemEventListener;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
-import org.drools.common.InternalFactHandle;
 import org.drools.informer.generator.annotations.QuestionMark;
-import org.drools.informer.listener.DebugAgendaEventListener;
 import org.drools.io.Resource;
 import org.drools.io.impl.ChangeSetImpl;
 import org.drools.io.impl.ClassPathResource;
@@ -41,7 +38,9 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 

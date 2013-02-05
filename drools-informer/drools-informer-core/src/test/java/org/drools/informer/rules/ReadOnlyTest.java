@@ -32,6 +32,7 @@ import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -97,9 +98,9 @@ public class ReadOnlyTest {
 			knowledgeSession.insert(question1);
 			knowledgeSession.fireAllRules();
 
-            for ( Object o : knowledgeSession.getObjects() ) {
-                System.out.println( o );
-            }
+//            for ( Object o : knowledgeSession.getObjects() ) {
+//                System.out.println( o );
+//            }
 
 			assertEquals(true, isReadOnlyInherited(question1));
 
@@ -135,4 +136,5 @@ public class ReadOnlyTest {
 	private boolean isReadOnlyInherited(Question question) {
 		return question.getPresentationStyles() != null && Arrays.asList(question.getPresentationStyles()).contains("readonly-inherited");
 	}
+
 }

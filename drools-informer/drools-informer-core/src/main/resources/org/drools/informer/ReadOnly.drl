@@ -38,8 +38,9 @@ when
 	           presentationStyles contains "readonly" || presentationStyles contains "readonly-inherited" )
 	)
 then
+    System.out.println( "Rule A " + $item.getType() );
     modify ( $item ) {
-        addPresentationStyle("readonly-inherited");
+        addPresentationStyle( "readonly-inherited" );
     }
 end
 
@@ -54,8 +55,9 @@ when
 	           presentationStyles contains "readonly" || presentationStyles contains "readonly-inherited" )
 	)
 then
+    System.out.println("Rule B " + $item.getType());
     modify ( $item ) {
-        addPresentationStyle("readonly-inherited");
+        addPresentationStyle( "readonly-inherited" );
     }
 end
 
@@ -73,8 +75,9 @@ when
 	           presentationStyles contains "readonly" || presentationStyles contains "readonly-inherited" )
 	)
 then
+    System.out.println("Rule C" + $item.getType());
     modify ( $item ) {
-        removePresentationStyle("readonly-inherited");
+        removePresentationStyle( "readonly-inherited" );
     }
 end
 
@@ -90,8 +93,9 @@ when
 	           presentationStyles contains "readonly" || presentationStyles contains "readonly-inherited" )
 	)
 then
+    System.out.println("Rule D" + $item.getType());
     modify ( $item ) {
-        removePresentationStyle("readonly-inherited");
+        removePresentationStyle( "readonly-inherited" );
     }
 end
 

@@ -20,7 +20,7 @@ rule "Attach @{questType} in @{context}"
 no-loop
 when
     $Quest : org.drools.informer.Questionnaire( $ctx : context == "@{context}",
-                            $itemList : itemList ) @watch( items )
+                            $itemList : itemList ) @watch( * )
     $quest : org.drools.informer.Question( type == "@{questType}", context == $ctx,
                                            $id : id not memberOf $itemList )
     $hold  : @{klass}( questionnaireId == "@{context}", @{whenClause} )
@@ -32,9 +32,9 @@ then
         dma.setQuestionId( $id );
         dma.setContext( "@{context}" );
         dma.setProperty("@{questType}");
-    insert(dma);
+    insert( dma );
     modify( $Quest ){
-        addItem($id);
+        addItem( $id );
     }
 end
 

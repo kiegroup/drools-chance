@@ -41,6 +41,7 @@ end
 
 
 declare QuestionGUIAdapter extends GUIAdapter
+@propertyReactive
     questionName : String
     preLabel : String
     required : boolean
@@ -105,5 +106,5 @@ when
     $quest : Questionnaire( id == $sid )
 then
     $ticket.setQuestionnaire($quest);
-    update($ticket);
+    modify ( $ticket ) { }
 end
