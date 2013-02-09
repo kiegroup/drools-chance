@@ -251,16 +251,16 @@ public class FactTest {
         assertFalse( px.hashCode() == painting.hashCode() );
 
 
-        painting.setDyEntryId( "aid" );
+        ((PaintingImpl) painting).setDyEntryId( "aid" );
 //        ((PaintingImpl) painting).setDyReference( false );
-        px.setDyEntryId( "aid" );
+        ((PaintingImpl) px).setDyEntryId( "aid" );
 //        ((PaintingImpl) px).setDyReference( false );
 
         assertEquals( painting, px );
         assertTrue( px.hashCode() == painting.hashCode() );
 
 
-        px.setDyEntryId( "aid2" );
+        ((PaintingImpl) painting).setDyEntryId( "aid2" );
 
         assertFalse( px.equals( painting ) );
         assertFalse( px.hashCode() == painting.hashCode() );
@@ -482,7 +482,7 @@ public class FactTest {
 
 
         KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        builder.add( new ClassPathResource( "testFacts.drl" ), ResourceType.DRL );
+        builder.add( new ClassPathResource( "test/testFacts.drl" ), ResourceType.DRL );
         if ( builder.hasErrors() ) {
             fail( builder.getErrors().toString() );
         }
@@ -517,9 +517,9 @@ public class FactTest {
 
 
 
-        persist(painting, em);
+        persist( painting, em );
 
-        Painting p2 = (Painting) refreshOnJPA( painting, (painting).getDyEntryId(), em );
+        Painting p2 = (Painting) refreshOnJPA( painting, ((PaintingImpl) painting).getDyEntryId(), em );
 
 
         checkPainting( p2 );
