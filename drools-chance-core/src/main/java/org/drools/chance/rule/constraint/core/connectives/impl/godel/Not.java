@@ -1,7 +1,5 @@
 package org.drools.chance.rule.constraint.core.connectives.impl.godel;
 
-
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
 import org.drools.chance.rule.constraint.core.connectives.impl.LogicConnectives;
 import org.drools.chance.degree.Degree;

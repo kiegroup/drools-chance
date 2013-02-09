@@ -16,7 +16,6 @@
 
 package org.drools.chance.common;
 
-import com.google.common.collect.HashBasedTable;
 import org.drools.chance.rule.constraint.core.connectives.ConnectiveFactory;
 import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.linguistic.FuzzyConnectiveFactory;
 import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.mvl.ManyValuedConnectiveFactory;
@@ -29,6 +28,8 @@ import org.drools.chance.distribution.DistributionStrategies;
 import org.drools.chance.distribution.DistributionStrategyFactory;
 import org.drools.chance.distribution.ImpKind;
 import org.drools.chance.distribution.ImpType;
+
+import java.util.HashMap;
 
 
 /**
@@ -55,20 +56,36 @@ import org.drools.chance.distribution.ImpType;
 public class ChanceStrategyFactory<T> {
 
 
-    private static HashBasedTable<ImpKind,ImpType,ConnectiveFactory> cacheConnective = HashBasedTable.create();
+
+    private static HashMap<Pair<ImpKind,ImpType>,ConnectiveFactory> cacheConnective = new HashMap<Pair<ImpKind, ImpType>, ConnectiveFactory>();
     private static ConnectiveFactory defaultFactory = new ManyValuedConnectiveFactory();
 
     static {
-        cacheConnective.put( ImpKind.PROBABILITY, ImpType.DISCRETE, new DiscreteProbabilityConnectiveFactory() );
-        cacheConnective.put( ImpKind.PROBABILITY, ImpType.DIRICHLET, new DiscreteProbabilityConnectiveFactory() );
-        cacheConnective.put( ImpKind.FUZZINESS, ImpType.LINGUISTIC, new FuzzyConnectiveFactory() );
-        cacheConnective.put( ImpKind.FUZZINESS, ImpType.MVL, new ManyValuedConnectiveFactory() );
-        cacheConnective.put( ImpKind.FUZZINESS, ImpType.BASIC, new ManyValuedConnectiveFactory() );
-        cacheConnective.put( ImpKind.PROBABILITY, ImpType.BASIC, new ManyValuedConnectiveFactory() );
+        cacheConnective.put(
+                new Pair<ImpKind, ImpType>( ImpKind.PROBABILITY, ImpType.DISCRETE ),
+                new DiscreteProbabilityConnectiveFactory() );
+
+        cacheConnective.put(
+                new Pair<ImpKind, ImpType>( ImpKind.PROBABILITY, ImpType.DIRICHLET ),
+                new DiscreteProbabilityConnectiveFactory() );
+
+        cacheConnective.put(
+                new Pair<ImpKind, ImpType>( ImpKind.FUZZINESS, ImpType.LINGUISTIC ),
+                new FuzzyConnectiveFactory() );
+
+        cacheConnective.put(
+                new Pair<ImpKind, ImpType>( ImpKind.FUZZINESS, ImpType.MVL ),
+                new ManyValuedConnectiveFactory() );
+        cacheConnective.put(
+                new Pair<ImpKind, ImpType>( ImpKind.FUZZINESS, ImpType.BASIC ),
+                new ManyValuedConnectiveFactory() );
+        cacheConnective.put(
+                new Pair<ImpKind, ImpType>( ImpKind.PROBABILITY, ImpType.BASIC ),
+                new ManyValuedConnectiveFactory() );
     }
 
     public static void registerConnectiveFactory( ImpKind kind, ImpType model, ConnectiveFactory connFac ) {
-        cacheConnective.put( kind, model, connFac );
+        cacheConnective.put( new Pair<ImpKind, ImpType>( kind, model ), connFac );
 
     }
 
@@ -76,7 +93,7 @@ public class ChanceStrategyFactory<T> {
         if ( kind == null || model == null ) {
             return defaultFactory;
         }
-        return cacheConnective.get( kind, model );
+        return cacheConnective.get( new Pair<ImpKind, ImpType>( kind, model ) );
     }
 
     public static void setDefaultFactory(ConnectiveFactory defaultFactory) {
@@ -89,19 +106,19 @@ public class ChanceStrategyFactory<T> {
 
 
 
-    private static HashBasedTable<ImpKind,ImpType,DistributionStrategyFactory> cache
-            = HashBasedTable.create();
+    private static HashMap<Pair<ImpKind,ImpType>,DistributionStrategyFactory> cache
+            = new HashMap<Pair<ImpKind, ImpType>, DistributionStrategyFactory>();
 
     public static <T> DistributionStrategies buildStrategies(
             ImpKind kind, ImpType model, DegreeType degreeType, Class<T> domainType) {
 
-        DistributionStrategyFactory<T> factory = cache.get(kind,model);
+        DistributionStrategyFactory<T> factory = cache.get( new Pair( kind,model ) );
         return factory.<T>buildStrategies( degreeType, domainType );
 
     }
 
     public static <T> void register( ImpKind kind, ImpType model, DistributionStrategyFactory<T> factory ) {
-        cache.put( kind, model, factory );
+        cache.put( new Pair<ImpKind, ImpType>( kind, model ), factory );
     }
 
 
@@ -177,6 +194,46 @@ public class ChanceStrategyFactory<T> {
 
     /*********************************************************************************************************************************/
 
+
+
+    private static class Pair<X,Y> {
+
+        private X x;
+        private Y y;
+
+        Pair( X x, Y y ) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public X getX() {
+            return x;
+        }
+
+        public Y getY() {
+            return y;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Pair pair = (Pair) o;
+
+            if (!x.equals(pair.x)) return false;
+            if (!y.equals(pair.y)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = x.hashCode();
+            result = 31 * result + y.hashCode();
+            return result;
+        }
+    }
 
 
 

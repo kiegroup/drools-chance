@@ -124,7 +124,7 @@ when
              Size( formId == $formId, $max : num > 0 )
 then
     Progress p = new Progress( $formId, (int) Math.round( 100.0 * $num.doubleValue() / $max ) );
-    System.out.println( "Making progress.... " + p );
+//    System.out.println( "Making progress.... " + p );
     insertLogical( p );
 end
 

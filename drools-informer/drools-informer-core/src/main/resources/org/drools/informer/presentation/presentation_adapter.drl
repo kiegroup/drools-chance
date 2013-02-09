@@ -324,7 +324,7 @@ when
     $p : ProgressStatus( $formId, $percentage ; )
     $s : SurveyGUIAdapter( itemId == $formId, progress != $percentage )
 then
-    System.out.println("SETTING GUI PROGRESS TO " + $percentage );
+//    System.out.println("SETTING GUI PROGRESS TO " + $percentage );
     modify ( $s ) {
         setProgress( $percentage );
     }
@@ -336,7 +336,7 @@ rule "Invalidations"
 when
     InvalidAnswer( $qid : questionId, $msg : reason, $type : type != "missing" )
 then
-    System.out.println( "INVALIDATE ! " + $qid + " due to " + $type );
+//    System.out.println( "INVALIDATE ! " + $qid + " due to " + $type );
     insert( new QuestionInvalidate( $qid ) );
 end
 
@@ -344,7 +344,7 @@ rule "Finalizations"
 when
     Question( $qid : id, finalAnswer == true, answered == true )
 then
-    System.out.println( "FINALIZE ! " + $qid );
+//    System.out.println( "FINALIZE ! " + $qid );
     insert( new QuestionFinalize( $qid ) );
 end
 
