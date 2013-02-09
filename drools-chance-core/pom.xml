@@ -18,76 +18,49 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-chance</artifactId>
-        <version>5.5.0-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>org.drools</groupId>
+    <artifactId>drools-chance</artifactId>
+    <version>0.5.6.Final</version>
+  </parent>
 
-    <artifactId>drools-chance-core</artifactId>
+  <artifactId>drools-chance-core</artifactId>
 
-
-    <name>Drools :: Chance Core</name>
-
-
-    <dependencies>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>knowledge-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-compiler</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-pmml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.lab4inf</groupId>
-            <artifactId>Lab4Jefis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.lab4inf</groupId>
-            <artifactId>Lab4Math</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>r09</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uncertweb</groupId>
-            <artifactId>uncertml-x-api</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
-        </dependency>
-
-    </dependencies>
+  <name>Drools :: Chance Core</name>
+  <description>Imperfect Reasoning extensions</description>
 
 
+  <dependencies>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-compiler</artifactId>
+    </dependency>
 
-    <repositories>
-        <repository>
-            <id>UncertWebMavenRepository</id>
-            <name>UncertWeb Maven Repository</name>
-            <url>http://giv-uw.uni-muenster.de/m2/repo</url>
-        </repository>
-    </repositories>
+    <dependency>
+      <groupId>de.lab4inf</groupId>
+      <artifactId>Lab4Jefis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-pmml</artifactId>
+      <version>${chance.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
 
 
 </project>
