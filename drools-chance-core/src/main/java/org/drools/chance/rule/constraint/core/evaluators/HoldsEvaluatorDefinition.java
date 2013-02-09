@@ -25,6 +25,7 @@ import org.drools.chance.degree.simple.SimpleDegree;
 import org.drools.chance.distribution.DiscreteDomainDistribution;
 import org.drools.chance.distribution.Distribution;
 import org.drools.chance.rule.builder.ChanceOperators;
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.rule.VariableRestriction;
 import org.drools.spi.Evaluator;
@@ -161,18 +162,6 @@ public class HoldsEvaluatorDefinition implements EvaluatorDefinition {
         public HoldsEvaluator( ValueType type, boolean negated, List<String> parameters, boolean enableImperfection ) {
             super( type, HOLDS, negated, parameters, enableImperfection );   
         }
-
-        @Override
-        protected Degree compare(Object source, Object target, InternalWorkingMemory workingMemory) {
-            return super.compare(source, target, workingMemory);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public Degree matchCachedLeft(InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, Object right) {
-            return super.matchCachedLeft(workingMemory, context, right);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-
-
 
 
         protected Degree matchDistributionToValue( Distribution leftDist, Object rightValue, InternalWorkingMemory workingMemory ) {

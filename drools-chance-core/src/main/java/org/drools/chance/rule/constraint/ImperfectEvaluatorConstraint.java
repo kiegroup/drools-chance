@@ -47,45 +47,43 @@ public class ImperfectEvaluatorConstraint extends EvaluatorConstraint implements
         ImperfectEvaluator evaluator = (ImperfectEvaluator) getEvaluator();
 
         if ( isLiteral() ) {
-            return evaluator.match( workingMemory, getExtractor(), factHandle.getObject(), getField() );
+            return evaluator.match( workingMemory, rightReadAccessor, factHandle, field );
         }
 
         return evaluator.match(
                 workingMemory,
-                getExtractor(),
-                evaluator.prepareLeftObject( factHandle ),
-                getRequiredDeclarations()[0].getExtractor(),
-                evaluator.prepareRightObject( factHandle ) );
+                rightReadAccessor,
+                factHandle,
+                declarations[0].getExtractor(),
+                factHandle );
     }
 
 
     public Degree matchCachedLeft( ContextEntry context, InternalFactHandle handle ) {
         if (isLiteral()) {
-            return ((ImperfectEvaluator)evaluator).match( ((LiteralContextEntry) context).workingMemory,
+            return ( (ImperfectEvaluator) evaluator).match( ((LiteralContextEntry) context).workingMemory,
                     ((LiteralContextEntry) context).getFieldExtractor(),
-                    handle.getObject(),
+                    handle,
                     field );
         }
 
-        return ((ImperfectEvaluator)evaluator).matchCachedLeft(
-                ((VariableRestriction.VariableContextEntry) context).workingMemory,
+        return ( (ImperfectEvaluator) evaluator).matchCachedLeft( ((VariableRestriction.VariableContextEntry) context).workingMemory,
                 (VariableRestriction.VariableContextEntry) context,
-                evaluator.prepareRightObject(handle));
-
+                handle );
     }
 
     public Degree matchCachedRight(LeftTuple tuple, ContextEntry context) {
-        if (isLiteral()) {
+        if ( isLiteral() ) {
             return ((ImperfectEvaluator)evaluator).match( ((LiteralContextEntry) context).workingMemory,
                     ((LiteralContextEntry) context).getFieldExtractor(),
-                    ((LiteralContextEntry) context).getObject(),
+                    ((LiteralContextEntry) context).getFactHandle(),
                     field );
         }
 
         return ((ImperfectEvaluator)evaluator).matchCachedRight(
                 ((VariableRestriction.VariableContextEntry) context).workingMemory,
                 (VariableRestriction.VariableContextEntry) context,
-                evaluator.prepareLeftObject(tuple.get(declarations[0])));
+                tuple.get(declarations[0]) );
     }
 
     public int getNodeId() {

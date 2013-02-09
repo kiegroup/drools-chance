@@ -6,6 +6,7 @@ import org.drools.chance.factmodel.ImperfectTraitProxy;
 import org.drools.chance.rule.builder.ChanceOperators;
 import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.Degree;
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.factmodel.traits.Thing;
 import org.drools.factmodel.traits.TraitableBean;
@@ -121,14 +122,14 @@ public class IsAEvaluatorDefinition extends org.drools.base.evaluators.IsAEvalua
             }
         }
 
-        public Degree match( InternalWorkingMemory workingMemory, InternalReadAccessor extractor, Object object, FieldValue value ) {
+        public Degree match( InternalWorkingMemory workingMemory, InternalReadAccessor extractor, InternalFactHandle handle, FieldValue value ) {
             Object typeName = value.getValue();
 
             if ( typeName instanceof Class ) {
                 typeName = ((Class) typeName).getName();
             }
 
-            return match( workingMemory, object, (String) typeName );
+            return match( workingMemory, handle.getObject(), (String) typeName );
         }
 
         private Degree extractDegree( Thing proxy ) {
@@ -143,15 +144,15 @@ public class IsAEvaluatorDefinition extends org.drools.base.evaluators.IsAEvalua
             }
         }
 
-        public Degree match( InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, Object left, InternalReadAccessor rightExtractor, Object right ) {
+        public Degree match( InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, InternalFactHandle left, InternalReadAccessor rightExtractor, InternalFactHandle right ) {
             throw new UnsupportedOperationException( "Not implemented yet" );
         }
 
-        public Degree matchCachedLeft( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, Object right ) {
+        public Degree matchCachedLeft( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle right ) {
             throw new UnsupportedOperationException( "Not implemented yet" );
         }
 
-        public Degree matchCachedRight( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, Object left ) {
+        public Degree matchCachedRight( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle left ) {
             throw new UnsupportedOperationException( "Not implemented yet" );
         }
     }

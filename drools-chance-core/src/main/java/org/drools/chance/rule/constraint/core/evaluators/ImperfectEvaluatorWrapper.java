@@ -4,6 +4,7 @@ package org.drools.chance.rule.constraint.core.evaluators;
 import org.drools.base.EvaluatorWrapper;
 import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.Degree;
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.rule.Declaration;
 import org.drools.rule.VariableRestriction;
@@ -14,17 +15,17 @@ import org.drools.spi.InternalReadAccessor;
 public class ImperfectEvaluatorWrapper extends EvaluatorWrapper implements ImperfectEvaluator {
 
     public ImperfectEvaluatorWrapper( Evaluator evaluator, Declaration leftBinding, Declaration rightBinding ) {
-        super(evaluator, leftBinding, rightBinding);
+        super( evaluator, leftBinding, rightBinding );
     }
 
-    public Degree match( Object left,
-                         Object right ) {
-        if( getLeftBinding() != null ) {
-            left = getEvaluator().prepareLeftObject(getLeftHandle());
-        }
-        if( getRightBinding() != null ) {
-            right = getEvaluator().prepareRightObject(getRightHandle());
-        }
+    public Degree match( InternalFactHandle left,
+                         InternalFactHandle right ) {
+//        if( getLeftBinding() != null ) {
+//            left = getLeftHandle();
+//        }
+//        if( getRightBinding() != null ) {
+//            right = getRightHandle();
+//        }
 
         if ( getEvaluator() instanceof ImperfectEvaluator ) {
             return ((ImperfectEvaluator) getEvaluator()).match( getWorkingMemory(),
@@ -43,19 +44,19 @@ public class ImperfectEvaluatorWrapper extends EvaluatorWrapper implements Imper
         }
     }
 
-    public Degree match( InternalWorkingMemory workingMemory, InternalReadAccessor extractor, Object object, FieldValue value ) {
+    public Degree match( InternalWorkingMemory workingMemory, InternalReadAccessor extractor, InternalFactHandle object, FieldValue value ) {
         return ((ImperfectEvaluator) getEvaluator()).match( workingMemory, extractor, object, value );
     }
 
-    public Degree match( InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, Object left, InternalReadAccessor rightExtractor, Object right ) {
+    public Degree match( InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, InternalFactHandle left, InternalReadAccessor rightExtractor, InternalFactHandle right ) {
         return ((ImperfectEvaluator) getEvaluator()).match( workingMemory, leftExtractor, left, rightExtractor, right );
     }
 
-    public Degree matchCachedLeft( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, Object right ) {
+    public Degree matchCachedLeft( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle right ) {
         return ((ImperfectEvaluator) getEvaluator()).matchCachedLeft( workingMemory, context, right );
     }
 
-    public Degree matchCachedRight( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, Object left ) {
+    public Degree matchCachedRight( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle left ) {
         return ((ImperfectEvaluator) getEvaluator()).matchCachedRight( workingMemory, context, left );
     }
 }

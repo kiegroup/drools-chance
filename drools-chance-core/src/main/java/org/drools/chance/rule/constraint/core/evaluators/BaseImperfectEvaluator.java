@@ -16,6 +16,7 @@ import org.drools.chance.distribution.DiscreteDomainDistribution;
 import org.drools.chance.distribution.Distribution;
 import org.drools.chance.distribution.ImpKind;
 import org.drools.chance.distribution.ImpType;
+import org.drools.common.InternalFactHandle;
 import org.drools.common.InternalWorkingMemory;
 import org.drools.rule.VariableRestriction;
 import org.drools.spi.FieldValue;
@@ -109,24 +110,25 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
     }
 
 
-    public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor extractor, Object object, FieldValue value) {
+    public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor extractor, InternalFactHandle object, FieldValue value) {
         return match( workingMemory, extractor, object, value ).toBoolean();
     }
 
-    public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, Object left, InternalReadAccessor rightExtractor, Object right) {
+    public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, InternalFactHandle left, InternalReadAccessor rightExtractor, InternalFactHandle right) {
         return match( workingMemory, leftExtractor, left, rightExtractor, right ).toBoolean();
     }
 
-    public boolean evaluateCachedLeft( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, Object left ) {
+    public boolean evaluateCachedLeft( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle left ) {
         return matchCachedLeft(workingMemory, context, left).toBoolean();
     }
 
-    public boolean evaluateCachedRight( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, Object left ) {
+    public boolean evaluateCachedRight( InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle left ) {
         return matchCachedRight( workingMemory, context, left ).toBoolean();
     }
 
     public Degree match( InternalWorkingMemory workingMemory,
-                         InternalReadAccessor extractor, Object object, FieldValue value ) {
+                         InternalReadAccessor extractor, InternalFactHandle handle, FieldValue value ) {
+        Object object = handle.getObject();
         Object objectValue = null;
         if ( object != null ) {
             objectValue = extractor.getValue( workingMemory, object );
@@ -136,8 +138,10 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
     }
 
     public Degree match( InternalWorkingMemory workingMemory,
-                         InternalReadAccessor leftExtractor, Object left,
-                         InternalReadAccessor rightExtractor, Object right ) {
+                         InternalReadAccessor leftExtractor, InternalFactHandle leftHandle,
+                         InternalReadAccessor rightExtractor, InternalFactHandle rightHandle ) {
+        Object left = leftHandle.getObject();
+        Object right = rightHandle.getObject();
         final Object value1 = leftExtractor.getValue(workingMemory, left);
         final Object value2 = rightExtractor.getValue(workingMemory, right);
 
@@ -149,8 +153,9 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
 
 
     public Degree matchCachedLeft( InternalWorkingMemory workingMemory,
-                                   VariableRestriction.VariableContextEntry context, Object right ) {
+                                   VariableRestriction.VariableContextEntry context, InternalFactHandle rightHandle ) {
 
+        Object right = rightHandle.getObject();
         Object target;
         if ( ! context.isLeftNull() ) {
             target = ( (VariableRestriction.ObjectVariableContextEntry) context).left;
@@ -168,10 +173,10 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
     }
 
     public Degree matchCachedRight( InternalWorkingMemory workingMemory,
-                                    VariableRestriction.VariableContextEntry context, Object left ) {
+                                    VariableRestriction.VariableContextEntry context, InternalFactHandle leftHandle ) {
 
         Object source = context.getFieldExtractor().getValue( context.getObject() );
-        Object target = left;
+        Object target = leftHandle.getObject();
         if ( context.getVariableDeclaration() != null ) {
             target = context.getVariableDeclaration().getExtractor().getValue( workingMemory, target );
         }
