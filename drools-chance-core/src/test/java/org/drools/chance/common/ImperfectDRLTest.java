@@ -51,7 +51,6 @@ public class ImperfectDRLTest {
 
     @Before
     public void setUp() throws Exception {
-        TraitFactory.reset();
         initObjects();
     }
 

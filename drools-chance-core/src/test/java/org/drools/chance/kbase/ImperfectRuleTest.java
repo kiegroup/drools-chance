@@ -40,15 +40,6 @@ public class ImperfectRuleTest extends AbstractChanceTest {
         Chance.initialize();
     }
 
-    @Before
-    public void setUp() throws Exception {
-        TraitFactory.reset();
-    }
-
-
-
-
-
     @Test
     public void testSingleRestrictions() {
         StatefulKnowledgeSession kSession = initBasicChanceTest("org/drools/chance/testSingleRestrictions.drl");

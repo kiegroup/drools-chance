@@ -22,6 +22,7 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentConfiguration;
 import org.drools.agent.KnowledgeAgentFactory;
+import org.drools.agent.conf.NewInstanceOption;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
@@ -53,7 +54,7 @@ public class AnnotationsTest {
     public void testGenerateQuestionnaireWithAnnotations() throws NoSuchFieldException {
 
         KnowledgeAgentConfiguration kaConfig = KnowledgeAgentFactory.newKnowledgeAgentConfiguration();
-        kaConfig.setProperty("drools.agent.newInstance","false");
+        kaConfig.setProperty( NewInstanceOption.PROPERTY_NAME , NewInstanceOption.NO.name() );
         KnowledgeAgent kAgent = KnowledgeAgentFactory.newKnowledgeAgent("testAnnotationKA",kaConfig);
 //        kAgent.setSystemEventListener( new PrintStreamSystemEventListener() );
 
@@ -241,12 +242,8 @@ public class AnnotationsTest {
         System.out.println(p1);
         System.out.println(p2);
 
-//        for ( Object o : kSession.getObjects() ) {
-//                            System.err.println(o);
-//         }
-
-
-
+        kSession.dispose();
+        kAgent.dispose();
 
     }
 

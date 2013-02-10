@@ -24,9 +24,6 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.chance.Chance;
 import org.drools.chance.core.util.ImperfectTripleFactory;
-import org.drools.chance.factmodel.ChanceBeanBuilderImpl;
-import org.drools.chance.factmodel.ChanceTraitBuilderImpl;
-import org.drools.chance.factmodel.ChanceTriplePropertyWrapperClassBuilderImpl;
 import org.drools.chance.common.fact.BeanImp;
 import org.drools.chance.common.fact.Price;
 import org.drools.chance.common.fact.Weight;
@@ -39,23 +36,17 @@ import org.drools.chance.distribution.DistributionStrategies;
 import org.drools.chance.distribution.ImpKind;
 import org.drools.chance.distribution.ImpType;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
-import org.drools.chance.factmodel.ChanceTripleProxyBuilderImpl;
 import org.drools.common.AbstractRuleBase;
 import org.drools.core.util.Triple;
 import org.drools.core.util.TripleFactoryImpl;
 import org.drools.core.util.TripleStore;
 import org.drools.definition.type.FactType;
-import org.drools.factmodel.ClassBuilderFactory;
-import org.drools.factmodel.traits.TraitFactory;
-import org.drools.factmodel.traits.TripleStoreRegistry;
 import org.drools.impl.KnowledgeBaseImpl;
 import org.drools.io.impl.ClassPathResource;
-import org.drools.reteoo.ReteooComponentFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.Variable;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -86,7 +77,6 @@ public class ImperfectBeanFieldTest {
   
     @Before
     public void setUp() throws Exception {
-        TraitFactory.reset();
         //TODO
         initObjects();
     }
@@ -107,7 +97,7 @@ public class ImperfectBeanFieldTest {
         kSession.fireAllRules();
 
 
-        TripleStore store = TripleStoreRegistry.getRegistry( ((AbstractRuleBase) ((KnowledgeBaseImpl) kBase).getRuleBase()).getId() );
+        TripleStore store = ((AbstractRuleBase) ((KnowledgeBaseImpl) kBase).getRuleBase()).getTripleStore();
         
         beanHand = new BeanImp( );
         

@@ -25,12 +25,6 @@ public class FuzzyControllerTest extends AbstractChanceTest {
         ChanceStrategyFactory.setDefaultFactory( new FuzzyConnectiveFactory() );
     }
 
-    @Before
-    public void setUp() throws Exception {
-        TraitFactory.reset();
-    }
-
-
     @Test
     public void testFuzzyExample1() throws InterruptedException {
 

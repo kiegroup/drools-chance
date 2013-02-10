@@ -27,11 +27,6 @@ public class FuzzyKBTest extends AbstractChanceTest {
 
     }
 
-    @Before
-    public void setUp() throws Exception {
-        TraitFactory.reset();
-    }
-
     @Test
     public void testFuzzyIs() {
 

@@ -23,12 +23,6 @@ public class MVLTest extends AbstractChanceTest {
         Chance.initialize();
     }
 
-    @Before
-    public void setUp() throws Exception {
-        TraitFactory.reset();
-    }
-
-
 
     @Test
     public void testConnectives() {
