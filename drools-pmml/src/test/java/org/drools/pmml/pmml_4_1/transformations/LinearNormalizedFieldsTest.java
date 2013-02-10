@@ -19,6 +19,7 @@ package org.drools.pmml.pmml_4_1.transformations;
 
 import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,6 +38,11 @@ public class LinearNormalizedFieldsTest extends DroolsAbstractPMMLTest {
 
         setKSession(getModelSession(source,VERBOSE));
         setKbase(getKSession().getKnowledgeBase());
+    }
+
+    @After
+    public void tearDown() {
+        getKSession().dispose();
     }
 
     @Test

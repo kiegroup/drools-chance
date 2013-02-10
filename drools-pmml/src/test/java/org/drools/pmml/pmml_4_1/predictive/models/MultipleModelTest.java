@@ -206,6 +206,8 @@ public class MultipleModelTest extends DroolsAbstractPMMLTest {
         assertEquals( 2, kSession.getObjects( new ClassObjectFilter( Questionnaire.class ) ).size() );
         assertEquals( 11, kSession.getObjects( new ClassObjectFilter( kSession.getKnowledgeBase().getFactType( packageName, "Synapse" ).getFactClass() ) ).size() );
 
+        kSession.dispose();
+
     }
 
 
@@ -284,6 +286,8 @@ public class MultipleModelTest extends DroolsAbstractPMMLTest {
         assertEquals( 23, kSession.getObjects( new ClassObjectFilter( kSession.getKnowledgeBase().getFactType( packageName, "Synapse" ).getFactClass() ) ).size() );
 
 
+        kSession.dispose();
+        kagent.dispose();
 
     }
 
@@ -341,8 +345,8 @@ public class MultipleModelTest extends DroolsAbstractPMMLTest {
         assertEquals( 9, kSession.getObjects( new ClassObjectFilter( kSession.getKnowledgeBase().getFactType( packageName, "Synapse" ).getFactClass() ) ).size() );
         assertEquals( 4, kSession.getObjects( new ClassObjectFilter( kSession.getKnowledgeBase().getFactType( packageName, "SupportVector" ).getFactClass() ) ).size() );
 
-
-
+        kSession.dispose();
+        kagent.dispose();
     }
 
 

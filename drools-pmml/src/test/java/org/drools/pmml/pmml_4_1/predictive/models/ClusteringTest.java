@@ -21,6 +21,7 @@ import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -37,6 +38,10 @@ public class ClusteringTest extends DroolsAbstractPMMLTest {
     private static final String packageName = "org.drools.pmml.pmml_4_1.test";
 
 
+    @After
+    public void tearDown() {
+        getKSession().dispose();
+    }
 
     @Test
     public void testCenterBasedClustering() throws Exception {

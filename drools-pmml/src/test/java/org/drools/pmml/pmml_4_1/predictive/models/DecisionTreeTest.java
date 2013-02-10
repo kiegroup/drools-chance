@@ -32,6 +32,7 @@ import org.drools.pmml.pmml_4_1.PMML4Compiler;
 import org.dmg.pmml.pmml_4_1.descr.*;
 import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -48,6 +49,10 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
 
 
 
+    @After
+    public void tearDown() {
+        getKSession().dispose();
+    }
 
     @Test
     public void testSimpleTree() throws Exception {

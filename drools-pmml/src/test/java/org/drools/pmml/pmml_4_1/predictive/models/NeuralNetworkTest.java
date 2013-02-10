@@ -32,6 +32,7 @@ import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.pmml.pmml_4_1.ModelMarker;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.Variable;
+import org.junit.After;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -62,6 +63,11 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
     private static final String smartVent = "org/drools/pmml/pmml_4_1/smartvent.xml";
 
 
+    @After
+    public void tearDown() {
+        getKSession().dispose();
+    }
+
     
     
     @Test
@@ -79,6 +85,7 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         kBase.addKnowledgePackages( knowledgeBuilder.getKnowledgePackages() );
         
         StatefulKnowledgeSession kSession = kBase.newStatefulKnowledgeSession();
+        setKSession( kSession );
 
 //        kSession.addEventListener( new DebugAgendaEventListener() );
 //        kSession.addEventListener( new DebugWorkingMemoryEventListener() );
@@ -122,7 +129,6 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 
         Thread.sleep(200);
         System.err.println(reportWMObjects(getKSession()));
-
 
 
         Assert.assertEquals( 828.0, Math.floor( queryDoubleField( "OutAmOfClaims", "NeuralInsurance" ) ) );

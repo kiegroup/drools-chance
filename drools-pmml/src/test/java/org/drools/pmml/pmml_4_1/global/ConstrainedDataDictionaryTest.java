@@ -22,6 +22,7 @@ import org.drools.common.EventFactHandle;
 import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.runtime.ClassObjectFilter;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,8 +40,13 @@ public class ConstrainedDataDictionaryTest extends DroolsAbstractPMMLTest {
 
     @Before
     public void setUp() throws Exception {
-        setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKSession( getModelSession( source, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+    }
+
+    @After
+    public void tearDown() {
+        getKSession().dispose();
     }
 
     @Test

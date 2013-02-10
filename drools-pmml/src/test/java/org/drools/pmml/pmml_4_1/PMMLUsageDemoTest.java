@@ -47,6 +47,7 @@ public class PMMLUsageDemoTest {
         // Create kSession and initialize it
         kSession = kbase.newStatefulKnowledgeSession();
         kSession.fireAllRules();
+
     }
 
 

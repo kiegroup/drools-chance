@@ -35,6 +35,7 @@ import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.QueryResults;
 import org.drools.runtime.rule.Variable;
+import org.junit.After;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -73,6 +74,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         System.err.println(reportWMObjects(kSession));
 
         assertEquals( 1, kSession.getObjects().size() );
+        kSession.dispose();
     }
 
 
@@ -113,6 +115,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         assertEquals( 61, getKSession().getObjects().size() );
 
+        getKSession().dispose();
     }
 
 
@@ -135,6 +138,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         assertEquals( 1, kSession.getObjects().size() );
 
+        kSession.dispose();
     }
 
     @Test
@@ -155,6 +159,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         assertEquals( 1, kSession.getObjects().size() );
 
+        kSession.dispose();
     }
 
     @Test
@@ -175,6 +180,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         assertEquals( 1, kSession.getObjects().size() );
 
+        kSession.dispose();
     }
 
     @Test
@@ -195,6 +201,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         assertEquals( 1, kSession.getObjects().size() );
 
+        kSession.dispose();
     }
 
     @Test
@@ -215,6 +222,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         assertEquals( 1, kSession.getObjects().size() );
 
+        kSession.dispose();
     }
 
 
@@ -271,6 +279,8 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         System.err.println( reportWMObjects( kSession ) );
         assertEquals( 0, kSession.getObjects().size() );
 
+        kSession.dispose();
+        kAgent.dispose();
 
     }
 
@@ -310,6 +320,8 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         System.err.println( reportWMObjects( kSession ) );
         assertEquals( 0, kSession.getObjects().size() );
 
+        kSession.dispose();
+        kAgent.dispose();
     }
 
     @Test
@@ -346,6 +358,9 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         System.err.println( reportWMObjects( kSession ) );
         assertEquals( 0, kSession.getObjects().size() );
+
+        kSession.dispose();
+        kAgent.dispose();
     }
 
     @Test
@@ -382,6 +397,9 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         System.err.println( reportWMObjects( kSession ) );
         assertEquals( 0, kSession.getObjects().size() );
+
+        kSession.dispose();
+        kAgent.dispose();
     }
 
     @Test
@@ -418,6 +436,9 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         System.err.println( reportWMObjects( kSession ) );
         assertEquals( 0, kSession.getObjects().size() );
+
+        kSession.dispose();
+        kAgent.dispose();
     }
 
     @Test
@@ -454,6 +475,9 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         System.err.println( reportWMObjects( kSession ) );
         assertEquals( 0, kSession.getObjects().size() );
+
+        kSession.dispose();
+        kAgent.dispose();
     }
 
 

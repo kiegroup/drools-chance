@@ -19,6 +19,7 @@ package org.drools.pmml.pmml_4_1.transformations;
 
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.runtime.rule.WorkingMemoryEntryPoint;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -38,6 +39,10 @@ public class AggregateFieldsTest extends DroolsAbstractPMMLTest {
         setKbase(getKSession().getKnowledgeBase());
     }
 
+    @After
+    public void tearDown() {
+        getKSession().dispose();
+    }
 
 
     @Test

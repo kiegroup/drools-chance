@@ -21,6 +21,7 @@ import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.rule.FactHandle;
+import org.junit.After;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -34,6 +35,10 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     private static final String source3 = "org/drools/pmml/pmml_4_1/test_user_functions_simpleTransformations.xml";
     private static final String packageName = "org.drools.pmml.pmml_4_1.test";
 
+    @After
+    public void tearDown() {
+        getKSession().dispose();
+    }
 
 
     @Test

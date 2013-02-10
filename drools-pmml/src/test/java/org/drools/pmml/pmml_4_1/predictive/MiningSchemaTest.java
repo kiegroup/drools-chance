@@ -18,6 +18,7 @@ package org.drools.pmml.pmml_4_1.predictive;
 
 
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
+import org.junit.After;
 import org.junit.Test;
 
 
@@ -29,7 +30,10 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
 
 
 
-
+    @After
+    public void tearDown() {
+        getKSession().dispose();
+    }
 
 
     @Test

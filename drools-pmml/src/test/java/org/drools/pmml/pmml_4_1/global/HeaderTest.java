@@ -82,6 +82,7 @@ public class HeaderTest extends DroolsAbstractPMMLTest {
         KnowledgePackage pack = ksession.getKnowledgeBase().getKnowledgePackage("org.drools.pmml.pmml_4_1.test");
         assertNotNull(pack);
 
+        ksession.dispose();
     }
 
 

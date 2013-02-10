@@ -18,6 +18,7 @@ package org.drools.pmml.pmml_4_1.predictive;
 
 
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
+import org.junit.After;
 import org.junit.Test;
 
 
@@ -29,6 +30,10 @@ public class TargetsAndOutputsTest extends DroolsAbstractPMMLTest {
     private static final String packageName = "org.drools.pmml.pmml_4_1.test";
 
 
+    @After
+    public void tearDown() {
+        getKSession().dispose();
+    }
 
 
     @Test

@@ -20,6 +20,7 @@ package org.drools.pmml.pmml_4_1.predictive.models;
 import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.junit.After;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -33,6 +34,11 @@ public class SimpleRegressionTest extends DroolsAbstractPMMLTest {
     private static final String packageName = "org.drools.pmml.pmml_4_1.test";
 
 
+
+    @After
+    public void tearDown() {
+        getKSession().dispose();
+    }
 
     @Test
     public void testRegression() throws Exception {
