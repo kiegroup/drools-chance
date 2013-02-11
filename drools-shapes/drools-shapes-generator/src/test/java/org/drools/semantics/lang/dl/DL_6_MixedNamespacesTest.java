@@ -75,20 +75,4 @@ public class DL_6_MixedNamespacesTest {
 
 
 
-
-    @Test
-    public void testWWTPMix() {
-        String source1 = "ontologies/wwtp/wwtp_ok.ttl";
-        String source2 = "ontologies/wwtp/mulo.ttl";
-        Resource res = ResourceFactory.newClassPathResource(source1);
-        Resource res2 = ResourceFactory.newClassPathResource(source2);
-
-        OntoModel results = factory.buildModel( "mule", new Resource[] { res, res2 }, OntoModel.Mode.OPTIMIZED );
-
-        assertEquals( 37, results.getIndividuals().size() );
-        assertEquals( "it.bologna.enea.utvalamb.wwtp.mulo", results.getDefaultPackage() );
-
-    }
-
-
 }
