@@ -19,8 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.fail;
-
 public class XMLSerializationHelper extends XmlAdapter<UIdAble,org.w3._2002._07.owl.Thing> {
 
 
@@ -63,7 +61,6 @@ public class XMLSerializationHelper extends XmlAdapter<UIdAble,org.w3._2002._07.
             return marsh;
         } catch ( JAXBException e ) {
             e.printStackTrace();
-            fail( e.getMessage() );
         }
         return null;
     }
@@ -93,7 +90,6 @@ public class XMLSerializationHelper extends XmlAdapter<UIdAble,org.w3._2002._07.
             return unmarsh;
         } catch ( JAXBException e ) {
             e.printStackTrace();
-            fail( e.getMessage() );
         }
         return null;
     }
