@@ -26,19 +26,12 @@ import org.drools.semantics.builder.model.inference.ModelInferenceStrategy;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLOntologyDocumentSource;
 import org.semanticweb.owlapi.io.StreamDocumentSource;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator;
-import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,23 +46,6 @@ public class DLFactoryImpl implements DLFactory {
 
     private static DLFactoryImpl singleton;
 
-
-
-    public static final List<InferredAxiomGenerator<? extends OWLAxiom>> defaultAxiomGenerators = Collections.unmodifiableList(
-            new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
-                    Arrays.asList(
-                            new InferredClassAssertionAxiomGenerator(),
-                            new InferredDataPropertyCharacteristicAxiomGenerator(),
-                            new InferredEquivalentClassAxiomGenerator(),
-                            new InferredEquivalentDataPropertiesAxiomGenerator(),
-                            new InferredEquivalentObjectPropertyAxiomGenerator(),
-                            new InferredInverseObjectPropertiesAxiomGenerator(),
-//                            new InferredObjectPropertyCharacteristicAxiomGenerator(),
-                            new InferredPropertyAssertionGenerator(),
-                            new InferredSubClassAxiomGenerator(),
-                            new InferredSubDataPropertyAxiomGenerator(),
-                            new InferredSubObjectPropertyAxiomGenerator()
-                    ) ) );
 
     public static final List<ModelInferenceStrategy.InferenceTask> defaultInferenceTasks = Collections.unmodifiableList(
             new ArrayList<ModelInferenceStrategy.InferenceTask>(

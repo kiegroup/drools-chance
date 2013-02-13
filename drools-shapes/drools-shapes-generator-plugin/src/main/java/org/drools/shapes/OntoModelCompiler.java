@@ -4,6 +4,7 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.drools.rule.builder.dialect.asm.ClassGenerator;
+import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.DRLModel;
 import org.drools.semantics.builder.model.JarModel;
@@ -20,6 +21,8 @@ import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.jvnet.hyperjaxb3.maven2.Hyperjaxb3Mojo;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 import org.w3._2002._07.owl.Thing;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -134,6 +137,21 @@ public class OntoModelCompiler {
 
         public List<String> getOptions() {
             return options;
+        }
+    }
+
+
+    public enum AXIOM_INFERENCE {
+        LITE( DLFactory.liteAxiomGenerators ), DEFAULT( DLFactory.defaultAxiomGenerators ), FULL( DLFactory.fullAxiomGenerators );
+
+        private List<InferredAxiomGenerator<? extends OWLAxiom>> gens;
+
+        AXIOM_INFERENCE( List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators ) {
+            gens = axiomGenerators;
+        }
+
+        public List<InferredAxiomGenerator<? extends OWLAxiom>> getGenerators() {
+            return gens;
         }
     }
 

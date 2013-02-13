@@ -33,8 +33,6 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
     // map : namespace --> schema file
     protected Map<Namespace, String> schemaLocations = new HashMap<Namespace,String>();
 
-    private XSDModelCompiler.XSDSchemaMode schemaMode = XSDModelCompiler.XSDSchemaMode.JAXB;
-
 
     XSDModelImpl() {
 

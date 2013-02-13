@@ -126,6 +126,19 @@ public class ShapeCaster
 
 
 
+    /**
+     * @parameter default-value="default"
+     */
+    private String axiomInference = OntoModelCompiler.AXIOM_INFERENCE.DEFAULT.name();
+
+    public String getAxiomInference() {
+        return axiomInference;
+    }
+
+    public void setAxiomInference( String axiomInference ) {
+        this.axiomInference = axiomInference;
+    }
+
 
 
 
@@ -388,7 +401,10 @@ public class ShapeCaster
         }
         res[j] = ResourceFactory.newFileResource( ontology );
 
-        return factory.buildModel( getModelName(), res, mode );
+        return factory.buildModel( getModelName(),
+                                   res,
+                                   mode,
+                                   OntoModelCompiler.AXIOM_INFERENCE.valueOf( axiomInference.toUpperCase() ).getGenerators() );
     }
 
 

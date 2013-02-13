@@ -17,7 +17,10 @@
 package org.drools.semantics.lang.dl;
 
 import com.clarkparsia.empire.annotation.RdfsClass;
-import org.antlr.runtime.*;
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.MismatchedTokenException;
+import org.antlr.runtime.RecognitionException;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
@@ -28,7 +31,19 @@ import org.drools.rule.builder.dialect.java.parser.JavaLexer;
 import org.drools.rule.builder.dialect.java.parser.JavaParser;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
-import org.drools.semantics.builder.model.*;
+import org.drools.semantics.builder.DLFactoryImpl;
+import org.drools.semantics.builder.model.Concept;
+import org.drools.semantics.builder.model.DRLModel;
+import org.drools.semantics.builder.model.GraphModel;
+import org.drools.semantics.builder.model.JarModel;
+import org.drools.semantics.builder.model.JavaInterfaceModel;
+import org.drools.semantics.builder.model.JavaInterfaceModelImpl;
+import org.drools.semantics.builder.model.ModelFactory;
+import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.PropertyRelation;
+import org.drools.semantics.builder.model.SemanticXSDModel;
+import org.drools.semantics.builder.model.WorkingSetModel;
+import org.drools.semantics.builder.model.XSDModel;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
@@ -37,15 +52,35 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.util.InferredAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator;
+import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 
@@ -58,6 +93,154 @@ public class DL_99_ModelTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+
+
+
+    @Test()
+    public void testConyardComplexModelGeneration() {
+
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/conyard.ttl" );
+        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.FLAT,
+                DLFactoryImpl.liteAxiomGenerators );
+
+
+
+        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+        SemanticXSDModel xsdModel;
+
+
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        xsdModel.streamAll( System.out );
+
+
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        xsdModel.streamAll( System.out );
+
+        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
+        xsdModel = (SemanticXSDModel) compiler.compile( results );
+
+        xsdModel.streamAll( System.out );
+//                xsdModel.streamBindings( System.out );
+
+
+        String pack = "<http://org.drools.conyard.owl#>";
+        Concept activity = results.getConcept(pack.replace("#", "#Activity") );
+        Concept painting = results.getConcept(pack.replace("#", "#Painting") );
+        Concept ironInst = results.getConcept(pack.replace("#", "#IronInstallation") );
+        Concept wallRais = results.getConcept(pack.replace("#", "#WallRaising") );
+        Concept inspectn = results.getConcept(pack.replace("#", "#Inspection") );
+
+        assertNotNull( painting );
+        assertNotNull( ironInst );
+        assertNotNull( wallRais );
+
+
+        Concept fallProt = results.getConcept(pack.replace("#", "#FallProtection") );
+        Concept frostProt = results.getConcept(pack.replace("#", "#FrostProtection") );
+        Concept fireProt = results.getConcept(pack.replace("#", "#FireProtection") );
+
+        assertNotNull( fallProt );
+        assertNotNull( fireProt );
+        assertNotNull( frostProt );
+
+        Concept beltX = results.getConcept(pack.replace("#", "#BeltBrandX") );
+        Concept glove = results.getConcept(pack.replace("#", "#Gloves") );
+        Concept gloveX = results.getConcept(pack.replace("#", "#GlovesBrandX") );
+
+        assertNotNull( beltX );
+        assertNotNull( gloveX );
+        assertNotNull( glove );
+
+
+        Concept fire = results.getConcept(pack.replace("#", "#Fire") );
+        Concept anotherfire = results.getConcept(pack.replace("#", "#AnotherFire") );
+        Concept anotherheat = results.getConcept(pack.replace("#", "#AnotherHeat") );
+        Concept testfire = results.getConcept(pack.replace("#", "#TestFire") );
+
+        assertNotNull( fire );
+        assertNotNull( anotherfire );
+        assertNotNull( anotherheat );
+        assertNotNull( testfire );
+
+
+
+        assertTrue( beltX.getSuperConcepts().contains( fallProt ) );
+        assertTrue( gloveX.getSuperConcepts().contains( fireProt ) );
+        assertTrue( gloveX.getSuperConcepts().contains( glove ) );
+        assertTrue( glove.getSuperConcepts().contains( frostProt ) );
+
+        assertTrue( testfire.getSuperConcepts().contains( fire ) );
+        assertTrue( anotherfire.getSuperConcepts().contains( fire ) );
+        assertTrue( anotherheat.getSuperConcepts().contains( anotherfire ) );
+
+
+//        assertTrue( checkProperty( painting, pack, "involvesPersons", "Person", 1, null, true, true) );
+        assertTrue( checkProperty( painting, pack, "involvesLabourers", "Labourer", 1, null, true, false ) );
+//        assertTrue( checkProperty( painting, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
+        assertTrue( checkProperty( painting, pack, "requiresPaints", "Paint", 1, null, true, false ) );
+        assertTrue( checkProperty( painting, pack, "requiresStair", "Stair", 1, 1, true, false ) );
+        assertTrue( checkProperty( painting, pack, "requires", "Equipment", 0, null, false, true ) );
+        assertTrue( checkProperty( painting, pack, "involves", "Person", 0, null, false, true ) );
+
+
+        assertEquals( 15, ironInst.getChosenProperties().size() );
+        assertTrue( checkProperty( ironInst, pack, "involvesMasons", "Mason", 1, null, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresWeldingTorchs", "WeldingTorch", 1, null, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresIronBars", "IronBar", 1, null, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresGrinders", "Grinder", 1, null, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "requiresCrane", "Crane", 1, 1, true, false ) );
+        assertTrue( checkProperty( ironInst, pack, "involvesSmiths", "Smith", 1, 4, true, false) );
+        assertTrue( checkProperty( ironInst, pack, "involvesPersons", "Person", 1, null, true, true ) );
+        assertTrue( checkProperty( ironInst, pack, "involvesLabourers", "Labourer", 2, null, true, false ) );
+//        assertTrue( checkProperty( ironInst, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
+        assertTrue( checkProperty( ironInst, pack, "hasComment", "xsd:string", 1, 1, false, true ) );
+//        assertTrue( checkProperty( ironInst, pack, "hasCommentString", "xsd:string", 1, 1, true, true ) );
+
+
+        assertTrue( checkProperty( wallRais, pack, "involves", "Person", 0, null, false, false ) );
+        assertTrue( checkProperty( wallRais, pack, "involvesMasons", "Mason", 3, null, true, false ) );
+        assertTrue( checkProperty( wallRais, pack, "requiresBricks", "Bricks", 1, 1, true, false ) );
+        assertFalse( checkProperty( wallRais, pack, "requiresBrickses", "Bricks", 1, null, true, true ) );
+
+        assertTrue( checkProperty( inspectn, pack, "involvesPersons", "Person", 1, null, true, true ) );
+        assertTrue( checkProperty( inspectn, pack, "involvesPerson", "Person", 1, 1, true, false ) );
+        assertTrue( checkProperty( inspectn, pack, "requiresEquipments", "Equipment", 0, 3, true, false ) );
+
+//
+        for ( Concept con : results.getConcepts() ) {
+            if ( con.getName().endsWith( "Range" ) || con.getName().endsWith( "Domain" ) ) {
+                assertTrue( con.isAbstrakt() );
+                assertTrue( con.isAnonymous() );
+                assertFalse( con.isPrimitive() );
+            }
+            if ( con.getName().endsWith( "Filler" ) ) {
+                assertFalse( con.isAbstrakt() );
+                assertTrue( con.isAnonymous() );
+                assertFalse( con.isPrimitive() );
+            }
+        }
+
+        assertEquals( 6, wallRais.getEffectiveProperties().size() );
+
+        Set<PropertyRelation> wrEffectiveBaseProperties = wallRais.getEffectiveBaseProperties();
+        for ( PropertyRelation p : wrEffectiveBaseProperties ) {
+            System.out.println( p );
+            for( PropertyRelation sub : wallRais.getProperties().values() ) {
+                if ( sub.isRestricted() && sub.getBaseProperty().equals( p ) ) {
+                    if ( p.getName().equals( "involves" ) ) {
+                        assertTrue( sub.getName().equals( "involvesMasons" ) || sub.getName().equals( "involvesPersons" ) );
+                    }
+                }
+            }
+        }
+
+
+    }
 
 
     @Test
@@ -363,148 +546,6 @@ public class DL_99_ModelTest {
 
 
 
-
-    @Test
-    public void testConyardComplexModelGeneration() {
-
-        Resource res = ResourceFactory.newClassPathResource( "ontologies/conyard.ttl" );
-        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.FLAT );
-
-        ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
-        SemanticXSDModel xsdModel;
-
-
-        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
-        xsdModel = (SemanticXSDModel) compiler.compile( results );
-
-        xsdModel.streamAll( System.out );
-
-
-        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( true );
-        xsdModel = (SemanticXSDModel) compiler.compile( results );
-
-        xsdModel.streamAll( System.out );
-
-        ((XSDModelCompiler) compiler).setTransientPropertiesEnabled( false );
-        xsdModel = (SemanticXSDModel) compiler.compile( results );
-
-        xsdModel.streamAll( System.out );
-//                xsdModel.streamBindings( System.out );
-
-
-        String pack = "<http://org.drools.conyard.owl#>";
-        Concept activity = results.getConcept(pack.replace("#", "#Activity") );
-        Concept painting = results.getConcept(pack.replace("#", "#Painting") );
-        Concept ironInst = results.getConcept(pack.replace("#", "#IronInstallation") );
-        Concept wallRais = results.getConcept(pack.replace("#", "#WallRaising") );
-        Concept inspectn = results.getConcept(pack.replace("#", "#Inspection") );
-
-        assertNotNull( painting );
-        assertNotNull( ironInst );
-        assertNotNull( wallRais );
-
-
-        Concept fallProt = results.getConcept(pack.replace("#", "#FallProtection") );
-        Concept frostProt = results.getConcept(pack.replace("#", "#FrostProtection") );
-        Concept fireProt = results.getConcept(pack.replace("#", "#FireProtection") );
-
-        assertNotNull( fallProt );
-        assertNotNull( fireProt );
-        assertNotNull( frostProt );
-
-        Concept beltX = results.getConcept(pack.replace("#", "#BeltBrandX") );
-        Concept glove = results.getConcept(pack.replace("#", "#Gloves") );
-        Concept gloveX = results.getConcept(pack.replace("#", "#GlovesBrandX") );
-
-        assertNotNull( beltX );
-        assertNotNull( gloveX );
-        assertNotNull( glove );
-
-
-        Concept fire = results.getConcept(pack.replace("#", "#Fire") );
-        Concept anotherfire = results.getConcept(pack.replace("#", "#AnotherFire") );
-        Concept anotherheat = results.getConcept(pack.replace("#", "#AnotherHeat") );
-        Concept testfire = results.getConcept(pack.replace("#", "#TestFire") );
-
-        assertNotNull( fire );
-        assertNotNull( anotherfire );
-        assertNotNull( anotherheat );
-        assertNotNull( testfire );
-
-
-
-        assertTrue( beltX.getSuperConcepts().contains( fallProt ) );
-        assertTrue( gloveX.getSuperConcepts().contains( fireProt ) );
-        assertTrue( gloveX.getSuperConcepts().contains( glove ) );
-        assertTrue( glove.getSuperConcepts().contains( frostProt ) );
-
-        assertTrue( testfire.getSuperConcepts().contains( fire ) );
-        assertTrue( anotherfire.getSuperConcepts().contains( fire ) );
-        assertTrue( anotherheat.getSuperConcepts().contains( anotherfire ) );
-
-
-//        assertTrue( checkProperty( painting, pack, "involvesPersons", "Person", 1, null, true, true) );
-        assertTrue( checkProperty( painting, pack, "involvesLabourers", "Labourer", 1, null, true, false ) );
-//        assertTrue( checkProperty( painting, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
-        assertTrue( checkProperty( painting, pack, "requiresPaints", "Paint", 1, null, true, false ) );
-        assertTrue( checkProperty( painting, pack, "requiresStair", "Stair", 1, 1, true, false ) );
-        assertTrue( checkProperty( painting, pack, "requires", "Equipment", 0, null, false, true ) );
-        assertTrue( checkProperty( painting, pack, "involves", "Person", 0, null, false, true ) );
-
-
-        assertEquals( 15, ironInst.getChosenProperties().size() );
-        assertTrue( checkProperty( ironInst, pack, "involvesMasons", "Mason", 1, null, true, false ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresWeldingTorchs", "WeldingTorch", 1, null, true, false ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresIronBars", "IronBar", 1, null, true, false ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresGrinders", "Grinder", 1, null, true, false ) );
-        assertTrue( checkProperty( ironInst, pack, "requiresCrane", "Crane", 1, 1, true, false ) );
-        assertTrue( checkProperty( ironInst, pack, "involvesSmiths", "Smith", 1, 4, true, false) );
-        assertTrue( checkProperty( ironInst, pack, "involvesPersons", "Person", 1, null, true, true ) );
-        assertTrue( checkProperty( ironInst, pack, "involvesLabourers", "Labourer", 2, null, true, false ) );
-//        assertTrue( checkProperty( ironInst, pack, "requiresEquipments", "Equipment", 0, null, true, true ) );
-        assertTrue( checkProperty( ironInst, pack, "hasComment", "xsd:string", 1, 1, false, true ) );
-//        assertTrue( checkProperty( ironInst, pack, "hasCommentString", "xsd:string", 1, 1, true, true ) );
-
-
-        assertTrue( checkProperty( wallRais, pack, "involves", "Person", 0, null, false, false ) );
-        assertTrue( checkProperty( wallRais, pack, "involvesMasons", "Mason", 3, null, true, false ) );
-        assertTrue( checkProperty( wallRais, pack, "requiresBricks", "Bricks", 1, 1, true, false ) );
-        assertFalse( checkProperty( wallRais, pack, "requiresBrickses", "Bricks", 1, null, true, true ) );
-
-        assertTrue( checkProperty( inspectn, pack, "involvesPersons", "Person", 1, null, true, true ) );
-        assertTrue( checkProperty( inspectn, pack, "involvesPerson", "Person", 1, 1, true, false ) );
-        assertTrue( checkProperty( inspectn, pack, "requiresEquipments", "Equipment", 0, 3, true, false ) );
-
-//
-        for ( Concept con : results.getConcepts() ) {
-            if ( con.getName().endsWith( "Range" ) || con.getName().endsWith( "Domain" ) ) {
-                assertTrue( con.isAbstrakt() );
-                assertTrue( con.isAnonymous() );
-                assertFalse( con.isPrimitive() );
-            }
-            if ( con.getName().endsWith( "Filler" ) ) {
-                assertFalse( con.isAbstrakt() );
-                assertTrue( con.isAnonymous() );
-                assertFalse( con.isPrimitive() );
-            }
-        }
-
-        assertEquals( 6, wallRais.getEffectiveProperties().size() );
-
-        Set<PropertyRelation> wrEffectiveBaseProperties = wallRais.getEffectiveBaseProperties();
-        for ( PropertyRelation p : wrEffectiveBaseProperties ) {
-            System.out.println( p );
-            for( PropertyRelation sub : wallRais.getProperties().values() ) {
-                if ( sub.isRestricted() && sub.getBaseProperty().equals( p ) ) {
-                    if ( p.getName().equals( "involves" ) ) {
-                        assertTrue( sub.getName().equals( "involvesMasons" ) || sub.getName().equals( "involvesPersons" ) );
-                    }
-                }
-            }
-        }
-
-
-    }
 
     private boolean checkProperty( Concept base, String pack, String propName, String target, Integer minCard, Integer maxCard, boolean restricted, boolean inherited ) {
 

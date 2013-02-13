@@ -6,9 +6,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <http://some/dependency/test> .
 
-<http://some/dependency/test> rdf:type owl:Ontology ;
-                              
-                              owl:imports <http://jboss.org/drools/semantics/Diamond> .
+<http://some/dependency/test> rdf:type owl:Ontology .
 
 
 #################################################################

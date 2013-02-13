@@ -33,7 +33,7 @@ when
     $r : Rule( $uid : this.dyEntryId )
 then
     RuleDescr rd = new RuleDescr();
-        rd.setName( $uid );
+        rd.setName( (String) $uid );
     pack.addRule( rd );
     insert( rd );
 end
@@ -52,7 +52,7 @@ then
     AndDescr lhs = new AndDescr();
     PatternDescr pat = new PatternDescr();
         pat.setObjectType( (String) $type );
-        pat.setIdentifier( $pid );
+        pat.setIdentifier( (String) $pid );
 
     lhs.addDescr( pat );
     modify ( $x ) {
@@ -108,7 +108,7 @@ when
 then
     PatternDescr act = new PatternDescr();
         act.setObjectType( "Activation" );
-        act.setIdentifier( $aid );
+        act.setIdentifier( (String) $aid );
         ExprConstraintDescr rn = new ExprConstraintDescr();
             rn.setExpression( "rule.name == " + $about );
         act.addConstraint( rn );
@@ -138,7 +138,7 @@ when
 then
     PatternDescr act = new PatternDescr();
         act.setObjectType( "Failure" );
-        act.setIdentifier( $aid );
+        act.setIdentifier( (String) $aid );
         ExprConstraintDescr rn = new ExprConstraintDescr();
             rn.setExpression( "rule.name == " + $about );
         act.addConstraint( rn );

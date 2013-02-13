@@ -18,18 +18,79 @@ package org.drools.semantics.builder;
 
 
 import org.drools.io.Resource;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.inference.ModelInferenceStrategy;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator;
+import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
+import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public interface DLFactory {
 
+
+    public static final List<InferredAxiomGenerator<? extends OWLAxiom>> liteAxiomGenerators = Collections.unmodifiableList(
+            new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
+                    Arrays.asList(
+                            new InferredClassAssertionAxiomGenerator(),
+                            new InferredDataPropertyCharacteristicAxiomGenerator(),
+                            new InferredEquivalentClassAxiomGenerator(),
+//                            new InferredEquivalentDataPropertiesAxiomGenerator(),
+                            new InferredEquivalentObjectPropertyAxiomGenerator(),
+                            new InferredInverseObjectPropertiesAxiomGenerator(),
+//                            new InferredObjectPropertyCharacteristicAxiomGenerator(),
+//                            new InferredPropertyAssertionGenerator(),
+                            new InferredSubClassAxiomGenerator(),
+//                            new InferredSubDataPropertyAxiomGenerator(),
+                            new InferredSubObjectPropertyAxiomGenerator()
+                    )));
+
+
+    public static final List<InferredAxiomGenerator<? extends OWLAxiom>> defaultAxiomGenerators = Collections.unmodifiableList(
+            new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
+                    Arrays.asList(
+                            new InferredClassAssertionAxiomGenerator(),
+                            new InferredDataPropertyCharacteristicAxiomGenerator(),
+                            new InferredEquivalentClassAxiomGenerator(),
+//                            new InferredEquivalentDataPropertiesAxiomGenerator(),
+                            new InferredEquivalentObjectPropertyAxiomGenerator(),
+                            new InferredInverseObjectPropertiesAxiomGenerator(),
+//                            new InferredObjectPropertyCharacteristicAxiomGenerator(),
+                            new InferredPropertyAssertionGenerator(),
+                            new InferredSubClassAxiomGenerator(),
+                            new InferredSubDataPropertyAxiomGenerator(),
+                            new InferredSubObjectPropertyAxiomGenerator()
+                    ) ) );
+
+    public static final List<InferredAxiomGenerator<? extends OWLAxiom>> fullAxiomGenerators = Collections.unmodifiableList(
+            new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
+                    Arrays.asList(
+                            new InferredClassAssertionAxiomGenerator(),
+                            new InferredDataPropertyCharacteristicAxiomGenerator(),
+                            new InferredEquivalentClassAxiomGenerator(),
+                            new InferredEquivalentDataPropertiesAxiomGenerator(),
+                            new InferredEquivalentObjectPropertyAxiomGenerator(),
+                            new InferredInverseObjectPropertiesAxiomGenerator(),
+                            new InferredObjectPropertyCharacteristicAxiomGenerator(),
+                            new InferredPropertyAssertionGenerator(),
+                            new InferredSubClassAxiomGenerator(),
+                            new InferredSubDataPropertyAxiomGenerator(),
+                            new InferredSubObjectPropertyAxiomGenerator()
+                    ) ) );
 
     public OWLOntology parseOntology( Resource resource );
 

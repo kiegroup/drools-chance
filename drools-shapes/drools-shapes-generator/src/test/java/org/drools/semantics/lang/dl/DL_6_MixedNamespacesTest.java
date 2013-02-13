@@ -69,7 +69,7 @@ public class DL_6_MixedNamespacesTest {
         SemanticXSDModel xsdModel = (SemanticXSDModel) compiler.compile( results );
 
         assertEquals( 5, xsdModel.getNamespaces().size() );
-        assertEquals( 5, xsdModel.getConcepts().size() );
+        assertEquals( 7, xsdModel.getConcepts().size() );
 
     }
 

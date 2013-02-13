@@ -64,6 +64,7 @@
     </dependency>
 
 
+
     <!--dependency>
         <groupId>org.jscience</groupId>
         <artifactId>jscience</artifactId>
@@ -101,13 +102,12 @@
     <dependency>
       <groupId>net.sourceforge.owlapi</groupId>
       <artifactId>owlapi-api</artifactId>
-      <version>3.4</version>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.owlapi</groupId>
       <artifactId>owlapi-apibinding</artifactId>
-      <version>3.4</version>
     </dependency>
+
 
     <dependency>
       <groupId>org.semanticweb</groupId>
@@ -116,7 +116,7 @@
       <exclusions>
         <exclusion>
           <groupId>owlapi</groupId>
-          <artifactId>owlapi</artifactId>
+          <artifactId>owlapi-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

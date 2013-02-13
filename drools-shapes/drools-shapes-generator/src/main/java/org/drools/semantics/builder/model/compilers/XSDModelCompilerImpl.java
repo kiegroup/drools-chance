@@ -35,9 +35,6 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     protected Map<String,Map<String,PropertyRelation>> propCache = new HashMap<String, Map<String, PropertyRelation>>();
 
 
-
-    private XSDSchemaMode schemaMode = XSDSchemaMode.JAXB;
-
     private boolean transientPropertiesEnabled;
     private boolean useImplementation;
 
@@ -56,10 +53,6 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
     public void setUseImplementation(boolean useImplementation) {
         this.useImplementation = useImplementation;
-    }
-
-    public void setSchemaMode(XSDSchemaMode mode) {
-        this.schemaMode = mode;
     }
 
     public void setModel( OntoModel model ) {

@@ -87,6 +87,14 @@
       <id>EmpireRDF-snapshot</id>
       <url>https://github.com/EmpireRDF/mavenRepo/raw/master/snapshots</url>
     </repository>
+
+    <repository>
+      <!--owlapi 3.2.2 -->
+      <id>Ontocat-snapshot</id>
+      <url>http://ontocat.sourceforge.net/maven/repo/</url>
+    </repository>
+
+
   </repositories>
 
 
@@ -239,6 +247,17 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>3.5.6-Final</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.sourceforge.owlapi</groupId>
+        <artifactId>owlapi-api</artifactId>
+        <version>3.4.2</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.owlapi</groupId>
+        <artifactId>owlapi-apibinding</artifactId>
+        <version>3.4.2</version>
       </dependency>
 
 
