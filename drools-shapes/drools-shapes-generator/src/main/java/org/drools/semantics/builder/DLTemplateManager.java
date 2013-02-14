@@ -28,7 +28,7 @@ import java.io.InputStream;
 
 public class DLTemplateManager {
 
-    private static final String SEP = File.separator;
+    private static final String SEP = "/";
     
     public static final String BASE_PACK = "org.drools.semantics";
     protected static final String RESOURCE_PATH = BASE_PACK.replace( ".", SEP );
@@ -105,7 +105,7 @@ public class DLTemplateManager {
                 String path = TEMPLATE_PATH + ntempl.replace( "/", SEP );
                 InputStream stream = ResourceFactory.newClassPathResource(path, DLTemplateManager.class).getInputStream();
 
-                registry.addNamedTemplate( path.substring( path.lastIndexOf( File.separator ) + 1 ),
+                registry.addNamedTemplate( path.substring( path.lastIndexOf( SEP ) + 1 ),
                         TemplateCompiler.compileTemplate(stream));
             } catch (IOException e) {
                 e.printStackTrace();
