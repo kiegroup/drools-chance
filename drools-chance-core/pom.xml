@@ -37,26 +37,19 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-compiler</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>knowledge-api</artifactId>
+    </dependency>
+
 
     <dependency>
       <groupId>de.lab4inf</groupId>
       <artifactId>Lab4Jefis</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-    </dependency>
-
-
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-pmml</artifactId>
-      <version>${chance.version}</version>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>

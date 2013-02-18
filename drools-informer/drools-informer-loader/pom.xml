@@ -34,14 +34,6 @@
   <description> Loads Informer models from spreadsheets </description>
 
   <dependencies>
-    <!-- Internal dependencies -->
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-informer-core</artifactId>
-    </dependency>
-
-
-
 
     <dependency>
       <groupId>org.apache.poi</groupId>
