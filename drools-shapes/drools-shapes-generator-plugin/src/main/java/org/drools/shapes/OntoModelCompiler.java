@@ -648,6 +648,7 @@ public class OntoModelCompiler {
 
             mojo.setArgs( args );
 
+            mojo.setForceRegenerate( true );
             mojo.execute();
             success = true;
         } catch (MojoExecutionException e) {
