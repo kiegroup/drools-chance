@@ -596,11 +596,11 @@ public class OntoModelCompiler {
 
             MavenProject mp = new MavenProject();
 
-            Hyperjaxb3Mojo mojo = new Hyperjaxb3Mojo();
+            final Hyperjaxb3Mojo mojo = new Hyperjaxb3Mojo();
             mojo.setVerbose( true );
 
             mojo.setBindingDirectory( getMetaInfDir() );
-            mojo.setSchemaDirectory( getMetaInfDir() );
+            mojo.setSchemaDirectory(getMetaInfDir());
 
             int j = 0;
             String[] excludedSchemas = new String[ preexistingSchemas.size() ];
@@ -619,7 +619,7 @@ public class OntoModelCompiler {
 
 
             mojo.setGenerateDirectory( getXjcDir() );
-            mojo.setExtension( true );
+            mojo.setExtension(true);
             mojo.variant = variant.getLabel();
 
             File perx = new File( getBinDir().getPath() + File.separator + "META-INF" + File.separator + "persistence.xml" );

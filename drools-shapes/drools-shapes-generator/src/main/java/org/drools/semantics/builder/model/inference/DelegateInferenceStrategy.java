@@ -1531,13 +1531,20 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             }
 
             for ( PropertyRelation prop : model.getProperties() ) {
-                if ( prop.getDomain() == thing ) {
-                    prop.setDomain( localRoot );
-                }
-                if ( prop.getTarget() == thing ) {
-                    prop.setTarget( localRoot );
-                }
+                fixProperty( prop, thing, localRoot );
             }
+        }
+    }
+
+    private void fixProperty( PropertyRelation prop, Concept thing, Concept localRoot ) {
+        if ( prop.getDomain() == thing ) {
+            prop.setDomain( localRoot );
+        }
+        if ( prop.getTarget() == thing ) {
+            prop.setTarget( localRoot );
+        }
+        for ( PropertyRelation sub : prop.getRestrictedProperties() ) {
+            fixProperty( sub, thing, localRoot );
         }
     }
 

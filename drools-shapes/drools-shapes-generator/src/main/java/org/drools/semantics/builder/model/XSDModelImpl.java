@@ -57,7 +57,7 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         Element root = new Element( "schema", getNamespace( "xsd" ) );
 
         root.setAttribute( "elementFormDefault", "qualified" );
-        root.setAttribute( "targetNamespace", tgtNamespace );
+        root.setAttribute( "targetNamespace", NamespaceUtils.removeLastSeparator( tgtNamespace ) );
 
         for ( Namespace ns : prefixMap.values() ) {
             root.addNamespaceDeclaration( ns );
