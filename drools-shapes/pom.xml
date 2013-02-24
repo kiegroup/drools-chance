@@ -40,6 +40,8 @@
     <module>drools-shapes-generator-plugin</module>
     <module>drools-shapes-examples</module>
     <module>drools-shapes-utilities</module>
+    <module>drools-shapes-xsd-processor</module>
+    <module>drools-shapes-xsd-processor-plugin</module>
   </modules>
 
   <repositories>
@@ -259,6 +261,35 @@
         <artifactId>owlapi-apibinding</artifactId>
         <version>3.4.2</version>
       </dependency>
+      <dependency>
+        <groupId>net.sourceforge.owlapi</groupId>
+        <artifactId>owlapi-parsers</artifactId>
+        <version>3.4.2</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.owlapi</groupId>
+        <artifactId>owlapi-tools</artifactId>
+        <version>3.4.2</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.owlapi</groupId>
+        <artifactId>owlapi-impl</artifactId>
+        <version>3.4.2</version>
+      </dependency>
+
+
+      <dependency>
+        <groupId>org.semanticweb</groupId>
+        <artifactId>HermiT</artifactId>
+        <version>1.3.6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>owlapi</groupId>
+            <artifactId>owlapi-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
 
 
 

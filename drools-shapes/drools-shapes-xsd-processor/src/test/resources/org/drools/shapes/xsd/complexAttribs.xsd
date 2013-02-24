@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright 2013 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<xs:schema elementFormDefault="qualified" targetNamespace="http://asu.edu/test"
+           xmlns="http://asu.edu/test" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+
+  <xs:complexType name="TestComplex">
+    <xs:complexContent>
+      <xs:extension base="TestBase">
+        <xs:attribute name="field" type="xs:string" use="optional"/>
+        <xs:attribute name="otherField" type="xs:string" use="required"/>
+        <xs:attribute name="noField" type="xs:string" use="prohibited"/>
+        <xs:attribute name="defField" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType abstract="true" name="TestBase">
+    <xs:attribute name="baseAttr" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="TestChild">
+    <xs:complexContent>
+      <xs:extension base="TestComplex">
+        <xs:sequence>
+          <xs:element name="baseField1" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="baseField2" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="baseField3" type="xs:string" minOccurs="2" maxOccurs="3"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="TestAnotherChild">
+    <xs:complexContent>
+      <xs:extension base="TestBase">
+        <xs:choice>
+          <xs:element name="optionField1" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="optionField2" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+</xs:schema>
+

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://www.exampleURI.com/HeD"
+           elementFormDefault="qualified"
+           targetNamespace="http://www.exampleURI.com/HeD">
+
+  <!--xs:include schemaLocation="datatypes-iso21090-clean.xsd"/-->
+
+  <xs:complexType name="ANY">
+  </xs:complexType>
+
+  <xs:simpleType name="Decimal">
+    <xs:restriction base="xs:double" />
+  </xs:simpleType>
+  <xs:simpleType name="CD">
+    <xs:restriction base="xs:string" />
+  </xs:simpleType>
+  <xs:simpleType name="Code">
+    <xs:restriction base="xs:string" />
+  </xs:simpleType>
+
+  <xs:complexType name="IVL_RTO">
+    <xs:complexContent>
+      <xs:extension base="ANY">
+        <xs:attributeGroup ref="ATTR_RTO_LOW">
+        </xs:attributeGroup>
+        <xs:attributeGroup ref="ATTR_RTO_HIGH">
+        </xs:attributeGroup>
+        <xs:attribute name="lowIsInclusive" type="xs:boolean" use="optional">
+        </xs:attribute>
+        <xs:attribute name="highIsInclusive" type="xs:boolean" use="optional">
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:attributeGroup name="ATTR_PQ_HIGH">
+    <xs:attribute name="highValue" type="Decimal" use="required">
+    </xs:attribute>
+    <xs:attribute name="highUnit" type="Code" use="required">
+    </xs:attribute>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="ATTR_RTO">
+    <xs:attribute name="numerator" type="Decimal" use="required">
+    </xs:attribute>
+    <xs:attribute name="denominator" type="Decimal" use="required">
+    </xs:attribute>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="ATTR_RTO_LOW">
+    <xs:attribute name="lowNumerator" type="Decimal" use="required">
+    </xs:attribute>
+    <xs:attribute name="lowDenominator" type="Decimal" use="required">
+    </xs:attribute>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="ATTR_RTO_HIGH">
+    <xs:attribute name="highNumerator" type="Decimal" use="required">
+    </xs:attribute>
+    <xs:attribute name="highDenominator" type="Decimal" use="required">
+    </xs:attribute>
+  </xs:attributeGroup>
+
+
+  <xs:complexType name="XYZ.ABC">
+    <xs:attributeGroup ref="ATTR_RTO_LOW" />
+  </xs:complexType>
+
+</xs:schema>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" targetNamespace="http://asu.edu/test"
+           xmlns="http://asu.edu/test" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+
+  <xs:simpleType name="dSix">
+    <xs:list itemType="score" />
+  </xs:simpleType>
+
+  <xs:simpleType name="dEight">
+    <xs:list itemType="highScore" />
+  </xs:simpleType>
+
+  <xs:simpleType name="dTwenty">
+    <xs:list>
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="1"/>
+          <xs:maxInclusive value="20"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:list>
+  </xs:simpleType>
+
+
+  <xs:simpleType name="score">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="6"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="highScore">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="8"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+
+  <xs:complexType name="Die">
+    <xs:sequence>
+      <xs:element name="rock" type="dEight" />
+      <xs:element name="roll" type="dSix" />
+      <xs:element name="troll" type="dTwenty" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
