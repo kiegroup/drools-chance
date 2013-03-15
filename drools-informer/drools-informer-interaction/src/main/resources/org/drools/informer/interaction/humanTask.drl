@@ -373,7 +373,7 @@ when
 then
 //    org.jbpm.task.Task jTask = new org.jbpm.task.Task();
 //    TaskHelper.getTaskService().addTask( jTask, new ContentData() );
-//    System.out.println( jTask.getId() + " " + jTask );
+//    //System.out.println( jTask.getId() + " " + jTask );
 
     modify ( $task ) {
         //setForeignTaskId( jTask.getId() );
@@ -386,7 +386,7 @@ rule "Nomination"
 when
     $task   : HumanTask( $tid : taskId, state == TaskStates.CREATED, $owner : owner != null, potentialOwners == null || potentialOwners.size() <= 1 )
 then
-//    System.out.println( "Nomination" ) ;
+//    //System.out.println( "Nomination" ) ;
     insert( new TaskStateTransition( $tid, TaskTransitions.ACTIVATE, $owner, new Date() ) );
 end
 
@@ -394,7 +394,7 @@ rule "Guess who's gonna take it"
 when
     $task   : HumanTask( $tid : taskId, state == TaskStates.READY, owner == null, potentialOwners.size() == 1, $owner : potentialOwners[0] )
 then
-    System.out.println( "Guess.... " + $owner ) ;
+    //System.out.println( "Guess.... " + $owner ) ;
     modify ( $task ) {
         setOwner( (String) $owner );
     }
@@ -408,12 +408,12 @@ when
     $tx     : TaskStateTransition( $tid, $tran, $owner, $time ; )
               allowedTransition( $tid, $oldState, $tran, $newState ; )
 then
-    System.out.println( "Task " + $tx  + " : Trasition detected " + $tran +" into state " + $newState + " for owner " + $owner );
+    //System.out.println( "Task " + $tx  + " : Trasition detected " + $tran +" into state " + $newState + " for owner " + $owner + " task is now \n\t " + $t );
 
     retract( $tx );
 
     modify ( $t ) {
-        setOwner( $tx.getOwner() != null ? $tx.getOwner() : $t.getOwner() ),
+        setOwner( $owner != null ? $owner : $t.getOwner() ),
         setState( $newState ),
         setLastChange( $time );
     }
@@ -428,7 +428,7 @@ when
     $tst    : List() from accumulate ( AllowedTransition( $tid, $s, $tx, $new ; ) collectList( $tx.name() ) )
     $tranx:   MultipleChoiceQuestion( type == "transition", context == $xid, $prev : possibleAnswersValuesAsList != $tst ) @watch( * )
 then
-    System.out.println( "SETTING TRANSITIONS " + $tst );
+    //System.out.println( "SETTING TRANSITIONS " + $tst );
     modify ( $tranx ) { setPossibleAnswersByValue( $tst ); }
 end
 
@@ -442,21 +442,9 @@ when
                                       $prev : possibleAnswersValuesAsList != $potential
                                     ) @watch( * )
 then
-    System.out.println( "SETTING OWNERS " + $potential + " when prev was " + $prev ) ;
+    //System.out.println( "SETTING OWNERS " + $potential + " when prev was " + $prev ) ;
     modify ( $owners ) { setPossibleAnswersByValue( $potential ); }
 end
-
-////
-//rule "Synch Owner"
-//salience -999
-//when
-//    $t : HumanTask( $tid : taskId, $owner : owner != null )
-//    $h : TaskTransitionHolder( taskId == $tid, owner != $owner )
-//then
-//    modify ($h) {
-//        setOwner( $owner );
-//    }
-//end
 
 
 
@@ -466,7 +454,7 @@ salience 1
 when
     $task   : HumanTask( $tid : taskId, $state : state != null, $owner : owner )
 then
-    System.out.println( "TODO Persist in HTS that : State changed for " + $tid + " >> " + $state + "(" + $owner + ")" );
+    //System.out.println( "TODO Persist in HTS that : State changed for " + $tid + " >> " + $state + "(" + $owner + ")" );
 end
 
 
@@ -488,7 +476,7 @@ then
         holder.setQuestionnaireId( java.util.UUID.randomUUID().toString() );
         holder.setTaskId( $tid );
         holder.setOwner( $t.getOwner() );
-    System.out.println( "Create interactive task transition Quest' >>>>>>>>>>>" +  holder + " for " + $t + " with owner " + $t.getOwner() );
+    //System.out.println( "Create interactive task transition Quest' >>>>>>>>>>>" +  holder + " for " + $t + " with owner " + $t.getOwner() );
     insert( holder );
     modify ( $t ) {
         setControlQuestId( holder.getQuestionnaireId() );
@@ -500,7 +488,7 @@ when
     $t : TaskTransitionHolder( $tid : taskId )
     not  InteractiveTask( $tid == taskId )
 then
-    System.out.println(" @@@@ Retracting TTH " + $tid );
+    //System.out.println(" @@@@ Retracting TTH " + $tid );
     retract( $t );
 end
 
@@ -517,9 +505,9 @@ when
                                     || transition == TaskTransitions.ACTIVATE.name
                                     || transition == TaskTransitions.SUSPEND.name
                                     || transition == TaskTransitions.RESUME.name )
-//    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
+    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
 then
-    System.out.println(" Preparing a tx " + $tranx );
+    //System.out.println(" Preparing a tx " + $tranx );
     modify ( $holder ) {
         setTransition( null );
     }
@@ -533,9 +521,9 @@ when
                                     && != TaskTransitions.ACTIVATE.name
                                     && != TaskTransitions.SUSPEND.name
                                     && != TaskTransitions.RESUME.name )
-//    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
+    ?taskInfo( $tid, $descr, $owner, $owners, $state, $lastChange, $persistent ; )
 then
-    System.out.println("Trax nont allowed since user is null");
+    //System.out.println("Trax nont allowed since user is null");
     modify ( $holder ) {
         setTransition( null );
     }
@@ -545,10 +533,10 @@ rule "Infer owner"
 when
     $holder : TaskTransitionHolder( $tid : taskId, owner == null,
                                     $tranx : transition != null )
-//    ?taskInfo( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
-    HumanTask( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
+    ?taskInfo( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
+//    HumanTask( $tid, $descr, $owner, null, $state, $lastChange, $persistent ; )
 then
-    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><Trax with INFERRED OWNER " + $owner );
+    //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><Trax with INFERRED OWNER " + $owner );
     modify ( $holder ) {
         setTransition( null );
     }
@@ -557,24 +545,6 @@ then
     insert( tst );
 end
 
-//
-//rule "Owned transition"
-//salience -999
-//when
-//    $holder : TaskTransitionHolder( $tid : taskId, $newOwner : owner != null,
-//                                    $tranx : transition )
-////    taskInfo( $tid, $descr, null, $list, $state, $lastChange, $persistent ; )
-////    String( this == $newOwner ) from $list
-//then
-//    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><Trax with OWNED " +" into " + $tranx );
-////    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><Trax with OWNED " + $newOwner);
-////    modify ( $holder ) {
-////        setTransition( null );
-////    }
-////
-////    TaskStateTransition tst = new TaskStateTransition( $tid, TaskTransitions.valueOf( $tranx ), $newOwner, new Date() );
-////    insert( tst );
-//end
 
 
 
@@ -587,20 +557,10 @@ when
     $trn: MultipleChoiceQuestion( type == "transition", $qid : id, lastAnswer != null, context == $ctrlQuestId )
 //    $dma: DomainModelAssociation( questionId == $qid )
 then
-    System.out.println( " I SHOULD NULLIFY THE TRANSITION ! " );
+    //System.out.println( " I SHOULD NULLIFY THE TRANSITION ! " );
     modify ( $trn ) { setLastAnswer( null ); }
 //    modify ( $dma ) { setLastAnswer( null ); }
 end
 
 
 
-
-//rule "Clear"
-//salience -9999
-//when
-//    $task : HumanTask( state == TaskStates.EXITED
-//                     || == TaskStates.OBSOLETE
-//                     || == TaskStates.ERROR )
-//then
-//    retract( $task );
-//end
