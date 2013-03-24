@@ -37,7 +37,7 @@ import static junit.framework.Assert.assertTrue;
  * This is a sample class to launch a rule.
  */
 @SuppressWarnings("restriction")
-public class DL_5_KMR_ClassHierarchyTest  {
+public class DL_5_ClassHierarchyTest {
 
     protected DLFactory factory = DLFactoryBuilder.newDLFactoryInstance();
 
@@ -171,7 +171,7 @@ public class DL_5_KMR_ClassHierarchyTest  {
                 assertEquals( "org.jboss.drools.semantics.diamond.DiamondRoot", con.getChosenSuperConcept().getFullyQualifiedName() );
             }
         }
-        assertEquals( Thing.class.getName(), results.getConcept( "<http://jboss.org/drools/semantics/DiamondDiamondRoot>" ).getChosenSuperConcept().getFullyQualifiedName() );
+        assertEquals( Thing.class.getName(), results.getConcept( "<http://jboss.org/drools/semantics/Diamond#DiamondRoot>" ).getChosenSuperConcept().getFullyQualifiedName() );
         assertEquals( Thing.class.getName(), results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getChosenSuperConcept().getFullyQualifiedName() );
 
 
@@ -185,7 +185,7 @@ public class DL_5_KMR_ClassHierarchyTest  {
         assertEquals( 0, results.getConcept( "<_Right>" ).getChosenProperties().size() );
         assertEquals( 0, results.getConcept( "<_Low>" ).getChosenProperties().size() );
         assertEquals( 0, results.getConcept( "<_Bottom>" ).getChosenProperties().size() );
-        assertEquals( 9, results.getConcept( "<http://jboss.org/drools/semantics/DiamondDiamondRoot>" ).getChosenProperties().size() );
+        assertEquals( 9, results.getConcept( "<http://jboss.org/drools/semantics/Diamond#DiamondRoot>" ).getChosenProperties().size() );
 
 
         assertEquals( 0, results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ).getProperties().size() );

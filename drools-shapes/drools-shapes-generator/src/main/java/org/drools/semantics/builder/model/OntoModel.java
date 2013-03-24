@@ -19,6 +19,7 @@ package org.drools.semantics.builder.model;
 import org.drools.semantics.builder.model.hierarchy.FlatModelProcessor;
 import org.drools.semantics.builder.model.hierarchy.HierarchicalModelProcessor;
 import org.drools.semantics.builder.model.hierarchy.ModelHierarchyProcessor;
+import org.drools.semantics.builder.model.hierarchy.NullModelProcessor;
 import org.drools.semantics.builder.model.hierarchy.OptimizedModelProcessor;
 import org.drools.semantics.builder.model.hierarchy.VariantModelProcessor;
 
@@ -32,7 +33,8 @@ public interface OntoModel extends Cloneable {
         HIERARCHY( new HierarchicalModelProcessor() ),
         FLAT( new FlatModelProcessor() ),
         VARIANT( new VariantModelProcessor() ),
-        OPTIMIZED( new OptimizedModelProcessor() );
+        OPTIMIZED( new OptimizedModelProcessor() ),
+        NONE( new NullModelProcessor() );
 
         private ModelHierarchyProcessor processor;
 
@@ -108,4 +110,6 @@ public interface OntoModel extends Cloneable {
 
     public void setClassLoader( ClassLoader classLoader );
 
+
+    public void reassignConceptCodes();
 }

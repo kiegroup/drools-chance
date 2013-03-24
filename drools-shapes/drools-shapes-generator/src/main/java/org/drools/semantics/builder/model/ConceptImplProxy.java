@@ -1,12 +1,11 @@
-package org.drools.semantics.builder.model.hierarchy.opt;
+package org.drools.semantics.builder.model;
 
 
 import org.drools.planner.api.domain.entity.PlanningEntity;
 import org.drools.planner.api.domain.variable.PlanningVariable;
 import org.drools.planner.api.domain.variable.ValueRange;
 import org.drools.planner.api.domain.variable.ValueRangeType;
-import org.drools.semantics.builder.model.Concept;
-import org.drools.semantics.builder.model.PropertyRelation;
+import org.drools.semantics.builder.model.hierarchy.opt.ConceptStrengthEvaluator;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,21 +13,21 @@ import java.util.Map;
 import java.util.Set;
 
 @PlanningEntity
-public class ConProxy implements Cloneable {
+public class ConceptImplProxy implements Cloneable {
 
-    private String iri;
     private Concept concept;
-    private ConProxy chosenSuper;
+    private ConceptImplProxy chosenSuper;
     private Map<String, PropertyRelation> chosenProperties;
     private Set<String> neededProperties;
+    private Set<ConceptImplProxy> chosenSubs;
 
 
-    protected ConProxy( Concept con, ConProxy sup ) {
-        this.iri = con.getIri();
+    protected ConceptImplProxy( Concept con, ConceptImplProxy sup ) {
         this.chosenSuper = sup;
         this.concept = con;
         this.chosenProperties = new HashMap<String, PropertyRelation>();
         this.neededProperties = new HashSet<String>();
+        this.chosenSubs = new HashSet<ConceptImplProxy>();
 
         Set<PropertyRelation> pros = con.getAvailableProperties();
         for ( PropertyRelation pro : pros ) {
@@ -36,29 +35,41 @@ public class ConProxy implements Cloneable {
         }
     }
 
-    protected ConProxy( ConProxy con ) {
-        this.iri = con.getIri();
+    public ConceptImplProxy( Concept con ) {
+        this.concept = con;
+        this.chosenProperties = new HashMap<String, PropertyRelation>();
+        this.neededProperties = new HashSet<String>();
+        this.chosenSubs = new HashSet<ConceptImplProxy>();
+
+        Set<PropertyRelation> pros = con.getAvailableProperties();
+        for ( PropertyRelation pro : pros ) {
+            neededProperties.add( pro.getProperty() );
+        }
+    }
+
+    protected ConceptImplProxy(ConceptImplProxy con) {
         this.chosenSuper = con.getChosenSuper();
         this.concept = con.getConcept();
         this.chosenProperties = new HashMap<String, PropertyRelation>( con.getChosenProperties() );
         this.neededProperties = con.getNeededProperties();
+        this.chosenSubs = new HashSet<ConceptImplProxy>();
     }
 
     public String getIri() {
-        return iri;
+        return concept.getIri();
     }
 
-    public void setIri(String iri) {
-        this.iri = iri;
-    }
+//    public void setIri(String iri) {
+//        this.iri = iri;
+//    }
 
     @PlanningVariable( strengthComparatorClass = ConceptStrengthEvaluator.class )
     @ValueRange( type = ValueRangeType.FROM_SOLUTION_PROPERTY, solutionProperty = "cons" )
-    public ConProxy getChosenSuper() {
+    public ConceptImplProxy getChosenSuper() {
         return chosenSuper;
     }
 
-    public void setChosenSuper(ConProxy dom) {
+    public void setChosenSuper( ConceptImplProxy dom ) {
         this.chosenSuper = dom;
     }
 
@@ -68,16 +79,16 @@ public class ConProxy implements Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ConProxy con = (ConProxy) o;
+        ConceptImplProxy con = (ConceptImplProxy) o;
 
-        if (iri != null ? !iri.equals(con.iri) : con.iri != null) return false;
+        if (getIri() != null ? !getIri().equals(con.getIri()) : con.getIri() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return iri != null ? iri.hashCode() : 0;
+        return getIri() != null ? getIri().hashCode() : 0;
     }
 
     public Concept getConcept() {
@@ -96,13 +107,25 @@ public class ConProxy implements Cloneable {
         this.chosenProperties = chosenProperties;
     }
 
-    public ConProxy clone() {
-        return new ConProxy( this );
+    public Set<ConceptImplProxy> getChosenSubs() {
+        return chosenSubs;
+    }
+
+    public void setChosenSubs( Set<ConceptImplProxy> chosenSubs ) {
+        this.chosenSubs = chosenSubs;
+    }
+
+    public void addChosenSub( ConceptImplProxy chosenSub ) {
+        this.chosenSubs.add( chosenSub );
+    }
+
+    public ConceptImplProxy clone() {
+        return new ConceptImplProxy( this );
     }
 
     @Override
     public String toString() {
-        String s = "ConProxy{ iri='" + iri + "\' child of " + chosenSuper.getIri() + "\n";
+        String s = "ConProxy{ iri='" + getIri() + "\' child of " + chosenSuper.getIri() + "\n";
         s += "\t\t chosen " + chosenProperties.size() + "\t" + chosenProperties.keySet() + "\n";
         s += "\t\t  avail " + getAvailablePropertiesVirtual().size() + "\t" + getAvailablePropertiesVirtual().keySet() + "\n";
         s += "\t\t needed " + neededProperties.size() + "\t" + neededProperties;
@@ -120,5 +143,7 @@ public class ConProxy implements Cloneable {
     public Set<String> getNeededProperties() {
         return neededProperties;
     }
+
+
 
 }

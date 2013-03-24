@@ -162,6 +162,7 @@ public abstract class ModelImpl implements OntoModel {
         innerModel.setClassLoader( classLoader );
     }
 
-
-
+    public void reassignConceptCodes() {
+        innerModel.reassignConceptCodes();
+    }
 }

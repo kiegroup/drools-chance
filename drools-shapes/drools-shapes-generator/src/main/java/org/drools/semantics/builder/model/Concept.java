@@ -17,11 +17,6 @@
 package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
-import org.drools.planner.api.domain.entity.PlanningEntity;
-import org.drools.planner.api.domain.variable.PlanningVariable;
-import org.drools.planner.api.domain.variable.ValueRange;
-import org.drools.planner.api.domain.variable.ValueRangeType;
-import org.drools.semantics.builder.model.hierarchy.opt.ConceptStrengthEvaluator;
 import org.drools.semantics.utils.NameUtils;
 import org.semanticweb.owlapi.model.IRI;
 
@@ -32,16 +27,19 @@ public class Concept implements Cloneable {
 
     @Position(0)    private     IRI                             iri;
     @Position(1)    private     String                          name;
-    @Position(2)    private     Set<Concept>                    superConcepts;
-    @Position(3)    private     Map<String, PropertyRelation>   properties;
-    @Position(4)    private     Set<Concept>                    equivalentConcepts;    
-    @Position(5)    private     List<PropertyRelation>          keys;
-    @Position(6)    private     Set<Concept>                    subConcepts;
-    @Position(7)    private     Map<String, PropertyRelation>   chosenProperties;
+    @Position(7)    private     String                          namespace;
     @Position(9)    private     String                          pack;
-    @Position(10)   private     String                          namespace;
-    @Position(11)   private     Concept                         chosenSuperConcept;
-    @Position(12)   private     Set<Concept>                    chosenSubConcepts;
+    @Position(8)    private     BitSet                          typeCode;
+
+
+    @Position(2)    private     Set<Concept>                    superConcepts;
+    @Position(6)    private     Set<Concept>                    subConcepts;
+    @Position(4)    private     Set<Concept>                    equivalentConcepts;
+
+    @Position(3)    private     Map<String, PropertyRelation>   properties;
+    @Position(5)    private     List<PropertyRelation>          keys;
+
+    @Position(9)    private ConceptImplProxy implementingCon;
 
 
     public enum Resolution { NONE, CLASS, IFACE, ENUM ; }
@@ -58,32 +56,16 @@ public class Concept implements Cloneable {
     public Concept( IRI iri, String name, boolean primitive ) {
         this.iri = iri;
         this.name = primitive ? name : NameUtils.compactUpperCase( name );
+        this.pack = NameUtils.namespaceURIToPackage( iri.getStart() );
         this.superConcepts = new HashSet();
         this.subConcepts = new HashSet();
         this.properties = new HashMap();
-        this.chosenProperties = new HashMap();
         this.equivalentConcepts = new HashSet();
         this.keys = new ArrayList<PropertyRelation>();
         this.primitive = primitive;
-        this.pack = NameUtils.namespaceURIToPackage( iri.getStart() );
         this.namespace = iri.getStart();
-        this.chosenSubConcepts = new HashSet();
+        this.implementingCon = new ConceptImplProxy( this );
     }
-
-//    public Concept( IRI iri, String name, Set superConcepts, Map properties, Set equivalentConcepts, Set subConcepts, Map shadowProperties, boolean primitive ) {
-//        this.iri = iri.toQuotedString();
-//        this.name = primitive ? name : NameUtils.compactUpperCase( name );
-//        this.superConcepts = superConcepts != null ? superConcepts : new HashSet<Concept>();
-//        this.properties = properties != null ? properties : new HashMap<String, PropertyRelation>();
-//        this.shadowProperties = shadowProperties != null ? shadowProperties : new HashMap<String, PropertyRelation>();
-//        this.equivalentConcepts = equivalentConcepts != null ? equivalentConcepts : new HashSet<Concept>();
-//        this.subConcepts = subConcepts != null ? subConcepts : new HashSet<Concept>();
-//        this.primitive = primitive;
-//        this.pack = NameUtils.namespaceURIToPackage( iri.getStart() );
-//        this.namespace = iri.getStart();
-//
-//    }
-
 
     @Override
     public String toString() {
@@ -101,7 +83,7 @@ public class Concept implements Cloneable {
         return "Concept{" + ( resolved ? " --- " : " +++ " ) +
                 "iri='" + iri + '\'' +
                 ", name='" + name + '\'' +
-                ", pack='" + pack + '\'' +
+                ", namespace='" + namespace + '\'' +
                 supers +
 //                ", properties=" + properties +
                 '}';
@@ -142,9 +124,45 @@ public class Concept implements Cloneable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName( String name ) {
         this.name = name;
     }
+
+    public String getPackage() {
+        return pack;
+    }
+
+    public void setPackage( String pack ) {
+        this.pack = pack;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace( String namespace ) {
+        this.namespace = namespace;
+    }
+
+    public String getFullyQualifiedName() {
+        if ( ! isPrimitive() && pack != null ) {
+            return pack + "." + name;
+        } else {
+            return name;
+        }
+    }
+
+    public BitSet getTypeCode() {
+        return typeCode;
+    }
+
+    public void setTypeCode(BitSet typeCode) {
+        this.typeCode = typeCode;
+    }
+
+
+
+
 
 
     public Set<Concept> getSuperConcepts() {
@@ -160,13 +178,13 @@ public class Concept implements Cloneable {
         return subConcepts;
     }
 
-    public void setSubConcepts(Set<Concept> subConcepts) {
-        this.subConcepts = subConcepts;
+    public Set<Concept> getEquivalentConcepts() {
+        return equivalentConcepts;
     }
 
-    public void setSuperConcepts(Set<Concept> superConcepts) {
-        this.superConcepts = superConcepts;
-    }
+
+
+
 
     public Map<String, PropertyRelation> getProperties() {
         return properties;
@@ -185,42 +203,8 @@ public class Concept implements Cloneable {
     }
 
     public Concept getPropertyRange( String propIri ) {
-        return ((PropertyRelation) properties.get( propIri )).getTarget();
+        return properties.get( propIri ).getTarget();
     }
-
-
-    public Set<Concept> getEquivalentConcepts() {
-        return equivalentConcepts;
-    }
-
-    public void setEquivalentConcepts(Set<Concept> equivalentConcepts) {
-        this.equivalentConcepts = equivalentConcepts;
-    }
-
-    public boolean isPrimitive() {
-        return primitive;
-    }
-
-    public void setPrimitive(boolean primitive) {
-        this.primitive = primitive;
-    }
-
-    public boolean isAbstrakt() {
-        return abstrakt;
-    }
-
-    public void setAbstrakt(boolean abstrakt) {
-        this.abstrakt = abstrakt;
-    }
-
-    public boolean isAnonymous() {
-        return anonymous;
-    }
-
-    public void setAnonymous(boolean anonymous) {
-        this.anonymous = anonymous;
-    }
-
 
     public List<PropertyRelation> getKeys() {
         List<PropertyRelation> keys = new ArrayList<PropertyRelation>( this.keys );
@@ -233,18 +217,18 @@ public class Concept implements Cloneable {
     public void setKeys(List<PropertyRelation> keys) {
         this.keys = keys;
     }
-    
+
     public void addKey( String key ){
         PropertyRelation k = lookupProperty(this, key);
         if ( ! keys.contains( k ) ) {
             keys.add( k );
         }
     }
-    
+
     public PropertyRelation lookupProperty( String key ) {
         return lookupProperty( this, key );
     }
-    
+
     protected PropertyRelation lookupProperty( Concept con, String key ) {
         PropertyRelation rel = con.getProperties().get(key);
         if ( rel != null ) {
@@ -260,7 +244,7 @@ public class Concept implements Cloneable {
         return null;
     }
 
-    
+
     public Set<PropertyRelation> getEffectiveProperties() {
         Set<PropertyRelation> ans = new HashSet<PropertyRelation>();
         for ( PropertyRelation prop : getProperties().values() ) {
@@ -288,8 +272,6 @@ public class Concept implements Cloneable {
         return ans;
     }
 
-
-
     public Set<PropertyRelation> getAvailableProperties() {
         Set<PropertyRelation> ans = new HashSet<PropertyRelation>();
 
@@ -304,36 +286,43 @@ public class Concept implements Cloneable {
     }
 
 
-    public Concept getChosenSuperConcept() {
-        return chosenSuperConcept;
+    public ConceptImplProxy getImplementingCon() {
+        return implementingCon;
     }
 
-    public void setChosenSuperConcept(Concept chosenSuperConcept) {
-        this.chosenSuperConcept = chosenSuperConcept;
+    public void setImplementingCon(ConceptImplProxy implementingCon) {
+        this.implementingCon = implementingCon;
+    }
+
+
+
+
+    public boolean isPrimitive() {
+        return primitive;
+    }
+
+    public void setPrimitive(boolean primitive) {
+        this.primitive = primitive;
+    }
+
+    public boolean isAbstrakt() {
+        return abstrakt;
+    }
+
+    public void setAbstrakt(boolean abstrakt) {
+        this.abstrakt = abstrakt;
+    }
+
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
     }
 
     public boolean isInherited( String propIri ) {
         return properties.containsKey( propIri ) && properties.get( propIri ).getDomain().getIri().equals( this.getIri() );
-    }
-
-    public Set<Concept> getChosenSubConcepts() {
-        return chosenSubConcepts;
-    }
-
-    public void setChosenSubConcepts(Set<Concept> chosenSubConcepts) {
-        this.chosenSubConcepts = chosenSubConcepts;
-    }
-
-    public Map<String, PropertyRelation> getChosenProperties() {
-        return chosenProperties;
-    }
-
-    public void setChosenProperties(Map<String, PropertyRelation> targetProperties) {
-        this.chosenProperties = targetProperties;
-    }
-
-    public void setProperties(Map<String, PropertyRelation> properties) {
-        this.properties = properties;
     }
 
     public boolean isResolved() {
@@ -360,29 +349,47 @@ public class Concept implements Cloneable {
         this.shadowed = shadowed;
     }
 
-    public String getPackage() {
-        return pack;
+
+
+
+
+    public Concept getChosenSuperConcept() {
+        return implementingCon.getChosenSuper().getConcept();
     }
 
-    public void setPackage(String pack) {
-        this.pack = pack;
+    public void setChosenSuperConcept( Concept chosenSuperConcept ) {
+        this.implementingCon.setChosenSuper( chosenSuperConcept.getImplementingCon() );
     }
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
-    public String getFullyQualifiedName() {
-        if ( ! isPrimitive() && pack != null ) {
-            return pack + "." + name;
-        } else {
-            return name;
+//
+    public Set<Concept> getChosenSubConcepts() {
+        Set<Concept> subs = new HashSet<Concept>();
+        for ( ConceptImplProxy con : implementingCon.getChosenSubs() ) {
+            subs.add( con.getConcept() );
         }
+        return subs;
     }
+//
+    public void setChosenSubConcepts( Set<Concept> chosenSubConcepts ) {
+        Set<ConceptImplProxy> subs = new HashSet<ConceptImplProxy>();
+        for ( Concept con : chosenSubConcepts ) {
+            subs.add( con.getImplementingCon() );
+        }
+        implementingCon.setChosenSubs( subs );
+    }
+//
+    public Map<String, PropertyRelation> getChosenProperties() {
+        return implementingCon.getChosenProperties();
+    }
+//
+    public void setChosenProperties(Map<String, PropertyRelation> targetProperties) {
+        this.implementingCon.setChosenProperties( targetProperties );
+    }
+
+
+
+
+
+
 
     public Concept clone() {
         Concept con = new Concept( iri, name, primitive );
@@ -392,11 +399,12 @@ public class Concept implements Cloneable {
         con.getEquivalentConcepts().addAll( getEquivalentConcepts() );
         con.getKeys().addAll( getKeys() );
         con.getSubConcepts().addAll( getSubConcepts() );
-        con.getChosenProperties().putAll( getChosenProperties() );
         con.setPackage( getPackage() );
         con.setNamespace( getNamespace() );
-        con.setChosenSuperConcept( getChosenSuperConcept() );
-        con.getChosenSubConcepts().addAll( getChosenSubConcepts() );
+        con.setTypeCode( getTypeCode() );
+        ConceptImplProxy impl = getImplementingCon().clone();
+        con.setImplementingCon( impl );
+        impl.setConcept( con );
 
         return con;
     }
@@ -449,6 +457,8 @@ public class Concept implements Cloneable {
                     '}';
         }
     }
+
+
 }
 
 

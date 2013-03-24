@@ -2,20 +2,17 @@ package org.drools.semantics.builder.model.hierarchy.opt;
 
 
 import org.drools.planner.api.domain.solution.PlanningEntityCollectionProperty;
-import org.drools.planner.core.score.Score;
 import org.drools.planner.core.score.buildin.hardandsoft.HardAndSoftScore;
 import org.drools.planner.core.solution.Solution;
+import org.drools.semantics.builder.model.ConceptImplProxy;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.PropertyRelation;
 import org.w3._2002._07.owl.Thing;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
@@ -24,7 +21,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
     private Concept top;
 
-    private LinkedHashMap<String, ConProxy> inheritances;
+    private LinkedHashMap<String, ConceptImplProxy> inheritances;
 
     private HardAndSoftScore score;
 
@@ -35,10 +32,10 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
         top = model.getConcept( Thing.IRI );
 
-        inheritances = new LinkedHashMap<String, ConProxy>( availableConcepts.size() );
+        inheritances = new LinkedHashMap<String, ConceptImplProxy>( availableConcepts.size() );
 
         for ( Concept c  : availableConcepts ) {
-            ConProxy x = new ConProxy( c, null );
+            ConceptImplProxy x = new ConceptImplProxy( c );
             inheritances.put(x.getIri(), x);
         }
     }
@@ -48,7 +45,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
         this.availableConcepts = opt.availableConcepts;
         this.availableProperties = opt.availableProperties;
 
-        inheritances = new LinkedHashMap<String, ConProxy>();
+        inheritances = new LinkedHashMap<String, ConceptImplProxy>();
         for ( String key : opt.inheritances.keySet() ) {
             inheritances.put( key, opt.inheritances.get( key ).clone() );
         }
@@ -58,11 +55,11 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
 
     @PlanningEntityCollectionProperty
-    public Collection<ConProxy> getCons() {
+    public Collection<ConceptImplProxy> getCons() {
         return inheritances.values();
     }
 
-    public LinkedHashMap<String, ConProxy> getInheritances() {
+    public LinkedHashMap<String, ConceptImplProxy> getInheritances() {
         return inheritances;
     }
 
@@ -103,7 +100,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
         this.top = top;
     }
 
-    public ConProxy getCon( String iri ) {
+    public ConceptImplProxy getCon( String iri ) {
         return inheritances.get( iri );
     }
 
@@ -111,7 +108,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
     @Override
     public String toString() {
         String s = "Optimized Hierarchy ( " + score + " ) \n";
-        for ( ConProxy con : inheritances.values() ) {
+        for ( ConceptImplProxy con : inheritances.values() ) {
             s += "\t " + con + "\n";
         }
         return s;
@@ -121,7 +118,7 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
     public void updateModel( OntoModel model ) {
 
-        for ( ConProxy con : getCons() ) {
+        for ( ConceptImplProxy con : getCons() ) {
             Concept x = con.getConcept();
             Concept sup = con.getChosenSuper().getConcept();
             x.setChosenSuperConcept( sup );

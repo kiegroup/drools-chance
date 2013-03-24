@@ -4,6 +4,8 @@ package org.drools.semantics.builder.model;
 
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.utils.NameUtils;
+import org.drools.util.HierarchyEncoder;
+import org.drools.util.HierarchyEncoderImpl;
 import org.w3._2002._07.owl.Thing;
 
 import java.util.*;
@@ -30,6 +32,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     private Set<String> packageNames = new HashSet<String>();
 
     private ClassLoader classLoader;
+
+    private HierarchyEncoder<Concept> hierarchyEncoder = new HierarchyEncoderImpl<Concept>();
 
 
     protected GenericModelImpl newInstance() {
@@ -256,7 +260,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         for ( Concept con : getConcepts() ) {
             for ( PropertyRelation rel : con.getProperties().values() ) {
 //                System.out.println( "Looking for property " + rel.getName() + " starting from " + con.getName() );
-                if ( ! isPropertyAvailable( rel, con ) ) {
+                if ( ! isPropertyAvailableToImpl( rel, con ) ) {
                     return false;
                 }
             }
@@ -264,7 +268,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         return true;
     }
 
-    private boolean isPropertyAvailable( PropertyRelation rel, Concept con ) {
+    private boolean isPropertyAvailableToImpl( PropertyRelation rel, Concept con ) {
         if ( con == null ) {
             return false;
         }
@@ -273,12 +277,19 @@ public class GenericModelImpl implements OntoModel, Cloneable {
             return true;
         } else {
             if ( con.getChosenSuperConcept() != con ) {
-                return isPropertyAvailable( rel, con.getChosenSuperConcept() );
+                return isPropertyAvailableToImpl( rel, con.getChosenSuperConcept() );
             } else {
 //                System.err.print( "Topp reached looking fir " + rel.getProperty() + " in " + con.getIri() );
                 return false;
             }
         }
+    }
+
+    public void reassignConceptCodes() {
+        for ( Concept con : getConcepts() ) {
+            con.setTypeCode( hierarchyEncoder.encode( con, con.getSuperConcepts() ) );
+        }
+        System.out.println( hierarchyEncoder );
     }
 
 

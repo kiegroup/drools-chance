@@ -356,9 +356,12 @@ public class OntoModelCompiler {
         SemanticXSDModelCompiler xcompiler = (SemanticXSDModelCompiler) ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
         SemanticXSDModel xmlModel = (SemanticXSDModel) xcompiler.compile( model );
 
+        xmlModel.streamAll( System.err );
+
         boolean success = false;
         try {
             success = xmlModel.stream( getMetaInfDir() );
+
             success = xmlModel.streamBindings( getMetaInfDir() );
 
             if ( includePersistenceConfiguration ) {

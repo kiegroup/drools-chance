@@ -73,7 +73,11 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
         OntoModel populatedModel = buildIndividuals( ontoDescr, kSession, theory, propertyModel );
 
-        populatedModel.getMode().getProcessor().process( populatedModel );
+
+        if ( populatedModel.getMode() != OntoModel.Mode.NONE ) {
+            //TODO Improve...
+            populatedModel.getMode().getProcessor().process( populatedModel );
+        }
 
         reportSessionStatus( kSession );
 

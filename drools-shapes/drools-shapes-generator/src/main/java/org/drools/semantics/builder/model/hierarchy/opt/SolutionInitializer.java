@@ -1,16 +1,14 @@
 package org.drools.semantics.builder.model.hierarchy.opt;
 
 
-import org.drools.planner.core.move.Move;
 import org.drools.planner.core.phase.custom.CustomSolverPhaseCommand;
 import org.drools.planner.core.score.director.ScoreDirector;
+import org.drools.semantics.builder.model.ConceptImplProxy;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.PropertyRelation;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Set;
 
 public class SolutionInitializer implements CustomSolverPhaseCommand {
 
@@ -23,9 +21,9 @@ public class SolutionInitializer implements CustomSolverPhaseCommand {
     }
 
 
-    private void initialize( LinkedHashMap<String, ConProxy> inheritances, ScoreDirector scoreDirector ) {
+    private void initialize( LinkedHashMap<String, ConceptImplProxy> inheritances, ScoreDirector scoreDirector ) {
 
-        for ( ConProxy con : inheritances.values() ) {
+        for ( ConceptImplProxy con : inheritances.values() ) {
             con.getChosenProperties().putAll( con.getConcept().getProperties() );
 
             for ( Concept sup : con.getConcept().getSuperConcepts() ) {
@@ -35,7 +33,7 @@ public class SolutionInitializer implements CustomSolverPhaseCommand {
             }
         }
 
-        for ( ConProxy con : inheritances.values() ) {
+        for ( ConceptImplProxy con : inheritances.values() ) {
             if ( ! con.getConcept().getSuperConcepts().isEmpty() ) {
 
                 Iterator<Concept> iter = con.getConcept().getSuperConcepts().iterator();
@@ -57,7 +55,7 @@ public class SolutionInitializer implements CustomSolverPhaseCommand {
                 scoreDirector.afterEntityAdded( con );
 
                 if ( inheritances.containsKey( next.getIri() ) ) {
-                    ConProxy supCon = inheritances.get( next.getIri() );
+                    ConceptImplProxy supCon = inheritances.get( next.getIri() );
                     for ( String key : supCon.getAvailablePropertiesVirtual().keySet() ) {
                         if ( con.getChosenProperties().containsKey( key ) ) {
                             con.getChosenProperties().remove( key );

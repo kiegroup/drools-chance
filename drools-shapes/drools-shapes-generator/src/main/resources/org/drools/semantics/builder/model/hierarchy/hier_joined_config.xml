@@ -2,7 +2,7 @@
 <solver>
   <environmentMode>TRACE</environmentMode>
   <solutionClass>org.drools.semantics.builder.model.hierarchy.opt.OptimalHierarchy</solutionClass>
-  <planningEntityClass>org.drools.semantics.builder.model.hierarchy.opt.ConProxy</planningEntityClass>
+  <planningEntityClass>org.drools.semantics.builder.model.ConceptImplProxy</planningEntityClass>
 
   <scoreDirectorFactory>
     <scoreDefinitionType>HARD_AND_SOFT</scoreDefinitionType>

@@ -5,9 +5,8 @@ import org.drools.planner.core.heuristic.selector.move.factory.MoveListFactory;
 import org.drools.planner.core.move.Move;
 import org.drools.planner.core.score.director.ScoreDirector;
 import org.drools.planner.core.solution.Solution;
+import org.drools.semantics.builder.model.ConceptImplProxy;
 import org.drools.semantics.builder.model.Concept;
-import org.drools.semantics.builder.model.PropertyRelation;
-import org.w3._2002._07.owl.Thing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +27,7 @@ public class AssignSuperMoveFactory implements MoveListFactory {
 
         thing = hier.getTop();
 
-        for ( ConProxy con : hier.getCons() ) {
+        for ( ConceptImplProxy con : hier.getCons() ) {
 
 //            if ( !Thing.IRI.equals( con.getIri() ) ) {
 //                for ( ConProxy candidate : hier.getInheritances() ) {
@@ -50,7 +49,7 @@ public class AssignSuperMoveFactory implements MoveListFactory {
         return new ArrayList( moveSet );
     }
 
-    private void addSuperConcepts( ConProxy base, Concept con, Set<Move> moveList, OptimalHierarchy hier ) {
+    private void addSuperConcepts( ConceptImplProxy base, Concept con, Set<Move> moveList, OptimalHierarchy hier ) {
         for ( Concept x : con.getSuperConcepts() ) {
             AssignDomainMove move = new AssignDomainMove( base, hier.getCon( x.getIri() ) );
 //                move.setVerbose( true );
@@ -62,8 +61,8 @@ public class AssignSuperMoveFactory implements MoveListFactory {
 
     public static class AssignDomainMove implements Move {
 
-        private ConProxy con;
-        private ConProxy next;
+        private ConceptImplProxy con;
+        private ConceptImplProxy next;
 
         private boolean verbose = false;
 
@@ -75,7 +74,7 @@ public class AssignSuperMoveFactory implements MoveListFactory {
             this.verbose = verbose;
         }
 
-        public AssignDomainMove( ConProxy con, ConProxy next ) {
+        public AssignDomainMove( ConceptImplProxy con, ConceptImplProxy next ) {
             this.con = con;
             this.next = next;
         }
@@ -111,7 +110,7 @@ public class AssignSuperMoveFactory implements MoveListFactory {
         public void doMove( ScoreDirector scoreDirector ) {
             scoreDirector.beforeVariableChanged( con, "chosenSuper" );
             OptimalHierarchy hier = (OptimalHierarchy) scoreDirector.getWorkingSolution();
-            ConProxy prev = hier.getCon( con.getChosenSuper().getIri() );
+            ConceptImplProxy prev = hier.getCon( con.getChosenSuper().getIri() );
 
             if ( verbose ) {
                 System.out.println( "Setting " + next.getIri() + " as super of " + con.getIri() + ( con.getChosenSuper() != null ? " in place of " + con.getChosenSuper().getIri() : " " ) );
