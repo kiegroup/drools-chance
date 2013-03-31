@@ -45,14 +45,19 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         setTripleFactory( tf );
         setFields( new ImpBeanLegacyWrapper( x, y, tf ) );
         
-        x.setDynamicProperties( new TripleBasedBean( x, y, tf ) );
+        x._setDynamicProperties( new TripleBasedBean( x, y, tf ) );
 
-        x.setTraitMap( new TripleBasedTypes( x, y, tf ) );
+        x._setTraitMap( new TripleBasedTypes( x, y, tf ) );
 
         synchFields();
 
     }
 
+
+    @Override
+    public String getTraitName() {
+        return ImpBean.class.getName();
+    }
 
     public Object getObject() {
         return object;

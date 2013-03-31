@@ -20,12 +20,12 @@ import static org.drools.rule.constraint.EvaluatorHelper.valuesAsMap;
 
 public class ImperfectMvelConditionEvaluator extends MvelConditionEvaluator {
     
-    public ImperfectMvelConditionEvaluator(ParserConfiguration configuration, String expression, Declaration[] declarations) {
-        super(configuration, expression, declarations);
+    public ImperfectMvelConditionEvaluator(ParserConfiguration configuration, String expression, Declaration[] declarations,String conditionClass) {
+        super(configuration, expression, declarations,conditionClass);
     }
 
-    public ImperfectMvelConditionEvaluator(MVELCompilationUnit compilationUnit, ParserConfiguration parserConfiguration, ExecutableStatement executableStatement, Declaration[] declarations) {
-        super(compilationUnit, parserConfiguration, executableStatement, declarations);
+    public ImperfectMvelConditionEvaluator(MVELCompilationUnit compilationUnit, ParserConfiguration parserConfiguration, ExecutableStatement executableStatement, Declaration[] declarations, String conditionClass) {
+        super(compilationUnit, parserConfiguration, executableStatement, declarations, conditionClass);
     }
     
     public Degree match(Object object, InternalWorkingMemory workingMemory, LeftTuple leftTuple) {
