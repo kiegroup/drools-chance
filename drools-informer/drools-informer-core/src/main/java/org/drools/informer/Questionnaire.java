@@ -294,8 +294,13 @@ public class Questionnaire extends Group {
         this.availableItems.add( availableItem );
     }
 
+    public ArrayList<NavigationStackEntry> getNavigationStack() {
+        return navigationStack;
+    }
 
-
+    public void setNavigationStack(ArrayList<NavigationStackEntry> navigationStack) {
+        this.navigationStack = navigationStack;
+    }
 
 	public String getClientDateFormat() {
 		return clientDateFormat;
