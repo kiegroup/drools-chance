@@ -100,6 +100,7 @@ public class PMMLUsageDemoTest {
                 "then " +
                 "   System.out.println( \"Trig\" ); " +
                 "   Entity o = new Entity(); " +
+                "   insert( o ); \n" +
                 "" +
                 // don an object with the default input trait ( modelName + "Input" )
                 // both soft and hard fields will be used to feed data into the model

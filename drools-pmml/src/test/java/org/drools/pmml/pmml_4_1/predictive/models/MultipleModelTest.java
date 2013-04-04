@@ -93,14 +93,13 @@ public class MultipleModelTest extends DroolsAbstractPMMLTest {
 
         String s3 = "package org.drools.test.agent; \n" +
                 "import org.drools.pmml.pmml_4_1.ModelMarker; \n" +
+                "import org.drools.informer.ISurveyableTrait; \n" +
                 "rule \"TraitX\"\n" +
                 "salience 1000\n" +
                 "when\n" +
                 "    $mm : ModelMarker( modelName == \"x\" , enabled == true )\n" +
                 "then\n" +
-                "    System.out.println( \"Traiting questionnaire X\" );\n" +
-                "    org.drools.informer.ISurveyableTrait surv;\n" +
-                "    surv = don( $mm, org.drools.informer.ISurveyableTrait.class, true );\n" +
+                "    ISurveyableTrait surv = don( $mm, ISurveyableTrait.class, true );\n" +
                 "    modify ( surv ) {\n" +
                 "        setQuestionnaireId( \"xid\" ),\n" +
                 "        setStateful( false ),\n" +

@@ -17,8 +17,11 @@
 package org.drools.informer.generator;
 
 
+import org.drools.definition.type.PropertyReactive;
+
 import java.io.Serializable;
 
+@PropertyReactive
 public interface ISurveyable<K> extends Serializable {
 
 
