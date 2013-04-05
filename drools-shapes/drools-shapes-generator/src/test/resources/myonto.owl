@@ -1,0 +1,676 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <Ontology rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#communicate -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#communicate"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#contain -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#contain"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#containHardwares -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#containHardwares">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#contain"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#containSoftwares -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#containSoftwares">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#contain"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#hardwareInstall -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#hardwareInstall">
+        <inverseOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#containHardwares"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#install"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#install -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#install"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#intermediator -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#intermediator"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#receiveData -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#receiveData">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#communicate"/>
+        <inverseOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#sendData"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#sendData -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#sendData">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#communicate"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#softwareInstall -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#softwareInstall">
+        <inverseOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#containSoftwares"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#install"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Computer"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#dependTo -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#dependTo">
+        <rdfs:domain>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+                </unionOf>
+            </Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <Class>
+                <unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+                </unionOf>
+            </Class>
+        </rdfs:range>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#drives -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#drives">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#dependTo"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#hasBusTo -->
+
+    <ObjectProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#hasBusTo">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+    </ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Bit -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Bit">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Capacity"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Byte -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Byte">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Capacity"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Capacity -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Capacity"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Frequency -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Frequency"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#GigaByte -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#GigaByte">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Capacity"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#GigaHertz -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#GigaHertz">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Frequency"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hertz -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hertz">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Frequency"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#KiloByte -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#KiloByte">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Capacity"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#KiloHertz -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#KiloHertz">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Frequency"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MegaByte -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MegaByte">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Capacity"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MegaHertz -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MegaHertz">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Frequency"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#TeraByte -->
+
+    <DatatypeProperty rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#TeraByte">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Capacity"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Application -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Application">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Buffer"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#CPU"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Cache"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ExtraParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#FlashMemory"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#HardDisk"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#InputDevices"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Keyboard"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Mainboard"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Memory"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Monitor"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#NetworkAdapter"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OutputDevices"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Printer"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#RAM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ROM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Scanner"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Temporary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#VGA"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Buffer -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Buffer">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Temporary"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#intermediator"/>
+                <someValuesFrom rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#HardDisk"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Driver"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Firmware"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#CPU -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#CPU">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#hardwareInstall"/>
+                <someValuesFrom rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Mainboard"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Driver"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Firmware"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Cache -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Cache">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Temporary"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#intermediator"/>
+                <someValuesFrom rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#CPU"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Driver"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Firmware"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Computer -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Computer"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Driver -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Driver">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#drives"/>
+                <someValuesFrom rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ExtraParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#FlashMemory"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#HardDisk"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#InputDevices"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Keyboard"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Mainboard"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Memory"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Monitor"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#NetworkAdapter"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OutputDevices"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Printer"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#RAM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ROM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Scanner"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Temporary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#VGA"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ExtraParts -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ExtraParts">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Firmware"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Firmware -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Firmware">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#softwareInstall"/>
+                <someValuesFrom rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ROM"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#FlashMemory"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#HardDisk"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#InputDevices"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Keyboard"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Mainboard"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Memory"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Monitor"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#NetworkAdapter"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OutputDevices"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Printer"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#RAM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ROM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Scanner"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Temporary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#VGA"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#FlashMemory -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#FlashMemory">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#RAM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ROM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#HardDisk -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#HardDisk">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#RAM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ROM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Computer"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#InputDevices -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#InputDevices">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Keyboard -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Keyboard">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#InputDevices"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Hardware"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Mainboard -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Mainboard">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Memory -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Memory">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Monitor -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Monitor">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OutputDevices"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#NetworkAdapter -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#NetworkAdapter">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ExtraParts"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#sendData"/>
+                <someValuesFrom rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#NetworkAdapter"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OS">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OutputDevices"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Printer"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#RAM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ROM"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Scanner"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Temporary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#VGA"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OutputDevices -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OutputDevices">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Memory"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#hasBusTo"/>
+                <someValuesFrom rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#CPU"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Printer -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Printer">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ExtraParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#RAM -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#RAM">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ROM -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ROM">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Primary"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Scanner -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Scanner">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#ExtraParts"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Secondary">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Memory"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#hasBusTo"/>
+                <someValuesFrom rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Mainboard"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Software">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Computer"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Temporary"/>
+        <disjointWith rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#VGA"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Temporary -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Temporary">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Memory"/>
+    </Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#VGA -->
+
+    <Class rdf:about="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#VGA">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#MainParts"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#OutputDevices"/>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/myonto#sendData"/>
+                <someValuesFrom rdf:resource="http://www.semanticweb.org/mamad/ontologies/2013/2/untitled-ontology-22#Monitor"/>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+

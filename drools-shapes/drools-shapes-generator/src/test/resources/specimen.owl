@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.semanticweb.org/mamad/ontologies/2013/3/untitled-ontology-40"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     ontologyIRI="http://www.semanticweb.org/mamad/ontologies/2013/3/untitled-ontology-40">
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="#acellular_bl_specimen"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#acidified_ser_sample"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#amniotic_fluid_spec"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#blood_specimen"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#body_fluid_sample"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#body_subs_sample"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#drug_specimen"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#fecal_fluid_sample"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#fluid_sample"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#mixed_venous_bl_spec"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#mock"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#serum_spec_from_bl_prod"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#serum_specimen"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#specimen"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#stool_specimen"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#venous_bl_specimen"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasRelation"/>
+    </Declaration>
+    <SubClassOf>
+        <Class IRI="#acellular_bl_specimen"/>
+        <Class IRI="#drug_specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#acellular_bl_specimen"/>
+        <Class IRI="#fluid_sample"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#acidified_ser_sample"/>
+        <Class IRI="#serum_specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#amniotic_fluid_spec"/>
+        <Class IRI="#body_fluid_sample"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#blood_specimen"/>
+        <Class IRI="#body_fluid_sample"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#blood_specimen"/>
+        <Class IRI="#drug_specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#body_fluid_sample"/>
+        <Class IRI="#body_subs_sample"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#body_fluid_sample"/>
+        <Class IRI="#fluid_sample"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#body_subs_sample"/>
+        <Class IRI="#specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#body_subs_sample"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#hasRelation"/>
+            <Class IRI="#mock"/>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#drug_specimen"/>
+        <Class IRI="#specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#drug_specimen"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#hasRelation"/>
+            <Class IRI="#mock"/>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#fecal_fluid_sample"/>
+        <Class IRI="#fluid_sample"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#fecal_fluid_sample"/>
+        <Class IRI="#stool_specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#fluid_sample"/>
+        <Class IRI="#specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#fluid_sample"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#hasRelation"/>
+            <Class IRI="#mock"/>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#mixed_venous_bl_spec"/>
+        <Class IRI="#venous_bl_specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#serum_spec_from_bl_prod"/>
+        <Class IRI="#blood_specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#serum_spec_from_bl_prod"/>
+        <Class IRI="#serum_specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#serum_specimen"/>
+        <Class IRI="#acellular_bl_specimen"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#serum_specimen"/>
+        <Class IRI="#body_fluid_sample"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#stool_specimen"/>
+        <Class IRI="#body_subs_sample"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#venous_bl_specimen"/>
+        <Class IRI="#blood_specimen"/>
+    </SubClassOf>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasRelation"/>
+        <ObjectUnionOf>
+            <Class IRI="#body_subs_sample"/>
+            <Class IRI="#drug_specimen"/>
+            <Class IRI="#fluid_sample"/>
+        </ObjectUnionOf>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasRelation"/>
+        <Class IRI="#mock"/>
+    </ObjectPropertyRange>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+
