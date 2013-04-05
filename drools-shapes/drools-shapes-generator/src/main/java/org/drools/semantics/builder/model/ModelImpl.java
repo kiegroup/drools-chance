@@ -17,7 +17,7 @@
 package org.drools.semantics.builder.model;
 
 
-import org.drools.semantics.builder.model.compilers.ModelCompiler;
+import org.drools.util.CodedHierarchy;
 
 import java.util.List;
 import java.util.Set;
@@ -164,5 +164,9 @@ public abstract class ModelImpl implements OntoModel {
 
     public void reassignConceptCodes() {
         innerModel.reassignConceptCodes();
+    }
+
+    public CodedHierarchy<Concept> getConceptHierarchy() {
+        return innerModel.getConceptHierarchy();
     }
 }
