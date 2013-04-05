@@ -2,11 +2,9 @@
 package org.drools.semantics.builder.model;
 
 
-import org.drools.semantics.builder.model.compilers.ModelCompiler;
-import org.drools.semantics.utils.NameUtils;
+import org.drools.util.CodedHierarchy;
 import org.drools.util.HierarchyEncoder;
 import org.drools.util.HierarchyEncoderImpl;
-import org.w3._2002._07.owl.Thing;
 
 import java.util.*;
 
@@ -245,6 +243,9 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     }
 
 
+    public CodedHierarchy<Concept> getConceptHierarchy() {
+        return hierarchyEncoder;
+    }
 
 
     public Mode getMode() {

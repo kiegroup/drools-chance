@@ -73,6 +73,7 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
         OntoModel populatedModel = buildIndividuals( ontoDescr, kSession, theory, propertyModel );
 
+        populatedModel.reassignConceptCodes();
 
         if ( populatedModel.getMode() != OntoModel.Mode.NONE ) {
             //TODO Improve...
