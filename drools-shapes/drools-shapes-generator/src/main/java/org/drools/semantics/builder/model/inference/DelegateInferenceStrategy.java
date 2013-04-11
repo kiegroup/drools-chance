@@ -191,6 +191,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         fixRootHierarchy( hierarchicalModel );
 
+        validate( hierarchicalModel );
+
         return hierarchicalModel;
     }
 
@@ -508,7 +510,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         if ( type.indexOf(".") >= 0 ) {
             type = type.substring( type.lastIndexOf(".") + 1 );
         }
-        return type + ( plural ? ( type.endsWith("s") ? "es" : "s") : "" ); // + "As" + role;
+        return type + ( plural ? ( type.endsWith( "s" ) ? "es" : "s") : "" ); // + "As" + role;
     }
 
     private PropertyRelation extractProperty( Concept con, String propIri, Concept target, Integer min, Integer max, boolean restrictTarget ) {
@@ -517,7 +519,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         }
 
         String restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
-        String restrictedPropIri = propIri.replace(">", restrictedSuffix + ">");
+        String restrictedPropIri = propIri.replace( ">", restrictedSuffix + ">" );
 
 
 //        PropertyRelation rel = con.getProperties().get( propIri );
@@ -533,19 +535,28 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         boolean alreadyRestricted = false;
         PropertyRelation rel = con.getProperties().get( propIri );
+        PropertyRelation originalProperty;
+
         if ( rel != null ) {
-            rel = cloneRel( rel );
+            originalProperty = rel;
+            rel = cloneRel( originalProperty );
         } else {
             rel = con.getProperties().get( restrictedPropIri );
 
             if ( rel != null ) {
+                originalProperty = rel;
                 alreadyRestricted = true;
+                rel = cloneRel( originalProperty );
             } else {
-                rel = inheritPropertyCopy( con, con, restrictedPropIri );
-                if ( rel != null ) {
+                PropertyRelation source = inheritPropertyCopy( con, con, restrictedPropIri );
+
+                if ( source != null ) {
+                    originalProperty = source;
                     alreadyRestricted = true;
+                    rel = cloneRel( originalProperty );
                 } else {
-                    rel = inheritPropertyCopy( con, con, propIri );
+                    originalProperty = inheritPropertyCopy( con, con, propIri );
+                    rel = cloneRel( originalProperty );
                 }
             }
         }
@@ -567,8 +578,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                ) {
                 target = rel.getTarget();
                 restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
-                restrictedPropIri = propIri.replace (">", restrictedSuffix + ">" );
-                dirty = true;
+                restrictedPropIri = propIri.replace ( ">", restrictedSuffix + ">" );
+//                dirty = true;
             }
             if ( ! rel.getTarget().equals( target ) && ! restrictTarget ) {
                 //TODO FIXME : check that target is really restrictive!
@@ -602,7 +613,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             if ( dirty ) {
                 if ( ! target.isPrimitive() || ! rel.getDomain().equals( con ) ) {
                     rel.setRestricted( true );
-                    rel.setName( rel.getBaseProperty().getName() + restrictedSuffix );
+                    rel.setName( originalProperty.getBaseProperty().getName() + restrictedSuffix );
                     rel.setProperty( restrictedPropIri );
                 } else {
                     if ( rel.getMaxCard() != null && rel.getMaxCard() <= 1 ) {
@@ -628,12 +639,21 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 con.addProperty( rel.getProperty(), rel.getName(), rel );
             }
 
+
+            if ( dirty ) {
+                rel.setBaseProperty( originalProperty );
+            } else {
+                System.out.println( "No real restriction detected II "+ rel.getName() );
+                rel = originalProperty;
+            }
+
+            rel.getDomain().addProperty( rel.getProperty(), rel.getName(), rel );
+
             return rel;
 
-//            } else {
-//                // not really a restriction, so keep the parent's
+        } else {
+            System.out.println( "No real restriction detected" );
 //                return null;
-//            }
         }
 
 
@@ -653,7 +673,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             if ( rel != null ) {
                 System.err.println( "Found " +propIri + " in " + sup.getName() );
 
-                return cloneRel( rel );
+                return rel;
             } else {
                 rel = inheritPropertyCopy( original, sup, propIri );
                 if ( rel != null ) {
@@ -668,10 +688,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     private PropertyRelation cloneRel( PropertyRelation rel ) {
         PropertyRelation clonedRel = new PropertyRelation( rel.getSubject(), rel.getProperty(), rel.getObject(), rel.getName() );
         clonedRel.setMinCard( rel.getMinCard() );
-        clonedRel.setMaxCard(rel.getMaxCard() );
+        clonedRel.setMaxCard( rel.getMaxCard() );
         clonedRel.setTarget( rel.getTarget() );
         clonedRel.setDomain( rel.getDomain() );
-        clonedRel.setBaseProperty( rel );
         clonedRel.setRestricted( rel.isRestricted() );
         return clonedRel;
 
@@ -1721,6 +1740,76 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         }
 
     }
+
+
+
+
+
+
+    private boolean validate( OntoModel model ) {
+
+        for ( PropertyRelation rel : model.getProperties() ) {
+            if ( ! rel.isRestricted() ) {
+                if ( rel != rel.getBaseProperty() ) {
+                    throw new IllegalStateException( "Property is not restricted, but not a base property either " + rel + " >> base " + rel.getBaseProperty() );
+                }
+            }
+            for ( PropertyRelation rest : rel.getRestrictedProperties() ) {
+                checkForRestriction( rest, rel, rel.getBaseProperty() );
+            }
+        }
+        return true;
+    }
+
+    private void checkForRestriction( PropertyRelation restricted, PropertyRelation parent, PropertyRelation base ) {
+        if ( restricted.getBaseProperty() != base ) {
+            throw new IllegalStateException( "Inconsistent base property for" + restricted + " >> base " + restricted.getBaseProperty() + " , expected " + base );
+        }
+        if ( restricted.getImmediateBaseProperty() != parent ) {
+            throw new IllegalStateException( "Inconsistent parent property for" + restricted + " >> parent  " + restricted.getImmediateBaseProperty() + " , expected " + parent );
+        }
+        int diff = diff( restricted, parent );
+        if ( 0 == diff ) {
+            throw new IllegalStateException( "Inconsistent restriction for " + restricted + " >> parent  " + parent  );
+        }
+        for ( PropertyRelation subRestr : restricted.getRestrictedProperties() ) {
+            checkForRestriction( subRestr, restricted, base );
+        }
+    }
+
+    private enum DIFF_BY {
+        DOMAIN( (byte) 1 ), RANGE( (byte) 2 ), MIN( (byte) 4 ), MAX( (byte) 8 );
+
+        DIFF_BY( byte x ) { bit = x; }
+
+        private byte bit;
+
+        public byte getBit() { return bit; }
+    }
+
+    private int diff( PropertyRelation restricted, PropertyRelation parent ) {
+        int diff = 0;
+        if ( ! restricted.getDomain().equals( parent.getDomain() ) ) {
+            diff |= DIFF_BY.DOMAIN.getBit();
+        }
+        if ( ! restricted.getTarget().equals( parent.getTarget() ) ) {
+            diff |= DIFF_BY.RANGE.getBit();
+        }
+        if ( restricted.getMinCard() == null && parent.getMinCard() != null
+                || ! restricted.getMinCard().equals( parent.getMinCard() ) ) {
+            diff |= DIFF_BY.MIN.getBit();
+        }
+        if ( restricted.getMaxCard() == null && parent.getMaxCard() != null
+                || restricted.getMaxCard() != null && parent.getMaxCard() == null
+                || ( restricted.getMaxCard() != null && ! restricted.getMaxCard().equals( parent.getMaxCard() ) )
+                ) {
+            diff |= DIFF_BY.MAX.getBit();
+        }
+        return diff;
+    }
+
+
+
 
 
 

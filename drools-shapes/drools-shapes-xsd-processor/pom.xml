@@ -30,7 +30,7 @@
   <artifactId>drools-shapes-xsd-processor</artifactId>
   <version>0.5.6.Final</version>
 
-  <name>Drools Shapes :: XSD -> OWL2 converter</name>
+  <name>Drools :: XSD -> OWL2 converter</name>
   <description>Processes XSD schemas and infers an OWL2 conceptual model based on the original schema</description>
 
   <dependencies>

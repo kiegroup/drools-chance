@@ -64,7 +64,7 @@ public class DL_5_ClassHierarchyTest {
         assertEquals( 1, results.getProperty( "<_zimple1Integer>" ).getMaxCard().intValue() );
 
         // restricted props contains the prop itself, too
-        assertEquals( 2, results.getProperty( "<_zimple1>" ).getRestrictedProperties().size() );
+        assertEquals( 1, results.getProperty( "<_zimple1>" ).getRestrictedProperties().size() );
 
         assertEquals( 7, results.getConcepts().size() );
         assertNotNull( results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ) );

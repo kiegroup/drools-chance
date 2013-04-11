@@ -1,0 +1,56 @@
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: : <http://jboss.org/drools/semantics/Diamond2#>
+Prefix: koal: <http://jboss.org/drools/semantics/coal#>
+Prefix: xml: <http://www.w3.org/XML/1998/namespace>
+Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Prefix: dc: <http://purl.org/dc/elements/1.1/>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+
+
+Ontology: <http://jboss.org/drools/semantics/Diamond2>
+
+
+Datatype: xsd:string
+
+    
+ObjectProperty: <http://jboss.org/drools/semantics/Diamond2#objProp>
+
+    Domain: 
+        Top
+    
+    Range: 
+        X
+    
+Class: Left
+
+    EquivalentTo: 
+        C1
+         and Top
+
+    SubClassOf:
+        <http://jboss.org/drools/semantics/Diamond2#objProp> some X
+
+    
+Class: Bottom
+
+    EquivalentTo: 
+        C1
+         and C2
+         and Top
+
+    SubClassOf:
+        <http://jboss.org/drools/semantics/Diamond2#objProp> exactly 1 X
+
+Class: C2
+
+Class: Top
+
+Class: C1
+
+Class: X
+
+
+    
+    

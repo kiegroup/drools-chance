@@ -234,22 +234,6 @@ public class ShapeCaster
 
 
 
-
-
-    /**
-     * @parameter default-value="false"
-     */
-    private boolean generateDRL = true;
-
-    public boolean isGenerateDRL() {
-        return generateDRL;
-    }
-
-    public void setGenerateDRL(boolean generateDRL) {
-        this.generateDRL = generateDRL;
-    }
-
-
     /**
      * @parameter default-value="default"
      */
@@ -294,7 +278,7 @@ public class ShapeCaster
         }
 
 
-        if ( isGenerateDRL() ) {
+        if ( isGenerateTraitDRL() ) {
 //            generateDRLDeclares(results);
             compiler.streamDRLDeclares();
         }

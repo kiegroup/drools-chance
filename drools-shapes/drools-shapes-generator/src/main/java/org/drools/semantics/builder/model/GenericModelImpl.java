@@ -5,8 +5,16 @@ package org.drools.semantics.builder.model;
 import org.drools.util.CodedHierarchy;
 import org.drools.util.HierarchyEncoder;
 import org.drools.util.HierarchyEncoderImpl;
+import org.drools.util.HierarchySorter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GenericModelImpl implements OntoModel, Cloneable {
 
@@ -273,7 +281,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         if ( con == null ) {
             return false;
         }
-//        System.out.println( "Is property " + rel.toFullString() + " available to " + con.getName() );
+        System.out.println( "Is property " + rel.toFullString() + " available to " + con.getName() );
         if ( con.getChosenProperties().containsKey( rel.getProperty() ) ) {
             return true;
         } else {
@@ -303,138 +311,16 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     }
 
     public void sort() {
-        List<Concept> conceptList = new ArrayList<Concept>( getConcepts() );
-        Node<Concept> root = new Node<Concept>( null );
-        Map<String, Node<Concept>> map = new HashMap<String, Node<Concept>>();
-        for ( Concept con : conceptList ) {
-            String key = con.getIri();
-
-            Node<Concept> node = map.get( key );
-            if ( node == null ) {
-                node = new Node( key,
-                        con );
-                map.put( key,
-                        node );
-            } else if ( node.getData() == null ) {
-                node.setData( con );
-            }
-            if ( con.getSuperConcepts().isEmpty() ) {
-                root.addChild( node );
-            } else {
-                for ( Concept superCon : con.getSuperConcepts() ) {
-
-                    String superKey = superCon.getIri();
-
-                    Node<Concept> superNode = map.get( superKey );
-                    if ( superNode == null ) {
-                        superNode = new Node<Concept>( superKey );
-                        map.put( superKey,
-                                superNode );
-                    }
-                    if ( ! superNode.children.contains( node ) ) {
-                        superNode.addChild( node );
-                    }
-                }
-
-            }
-
+        Map<Concept,Collection<Concept>> hier = new HashMap<Concept, Collection<Concept>>();
+        for ( Concept c : concepts.values() ) {
+            hier.put( c, c.getSuperConcepts() );
         }
-
-        Iterator<Node<Concept>> iter = map.values().iterator();
-        while ( iter.hasNext() ) {
-            Node<Concept> n = iter.next();
-            if ( n.getData() == null ) root.addChild( n );
-
-        }
-
-        List<Concept> sortedList = new LinkedList<Concept>();
-        root.accept( sortedList );
-
         concepts.clear();
-        for ( Concept c : sortedList ) {
+
+        List<Concept> sorted = new HierarchySorter<Concept>().sort( hier );
+        for ( Concept c : sorted ) {
             concepts.put( c.getIri(), c );
         }
     }
-
-    /**
-     * Utility class for the sorting algorithm
-     *
-     * @param <T>
-     */
-    private static class Node<T> {
-        private String        key;
-        private T             data;
-        private List<Node<T>> children;
-
-        public Node(String key) {
-            this.key = key;
-            this.children = new LinkedList<Node<T>>();
-        }
-
-        public Node(String key,
-                    T content) {
-            this( key );
-            this.data = content;
-        }
-
-        public void addChild(Node<T> child) {
-            this.children.add( child );
-        }
-
-        public List<Node<T>> getChildren() {
-            return children;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public T getData() {
-            return data;
-        }
-
-        public void setData(T content) {
-            this.data = content;
-        }
-
-        public void accept(List<T> list) {
-            if ( this.data != null ) {
-                if ( list.contains( this.data ) ) {
-                    list.remove( this.data );
-                }
-                list.add( this.data );
-            }
-
-            for ( int j = 0; j < children.size(); j++ ) {
-                    children.get( j ).accept( list );
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "Node{" +
-                    "key='" + key + '\'' +
-                    '}';
-        }
-
-        @Override
-        public boolean equals( Object o ) {
-            if ( this == o ) return true;
-            if ( o == null || getClass() != o.getClass() ) return false;
-
-            Node node = (Node) o;
-
-            if ( !key.equals( node.key ) ) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return key.hashCode();
-        }
-    }
-
-
 
 }

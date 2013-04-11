@@ -282,7 +282,6 @@
           <outputDirectory>${pom.basedir}</outputDirectory>
           <ontology>${pom.basedir}/src/main/resources/conyard.ttl</ontology>
           <axiomInference>lite</axiomInference>
-
           <modelName>conyard</modelName>
           <generateInterfaces>true</generateInterfaces>
           <generateInterfaceJar>true</generateInterfaceJar>

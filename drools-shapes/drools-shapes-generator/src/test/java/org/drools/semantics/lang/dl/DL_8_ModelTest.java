@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 JBoss Inc
+ * Copyright 2013 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,13 +79,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
 
 @SuppressWarnings("restriction")
-public class DL_99_ModelTest {
+public class DL_8_ModelTest {
 
 
 
@@ -202,7 +203,7 @@ public class DL_99_ModelTest {
 //        assertTrue( checkProperty( ironInst, pack, "hasCommentString", "xsd:string", 1, 1, true, true ) );
 
 
-        assertTrue( checkProperty( wallRais, pack, "involves", "Person", 0, null, false, false ) );
+        assertTrue( checkProperty( wallRais, pack, "involves", "Person", 0, null, false, true ) );
         assertTrue( checkProperty( wallRais, pack, "involvesMasons", "Mason", 3, null, true, false ) );
         assertTrue( checkProperty( wallRais, pack, "requiresBricks", "Bricks", 1, 1, true, false ) );
         assertFalse( checkProperty( wallRais, pack, "requiresBrickses", "Bricks", 1, null, true, true ) );
@@ -225,7 +226,8 @@ public class DL_99_ModelTest {
             }
         }
 
-        assertEquals( 6, wallRais.getEffectiveProperties().size() );
+        System.out.println( wallRais.getEffectiveProperties() );
+        assertEquals( 4, wallRais.getEffectiveProperties().size() );
 
         Set<PropertyRelation> wrEffectiveBaseProperties = wallRais.getEffectiveBaseProperties();
         for ( PropertyRelation p : wrEffectiveBaseProperties ) {
@@ -544,6 +546,22 @@ public class DL_99_ModelTest {
 
 
 
+    @Test
+    public void testPropertyConsistency() {
+
+        URI uri = (new File(".")).getAbsoluteFile().toURI();
+        System.out.println( uri );
+
+        String source = "ontologies/rule_merged.owl";
+//        String source = "rules.owl";
+        Resource res = ResourceFactory.newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "testRules", res, OntoModel.Mode.FLAT );
+
+        System.out.println( results );
+
+
+    }
 
 
 

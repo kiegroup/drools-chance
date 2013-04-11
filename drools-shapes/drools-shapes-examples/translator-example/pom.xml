@@ -231,9 +231,7 @@
           <generateTraitDRL>true</generateTraitDRL>
           <generateDefaultImplClasses>true</generateDefaultImplClasses>
           <inheritanceMode>OPTIMIZED</inheritanceMode>
-          <generateSpecXSDs>false</generateSpecXSDs>
           <generateIndividuals>true</generateIndividuals>
-          <generateDRL>true</generateDRL>
           <compilationOptionsPackage>default</compilationOptionsPackage>
           <compilationOptions>
             <compilationOption>-XtoString</compilationOption>

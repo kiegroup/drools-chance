@@ -253,9 +253,9 @@ public class Concept implements Cloneable {
             PropertyRelation current = prop;
             do {
                 if ( current.isRestricted() ) {
-                    ans.add( current.getBaseProperty() );
+                    ans.add( current.getImmediateBaseProperty() );
                 }
-                current = current.getBaseProperty();
+                current = current.getImmediateBaseProperty();
             } while ( current != current.getBaseProperty() );
         }
         return ans;
