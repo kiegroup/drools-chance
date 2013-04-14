@@ -52,12 +52,14 @@ public class DL_5_ClassHierarchyTest {
 
         System.out.println(results);
 
+        String ns = "http://jboss.org/drools/semantics/Example6#";
+
         assertEquals( 4, results.getProperties().size() );
         assertEquals( "<_Test>", results.getProperty( "<_zimple3>" ).getSubject() );
         assertEquals( "<http://www.w3.org/2001/XMLSchema#int>", results.getProperty( "<_zimple3>" ).getObject() );
-        assertEquals( "<http://jboss.org/drools/semantics/Zimple2Domain>", results.getProperty( "<_zimple2>" ).getSubject() );
+        assertEquals( "<" + ns + "Zimple2Domain>", results.getProperty( "<_zimple2>" ).getSubject() );
         assertEquals( "<http://www.w3.org/2001/XMLSchema#int>", results.getProperty( "<_zimple2>" ).getObject() );
-        assertEquals( "<http://jboss.org/drools/semantics/Zimple1Domain>", results.getProperty( "<_zimple1>" ).getSubject() );
+        assertEquals( "<" + ns + "Zimple1Domain>", results.getProperty( "<_zimple1>" ).getSubject() );
         assertEquals( "<http://www.w3.org/2001/XMLSchema#int>", results.getProperty( "<_zimple1>" ).getObject() );
         assertEquals( "<_Test>", results.getProperty( "<_zimple1Integer>" ).getSubject() );
         assertEquals( "<http://www.w3.org/2001/XMLSchema#int>", results.getProperty( "<_zimple1Integer>" ).getObject() );
@@ -68,19 +70,19 @@ public class DL_5_ClassHierarchyTest {
 
         assertEquals( 7, results.getConcepts().size() );
         assertNotNull( results.getConcept( "<http://www.w3.org/2002/07/owl#Thing>" ) );
-        assertNotNull( results.getConcept( "<http://jboss.org/drools/semantics/Zimple1Domain>" ) );
-        assertNotNull( results.getConcept( "<http://jboss.org/drools/semantics/Zimple2Domain>" ) );
+        assertNotNull( results.getConcept( "<" + ns + "Zimple1Domain>" ) );
+        assertNotNull( results.getConcept( "<" + ns + "Zimple2Domain>" ) );
         assertNotNull( results.getConcept( "<_Test3>" ) );
         assertNotNull( results.getConcept( "<_Test2>" ) );
         assertNotNull( results.getConcept( "<_Test>" ) );
         assertNotNull( results.getConcept( "<_Fact>" ) );
 
         assertEquals( 7, results.getSubConcepts().size() );
-        assertNotNull( results.getSubConceptOf( "<http://jboss.org/drools/semantics/Zimple1Domain>", "<http://www.w3.org/2002/07/owl#Thing>" ) );
-        assertNotNull( results.getSubConceptOf( "<http://jboss.org/drools/semantics/Zimple2Domain>", "<http://jboss.org/drools/semantics/Zimple1Domain>" ) );
-        assertNotNull( results.getSubConceptOf( "<_Test2>", "<http://jboss.org/drools/semantics/Zimple2Domain>" ) );
-        assertNotNull( results.getSubConceptOf( "<_Test>", "<http://jboss.org/drools/semantics/Zimple2Domain>" ) );
-        assertNotNull( results.getSubConceptOf( "<_Test3>", "<http://jboss.org/drools/semantics/Zimple1Domain>" ) );
+        assertNotNull( results.getSubConceptOf( "<" + ns + "Zimple1Domain>", "<http://www.w3.org/2002/07/owl#Thing>" ) );
+        assertNotNull( results.getSubConceptOf( "<" + ns + "Zimple2Domain>", "<" + ns + "Zimple1Domain>" ) );
+        assertNotNull( results.getSubConceptOf( "<_Test2>", "<" + ns + "Zimple2Domain>" ) );
+        assertNotNull( results.getSubConceptOf( "<_Test>", "<" + ns + "Zimple2Domain>" ) );
+        assertNotNull( results.getSubConceptOf( "<_Test3>", "<" + ns + "Zimple1Domain>" ) );
         assertNotNull( results.getSubConceptOf( "<_Test>", "<_Fact>" ) );
         assertNotNull( results.getSubConceptOf( "<_Fact>", "<http://www.w3.org/2002/07/owl#Thing>" ) );
 

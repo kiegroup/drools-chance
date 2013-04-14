@@ -608,5 +608,72 @@ public class DL_8_ModelTest {
 
     }
 
+    @Test
+    public void testNestedClassesByDisjunction() {
+
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/falseSubclass.owl" );
+        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
+
+        System.out.println( results );
+        Concept master = results.getConcept( "<http://test#AMaster>" );
+        assertEquals( 3, master.getSubConcepts().size() );
+        assertEquals( 2, master.getSuperConcepts().size() );
+
+        System.out.println( master.getSuperConcepts() );
+
+        Concept klass = results.getConcept( "<http://test#Klass>" );
+        Concept subKlass = results.getConcept( "<http://test#SubKlass>" );
+        Concept moreKlass = results.getConcept( "<http://test#MoreKlass>" );
+        Concept yetKlass = results.getConcept( "<http://test#YetAnotherKlass>" );
+        Concept againKlass = results.getConcept( "<http://test#AgainKlass>" );
+
+        Concept disj = results.getConcept( "<http://test#YorXorZ>" );
+        Concept xoz = results.getConcept( "<http://test#XorZ>" );
+
+        assertTrue( master.getSuperConcepts().contains( disj ) );
+        assertTrue( moreKlass.getSuperConcepts().contains( xoz ) );
+
+        Concept w = results.getConcept( "<http://test#W>" );
+        Concept z = results.getConcept( "<http://test#Z>" );
+
+        assertTrue( againKlass.getSubConcepts().contains( w ) );
+        assertTrue( againKlass.getSubConcepts().contains( z ) );
+        assertTrue( w.getSuperConcepts().contains( againKlass ) );
+        assertTrue( z.getSuperConcepts().contains( againKlass ) );
+
+
+        Concept randKlass = results.getConcept( "<http://test#RandomKlass>" );
+        Concept caslKlass = results.getConcept( "<http://test#CasualKlass>" );
+
+
+        Concept anon0 = results.getConcept( "<http://test#Anon0>" );
+        Concept anon1 = results.getConcept( "<http://test#Anon1>" );
+        Concept anon2 = results.getConcept( "<http://test#Anon2>" );
+
+        assertNotNull( anon0 );
+        assertNotNull( anon1 );
+        assertNull( anon2 );
+
+
+    }
+
+
+    @Test
+    public void testHardwareOntology() {
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/hardware.owl" );
+        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
+        assertNotNull( results );
+
+    }
+
+    @Test
+    @Ignore
+    public void testRemoveme2() {
+
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/biopax-level3.owl" );
+        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.HIERARCHY );
+
+    }
+
 
 }

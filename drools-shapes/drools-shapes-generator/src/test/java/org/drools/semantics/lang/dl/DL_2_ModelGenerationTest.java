@@ -120,7 +120,7 @@ public class DL_2_ModelGenerationTest {
         System.out.println( drlModel.getDRL() );
         System.out.println(" -------------------------------");
 
-        String ns = "http://jboss.org/drools/semantics/";
+        String ns = "http://jboss.org/drools/semantics/Example6#";
 
         assertNotNull( results.getConcept( "<_A>") );
         assertNotNull( results.getConcept( "<_B>") );

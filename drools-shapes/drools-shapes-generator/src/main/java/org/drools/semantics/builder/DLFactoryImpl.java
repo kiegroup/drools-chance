@@ -58,9 +58,7 @@ public class DLFactoryImpl implements DLFactory {
                     ) ) );
 
 
-    private ModelInferenceStrategy strategy = new DelegateInferenceStrategy();
-
-    public DLFactoryImpl() {
+    private DLFactoryImpl() {
 
     }
 
@@ -113,7 +111,7 @@ public class DLFactoryImpl implements DLFactory {
                                    OntoModel.Mode mode,
                                    List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
                                    List<ModelInferenceStrategy.InferenceTask> tasks, ClassLoader classLoader) {
-        OWLOntology ontoDescr = DLFactoryImpl.getInstance().parseOntology( res );
+        OWLOntology ontoDescr = parseOntology( res );
 
         Map<ModelInferenceStrategy.InferenceTask, Resource> theory = new LinkedHashMap<ModelInferenceStrategy.InferenceTask, Resource>();
 
@@ -135,27 +133,7 @@ public class DLFactoryImpl implements DLFactory {
             theory.put( ModelInferenceStrategy.InferenceTask.TABLEAU, tableauRules );
         }
 
-        if ( tasks.contains( ModelInferenceStrategy.InferenceTask.CLASS_LATTICE_BUILD_AND_PRUNE ) ) {
-            ClassPathResource classBuilder = new ClassPathResource( "FALC_ModelLatticeFullVisitor.drl" );
-            classBuilder.setResourceType( ResourceType.DRL );
-            theory.put( ModelInferenceStrategy.InferenceTask.CLASS_LATTICE_BUILD_AND_PRUNE, classBuilder );
-        }
-
-        if ( tasks.contains( ModelInferenceStrategy.InferenceTask.CLASS_LATTICE_PRUNE ) ) {
-            ClassPathResource classPruner = new ClassPathResource( "FALC_ModelLatticeSimplePrune.drl" );
-            classPruner.setResourceType( ResourceType.DRL );
-            theory.put( ModelInferenceStrategy.InferenceTask.CLASS_LATTICE_PRUNE, classPruner );
-        }
-
-        if ( tasks.contains( ModelInferenceStrategy.InferenceTask.PROPERTY_MATCH ) ) {
-            ClassPathResource propertyBuilder = new ClassPathResource( "FALC_ModelPropertyVisitor.drl" );
-            propertyBuilder.setResourceType( ResourceType.DRL );
-            theory.put( ModelInferenceStrategy.InferenceTask.PROPERTY_MATCH, propertyBuilder );
-        }
-
-
-
-        return strategy.buildModel( name,
+        return new DelegateInferenceStrategy().buildModel( name,
                 ontoDescr,
                 mode,
                 theory,
