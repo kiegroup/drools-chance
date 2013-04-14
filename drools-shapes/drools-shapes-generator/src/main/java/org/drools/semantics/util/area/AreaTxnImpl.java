@@ -1,6 +1,5 @@
 package org.drools.semantics.util.area;
-//import org.drools.factmodel.traits.TypeHierarchy;
-import org.apache.commons.collections15.collection.CompositeCollection;
+
 import org.drools.io.Resource;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.semantics.builder.DLFactory;
@@ -8,23 +7,15 @@ import org.drools.semantics.builder.DLFactoryImpl;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.PropertyRelation;
-import org.drools.semantics.util.HierarchySorter;
-import org.drools.util.CodedHierarchy;
 import org.drools.util.HierarchyEncoder;
 import org.drools.util.HierarchyEncoderImpl;
+import org.drools.util.HierarchySorter;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: mamad
- * Date: 3/6/13
- * Time: 1:55 PM
- * To change this template use File | Settings | File Templates.
- */
 public class AreaTxnImpl<T> implements AreaTxn<T>{
 
     public static boolean showDebugInfo = false;
