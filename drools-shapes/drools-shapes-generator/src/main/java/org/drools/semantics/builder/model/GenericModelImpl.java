@@ -281,7 +281,6 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         if ( con == null ) {
             return false;
         }
-        System.out.println( "Is property " + rel.toFullString() + " available to " + con.getName() );
         if ( con.getChosenProperties().containsKey( rel.getProperty() ) ) {
             return true;
         } else {

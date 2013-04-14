@@ -159,7 +159,7 @@ public interface DLFactory {
                                  List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
                                  List<ModelInferenceStrategy.InferenceTask> tasks );
 
-   public OntoModel buildModel( String name,
+    public OntoModel buildModel( String name,
                                  Resource[] res,
                                  OntoModel.Mode mode,
                                  List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
