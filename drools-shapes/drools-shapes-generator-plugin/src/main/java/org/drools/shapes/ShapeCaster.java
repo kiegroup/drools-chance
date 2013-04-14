@@ -216,7 +216,7 @@ public class ShapeCaster
     }
 
     /**
-     * @parameter default-value="false"
+     * @parameter default-value="true"
      */
     private boolean generateIndividuals = true;
 
