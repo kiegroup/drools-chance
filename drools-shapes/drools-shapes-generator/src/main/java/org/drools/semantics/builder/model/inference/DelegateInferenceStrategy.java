@@ -48,6 +48,7 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
 import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataOneOf;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
@@ -161,6 +162,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         register( "http://www.w3.org/2000/01/rdf-schema#Literal", "xsd:anySimpleType" );
 
+        register( "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral", "xsd:anySimpleType" );
+
         register( "http://www.w3.org/2001/XMLSchema#boolean", "xsd:boolean" );
 
         register( "http://www.w3.org/2001/XMLSchema#decimal", "xsd:decimal" );
@@ -186,7 +189,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         createAndAddBasicProperties( ontoDescr, factory, hierarchicalModel );
 
         // Apply any cardinality / range restriction
-        applyPropertyRestrictions( ontoDescr, hierarchicalModel );
+        applyPropertyRestrictions( ontoDescr, hierarchicalModel, factory );
 
         // Compose property chains
         fixPropertyChains( ontoDescr, hierarchicalModel );
@@ -287,7 +290,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
     private void setKeys(OWLOntology ontoDescr, OntoModel hierarchicalModel) {
-        for ( OWLHasKeyAxiom hasKey : ontoDescr.getAxioms( AxiomType.HAS_KEY ) ) {
+        for ( OWLHasKeyAxiom hasKey : ontoDescr.getAxioms(AxiomType.HAS_KEY) ) {
             Concept con = conceptCache.get( hasKey.getClassExpression().asOWLClass().getIRI().toQuotedString() );
             for ( OWLDataPropertyExpression expr : hasKey.getDataPropertyExpressions() ) {
                 String propIri = expr.asOWLDataProperty().getIRI().toQuotedString();
@@ -318,7 +321,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
 
-    private void applyPropertyRestrictions( OWLOntology ontoDescr, OntoModel hierarchicalModel ) {
+    private void applyPropertyRestrictions( OWLOntology ontoDescr, OntoModel hierarchicalModel, OWLDataFactory factory ) {
 
         for ( PropertyRelation prop : hierarchicalModel.getProperties() ) {
             if ( prop.getTarget() == null ) {
@@ -368,7 +371,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     continue;
                 }
 
-                processSuperClass( sup, con, hierarchicalModel );
+                processSuperClass( sup, con, hierarchicalModel, factory );
             }
 
 
@@ -381,7 +384,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
     }
 
-    private void processSuperClass( OWLClassExpression sup, Concept con, OntoModel hierarchicalModel ) {
+    private void processSuperClass( OWLClassExpression sup, Concept con, OntoModel hierarchicalModel, OWLDataFactory factory ) {
         String propIri;
         PropertyRelation rel;
         Concept tgt;
@@ -392,7 +395,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case DATA_ALL_VALUES_FROM:
                 OWLDataAllValuesFrom forall = (OWLDataAllValuesFrom) sup;
                 propIri = forall.getProperty().asOWLDataProperty().getIRI().toQuotedString();
-                tgt = primitives.get( forall.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
+                tgt = primitives.get( dataRangeToDataType( forall.getFiller(), factory ).getIRI().toQuotedString()  );
                 if ( tgt.equals( "xsd:anySimpleType" ) ) {
                     break;
                 }
@@ -406,7 +409,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case DATA_MIN_CARDINALITY:
                 OWLDataMinCardinality min = (OWLDataMinCardinality) sup;
                 propIri = min.getProperty().asOWLDataProperty().getIRI().toQuotedString();
-                tgt = primitives.get( min.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
+                tgt = primitives.get( dataRangeToDataType( min.getFiller(), factory ).getIRI().toQuotedString()  );
                 rel = extractProperty( con, propIri, tgt, min.getCardinality(), null, false );
                 if ( rel != null ) {
                     hierarchicalModel.addProperty( rel );
@@ -417,7 +420,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case DATA_MAX_CARDINALITY:
                 OWLDataMaxCardinality max = (OWLDataMaxCardinality) sup;
                 propIri = max.getProperty().asOWLDataProperty().getIRI().toQuotedString();
-                tgt = primitives.get( max.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
+                tgt = primitives.get( dataRangeToDataType( max.getFiller(), factory ).getIRI().toQuotedString()  );
                 rel = extractProperty( con, propIri, tgt, null, max.getCardinality(), false );
                 if ( rel != null ) {
                     hierarchicalModel.addProperty( rel );
@@ -428,7 +431,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case DATA_EXACT_CARDINALITY:
                 OWLDataExactCardinality ex = (OWLDataExactCardinality) sup;
                 propIri = ex.getProperty().asOWLDataProperty().getIRI().toQuotedString();
-                tgt = primitives.get( ex.getFiller().asOWLDatatype().getIRI().toQuotedString()  );
+                tgt = primitives.get( dataRangeToDataType( ex.getFiller(), factory ).getIRI().toQuotedString()  );
                 rel = extractProperty( con, propIri, tgt, ex.getCardinality(), ex.getCardinality(), false );
                 if ( rel != null ) {
                     hierarchicalModel.addProperty( rel );
@@ -504,7 +507,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case OBJECT_INTERSECTION_OF:
                 OWLObjectIntersectionOf and = (OWLObjectIntersectionOf) sup;
                 for ( OWLClassExpression arg : and.asConjunctSet() ) {
-                    processSuperClass( arg, con, hierarchicalModel );
+                    processSuperClass( arg, con, hierarchicalModel, factory );
                 }
             default:
                 logger.warn( " Cannot handle " + sup );
@@ -724,9 +727,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 for ( OWLClassExpression domain : domains ) {
                     for ( OWLDataRange range : ranges ) {
                         OWLClassExpression realDom = filterAliases( domain );
+                        OWLDatatype dataRange = dataRangeToDataType( range, factory );
                         PropertyRelation rel = new PropertyRelation( realDom.asOWLClass().getIRI().toQuotedString(),
                                 dp.getIRI().toQuotedString(),
-                                range.asOWLDatatype().getIRI().toQuotedString(),
+                                dataRange.getIRI().toQuotedString(),
                                 props.get( dp.getIRI().toQuotedString() ) );
 
 
@@ -788,6 +792,25 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             logger.info( missDataRange );
             logger.info( missObjectRange );
         }
+    }
+
+    private OWLDatatype dataRangeToDataType( OWLDataRange range, OWLDataFactory factory ) {
+        if ( range.isDatatype() ) {
+            return range.asOWLDatatype();
+        }
+        if ( range instanceof OWLDataOneOf ) {
+            OWLDataOneOf oneOf = (OWLDataOneOf) range;
+            Iterator<OWLLiteral> literals = oneOf.getValues().iterator();
+            OWLDatatype type = literals.next().getDatatype();
+            while ( literals.hasNext() ) {
+                OWLDatatype x = literals.next().getDatatype();
+                if ( ! type.equals( x ) ) {
+                    return factory.getTopDatatype();
+                }
+            }
+            return type;
+        }
+        return range.asOWLDatatype();
     }
 
 
@@ -925,7 +948,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
     private boolean processComplexSuperclasses(OWLOntology ontoDescr, OWLDataFactory factory ) {
         boolean dirty = false;
-        for ( OWLSubClassOfAxiom sub : ontoDescr.getAxioms( AxiomType.SUBCLASS_OF, true ) ) {
+        for ( OWLSubClassOfAxiom sub : ontoDescr.getAxioms(AxiomType.SUBCLASS_OF, true) ) {
 
             if ( sub.getSuperClass().isAnonymous() ) {
                 if ( sub.getSuperClass() instanceof OWLObjectUnionOf ) {

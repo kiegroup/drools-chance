@@ -1,0 +1,73 @@
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Prefix: xml: <http://www.w3.org/XML/1998/namespace>
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+
+
+Ontology: <http://org/drools/test>
+
+
+Datatype: xsd:string
+
+    
+ObjectProperty: <http://org/drools/test#individualProp>
+
+    Domain: 
+        <http://org/drools/test#Klass2>
+    
+    Range: 
+        {<http://org/drools/test#x> , <http://org/drools/test#y> , <http://org/drools/test#z>}
+    
+    
+DataProperty: <http://org/drools/test#valuedProp>
+
+    Domain: 
+        <http://org/drools/test#Klass>
+    
+    Range: 
+        {"aa"^^xsd:string , "bb"^^xsd:string , "cc"^^xsd:string}
+    
+    
+Class: <http://org/drools/test#Klass2>
+
+    
+Class: <http://org/drools/test#X>
+
+    
+Class: <http://org/drools/test#SubKlass2>
+
+    SubClassOf: 
+        <http://org/drools/test#Klass2>,
+        <http://org/drools/test#individualProp> some ({<http://org/drools/test#x> , <http://org/drools/test#y>})
+    
+    
+Class: <http://org/drools/test#SubKlass>
+
+    SubClassOf: 
+        <http://org/drools/test#valuedProp> exactly 1 {"aa"^^xsd:string , "bb"^^xsd:string},
+        <http://org/drools/test#Klass>
+    
+    
+Class: <http://org/drools/test#Klass>
+
+    
+Individual: <http://org/drools/test#y>
+
+    Types: 
+        <http://org/drools/test#X>
+    
+    
+Individual: <http://org/drools/test#z>
+
+    Types: 
+        <http://org/drools/test#X>
+    
+    
+Individual: <http://org/drools/test#x>
+
+    Types: 
+        <http://org/drools/test#X>
+    
+    

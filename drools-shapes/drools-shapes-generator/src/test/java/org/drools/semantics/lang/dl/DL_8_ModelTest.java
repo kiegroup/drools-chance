@@ -667,11 +667,34 @@ public class DL_8_ModelTest {
     }
 
     @Test
-    @Ignore
     public void testRemoveme2() {
-
         Resource res = ResourceFactory.newClassPathResource( "ontologies/biopax-level3.owl" );
-        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
+
+    }
+
+
+    @Test
+    public void testDataEnumRange() {
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/dataEnumRange.owl" );
+        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
+
+        Concept x = results.getConcept( "<http://org/drools/test#X>" );
+
+        PropertyRelation orel = results.getProperty( "<http://org/drools/test#individualProp>" );
+        PropertyRelation drel = results.getProperty( "<http://org/drools/test#valuedProp>" );
+
+        assertNotNull( x );
+        assertNotNull( orel );
+        assertNotNull( drel );
+
+        assertTrue( orel.getTarget().getSuperConcepts().contains( x ) );
+        assertEquals( "<http://www.w3.org/2001/XMLSchema#string>", drel.getTarget().getIri() );
+
+
+        ModelCompiler jcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAVA );
+        JavaInterfaceModel jModel = (JavaInterfaceModel) jcompiler.compile( results );
+
 
     }
 
