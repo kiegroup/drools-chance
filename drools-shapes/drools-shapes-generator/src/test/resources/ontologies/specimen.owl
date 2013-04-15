@@ -10,12 +10,12 @@
 
 
 <Ontology xmlns="http://www.w3.org/2002/07/owl#"
-     xml:base="http://www.semanticweb.org/mamad/ontologies/2013/3/untitled-ontology-40"
+     xml:base="http://org.drools/test"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     ontologyIRI="http://www.semanticweb.org/mamad/ontologies/2013/3/untitled-ontology-40">
+     ontologyIRI="http://org.drools/test">
     <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
@@ -70,7 +70,13 @@
         <Class IRI="#venous_bl_specimen"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#hasRelation"/>
+        <ObjectProperty IRI="#bodySubRel"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#drugRel"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#fluidRel"/>
     </Declaration>
     <SubClassOf>
         <Class IRI="#acellular_bl_specimen"/>
@@ -109,22 +115,8 @@
         <Class IRI="#specimen"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#body_subs_sample"/>
-        <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="#hasRelation"/>
-            <Class IRI="#mock"/>
-        </ObjectSomeValuesFrom>
-    </SubClassOf>
-    <SubClassOf>
         <Class IRI="#drug_specimen"/>
         <Class IRI="#specimen"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#drug_specimen"/>
-        <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="#hasRelation"/>
-            <Class IRI="#mock"/>
-        </ObjectSomeValuesFrom>
     </SubClassOf>
     <SubClassOf>
         <Class IRI="#fecal_fluid_sample"/>
@@ -137,13 +129,6 @@
     <SubClassOf>
         <Class IRI="#fluid_sample"/>
         <Class IRI="#specimen"/>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#fluid_sample"/>
-        <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="#hasRelation"/>
-            <Class IRI="#mock"/>
-        </ObjectSomeValuesFrom>
     </SubClassOf>
     <SubClassOf>
         <Class IRI="#mixed_venous_bl_spec"/>
@@ -174,15 +159,27 @@
         <Class IRI="#blood_specimen"/>
     </SubClassOf>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#hasRelation"/>
-        <ObjectUnionOf>
-            <Class IRI="#body_subs_sample"/>
-            <Class IRI="#drug_specimen"/>
-            <Class IRI="#fluid_sample"/>
-        </ObjectUnionOf>
+        <ObjectProperty IRI="#bodySubRel"/>
+        <Class IRI="#body_subs_sample"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#drugRel"/>
+        <Class IRI="#drug_specimen"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#fluidRel"/>
+        <Class IRI="#fluid_sample"/>
     </ObjectPropertyDomain>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#hasRelation"/>
+        <ObjectProperty IRI="#bodySubRel"/>
+        <Class IRI="#mock"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#drugRel"/>
+        <Class IRI="#mock"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#fluidRel"/>
         <Class IRI="#mock"/>
     </ObjectPropertyRange>
 </Ontology>

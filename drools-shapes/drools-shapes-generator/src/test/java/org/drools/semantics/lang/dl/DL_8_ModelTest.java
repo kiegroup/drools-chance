@@ -666,13 +666,6 @@ public class DL_8_ModelTest {
 
     }
 
-    @Test
-    public void testRemoveme2() {
-        Resource res = ResourceFactory.newClassPathResource( "ontologies/biopax-level3.owl" );
-        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
-
-    }
-
 
     @Test
     public void testDataEnumRange() {

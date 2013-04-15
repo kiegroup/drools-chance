@@ -18,6 +18,7 @@ package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
 import org.drools.semantics.utils.NameUtils;
+import org.drools.util.HierarchyEncoderImpl;
 import org.semanticweb.owlapi.model.IRI;
 
 import java.util.*;
@@ -30,6 +31,7 @@ public class Concept implements Cloneable {
     @Position(7)    private     String                          namespace;
     @Position(9)    private     String                          pack;
     @Position(8)    private     BitSet                          typeCode;
+    @Position(11)   private     BitSet                          areaCode;
 
 
     @Position(2)    private     Set<Concept>                    superConcepts;
@@ -39,8 +41,7 @@ public class Concept implements Cloneable {
     @Position(3)    private     Map<String, PropertyRelation>   properties;
     @Position(5)    private     List<PropertyRelation>          keys;
 
-    @Position(9)    private ConceptImplProxy implementingCon;
-
+    @Position(10)   private     ConceptImplProxy                implementingCon;
 
     public enum Resolution { NONE, CLASS, IFACE, ENUM ; }
 
@@ -160,6 +161,13 @@ public class Concept implements Cloneable {
         this.typeCode = typeCode;
     }
 
+    public void setAreaCode(BitSet areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public BitSet getAreaCode() {
+        return areaCode;
+    }
 
 
 

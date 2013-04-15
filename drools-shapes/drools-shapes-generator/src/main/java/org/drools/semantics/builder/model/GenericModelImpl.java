@@ -295,9 +295,13 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     public void reassignConceptCodes() {
         for ( Concept con : getConcepts() ) {
+            System.out.println( "Encoding con " + con + " >> " + con.getSuperConcepts() );
             con.setTypeCode( hierarchyEncoder.encode( con, con.getSuperConcepts() ) );
+
         }
-        System.out.println( hierarchyEncoder );
+        if ( hierarchyEncoder.size() != getConcepts().size() ) {
+            throw new IllegalStateException( " Not all concepts were coded correctly, or some code has been overwritten " + hierarchyEncoder.size() + " vs expected " + getConcepts().size() );
+        }
     }
 
 
