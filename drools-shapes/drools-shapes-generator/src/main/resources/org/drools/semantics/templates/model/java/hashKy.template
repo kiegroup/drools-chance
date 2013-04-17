@@ -2,16 +2,20 @@
 @declare{'hashKyTemplate'}
 
     public int hashCode() {
-        if ( getDyEntryId() != null ) {
+        @if{ keys.length == 0 }
             return super.hashCode();
-        } else {
-            final org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy = org.jvnet.jaxb2_commons.lang.JAXBHashCodeStrategy.INSTANCE;
-            return this.hashCode(null, strategy);
-        }
+        @else{}
+            if ( hasKeys() ) {
+                final org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy = org.jvnet.jaxb2_commons.lang.JAXBHashCodeStrategy.INSTANCE;
+                return this.hashCode(null, strategy);
+            } else {
+                return super.hashCode();
+            }
+        @end{}
     }
 
      public int hashCode(org.jvnet.jaxb2_commons.locator.ObjectLocator locator,  org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy) {
-            int currentHashCode = 1;
+        int currentHashCode = super.hashCode( locator, strategy );
             
             @foreach{ k : keys }
             {
@@ -19,8 +23,17 @@
                 currentHashCode = strategy.hashCode(org.jvnet.jaxb2_commons.locator.util.LocatorUtils.property(locator, "@{k.name}", the@{compactUpperCase(k.name)}), currentHashCode, the@{compactUpperCase(k.name)});
             }
             @end{}
+
         return currentHashCode;
      }
+
+     public boolean hasKeys() {
+        @foreach{ k : keys }
+            if ( ! this.isSet@{compactUpperCase(k.name)}() ) { return false; }
+        @end{}
+        return true;
+     }
+
 @end{}
 
 

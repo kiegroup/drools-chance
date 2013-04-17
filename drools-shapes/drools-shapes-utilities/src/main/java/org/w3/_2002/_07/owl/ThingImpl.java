@@ -265,48 +265,26 @@ public class ThingImpl
 
 
     public boolean equals(Object object) {
-
-        if ( super.equals( object ) ) {
-            return true;
-        }
-
-        final org.jvnet.jaxb2_commons.lang.EqualsStrategy strategy =  org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy.INSTANCE;
-        return equals(null, null, object, strategy);
+        return super.equals( object );
     }
 
 
 
     public boolean equals(org.jvnet.jaxb2_commons.locator.ObjectLocator thisLocator, org.jvnet.jaxb2_commons.locator.ObjectLocator thatLocator, Object object, org.jvnet.jaxb2_commons.lang.EqualsStrategy strategy) {
-            if (!(object instanceof ThingImpl)) {
-                    return false;
-                }
-                if (this == object) {
-                    return true;
-                }
-
-                final ThingImpl that = ((ThingImpl) object);
-
-                
-
-                return true;
-            }
+        if ( this == object ) {
+            return true;
+        }
+        return object instanceof ThingImpl;
+    }
 
 
 
     public int hashCode() {
-        if ( getDyEntryId() != null ) {
-            return super.hashCode();
-        } else {
-            final org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy = org.jvnet.jaxb2_commons.lang.JAXBHashCodeStrategy.INSTANCE;
-            return this.hashCode(null, strategy);
-        }
+        return super.hashCode();
     }
 
      public int hashCode(org.jvnet.jaxb2_commons.locator.ObjectLocator locator,  org.jvnet.jaxb2_commons.lang.HashCodeStrategy strategy) {
-            int currentHashCode = 1;
-            
-            
-        return currentHashCode;
+        return 31;
      }
 
 

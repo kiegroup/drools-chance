@@ -35,6 +35,7 @@ import java.util.List;
 public class KeyPlugin extends Plugin {
 
     public static String uri = "http://jboss.org/drools/drools-chance/drools-shapes/plugins/key";
+    public static String metaURI = "http://jboss.org/drools/drools-chance/drools-shapes/plugins/metadata";
 
     private static String equalsTempl = "equals";
     private static String hashKyTempl = "hashKy";
@@ -60,6 +61,7 @@ public class KeyPlugin extends Plugin {
         for (ClassOutline co : outline.getClasses() ) {
 
             CPluginCustomization c = co.target.getCustomizations().find( uri.toString(), "keyId" );
+            CPluginCustomization d = co.target.getCustomizations().find( metaURI.toString(), "type" );
             if( c == null ) {
                 continue;
             }
@@ -74,6 +76,7 @@ public class KeyPlugin extends Plugin {
 
             HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put( "klassName", co.target.shortName );
+                map.put( "typeName", d.element.getAttribute( "name" ) );
                 map.put( "keys", keys );
 
 

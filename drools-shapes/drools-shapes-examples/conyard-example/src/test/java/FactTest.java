@@ -234,40 +234,65 @@ public class FactTest {
 
 
     @Test
-    public void testEqualityAndHashCode() {
+    public void testEqualityAndHashCodeWithKey() {
 
         Painting px = new PaintingImpl();
         px.setOid( "oidX" );
         px.setHasComment("Some comment on this object");
 
+        // equal since key attributes are equal
         assertEquals( px, painting );
-        assertFalse( px.hashCode() == painting.hashCode() );
+        assertTrue( px.hashCode() == painting.hashCode() );
 
 
-
+        // change key - no longer equal
         px.setHasComment("Change value");
 
         assertFalse( px.equals( painting ) );
         assertFalse( px.hashCode() == painting.hashCode() );
 
-
+        // id has no effect in presence of keys
         ((PaintingImpl) painting).setDyEntryId( "aid" );
-//        ((PaintingImpl) painting).setDyReference( false );
         ((PaintingImpl) px).setDyEntryId( "aid" );
-//        ((PaintingImpl) px).setDyReference( false );
 
+        assertFalse( painting.equals( px ) );
+        assertFalse( px.hashCode() == painting.hashCode() );
+
+        painting.setHasComment( "Change value" );
+
+        // key is matchgin again
         assertEquals( painting, px );
         assertTrue( px.hashCode() == painting.hashCode() );
 
-
+        // no effect from id
         ((PaintingImpl) painting).setDyEntryId( "aid2" );
 
-        assertFalse( px.equals( painting ) );
-        assertFalse( px.hashCode() == painting.hashCode() );
+        assertTrue( px.equals( painting ) );
+        assertTrue( px.hashCode() == painting.hashCode() );
 
     }
 
 
+    @Test
+    public void testEqualsHashcodeNoKey() {
+        PaintingImpl p1 = new PaintingImpl();
+        PaintingImpl p2 = new PaintingImpl();
+        PaintingImpl p3 = new PaintingImpl();
+
+        assertFalse( p1.hashCode() == p2.hashCode() );
+        assertFalse( p1.equals( p2 ) );
+
+        p3.setDyReference( p1.getDyEntryId() );
+        assertTrue( p1.hashCode() == p3.hashCode() );
+        assertTrue( p1.equals( p3 ) );
+
+
+        p1.setOid( "abx" );
+        p2.setOid( "abx" );
+        p1.setHasComment( "x" );
+        p2.setHasComment( "x" );
+        assertEquals( p1, p2 );
+    }
 
 
     private Marshaller createMarshaller() {
@@ -446,7 +471,6 @@ public class FactTest {
         assertEquals( painting, p2 );
         assertEquals( p2, painting );
 
-        p2.setHasComment(" Change my mind ");
         p2.getRequiresStair().setStairLength(6);
 
         assertTrue( painting.equals( p2 ) );
@@ -719,5 +743,8 @@ public class FactTest {
             fail(jxe.getMessage());
         }
     }
+
+
+
 
 }

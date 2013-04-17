@@ -2,26 +2,31 @@
 @declare{'equalsTemplate'}
 
     public boolean equals(java.lang.Object object) {
+        @if{ keys.length == 0 }
+            return super.equals( object );
+        @else{}
+            if ( hasKeys() ) {
+                final org.jvnet.jaxb2_commons.lang.EqualsStrategy strategy =  org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy.INSTANCE;
+                return equals(null, null, object, strategy);
+            } else {
+                return super.equals( object );
+            }
+        @end{}
 
-        if ( super.equals( object ) ) {
-            return true;
-        }
 
-        final org.jvnet.jaxb2_commons.lang.EqualsStrategy strategy =  org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy.INSTANCE;
-        return equals(null, null, object, strategy);
     }
 
 
 
     public boolean equals(org.jvnet.jaxb2_commons.locator.ObjectLocator thisLocator, org.jvnet.jaxb2_commons.locator.ObjectLocator thatLocator, Object object, org.jvnet.jaxb2_commons.lang.EqualsStrategy strategy) {
-            if (!(object instanceof @{klassName})) {
-                    return false;
-                }
-                if (this == object) {
-                    return true;
-                }
+        if ( this == object ) { return true; }
+        if ( ! super.equals( thisLocator, thatLocator, object, strategy ) ) { return false; }
 
-                final @{klassName} that = ((@{klassName}) object);
+        if ( ! ( object instanceof @{klassName} ) ) { return false; }
+
+        @if{ keys.length > 0 }
+            final @{klassName} that = ((@{klassName}) object);
+        @end{}
 
                 @foreach{ k : keys }
                 {
@@ -33,8 +38,8 @@
                 }
                 @end{}
 
-                return true;
-            }
+        return true;
+    }
 
 
 @end{}

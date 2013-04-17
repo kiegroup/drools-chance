@@ -60,19 +60,21 @@ public abstract class UIdAble implements SupportsRdfId, org.w3._2002._07.owl.Thi
 
         UIdAble uIdAble = (UIdAble) o;
 
-        if ( getDyReference() == null && uIdAble.getDyReference() == null ) {
-            return this.getDyEntryId() != null && getDyEntryId().equals( uIdAble.getDyEntryId() );
+        if ( getDyReference() != null ) {
+            return this.getDyReference().equals( uIdAble.getDyEntryId() ) || this.getDyReference().equals( uIdAble.getDyReference() );
+        } else if ( uIdAble.getDyReference() != null ) {
+            return uIdAble.getDyReference().equals( this.getDyEntryId() );
         } else {
-            return this.getDyReference() != null && getDyReference().equals( uIdAble.getDyReference() );
+            return this.getDyEntryId().equals( uIdAble.getDyEntryId() );
         }
     }
 
     @Override
     public int hashCode() {
-        if ( getDyEntryId() != null ) {
+        if ( getDyReference() == null && getDyEntryId() != null ) {
             return getDyEntryId().hashCode();
         } else {
-            return 31 + ( getDyReference() != null ? getDyReference().hashCode() : 1 );
+            return getDyReference() != null ? getDyReference().hashCode() : System.identityHashCode( this );
         }
     }
 
