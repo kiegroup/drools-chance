@@ -22,6 +22,7 @@ import org.drools.semantics.builder.model.hierarchy.ModelHierarchyProcessor;
 import org.drools.semantics.builder.model.hierarchy.NullModelProcessor;
 import org.drools.semantics.builder.model.hierarchy.OptimizedModelProcessor;
 import org.drools.semantics.builder.model.hierarchy.VariantModelProcessor;
+import org.drools.semantics.util.area.AreaTxn;
 import org.drools.util.CodedHierarchy;
 
 import java.util.List;
@@ -115,4 +116,8 @@ public interface OntoModel extends Cloneable {
     public void reassignConceptCodes();
 
     public CodedHierarchy<Concept> getConceptHierarchy();
+
+    public void buildAreaTaxonomy();
+
+    public AreaTxn<Concept,PropertyRelation> getAreaTaxonomy();
 }

@@ -45,6 +45,10 @@ public class AreaNode<C,P> implements Area<C,P> {
         return roots;
     }
 
+    public BitSet getElementRootCode() {
+        return rootBitSet;
+    }
+
     public Collection<C> getElements() {
         return Collections.unmodifiableCollection( conHir.getSortedMembers() );
     }

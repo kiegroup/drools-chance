@@ -2,6 +2,7 @@
 package org.drools.semantics.builder.model;
 
 
+import org.drools.semantics.util.area.AreaTxn;
 import org.drools.util.CodedHierarchy;
 import org.drools.util.HierarchyEncoder;
 import org.drools.util.HierarchyEncoderImpl;
@@ -41,6 +42,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private HierarchyEncoder<Concept> hierarchyEncoder = new HierarchyEncoderImpl<Concept>();
 
+    private ConceptAreaTxn areaTxn;
 
     protected GenericModelImpl newInstance() {
         return new GenericModelImpl();
@@ -294,10 +296,9 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     }
 
     public void reassignConceptCodes() {
+        hierarchyEncoder.clear();
         for ( Concept con : getConcepts() ) {
-            System.out.println( "Encoding con " + con + " >> " + con.getSuperConcepts() );
             con.setTypeCode( hierarchyEncoder.encode( con, con.getSuperConcepts() ) );
-
         }
         if ( hierarchyEncoder.size() != getConcepts().size() ) {
             throw new IllegalStateException( " Not all concepts were coded correctly, or some code has been overwritten " + hierarchyEncoder.size() + " vs expected " + getConcepts().size() );
@@ -326,4 +327,15 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         }
     }
 
+
+    public void buildAreaTaxonomy() {
+        areaTxn = new ConceptAreaTxn( this );
+    }
+
+    public AreaTxn<Concept,PropertyRelation> getAreaTaxonomy() {
+        if ( areaTxn == null ) {
+            buildAreaTaxonomy();
+        }
+        return areaTxn;
+    }
 }

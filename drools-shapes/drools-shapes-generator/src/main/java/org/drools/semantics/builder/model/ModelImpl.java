@@ -17,6 +17,7 @@
 package org.drools.semantics.builder.model;
 
 
+import org.drools.semantics.util.area.AreaTxn;
 import org.drools.util.CodedHierarchy;
 
 import java.util.List;
@@ -169,4 +170,13 @@ public abstract class ModelImpl implements OntoModel {
     public CodedHierarchy<Concept> getConceptHierarchy() {
         return innerModel.getConceptHierarchy();
     }
+
+    public void buildAreaTaxonomy() {
+        innerModel.buildAreaTaxonomy();
+    }
+
+    public AreaTxn<Concept,PropertyRelation> getAreaTaxonomy() {
+        return innerModel.getAreaTaxonomy();
+    }
+
 }

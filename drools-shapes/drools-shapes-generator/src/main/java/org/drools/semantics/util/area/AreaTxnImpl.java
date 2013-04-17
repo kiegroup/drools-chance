@@ -37,6 +37,9 @@ public abstract class AreaTxnImpl<C,P> implements AreaTxn<C,P> {
         return areas;
     }
 
+    public Collection<Set<P>> getAreaKeys() {
+        return areas.keySet();
+    }
 
     public HierarchyEncoder<AreaNode<C,P>> getEncoderArea() {
         return encoderArea;
@@ -112,7 +115,6 @@ public abstract class AreaTxnImpl<C,P> implements AreaTxn<C,P> {
                 }
             }
             partialArea.put( i, encoder );
-            System.out.println( i + " partial= " + encoder );
         }
         return partialArea;
     }

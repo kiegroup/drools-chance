@@ -4,12 +4,15 @@ import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.PropertyRelation;
 import org.drools.util.HierarchyEncoder;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 
 public interface AreaTxn<C,P> {
+
+    public Collection<Set<P>> getAreaKeys();
 
     public Area<C,P> getArea( Set<P> key );
 

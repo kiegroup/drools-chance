@@ -30,6 +30,7 @@ import org.drools.util.HierarchyEncoderImpl;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -84,7 +85,7 @@ public class DL_4_AreaTest {
             Concept c14 = model.getConcept( "<http://org.drools/test#fecal_fluid_sample>" );
 
 
-            AreaTxn<Concept,PropertyRelation> areaTxn = new ConceptAreaTxn( model );
+            AreaTxn<Concept,PropertyRelation> areaTxn = model.getAreaTaxonomy();
 
 
             System.out.println( areaTxn );
@@ -144,6 +145,17 @@ public class DL_4_AreaTest {
             assertEquals( n5.getRoots(), new HashSet<Concept>( Arrays.asList( c05, c14 ) ) );
             assertEquals( n7.getRoots(), new HashSet<Concept>( Arrays.asList( c06, c09 ) ) );
 
+            BitSet n5root = (BitSet) c05.getTypeCode().clone();
+            n5root.and( c14.getTypeCode() );
+            BitSet n7root = (BitSet) c06.getTypeCode().clone();
+            n7root.and( c09.getTypeCode() );
+
+            assertEquals( n1.getElementRootCode(), c02.getTypeCode() );
+            assertEquals( n2.getElementRootCode(), c01.getTypeCode() );
+            assertEquals( n3.getElementRootCode(), c04.getTypeCode() );
+            assertEquals( n4.getElementRootCode(), c03.getTypeCode() );
+            assertEquals( n5.getElementRootCode(), n5root );
+            assertEquals( n7.getElementRootCode(), n7root );
 
 
             // Now check hierarchy
@@ -160,8 +172,6 @@ public class DL_4_AreaTest {
             assertTrue( HierarchyEncoderImpl.supersetOrEqualset( n7.getAreaCode(), n4.getAreaCode() ) );
             assertTrue( HierarchyEncoderImpl.supersetOrEqualset( n7.getAreaCode(), n5.getAreaCode() ) );
             assertTrue( HierarchyEncoderImpl.supersetOrEqualset( n7.getAreaCode(), n0.getAreaCode() ) );
-
-
 
 
 //
@@ -189,34 +199,22 @@ public class DL_4_AreaTest {
 
     }
 
-//    @Test
-//    public void testArea2() {
-//        try {
-//
-//            Resource res = ResourceFactory.newClassPathResource( "ontologies/hardware.owl" );
-//            OntoModel model = DLFactoryImpl.getInstance().buildModel( "hw", res, OntoModel.Mode.NONE );
-//
-//            System.out.println( "*********************************************************************************" );
-//            System.out.println( "*********************************************************************************" );
-//            System.out.println( "*********************************************************************************" );
-//            System.out.println( "*********************************************************************************" );
-//            System.out.println( "*********************************************************************************" );
-//            System.out.println( "*********************************************************************************" );
-//
-//
-//            AreaTxnImpl area = new AreaTxnImpl( model );
-//                area.makeAreaNodes();
-//
-//            System.out.println( area.getAreas() );
-//
-//                area.makeAreaRoots();
-//            PartialAreaTxnImpl parea = new PartialAreaTxnImpl( area.getAreas(), area.getEncoderArea() );
-//            Set<Concept> olpc = parea.getOverlappingCodes();
-//
-//        } catch ( Exception e ) {
-//            e.printStackTrace();
-//            fail( e.getMessage() );
-//        }
-//
-//    }
+    @Test
+    public void testArea2() {
+        try {
+
+            Resource res = ResourceFactory.newClassPathResource( "ontologies/hardware.owl" );
+            OntoModel model = DLFactoryImpl.getInstance().buildModel( "hw", res, OntoModel.Mode.NONE );
+
+            AreaTxn<Concept,PropertyRelation> areaTxn = model.getAreaTaxonomy();
+
+            System.out.println( areaTxn.getAreaKeys() );
+
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+
+    }
+
 }
