@@ -48,30 +48,17 @@ import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.drools.semantics.util.SemanticWorkingSetConfigData;
+import org.drools.util.HierarchyEncoderImpl;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.util.InferredAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator;
-import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,7 +66,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -98,14 +84,14 @@ public class DL_8_ModelTest {
 
 
 
-    @Test()
+        @Test()
     public void testConyardComplexModelGeneration() {
 
         Resource res = ResourceFactory.newClassPathResource( "ontologies/conyard.ttl" );
         OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.FLAT,
                 DLFactoryImpl.liteAxiomGenerators );
 
-
+        checkConceptEncoding( results );
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
         SemanticXSDModel xsdModel;
@@ -251,6 +237,8 @@ public class DL_8_ModelTest {
         Resource res = ResourceFactory.newClassPathResource(source);
 
         OntoModel results = factory.buildModel( "kmr2mini", res, OntoModel.Mode.HIERARCHY );
+
+        checkConceptEncoding( results );
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.DRL );
         DRLModel drlModel = (DRLModel) compiler.compile( results );
@@ -531,13 +519,14 @@ public class DL_8_ModelTest {
 
         OntoModel results = factory.buildModel( "testRules", res, OntoModel.Mode.FLAT );
 
+        checkConceptEncoding( results );
+
         ModelCompiler xcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
         SemanticXSDModel xsdModel = (SemanticXSDModel) xcompiler.compile( results );
 
         xsdModel.streamIndividualFactory( System.out );
 
         assertEquals( 22, xsdModel.getIndividuals().size() );
-
 
         System.out.println( "xx " );
 
@@ -614,6 +603,8 @@ public class DL_8_ModelTest {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/falseSubclass.owl" );
         OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
 
+        checkConceptEncoding( results );
+
         System.out.println( results );
         Concept master = results.getConcept( "<http://test#AMaster>" );
         assertEquals( 3, master.getSubConcepts().size() );
@@ -672,6 +663,8 @@ public class DL_8_ModelTest {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/dataEnumRange.owl" );
         OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
 
+        checkConceptEncoding( results );
+
         Concept x = results.getConcept( "<http://org/drools/test#X>" );
 
         PropertyRelation orel = results.getProperty( "<http://org/drools/test#individualProp>" );
@@ -691,5 +684,54 @@ public class DL_8_ModelTest {
 
     }
 
+
+
+    @Test
+    public void testKMR2Ontology() {
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/kmr2/KMR_Ontology2.ttl" );
+        OntoModel results = factory.buildModel( "kmr2", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
+        assertNotNull( results );
+
+        checkConceptEncoding( results );
+    }
+
+
+
+
+
+    private boolean checkConceptEncoding( OntoModel results ) {
+        boolean ans = true;
+        for ( Concept con : results.getConcepts() ) {
+            for ( Concept sub : results.getConcepts() ) {
+                boolean subByCode = HierarchyEncoderImpl.supersetOrEqualset( sub.getTypeCode(), con.getTypeCode() );
+                boolean subByRel = ancestor( con, sub );
+                if ( subByCode && ! subByRel  ) {
+                    ans = false;
+                    System.out.println( "FAILED!! SPURIOUS INHERITANCE " + sub + " vs " + con  );
+                }
+                if ( ! subByCode && subByRel  ) {
+                    ans = false;
+                    System.out.println( "FAILED!! MISSING INHERITANCE " + sub + " vs " + con );
+                }
+            }
+        }
+        assertTrue( ans );
+        return ans;
+    }
+
+    private boolean ancestor(Concept con, Concept sub) {
+        if ( con == sub ) {
+            return true;
+        }
+        if ( sub.getSuperConcepts().contains( con ) ) {
+            return true;
+        }
+        for ( Concept sup : sub.getSuperConcepts() ) {
+            if ( ancestor( con, sup ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

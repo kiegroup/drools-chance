@@ -300,8 +300,17 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         for ( Concept con : getConcepts() ) {
             con.setTypeCode( hierarchyEncoder.encode( con, con.getSuperConcepts() ) );
         }
+
         if ( hierarchyEncoder.size() != getConcepts().size() ) {
-            throw new IllegalStateException( " Not all concepts were coded correctly, or some code has been overwritten " + hierarchyEncoder.size() + " vs expected " + getConcepts().size() );
+            StringBuilder sb = new StringBuilder();
+            sb.append( " Not all concepts were coded correctly, or some code has been overwritten : \n" );
+            for ( Concept con : getConcepts() ) {
+                if ( hierarchyEncoder.getCode( con ) == null ) {
+                    sb.append( "Unable to find concept code : " ).append( con ).append( "\n" );
+                }
+            }
+            sb.append( " Encoder size " ).append( hierarchyEncoder.size() ).append( " vs expected " ).append( getConcepts().size() );
+            throw new IllegalStateException( sb.toString() );
         }
     }
 
