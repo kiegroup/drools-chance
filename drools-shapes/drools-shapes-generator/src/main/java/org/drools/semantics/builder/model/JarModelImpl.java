@@ -64,7 +64,7 @@ public class JarModelImpl extends JavaInterfaceModelImpl implements JarModel {
 //                System.out.println("Adding " + name);
 
                 // Add archive entry
-                JarEntry jarAdd = new JarEntry( getDefaultPackage().replace(".","/") + "/" + name + ".java" );
+                JarEntry jarAdd = new JarEntry( name.replace(".","/") + ".java" );
                 jarAdd.setTime( now.getTime() );
                 out.putNextEntry(jarAdd);
 
@@ -74,7 +74,7 @@ public class JarModelImpl extends JavaInterfaceModelImpl implements JarModel {
 
 
                 // Add archive entry
-                jarAdd = new JarEntry( getDefaultPackage().replace(".","/") + "/" + name + ".class" );
+                jarAdd = new JarEntry( name.replace(".","/") + ".class" );
                 jarAdd.setTime( now.getTime() );
                 out.putNextEntry(jarAdd);
 
