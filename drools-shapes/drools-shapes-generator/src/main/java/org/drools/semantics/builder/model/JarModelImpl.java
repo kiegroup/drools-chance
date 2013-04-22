@@ -62,9 +62,11 @@ public class JarModelImpl extends JavaInterfaceModelImpl implements JarModel {
             for ( String name : getTraitNames() ) {
 
 //                System.out.println("Adding " + name);
-
+                
+                String className = name.substring(name.lastIndexOf(".")+1);
+                
                 // Add archive entry
-                JarEntry jarAdd = new JarEntry( getDefaultPackage().replace(".","/") + "/" + name + ".java" );
+                JarEntry jarAdd = new JarEntry( getDefaultPackage().replace(".","/") + "/" + className + ".java" );
                 jarAdd.setTime( now.getTime() );
                 out.putNextEntry(jarAdd);
 
@@ -74,7 +76,7 @@ public class JarModelImpl extends JavaInterfaceModelImpl implements JarModel {
 
 
                 // Add archive entry
-                jarAdd = new JarEntry( getDefaultPackage().replace(".","/") + "/" + name + ".class" );
+                jarAdd = new JarEntry( getDefaultPackage().replace(".","/") + "/" + className + ".class" );
                 jarAdd.setTime( now.getTime() );
                 out.putNextEntry(jarAdd);
 
