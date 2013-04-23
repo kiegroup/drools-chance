@@ -653,9 +653,22 @@ public class DL_8_ModelTest {
     public void testHardwareOntology() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/hardware.owl" );
         OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
-        assertNotNull( results );
 
+        checkConceptEncoding( results );
+
+        assertNotNull( results );
     }
+
+    @Test
+    public void testPizzaOntology() {
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/pizza.owl" );
+        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
+
+        checkConceptEncoding( results );
+
+        assertNotNull( results );
+    }
+
 
 
     @Test
@@ -690,9 +703,34 @@ public class DL_8_ModelTest {
     public void testKMR2Ontology() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/kmr2/KMR_Ontology2.ttl" );
         OntoModel results = factory.buildModel( "kmr2", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
-        assertNotNull( results );
+        assertNotNull(results);
+
+        checkConceptEncoding(results);
+    }
+
+
+
+    @Test
+    public void testAnonymousClassIndividual() {
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/anonClassIndividual.owl" );
+        OntoModel results = factory.buildModel( "kmr2", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
+        assertNotNull(results);
 
         checkConceptEncoding( results );
+
+        Concept joeRestriction = results.getConcept( "<http://owl.man.ac.uk/2005/07/sssw/people#JoeRestrictedType4>" );
+        Concept joeType = results.getConcept( "<http://owl.man.ac.uk/2005/07/sssw/people#JoeType>" );
+
+        assertNotNull( joeRestriction );
+        assertNotNull( joeType );
+
+        assertEquals( 0, joeRestriction.getProperties().size() );
+        assertEquals( 1, joeType.getProperties().size() );
+
+        PropertyRelation petRestr = joeType.getProperties().get( "<http://owl.man.ac.uk/2005/07/sssw/people#has_petAnimal>" );
+        assertNotNull( petRestr );
+        assertTrue( petRestr.isRestricted() );
+
     }
 
 

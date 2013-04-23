@@ -117,6 +117,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     public int maxCounter = 0;
 
     private Map<OWLClassExpression,OWLClassExpression> aliases;
+    private Map<OWLClassExpression,Set<OWLClassExpression>> reverseAliases = new HashMap<OWLClassExpression, Set<OWLClassExpression>>();
     private Map<OWLClassExpression,OWLClass> anonNameAliases = new HashMap<OWLClassExpression, OWLClass>();
 
     private Map<String, Concept> conceptCache = new LinkedHashMap<String, Concept>();
@@ -339,10 +340,17 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLClassExpression delegate = aliases.get( klass );
                 supers.get( delegate.asOWLClass().getIRI().toQuotedString() ).addAll( klass.getSuperClasses( ontoDescr ) );
             } else {
-                supers.get( klass.asOWLClass().getIRI().toQuotedString() ).addAll( klass.getSuperClasses( ontoDescr ) );
+                Set<OWLClassExpression> sup = supers.get( klass.asOWLClass().getIRI().toQuotedString() );
+                Set<OWLClassExpression> ancestors = klass.getSuperClasses( ontoDescr );
+                sup.addAll(ancestors);
+                for ( OWLClassExpression anc : ancestors ) {
+                    if ( reverseAliases.containsKey( anc ) ) {
+                        sup.addAll( reverseAliases.get( anc ) );
+                    }
+                }
             }
-
         }
+
 
         for ( Concept con : hierarchicalModel.getConcepts() ) {      //use concepts as they're sorted!
 
@@ -924,6 +932,15 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             logger.info("-----------------------------------------------------------------------");
         }
 
+
+        for ( Map.Entry<OWLClassExpression,OWLClassExpression> entry : aliases.entrySet() ) {
+            OWLClassExpression key = entry.getKey();
+            OWLClassExpression val = entry.getValue();
+            if ( ! reverseAliases.containsKey( val ) ) {
+                reverseAliases.put( val, new HashSet<OWLClassExpression>() );
+            }
+            reverseAliases.get( val ).add( key );
+        }
         return aliases;
     }
 
@@ -1185,7 +1202,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLClass temp = factory.getOWLClass( IRI.create( ind.getIRI().getStart() + NameUtils.compactUpperCase( ind.getIRI().getFragment() ) + "RestrictedType" + j ) );
                 ontoDescr.getOWLOntologyManager().applyChange( new RemoveAxiom( ontoDescr, factory.getOWLClassAssertionAxiom( type, ind ) ) );
                 ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLDeclarationAxiom( temp ) ) );
-                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLSubClassOfAxiom( temp, type ) ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLEquivalentClassesAxiom(temp, type) ) );
                 ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLClassAssertionAxiom( temp, ind ) ) );
             }
         }
@@ -1987,6 +2004,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 InferenceType.OBJECT_PROPERTY_HIERARCHY
         );
 
+
+        if ( ! owler.isConsistent() ) {
+            throw new RuntimeException( "Inconsistent ontology " );
+        }
 
         return new InferredOntologyGenerator( owler, axiomGenerators );
 
