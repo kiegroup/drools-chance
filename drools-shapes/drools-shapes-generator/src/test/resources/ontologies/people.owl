@@ -1,0 +1,1424 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY people "http://owl.man.ac.uk/2005/07/sssw/people#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#"
+     xml:base="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:people="http://owl.man.ac.uk/2005/07/sssw/people#">
+    <owl:Ontology rdf:about="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#comment -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;label"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#drives -->
+
+    <owl:ObjectProperty rdf:about="&people;drives">
+        <rdfs:label rdf:datatype="&xsd;string">drives</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#eaten_by -->
+
+    <owl:ObjectProperty rdf:about="&people;eaten_by">
+        <rdfs:label rdf:datatype="&xsd;string">eaten_by</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <owl:inverseOf rdf:resource="&people;eats"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#eats -->
+
+    <owl:ObjectProperty rdf:about="&people;eats">
+        <rdfs:label rdf:datatype="&xsd;string">eats</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <rdfs:domain rdf:resource="&people;animal"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#has_child -->
+
+    <owl:ObjectProperty rdf:about="&people;has_child">
+        <rdfs:label rdf:datatype="&xsd;string">has_child</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#has_father -->
+
+    <owl:ObjectProperty rdf:about="&people;has_father">
+        <rdfs:label rdf:datatype="&xsd;string">has_father</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&people;has_parent"/>
+        <rdfs:range rdf:resource="&people;man"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#has_mother -->
+
+    <owl:ObjectProperty rdf:about="&people;has_mother">
+        <rdfs:label rdf:datatype="&xsd;string">has_mother</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&people;has_parent"/>
+        <rdfs:range rdf:resource="&people;woman"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#has_parent -->
+
+    <owl:ObjectProperty rdf:about="&people;has_parent">
+        <rdfs:label rdf:datatype="&xsd;string">has_parent</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#has_part -->
+
+    <owl:ObjectProperty rdf:about="&people;has_part">
+        <rdfs:label rdf:datatype="&xsd;string">has_part</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <owl:inverseOf rdf:resource="&people;part_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#has_pet -->
+
+    <owl:ObjectProperty rdf:about="&people;has_pet">
+        <rdfs:label rdf:datatype="&xsd;string">has_pet</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">Anyone that has a pet must like that pet.</rdfs:comment>
+        <rdfs:range rdf:resource="&people;animal"/>
+        <owl:inverseOf rdf:resource="&people;is_pet_of"/>
+        <rdfs:subPropertyOf rdf:resource="&people;likes"/>
+        <rdfs:domain rdf:resource="&people;person"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#is_pet_of -->
+
+    <owl:ObjectProperty rdf:about="&people;is_pet_of">
+        <rdfs:label rdf:datatype="&xsd;string">is_pet_of</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#likes -->
+
+    <owl:ObjectProperty rdf:about="&people;likes">
+        <rdfs:label rdf:datatype="&xsd;string">likes</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#part_of -->
+
+    <owl:ObjectProperty rdf:about="&people;part_of">
+        <rdfs:label rdf:datatype="&xsd;string">part_of</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#reads -->
+
+    <owl:ObjectProperty rdf:about="&people;reads">
+        <rdfs:label rdf:datatype="&xsd;string">reads</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <rdfs:range rdf:resource="&people;publication"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#works_for -->
+
+    <owl:ObjectProperty rdf:about="&people;works_for">
+        <rdfs:label rdf:datatype="&xsd;string">works_for</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#foo1 -->
+
+    <owl:Class rdf:about="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#foo1">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;has_pet"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#foo2 -->
+
+    <owl:Class rdf:about="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#foo2">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:complementOf rdf:resource="&people;animal"/>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#adult -->
+
+    <owl:Class rdf:about="&people;adult">
+        <rdfs:label rdf:datatype="&xsd;string">adult</rdfs:label>
+        <owl:disjointWith rdf:resource="&people;young"/>
+        <rdfs:comment rdf:datatype="&xsd;string">Things that are adult.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#animal -->
+
+    <owl:Class rdf:about="&people;animal">
+        <rdfs:label rdf:datatype="&xsd;string">animal</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;eats"/>
+                <owl:someValuesFrom rdf:resource="&owl;Thing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#animal_lover -->
+
+    <owl:Class rdf:about="&people;animal_lover">
+        <rdfs:label rdf:datatype="&xsd;string">animal lover</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;has_pet"/>
+                        <owl:minCardinality rdf:datatype="&xsd;nonNegativeInteger">3</owl:minCardinality>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string">Someone who really likes animals</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#bicycle -->
+
+    <owl:Class rdf:about="&people;bicycle">
+        <rdfs:label rdf:datatype="&xsd;string">bicycle</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;vehicle"/>
+        <rdfs:comment rdf:datatype="&xsd;string">A human propelled vehicle, with two wheels</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#bone -->
+
+    <owl:Class rdf:about="&people;bone">
+        <rdfs:label rdf:datatype="&xsd;string">bone</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#brain -->
+
+    <owl:Class rdf:about="&people;brain">
+        <rdfs:label rdf:datatype="&xsd;string">brain</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#broadsheet -->
+
+    <owl:Class rdf:about="&people;broadsheet">
+        <rdfs:label rdf:datatype="&xsd;string">broadsheet</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;newspaper"/>
+        <owl:disjointWith rdf:resource="&people;tabloid"/>
+        <rdfs:comment rdf:datatype="&xsd;string">A newspaper. Broadsheets are usually considered to be more &quot;high-brow&quot; than tabloids.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#bus -->
+
+    <owl:Class rdf:about="&people;bus">
+        <rdfs:label rdf:datatype="&xsd;string">bus</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;vehicle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#bus_company -->
+
+    <owl:Class rdf:about="&people;bus_company">
+        <rdfs:label rdf:datatype="&xsd;string">bus company</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;company"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#bus_driver -->
+
+    <owl:Class rdf:about="&people;bus_driver">
+        <rdfs:label rdf:datatype="&xsd;string">bus driver</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;drives"/>
+                        <owl:someValuesFrom rdf:resource="&people;bus"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string">Someone who drives a bus.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#car -->
+
+    <owl:Class rdf:about="&people;car">
+        <rdfs:label rdf:datatype="&xsd;string">car</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;vehicle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#cat -->
+
+    <owl:Class rdf:about="&people;cat">
+        <rdfs:label rdf:datatype="&xsd;string">cat</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;animal"/>
+        <owl:disjointWith rdf:resource="&people;dog"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#cat_liker -->
+
+    <owl:Class rdf:about="&people;cat_liker">
+        <rdfs:label rdf:datatype="&xsd;string">cat liker</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;likes"/>
+                        <owl:someValuesFrom rdf:resource="&people;cat"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#cat_owner -->
+
+    <owl:Class rdf:about="&people;cat_owner">
+        <rdfs:label rdf:datatype="&xsd;string">cat owner</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;has_pet"/>
+                        <owl:someValuesFrom rdf:resource="&people;cat"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#company -->
+
+    <owl:Class rdf:about="&people;company">
+        <rdfs:label rdf:datatype="&xsd;string">company</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#cow -->
+
+    <owl:Class rdf:about="&people;cow">
+        <rdfs:label rdf:datatype="&xsd;string">cow</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;animal"/>
+        <rdfs:comment rdf:datatype="&xsd;string">Cows are naturally vegetarians.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#dog -->
+
+    <owl:Class rdf:about="&people;dog">
+        <rdfs:label rdf:datatype="&xsd;string">dog</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;eats"/>
+                <owl:someValuesFrom rdf:resource="&people;bone"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#dog_liker -->
+
+    <owl:Class rdf:about="&people;dog_liker">
+        <rdfs:label rdf:datatype="&xsd;string">dog liker</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;likes"/>
+                        <owl:someValuesFrom rdf:resource="&people;dog"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#dog_owner -->
+
+    <owl:Class rdf:about="&people;dog_owner">
+        <rdfs:label rdf:datatype="&xsd;string">dog owner</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;has_pet"/>
+                        <owl:someValuesFrom rdf:resource="&people;dog"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#driver -->
+
+    <owl:Class rdf:about="&people;driver">
+        <rdfs:label rdf:datatype="&xsd;string">driver</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;drives"/>
+                        <owl:someValuesFrom rdf:resource="&people;vehicle"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&people;adult"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#duck -->
+
+    <owl:Class rdf:about="&people;duck">
+        <rdfs:label rdf:datatype="&xsd;string">duck</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;animal"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#elderly -->
+
+    <owl:Class rdf:about="&people;elderly">
+        <rdfs:label rdf:datatype="&xsd;string">elderly</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;adult"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#female -->
+
+    <owl:Class rdf:about="&people;female">
+        <rdfs:label rdf:datatype="&xsd;string">female</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#giraffe -->
+
+    <owl:Class rdf:about="&people;giraffe">
+        <rdfs:label rdf:datatype="&xsd;string">giraffe</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;eats"/>
+                <owl:allValuesFrom rdf:resource="&people;leaf"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#grass -->
+
+    <owl:Class rdf:about="&people;grass">
+        <rdfs:label rdf:datatype="&xsd;string">grass</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;plant"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#grownup -->
+
+    <owl:Class rdf:about="&people;grownup">
+        <rdfs:label rdf:datatype="&xsd;string">grownup</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;adult"/>
+                    <rdf:Description rdf:about="&people;person"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#haulage_company -->
+
+    <owl:Class rdf:about="&people;haulage_company">
+        <rdfs:label rdf:datatype="&xsd;string">haulage company</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;company"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#haulage_truck_driver -->
+
+    <owl:Class rdf:about="&people;haulage_truck_driver">
+        <rdfs:label rdf:datatype="&xsd;string">haulage truck driver</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;drives"/>
+                        <owl:someValuesFrom rdf:resource="&people;truck"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;works_for"/>
+                        <owl:someValuesFrom>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="&people;part_of"/>
+                                <owl:someValuesFrom rdf:resource="&people;haulage_company"/>
+                            </owl:Restriction>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#haulage_worker -->
+
+    <owl:Class rdf:about="&people;haulage_worker">
+        <rdfs:label rdf:datatype="&xsd;string">haulage worker</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;works_for"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="&people;haulage_company"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="&people;part_of"/>
+                                <owl:someValuesFrom rdf:resource="&people;haulage_company"/>
+                            </owl:Restriction>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#kid -->
+
+    <owl:Class rdf:about="&people;kid">
+        <rdfs:label rdf:datatype="&xsd;string">kid</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <rdf:Description rdf:about="&people;young"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#leaf -->
+
+    <owl:Class rdf:about="&people;leaf">
+        <rdfs:label rdf:datatype="&xsd;string">leaf</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;part_of"/>
+                <owl:someValuesFrom rdf:resource="&people;tree"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#lorry -->
+
+    <owl:Class rdf:about="&people;lorry">
+        <rdfs:label rdf:datatype="&xsd;string">lorry</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;vehicle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#lorry_driver -->
+
+    <owl:Class rdf:about="&people;lorry_driver">
+        <rdfs:label rdf:datatype="&xsd;string">lorry driver</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;drives"/>
+                        <owl:someValuesFrom rdf:resource="&people;lorry"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#mad_cow -->
+
+    <owl:Class rdf:about="&people;mad_cow">
+        <rdfs:label rdf:datatype="&xsd;string">mad cow</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;cow"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;eats"/>
+                        <owl:someValuesFrom>
+                            <owl:Class>
+                                <owl:intersectionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="&people;brain"/>
+                                    <owl:Restriction>
+                                        <owl:onProperty rdf:resource="&people;part_of"/>
+                                        <owl:someValuesFrom rdf:resource="&people;sheep"/>
+                                    </owl:Restriction>
+                                </owl:intersectionOf>
+                            </owl:Class>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string">A mad cow is a cow that has been eating the brains of sheep.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#magazine -->
+
+    <owl:Class rdf:about="&people;magazine">
+        <rdfs:label rdf:datatype="&xsd;string">magazine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;publication"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#male -->
+
+    <owl:Class rdf:about="&people;male">
+        <rdfs:label rdf:datatype="&xsd;string">male</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">The class of all male things.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#man -->
+
+    <owl:Class rdf:about="&people;man">
+        <rdfs:label rdf:datatype="&xsd;string">man</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;adult"/>
+                    <rdf:Description rdf:about="&people;male"/>
+                    <rdf:Description rdf:about="&people;person"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#newspaper -->
+
+    <owl:Class rdf:about="&people;newspaper">
+        <rdfs:label rdf:datatype="&xsd;string">newspaper</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;publication"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;broadsheet"/>
+                    <rdf:Description rdf:about="&people;tabloid"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string">All newspapers are either broadsheets or tabloids.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#old_lady -->
+
+    <owl:Class rdf:about="&people;old_lady">
+        <rdfs:label rdf:datatype="&xsd;string">old lady</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;elderly"/>
+                    <rdf:Description rdf:about="&people;female"/>
+                    <rdf:Description rdf:about="&people;person"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;has_pet"/>
+                        <owl:someValuesFrom rdf:resource="&people;animal"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;has_pet"/>
+                        <owl:allValuesFrom rdf:resource="&people;cat"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#person -->
+
+    <owl:Class rdf:about="&people;person">
+        <rdfs:label rdf:datatype="&xsd;string">person</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;animal"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#pet -->
+
+    <owl:Class rdf:about="&people;pet">
+        <rdfs:label rdf:datatype="&xsd;string">pet</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;is_pet_of"/>
+                <owl:someValuesFrom rdf:resource="&owl;Thing"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#pet_owner -->
+
+    <owl:Class rdf:about="&people;pet_owner">
+        <rdfs:label rdf:datatype="&xsd;string">pet owner</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;has_pet"/>
+                        <owl:someValuesFrom rdf:resource="&people;animal"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#plant -->
+
+    <owl:Class rdf:about="&people;plant">
+        <rdfs:label rdf:datatype="&xsd;string">plant</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#publication -->
+
+    <owl:Class rdf:about="&people;publication">
+        <rdfs:label rdf:datatype="&xsd;string">publication</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#quality_broadsheet -->
+
+    <owl:Class rdf:about="&people;quality_broadsheet">
+        <rdfs:label rdf:datatype="&xsd;string">quality broadsheet</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;broadsheet"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#red_top -->
+
+    <owl:Class rdf:about="&people;red_top">
+        <rdfs:label rdf:datatype="&xsd;string">red top</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;tabloid"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#sheep -->
+
+    <owl:Class rdf:about="&people;sheep">
+        <rdfs:label rdf:datatype="&xsd;string">sheep</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;eats"/>
+                <owl:allValuesFrom rdf:resource="&people;grass"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#tabloid -->
+
+    <owl:Class rdf:about="&people;tabloid">
+        <rdfs:label rdf:datatype="&xsd;string">tabloid</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;newspaper"/>
+        <rdfs:comment rdf:datatype="&xsd;string">A newspaper. Tabloids are usually thought of as more &quot;down-market&quot; than broadsheets.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#tiger -->
+
+    <owl:Class rdf:about="&people;tiger">
+        <rdfs:label rdf:datatype="&xsd;string">tiger</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;animal"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#tree -->
+
+    <owl:Class rdf:about="&people;tree">
+        <rdfs:label rdf:datatype="&xsd;string">tree</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;plant"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#truck -->
+
+    <owl:Class rdf:about="&people;truck">
+        <rdfs:label rdf:datatype="&xsd;string">truck</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;vehicle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#van -->
+
+    <owl:Class rdf:about="&people;van">
+        <rdfs:label rdf:datatype="&xsd;string">van</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;vehicle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#van_driver -->
+
+    <owl:Class rdf:about="&people;van_driver">
+        <rdfs:label rdf:datatype="&xsd;string">van driver</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;person"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;drives"/>
+                        <owl:someValuesFrom rdf:resource="&people;van"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#vegetarian -->
+
+    <owl:Class rdf:about="&people;vegetarian">
+        <rdfs:label rdf:datatype="&xsd;string">vegetarian</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;animal"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;eats"/>
+                        <owl:allValuesFrom>
+                            <owl:Class>
+                                <owl:complementOf rdf:resource="&people;animal"/>
+                            </owl:Class>
+                        </owl:allValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;eats"/>
+                        <owl:allValuesFrom>
+                            <owl:Class>
+                                <owl:complementOf>
+                                    <owl:Restriction>
+                                        <owl:onProperty rdf:resource="&people;part_of"/>
+                                        <owl:someValuesFrom rdf:resource="&people;animal"/>
+                                    </owl:Restriction>
+                                </owl:complementOf>
+                            </owl:Class>
+                        </owl:allValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string">A vegetarian is defined as an animal that eats no other animals, or parts of animals.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#vehicle -->
+
+    <owl:Class rdf:about="&people;vehicle">
+        <rdfs:label rdf:datatype="&xsd;string">vehicle</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#white_thing -->
+
+    <owl:Class rdf:about="&people;white_thing">
+        <rdfs:label rdf:datatype="&xsd;string">white thing</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#white_van_man -->
+
+    <owl:Class rdf:about="&people;white_van_man">
+        <rdfs:label rdf:datatype="&xsd;string">white van man</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;man"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;drives"/>
+                        <owl:someValuesFrom>
+                            <owl:Class>
+                                <owl:intersectionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="&people;van"/>
+                                    <rdf:Description rdf:about="&people;white_thing"/>
+                                </owl:intersectionOf>
+                            </owl:Class>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;reads"/>
+                <owl:allValuesFrom rdf:resource="&people;tabloid"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string">A white van man is a man who drives a white van.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#woman -->
+
+    <owl:Class rdf:about="&people;woman">
+        <rdfs:label rdf:datatype="&xsd;string">woman</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;adult"/>
+                    <rdf:Description rdf:about="&people;female"/>
+                    <rdf:Description rdf:about="&people;person"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#young -->
+
+    <owl:Class rdf:about="&people;young">
+        <rdfs:label rdf:datatype="&xsd;string">young</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Daily_Mirror -->
+
+    <owl:Thing rdf:about="&people;Daily_Mirror">
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdfs:label rdf:datatype="&xsd;string">Daily Mirror</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">The paper read by Mick (a white van man).</rdfs:comment>
+    </owl:Thing>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Dewey -->
+
+    <owl:NamedIndividual rdf:about="&people;Dewey">
+        <rdf:type rdf:resource="&people;duck"/>
+        <rdfs:label rdf:datatype="&xsd;string">Dewey</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Fido -->
+
+    <owl:NamedIndividual rdf:about="&people;Fido">
+        <rdf:type rdf:resource="&people;dog"/>
+        <rdfs:label rdf:datatype="&xsd;string">Fido</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Flossie -->
+
+    <owl:NamedIndividual rdf:about="&people;Flossie">
+        <rdf:type rdf:resource="&people;cow"/>
+        <rdfs:label rdf:datatype="&xsd;string">Flossie</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Fluffy -->
+
+    <owl:NamedIndividual rdf:about="&people;Fluffy">
+        <rdf:type rdf:resource="&people;tiger"/>
+        <rdfs:label rdf:datatype="&xsd;string">Fluffy</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Fred -->
+
+    <owl:NamedIndividual rdf:about="&people;Fred">
+        <rdf:type rdf:resource="&people;person"/>
+        <rdfs:label rdf:datatype="&xsd;string">Fred</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <people:has_pet rdf:resource="&people;Tibbs"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Huey -->
+
+    <owl:NamedIndividual rdf:about="&people;Huey">
+        <rdf:type rdf:resource="&people;duck"/>
+        <rdfs:label rdf:datatype="&xsd;string">Huey</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Joe -->
+
+    <owl:NamedIndividual rdf:about="&people;Joe">
+        <rdf:type rdf:resource="&people;person"/>
+        <rdf:type>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;has_pet"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdf:type>
+        <rdfs:label rdf:datatype="&xsd;string">Joe</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <people:has_pet rdf:resource="&people;Fido"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Kevin -->
+
+    <owl:NamedIndividual rdf:about="&people;Kevin">
+        <rdf:type rdf:resource="&people;person"/>
+        <rdfs:label rdf:datatype="&xsd;string">Kevin</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <people:has_pet rdf:resource="&people;Flossie"/>
+        <people:has_pet rdf:resource="&people;Fluffy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Louie -->
+
+    <owl:NamedIndividual rdf:about="&people;Louie">
+        <rdf:type rdf:resource="&people;duck"/>
+        <rdfs:label rdf:datatype="&xsd;string">Louie</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Mick -->
+
+    <owl:NamedIndividual rdf:about="&people;Mick">
+        <rdf:type rdf:resource="&people;male"/>
+        <rdfs:label rdf:datatype="&xsd;string">Mick</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">Mick is male and drives a white van. Due to the axiom concerning drivers, we know that Mick must be a man, and is therefore a white van man. The axiom about the reading material of a white van man then allows us to infer things about the Daily Mirror.</rdfs:comment>
+        <people:reads rdf:resource="&people;Daily_Mirror"/>
+        <people:drives rdf:resource="&people;Q123_ABC"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Minnie -->
+
+    <owl:NamedIndividual rdf:about="&people;Minnie">
+        <rdf:type rdf:resource="&people;elderly"/>
+        <rdf:type rdf:resource="&people;female"/>
+        <rdfs:label rdf:datatype="&xsd;string">Minnie</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <people:has_pet rdf:resource="&people;Tom"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Pete -->
+
+    <owl:Thing rdf:about="&people;Pete">
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdfs:label rdf:datatype="&xsd;string">Pete</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Thing>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Q123_ABC -->
+
+    <owl:NamedIndividual rdf:about="&people;Q123_ABC">
+        <rdf:type rdf:resource="&people;van"/>
+        <rdf:type rdf:resource="&people;white_thing"/>
+        <rdfs:label rdf:datatype="&xsd;string">Q123 ABC</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">A white van</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Rex -->
+
+    <owl:NamedIndividual rdf:about="&people;Rex">
+        <rdf:type rdf:resource="&people;dog"/>
+        <rdfs:label rdf:datatype="&xsd;string">Rex</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <people:is_pet_of rdf:resource="&people;Mick"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Spike -->
+
+    <owl:Thing rdf:about="&people;Spike">
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdfs:label rdf:datatype="&xsd;string">Spike</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <people:is_pet_of rdf:resource="&people;Pete"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#The_Guardian -->
+
+    <owl:NamedIndividual rdf:about="&people;The_Guardian">
+        <rdf:type rdf:resource="&people;broadsheet"/>
+        <rdfs:label rdf:datatype="&xsd;string">The Guardian</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#The_Sun -->
+
+    <owl:NamedIndividual rdf:about="&people;The_Sun">
+        <rdf:type rdf:resource="&people;tabloid"/>
+        <rdfs:label rdf:datatype="&xsd;string">The Sun</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#The_Times -->
+
+    <owl:NamedIndividual rdf:about="&people;The_Times">
+        <rdf:type rdf:resource="&people;broadsheet"/>
+        <rdfs:label rdf:datatype="&xsd;string">The Times</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Tibbs -->
+
+    <owl:NamedIndividual rdf:about="&people;Tibbs">
+        <rdf:type rdf:resource="&people;cat"/>
+        <rdfs:label rdf:datatype="&xsd;string">Tibbs</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Tom -->
+
+    <owl:Thing rdf:about="&people;Tom">
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdfs:label rdf:datatype="&xsd;string">Tom</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Thing>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Walt -->
+
+    <owl:NamedIndividual rdf:about="&people;Walt">
+        <rdf:type rdf:resource="&people;person"/>
+        <rdfs:label rdf:datatype="&xsd;string">Walt</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <people:has_pet rdf:resource="&people;Dewey"/>
+        <people:has_pet rdf:resource="&people;Huey"/>
+        <people:has_pet rdf:resource="&people;Louie"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:Class>
+        <owl:disjointWith>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;plant"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;part_of"/>
+                        <owl:someValuesFrom rdf:resource="&people;plant"/>
+                    </owl:Restriction>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:disjointWith>
+        <owl:unionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="&people;animal"/>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;part_of"/>
+                <owl:someValuesFrom rdf:resource="&people;animal"/>
+            </owl:Restriction>
+        </owl:unionOf>
+    </owl:Class>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="&people;Dewey"/>
+            <rdf:Description rdf:about="&people;Fido"/>
+            <rdf:Description rdf:about="&people;Flossie"/>
+            <rdf:Description rdf:about="&people;Fluffy"/>
+            <rdf:Description rdf:about="&people;Fred"/>
+            <rdf:Description rdf:about="&people;Huey"/>
+            <rdf:Description rdf:about="&people;Joe"/>
+            <rdf:Description rdf:about="&people;Kevin"/>
+            <rdf:Description rdf:about="&people;Louie"/>
+            <rdf:Description rdf:about="&people;Mick"/>
+            <rdf:Description rdf:about="&people;Minnie"/>
+            <rdf:Description rdf:about="&people;Q123_ABC"/>
+            <rdf:Description rdf:about="&people;Rex"/>
+            <rdf:Description rdf:about="&people;The_Guardian"/>
+            <rdf:Description rdf:about="&people;The_Sun"/>
+            <rdf:Description rdf:about="&people;The_Times"/>
+            <rdf:Description rdf:about="&people;Tibbs"/>
+            <rdf:Description rdf:about="&people;Walt"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+

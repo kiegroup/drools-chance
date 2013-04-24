@@ -64,6 +64,7 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectHasSelf;
@@ -345,7 +346,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 sup.addAll(ancestors);
                 for ( OWLClassExpression anc : ancestors ) {
                     if ( reverseAliases.containsKey( anc ) ) {
-                        sup.addAll( reverseAliases.get( anc ) );
+                        sup.addAll(reverseAliases.get(anc));
                     }
                 }
             }
@@ -517,6 +518,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 for ( OWLClassExpression arg : and.asConjunctSet() ) {
                     processSuperClass( arg, con, hierarchicalModel, factory );
                 }
+                break;
+            case OWL_CLASS:
+                break;
             default:
                 logger.warn( " Cannot handle " + sup );
         }
@@ -536,6 +540,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         if ( target == null ) {
             logger.warn( "Null target for property " + propIri );
         }
+
+
 
         String restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
         String restrictedPropIri = propIri.replace( ">", restrictedSuffix + ">" );
@@ -593,7 +599,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             boolean dirty = false;
             if ( target.getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" )
-                    || target.getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>")
+                    || target.getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>" )
+                    || target.getEquivalentConcepts().contains( conceptCache.get( "<http://www.w3.org/2002/07/owl#Thing>" ) )
                     ) {
                 target = rel.getTarget();
                 restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
@@ -847,7 +854,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLClassExpression secnd = pair.get( 1 );
                 OWLClassExpression removed = null;
 
-                if ( aliases.containsValue( first ) ) {
+                if ( aliases.containsValue(first) ) {
                     // add to existing eqSet, put reversed
                     // A->X,  add X->C          ==> A->X, C->X
                     removed = aliases.put( secnd, first );
@@ -857,7 +864,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
                     stable = false;
                     temp.remove( eq2 );
-                } else if ( aliases.containsValue( secnd ) ) {
+                } else if ( aliases.containsValue(secnd) ) {
                     // add to existing eqSet, put as is
                     // A->X,  add C->X          ==> A->X, C->X
                     removed = aliases.put( first, secnd );
@@ -867,7 +874,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
                     stable = false;
                     temp.remove( eq2 );
-                } else if ( aliases.containsKey( first ) ) {
+                } else if ( aliases.containsKey(first) ) {
                     // apply transitivity, reversed
                     // A->X,  add A->C          ==> A->X, C->X
                     removed = aliases.put( secnd, aliases.get( first ) );
@@ -877,7 +884,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
                     stable = false;
                     temp.remove( eq2 );
-                } else if ( aliases.containsKey( secnd ) ) {
+                } else if ( aliases.containsKey(secnd) ) {
                     // apply transitivity, as is
                     // A->X,  add C->A          ==> A->X, C->X
                     removed = aliases.put( first, aliases.get( secnd ) );
@@ -1227,6 +1234,20 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         return ans;
     }
 
+    private boolean isSuperClass( OWLOntology ontoDescr, Set<OWLClassExpression> supers, OWLClassExpression klass2 ) {
+        Set<OWLSubClassOfAxiom> subKlassOfs = ontoDescr.getSubClassAxiomsForSubClass( klass2.asOWLClass() );
+        for ( OWLSubClassOfAxiom sub : subKlassOfs ) {
+            if ( supers.contains( sub.getSuperClass() ) ) {
+                return true;
+            } else {
+                if ( ! sub.getSuperClass().isAnonymous() && isSuperClass( ontoDescr, supers, sub.getSuperClass() ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean isSuperClass( OWLOntology ontoDescr, OWLClassExpression klass1, OWLClassExpression klass2 ) {
         Set<OWLSubClassOfAxiom> subKlassOfs = ontoDescr.getSubClassAxiomsForSuperClass( klass1.asOWLClass() );
         for ( OWLSubClassOfAxiom sub : subKlassOfs ) {
@@ -1242,25 +1263,27 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
 
-    private void processQuantifiedRestrictions( OWLOntology ontoDescr, OWLDataFactory factory ) {
+    private boolean processQuantifiedRestrictions( OWLOntology ontoDescr, OWLDataFactory factory ) {
+        boolean dirty = false;
         // infer domain / range from quantified restrictions...
         for ( OWLClass klassAx : ontoDescr.getClassesInSignature() ) {
             OWLClass klass = klassAx;
 
             for ( OWLClassExpression clax : klass.getSuperClasses( ontoDescr ) ) {
                 clax = clax.getNNF();
-                processQuantifiedRestrictionsInClass( klass, clax, ontoDescr, factory );
+                dirty |= processQuantifiedRestrictionsInClass( klass, clax, ontoDescr, factory );
             }
 
             for ( OWLClassExpression clax : klass.getEquivalentClasses( ontoDescr ) ) {
                 clax = clax.getNNF();
-                processQuantifiedRestrictionsInClass( klass, clax, ontoDescr, factory );
+                dirty |= processQuantifiedRestrictionsInClass( klass, clax, ontoDescr, factory );
             }
         }
-
+        return dirty;
     }
 
-    private void processQuantifiedRestrictionsInClass(OWLClass klass, OWLClassExpression clax, OWLOntology ontology, OWLDataFactory fac) {
+    private boolean processQuantifiedRestrictionsInClass(OWLClass klass, OWLClassExpression clax, OWLOntology ontology, OWLDataFactory fac) {
+        final boolean[] dirty = { false };
         final OWLClass inKlass = klass;
         final OWLDataFactory factory = fac;
         final OWLOntology ontoDescr = ontology;
@@ -1278,41 +1301,31 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         process( clax );
                     }
                 } else if ( expr instanceof OWLQuantifiedObjectRestriction  ) {
-
                     OWLQuantifiedObjectRestriction rest = (OWLQuantifiedObjectRestriction) expr;
+//
                     OWLObjectProperty prop = rest.getProperty().asOWLObjectProperty();
                     OWLClassExpression fil = rest.getFiller();
-                    if ( fil.isAnonymous() ) {
-                        if ( logger.isDebugEnabled() ) { logger.debug("INFO :MARKED ANON FILLER OF" + rest); }
-                        OWLClass filler = fillerCache.get( fil );
 
-                        if ( filler == null ) {
-                            String fillerName =
-                                    NameUtils.separatingName( ontoDescr.getOntologyID().getOntologyIRI().toString() ) +
-                                            NameUtils.capitalize( inKlass.getIRI().getFragment() ) +
-                                            NameUtils.capitalize( prop.getIRI().getFragment() ) +
-                                            "Filler" +
-                                            (counter++);
-                            filler = factory.getOWLClass( IRI.create( fillerName ) );
-                            // On a second thought, fillers could stay real...
-//                            OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
-//                                    filler.getIRI(),
-//                                    factory.getOWLStringLiteral("abstract") );
-//                            ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, ann ) );
-
-                            fillerCache.put( fil, filler );
-                        } else {
-                            if ( logger.isDebugEnabled() )  { logger.debug("REUSED FILLER FOR" + fil); }
-                        }
-
-                        ontoDescr.getOWLOntologyManager().applyChange(new AddAxiom(ontoDescr, factory.getOWLDeclarationAxiom(filler)));
-                        ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLEquivalentClassesAxiom( filler, fil ) ) );
-
+                    boolean inDomain = checkIsPropertyInDomain( prop, inKlass, expr, ontoDescr );
+                    if ( ! inDomain ) {
+                        rewirePropertyDomain( prop, expr, ontoDescr );
                     }
+                    reifyFiller( prop, fil );
 
                     process( fil );
+                } else if ( expr instanceof OWLObjectCardinalityRestriction ) {
+                    OWLObjectCardinalityRestriction rest = (OWLObjectCardinalityRestriction) expr;
+//
+                    OWLObjectProperty prop = rest.getProperty().asOWLObjectProperty();
+                    OWLClassExpression fil = rest.getFiller();
 
+                    boolean inDomain = checkIsPropertyInDomain( prop, inKlass, expr, ontoDescr );
+                    if ( ! inDomain ) {
+                        rewirePropertyDomain( prop, expr, ontoDescr );
+                    }
+                    reifyFiller( prop, fil );
 
+                    process( fil );
                 } else if (  expr instanceof  OWLQuantifiedDataRestriction ) {
 
 
@@ -1343,6 +1356,98 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     }
                 }
                 else return;
+            }
+
+            private void rewirePropertyDomain( OWLObjectProperty prop, OWLClassExpression expr, OWLOntology ontoDescr ) {
+                Set<OWLObjectPropertyDomainAxiom> domains = ontoDescr.getObjectPropertyDomainAxioms( prop );
+                OWLClassExpression propDomain = null;
+                for ( OWLObjectPropertyDomainAxiom dox : domains ) {
+                    if ( ! dox.getDomain().isAnonymous() ) {
+                        propDomain = dox.getDomain();
+                    }
+                    ontoDescr.getOWLOntologyManager().applyChange( new RemoveAxiom( ontoDescr, dox ) );
+                }
+                OWLClass extDomain = factory.getOWLClass( IRI.create(
+                        prop.getIRI().getStart(), NameUtils.capitalize( prop.getIRI().getFragment() ) + "ExtraDomain" + counter++ ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLDeclarationAxiom( extDomain ) ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLSubClassOfAxiom( propDomain, extDomain ) ) );
+                ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLObjectPropertyDomainAxiom( prop, extDomain ) ) );
+
+
+                Set<OWLClassExpression> aliases = new HashSet<OWLClassExpression>();
+                for ( OWLEquivalentClassesAxiom eq : ontoDescr.getAxioms( AxiomType.EQUIVALENT_CLASSES ) ) {
+                    if ( eq.contains( expr ) ) {
+                        aliases.addAll( eq.getClassExpressions() );
+                    }
+                }
+
+                for ( OWLSubClassOfAxiom sub : ontoDescr.getAxioms( AxiomType.SUBCLASS_OF ) ) {
+                    System.out.println( sub );
+                    if ( aliases.contains( sub.getSuperClass() ) && ! sub.getSubClass().equals( extDomain ) ) {
+                        ontoDescr.getOWLOntologyManager().applyChange( new RemoveAxiom( ontoDescr, sub )  );
+                        ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLSubClassOfAxiom( sub.getSubClass(), extDomain ) )  );
+                    }
+                }
+                dirty[0] = true;
+        }
+
+            private boolean checkIsPropertyInDomain( OWLObjectProperty prop, OWLClass inKlass, OWLClassExpression expr, OWLOntology ontoDescr ) {
+                Set<OWLClassExpression> domains = new HashSet<OWLClassExpression>();
+                for ( OWLObjectPropertyDomainAxiom dom : ontoDescr.getObjectPropertyDomainAxioms( prop ) ) {
+                    domains.add( dom.getDomain() );
+                }
+                if ( domains.size() == 0 ) {
+                    // this property will become part of (Root)Thing
+                    return true;
+                }
+                if ( domains.contains( inKlass ) ) {
+                    return true;
+                }
+                if ( isSuperClass( ontoDescr, domains, inKlass ) ) {
+                    return true;
+                }
+
+                for ( OWLEquivalentClassesAxiom eq : ontoDescr.getEquivalentClassesAxioms( inKlass ) ) {
+                    for ( OWLClassExpression x : eq.getClassExpressions() ) {
+                        if ( ! x.isAnonymous() ) {
+                            if ( isSuperClass( ontoDescr, domains, x ) ) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            private void reifyFiller(OWLObjectProperty prop, OWLClassExpression fil) {
+                if ( fil.isAnonymous() ) {
+                    OWLClass filler = fillerCache.get( fil );
+
+                    if ( filler == null ) {
+                        String fillerName =
+                                NameUtils.separatingName( ontoDescr.getOntologyID().getOntologyIRI().toString() ) +
+                                        NameUtils.capitalize( inKlass.getIRI().getFragment() ) +
+                                        NameUtils.capitalize( prop.getIRI().getFragment() ) +
+                                        "Filler" +
+                                        (counter++);
+                        filler = factory.getOWLClass( IRI.create( fillerName ) );
+                        // On a second thought, fillers could stay real...
+//                            OWLAnnotationAssertionAxiom ann = factory.getOWLAnnotationAssertionAxiom( factory.getOWLAnnotationProperty( IRI.create( "http://www.w3.org/2000/01/rdf-schema#comment" ) ),
+//                                    filler.getIRI(),
+//                                    factory.getOWLStringLiteral("abstract") );
+//                            ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, ann ) );
+
+                        fillerCache.put( fil, filler );
+                    } else {
+                        if ( logger.isDebugEnabled() )  { logger.debug("REUSED FILLER FOR" + fil); }
+                    }
+
+                    dirty[0] = true;
+                    ontoDescr.getOWLOntologyManager().applyChange(new AddAxiom(ontoDescr, factory.getOWLDeclarationAxiom(filler)));
+                    ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLEquivalentClassesAxiom( filler, fil ) ) );
+
+                }
             }
 
             public void visit(OWLClass ce) {
@@ -1435,7 +1540,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         });
 
 
-
+        return dirty[0];
     }
 
 
@@ -1579,8 +1684,13 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         /************************************************************************************************************************************/
 
+        // new classes have been added, classify the
+        launchReasoner( dirty, kSession, ontoDescr, axiomGenerators );
+
+        /************************************************************************************************************************************/
+
         // reify complex restriction fillers
-        processQuantifiedRestrictions( ontoDescr, factory );
+        dirty = processQuantifiedRestrictions( ontoDescr, factory );
 
         /************************************************************************************************************************************/
 
@@ -1611,6 +1721,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         return baseModel;
     }
+
 
     private void fixRootHierarchy(OntoModel model) {
         Concept thing = model.getConcept( IRI.create( NamespaceUtils.getNamespaceByPrefix( "owl" ).getURI() + "#Thing"  ).toQuotedString() );

@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY people "http://owl.man.ac.uk/2005/07/sssw/people#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#"
+     xml:base="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:people="http://owl.man.ac.uk/2005/07/sssw/people#">
+    <owl:Ontology rdf:about="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#comment -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;label"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#has_pet -->
+
+    <owl:ObjectProperty rdf:about="&people;has_pet">
+        <rdfs:label rdf:datatype="&xsd;string">has_pet</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">Anyone that has a pet must like that pet.</rdfs:comment>
+        <rdfs:range rdf:resource="&people;animal"/>
+        <rdfs:subPropertyOf rdf:resource="&people;likes"/>
+        <rdfs:domain rdf:resource="&people;person"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#X"/>
+                    <rdf:Description rdf:about="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#Y"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#likes -->
+
+    <owl:ObjectProperty rdf:about="&people;likes">
+        <rdfs:label rdf:datatype="&xsd;string">likes</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#X -->
+
+    <owl:Class rdf:about="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#X"/>
+    
+
+
+    <!-- file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#Y -->
+
+    <owl:Class rdf:about="file:/Users/seanb/Desktop/Cercedilla2005/hands-on/people.owl#Y"/>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#animal -->
+
+    <owl:Class rdf:about="&people;animal">
+        <rdfs:label rdf:datatype="&xsd;string">animal</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#person -->
+
+    <owl:Class rdf:about="&people;person">
+        <rdfs:label rdf:datatype="&xsd;string">person</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&people;animal"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://owl.man.ac.uk/2005/07/sssw/people#Joe -->
+
+    <owl:NamedIndividual rdf:about="&people;Joe">
+        <rdf:type>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;has_pet"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdf:type>
+        <rdfs:label rdf:datatype="&xsd;string">Joe</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+

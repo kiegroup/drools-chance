@@ -228,7 +228,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/conyard.ttl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED );
+        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
 
         assertTrue( results.isHierarchyConsistent() );
 
@@ -240,7 +240,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/rule_merged.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED );
+        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
 
         assertTrue( results.isHierarchyConsistent() );
 
@@ -252,7 +252,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/sem_rules.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED );
+        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
 
         assertTrue( results.isHierarchyConsistent() );
 

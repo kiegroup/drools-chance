@@ -517,7 +517,7 @@ public class DL_8_ModelTest {
 //        String source = "rules.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "testRules", res, OntoModel.Mode.FLAT );
+        OntoModel results = factory.buildModel( "testRules", res, OntoModel.Mode.FLAT, DLFactoryImpl.liteAxiomGenerators );
 
         checkConceptEncoding( results );
 
@@ -545,7 +545,7 @@ public class DL_8_ModelTest {
 //        String source = "rules.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "testRules", res, OntoModel.Mode.FLAT );
+        OntoModel results = factory.buildModel( "testRules", res, OntoModel.Mode.FLAT, DLFactory.liteAxiomGenerators );
 
         System.out.println( results );
 
@@ -713,7 +713,7 @@ public class DL_8_ModelTest {
     @Test
     public void testAnonymousClassIndividual() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/anonClassIndividual.owl" );
-        OntoModel results = factory.buildModel( "kmr2", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "test", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
         assertNotNull(results);
 
         checkConceptEncoding( results );
@@ -733,8 +733,37 @@ public class DL_8_ModelTest {
 
     }
 
+    @Test
+    public void testOutOfDomainProperty() {
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/outOfDomainProperty.owl" );
+        OntoModel results = factory.buildModel( "test", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
+        assertNotNull(results);
+
+        checkConceptEncoding( results );
+
+        Concept joeType = results.getConcept( "<http://owl.man.ac.uk/2005/07/sssw/people#JoeType>" );
+
+        assertNotNull( joeType );
+
+        assertEquals( 1, joeType.getProperties().size() );
+
+        PropertyRelation petRestr = joeType.getProperties().get( "<http://owl.man.ac.uk/2005/07/sssw/people#has_petAnimal>" );
+        assertNotNull( petRestr );
+        assertTrue( petRestr.isRestricted() );
+        assertEquals( 1, petRestr.getMaxCard().intValue() );
+
+    }
 
 
+
+    @Test
+    public void testPeopleOntology() {
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/people.owl" );
+        OntoModel results = factory.buildModel( "people", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
+        assertNotNull( results );
+
+        checkConceptEncoding( results );
+    }
 
 
     private boolean checkConceptEncoding( OntoModel results ) {
