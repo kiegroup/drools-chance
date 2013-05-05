@@ -1,0 +1,270 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://t/x#"
+     xml:base="http://t/x"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="http://t/x"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://t/x#objProp -->
+
+    <owl:ObjectProperty rdf:about="http://t/x#objProp"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://t/x#dataProp -->
+
+    <owl:DatatypeProperty rdf:about="http://t/x#dataProp">
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://t/x#A -->
+
+    <owl:Class rdf:about="http://t/x#A">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://t/x#S"/>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://t/x#R"/>
+                            <rdf:Description rdf:about="http://t/x#W"/>
+                            <rdf:Description rdf:about="http://t/x#Z"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://t/x#X"/>
+                            <rdf:Description rdf:about="http://t/x#Y"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://t/x#B -->
+
+    <owl:Class rdf:about="http://t/x#B">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://t/x#S"/>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://t/x#R"/>
+                            <owl:Class>
+                                <owl:intersectionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="http://t/x#T"/>
+                                    <rdf:Description rdf:about="http://t/x#X"/>
+                                </owl:intersectionOf>
+                            </owl:Class>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://t/x#C -->
+
+    <owl:Class rdf:about="http://t/x#C">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://t/x#W"/>
+                    <rdf:Description rdf:about="http://t/x#X"/>
+                    <rdf:Description rdf:about="http://t/x#Y"/>
+                    <rdf:Description rdf:about="http://t/x#Z"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://t/x#D -->
+
+    <owl:Class rdf:about="http://t/x#D">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://t/x#W"/>
+                    <rdf:Description rdf:about="http://t/x#X"/>
+                    <rdf:Description rdf:about="http://t/x#Y"/>
+                    <rdf:Description rdf:about="http://t/x#Z"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://t/x#E -->
+
+    <owl:Class rdf:about="http://t/x#E">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://t/x#dataProp"/>
+                                <owl:hasValue>a</owl:hasValue>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://t/x#dataProp"/>
+                                <owl:hasValue>b</owl:hasValue>
+                            </owl:Restriction>
+                        </owl:unionOf>
+                    </owl:Class>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://t/x#dataProp"/>
+                        <owl:someValuesFrom rdf:resource="&xsd;string"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://t/x#dataProp"/>
+                        <owl:allValuesFrom rdf:resource="&xsd;string"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://t/x#F -->
+
+    <owl:Class rdf:about="http://t/x#F">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://t/x#R"/>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://t/x#objProp"/>
+                                <owl:someValuesFrom>
+                                    <owl:Class>
+                                        <owl:intersectionOf rdf:parseType="Collection">
+                                            <rdf:Description rdf:about="http://t/x#X"/>
+                                            <owl:Class>
+                                                <owl:unionOf rdf:parseType="Collection">
+                                                    <rdf:Description rdf:about="http://t/x#Y"/>
+                                                    <rdf:Description rdf:about="http://t/x#Z"/>
+                                                </owl:unionOf>
+                                            </owl:Class>
+                                        </owl:intersectionOf>
+                                    </owl:Class>
+                                </owl:someValuesFrom>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://t/x#objProp"/>
+                                <owl:allValuesFrom rdf:resource="http://t/x#W"/>
+                            </owl:Restriction>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://t/x#R -->
+
+    <owl:Class rdf:about="http://t/x#R"/>
+    
+
+
+    <!-- http://t/x#S -->
+
+    <owl:Class rdf:about="http://t/x#S"/>
+    
+
+
+    <!-- http://t/x#T -->
+
+    <owl:Class rdf:about="http://t/x#T"/>
+    
+
+
+    <!-- http://t/x#W -->
+
+    <owl:Class rdf:about="http://t/x#W"/>
+    
+
+
+    <!-- http://t/x#X -->
+
+    <owl:Class rdf:about="http://t/x#X"/>
+    
+
+
+    <!-- http://t/x#Y -->
+
+    <owl:Class rdf:about="http://t/x#Y"/>
+    
+
+
+    <!-- http://t/x#Z -->
+
+    <owl:Class rdf:about="http://t/x#Z"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+

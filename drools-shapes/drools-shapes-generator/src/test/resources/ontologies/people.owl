@@ -213,6 +213,14 @@
                 <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
             </owl:Restriction>
         </owl:equivalentClass>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;bone"/>
+                    <rdf:Description rdf:about="&people;brain"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
     </owl:Class>
     
 
@@ -1373,26 +1381,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    <owl:Class>
-        <owl:disjointWith>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="&people;plant"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&people;part_of"/>
-                        <owl:someValuesFrom rdf:resource="&people;plant"/>
-                    </owl:Restriction>
-                </owl:unionOf>
-            </owl:Class>
-        </owl:disjointWith>
-        <owl:unionOf rdf:parseType="Collection">
-            <rdf:Description rdf:about="&people;animal"/>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&people;part_of"/>
-                <owl:someValuesFrom rdf:resource="&people;animal"/>
-            </owl:Restriction>
-        </owl:unionOf>
-    </owl:Class>
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDifferent"/>
         <owl:distinctMembers rdf:parseType="Collection">
@@ -1416,6 +1404,26 @@
             <rdf:Description rdf:about="&people;Walt"/>
         </owl:distinctMembers>
     </rdf:Description>
+    <owl:Class>
+        <owl:disjointWith>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&people;plant"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&people;part_of"/>
+                        <owl:someValuesFrom rdf:resource="&people;plant"/>
+                    </owl:Restriction>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:disjointWith>
+        <owl:unionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="&people;animal"/>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&people;part_of"/>
+                <owl:someValuesFrom rdf:resource="&people;animal"/>
+            </owl:Restriction>
+        </owl:unionOf>
+    </owl:Class>
 </rdf:RDF>
 
 
