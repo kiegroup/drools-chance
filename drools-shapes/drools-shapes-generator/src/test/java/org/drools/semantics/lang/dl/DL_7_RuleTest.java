@@ -169,7 +169,7 @@ public class DL_7_RuleTest {
 
 
     @Test
-    public void testExampleDNFQuantifiers() {
+    public void testExampleDNFQuantifiersSome() {
 
         String owl = "" +
                 "<?xml version=\"1.0\"?>\n" +
@@ -338,6 +338,123 @@ public class DL_7_RuleTest {
 
 
     }
+
+
+
+    @Test
+    public void testExampleDNFQuantifiersOnly() {
+
+        String owl = "" +
+                     "<?xml version=\"1.0\"?>\n" +
+                     "<rdf:RDF xmlns=\"http://t/x#\"\n" +
+                     "     xml:base=\"http://t/x\"\n" +
+                     "     xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n" +
+                     "     xmlns:owl=\"http://www.w3.org/2002/07/owl#\"\n" +
+                     "     xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\"\n" +
+                     "     xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                     "    <owl:Ontology rdf:about=\"http://t/x\"/>\n" +
+                     "    <owl:ObjectProperty rdf:about=\"http://t/x#objProp\"/>\n" +
+                     "    <owl:Class rdf:about=\"http://t/x#D\"/>\n" +
+                     "    <owl:Class rdf:about=\"http://t/x#E\">\n" +
+                     "        <owl:equivalentClass>\n" +
+                     "            <owl:Class>\n" +
+                     "                <owl:intersectionOf rdf:parseType=\"Collection\">\n" +
+                     "                    <rdf:Description rdf:about=\"http://t/x#D\"/>\n" +
+                     "                    <owl:Restriction>\n" +
+                     "                        <owl:onProperty rdf:resource=\"http://t/x#objProp\"/>\n" +
+                     "                        <owl:allValuesFrom rdf:resource=\"http://t/x#F\"/>\n" +
+                     "                    </owl:Restriction>\n" +
+                     "                </owl:intersectionOf>\n" +
+                     "            </owl:Class>\n" +
+                     "        </owl:equivalentClass>\n" +
+                     "    </owl:Class>\n" +
+                     "    <owl:Class rdf:about=\"http://t/x#F\"/>\n" +
+                     "</rdf:RDF>\n" +
+                     "\n";
+
+        String drl2 = "package t.x; \n" +
+                      "import org.drools.factmodel.traits.Entity; \n" +
+                      "import org.w3._2002._07.owl.Thing; \n" +
+                      "" +
+                      "declare Entity end\n" +
+                      "" +
+                      "rule Init \n" +
+                      "when \n" +
+                      "then \n" +
+                      "   Entity e1 = new Entity( \"X\" ); \n" +
+                      "   insert( e1 );\n" +
+                      "   Entity e2 = new Entity( \"Y\" ); \n" +
+                      "   insert( e2 );\n" +
+                      "   Entity e3 = new Entity( \"Z\" ); \n" +
+                      "   insert( e3 );\n" +
+                      " " +
+                      "   D d1 = don( e1, D.class, true ); \n" +
+                      "   F f2 = don( e2, F.class, true ); \n" +
+                      "   F f3 = don( e3, F.class, true ); \n" +
+                      " " +
+                      "   modify ( d1 ) { \n" +
+                      "      getObjProp().add( f2.getCore() )," +
+                      "      getObjProp().add( f3.getCore() );" +
+                      "   } \n" +
+                      "   modify ( f3.getCore() ) {} \n " +
+                      "   modify ( f2.getCore() ) {} \n " +
+                      "end \n" +
+                      "" +
+                      "rule Log \n" +
+                      "when \n" +
+                      "   $x : E() \n" +
+                      "then \n" +
+                      "   System.out.println( \"RECOGNIZED \" + $x ); \n" +
+                      "end" ;
+
+        Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
+
+        OWLOntology onto = factory.parseOntology( res );
+
+        OntoModel ontoModel = factory.buildModel( "test",
+                res,
+                OntoModel.Mode.NONE,
+                DLFactory.defaultAxiomGenerators );
+
+        String drl = new RecognitionRuleBuilder().createDRL( onto, ontoModel );
+
+        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
+
+        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
+        if ( kBuilder.hasErrors() ) {
+            fail( kBuilder.getErrors().toString() );
+        }
+
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+
+        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+        kSession.fireAllRules();
+
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( Entity.class ) ) ) {
+            Entity e = (Entity) o;
+            if ( e.getId().equals( "X" ) ) {
+                assertTrue( e.hasTrait( "t.x.D" ) );
+                assertTrue( e.hasTrait( "t.x.E" ) );
+                assertFalse( e.hasTrait( "t.x.F" ) );
+                assertEquals( 2, ( (List) e._getDynamicProperties().get( "objProp" ) ).size() );
+            } else if ( e.getId().equals(  "Y" ) || e.getId().equals( "Z" ) ) {
+                assertTrue( e.hasTrait( "t.x.F" ) );
+                assertFalse( e.hasTrait( "t.x.D" ) );
+                assertFalse( e.hasTrait( "t.x.E" ) );
+            } else {
+                fail( "Unrecognized entity in WM" );
+            }
+
+        }
+
+
+    }
+
+
+
+
 
 
     @Test

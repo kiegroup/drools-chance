@@ -23,6 +23,7 @@ import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.PropertyRelation;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
@@ -213,31 +214,58 @@ public class RecognitionRuleBuilder {
             OWLClass klass = expr.asOWLClass();
             pb.constraint("this isA " + model.getConcept(klass.getIRI().toQuotedString()).getFullyQualifiedName() + ".class");
 
-        } else if (expr instanceof OWLObjectComplementOf) {
-
+        } else if ( expr instanceof OWLObjectComplementOf ) {
             OWLObjectComplementOf neg = (OWLObjectComplementOf) expr;
-            OWLClass klass = neg.getOperand().asOWLClass();
-            pb.constraint("this not isA " + model.getConcept(klass.getIRI().toQuotedString()).getFullyQualifiedName() + ".class");
+            OWLClassExpression arg = neg.getOperand();
 
-        } else if (expr instanceof OWLObjectSomeValuesFrom) {
+            if ( ! arg.isAnonymous() ) {
+
+                OWLClass klass = arg.asOWLClass();
+                pb.constraint( "this not isA " + model.getConcept(klass.getIRI().toQuotedString()).getFullyQualifiedName() + ".class" );
+
+            } else {
+                OWLObjectSomeValuesFrom all = (OWLObjectSomeValuesFrom) arg;
+
+                PropertyRelation prop = model.getProperty( all.getProperty().asOWLObjectProperty().getIRI().toQuotedString() );
+
+                String propKey = context.getPropertyKey( prop.getName() );
+                if ( ! context.isPropertyBound( propKey ) ) {
+                    context.bindProperty( prop.getName() );
+                    pb.bind( propKey, "fields[ \"" + prop.getName() + "\" ]", false );
+                }
+
+                context.push();
+                context.setSource( propKey );
+                processOrExpression( null,
+                        all.getFiller(),
+                        and.not().or(),
+                        model,
+                        context );
+                context.resetSource();
+                context.pop();
+            }
+
+        } else if ( expr instanceof OWLObjectSomeValuesFrom ) {
 
             OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) expr;
 
             PropertyRelation prop = model.getProperty(some.getProperty().asOWLObjectProperty().getIRI().toQuotedString());
 
-            String propKey = context.getPropertyKey(prop.getName());
-            if (!context.isPropertyBound(propKey)) {
-                context.bindProperty(prop.getName());
+            String propKey = context.getPropertyKey( prop.getName() );
+            context.bindProperty( prop.getName() );
 //                pb.bind( propKey, "this#" + prop.getDomain().getFullyQualifiedName() + "." + prop.getName(), false );
-                pb.bind(propKey, "fields[ \"" + prop.getName() + "\" ]", false);
-            }
+            pb.bind(propKey, "fields[ \"" + prop.getName() + "\" ]", false);
 
 
             context.push();
-            context.setSource(propKey);
+            context.setSource( propKey );
             processOrExpression(null, some.getFiller(), and.exists().or(), model, context);
             context.resetSource();
             context.pop();
+
+        }  else if ( expr instanceof OWLObjectAllValuesFrom ) {
+
+            throw new IllegalStateException( "ONLY is not properly supported, should have been rewritten as NOT (exists) NEG ..." );
 
         } else {
 
@@ -281,7 +309,7 @@ public class RecognitionRuleBuilder {
         }
 
         public boolean isPropertyBound( String propKey ) {
-            return vars.peek().isPropertyBound(propKey);
+            return vars.peek().isPropertyBound( propKey );
         }
 
         public String bindProperty( String prop ) {
@@ -299,7 +327,7 @@ public class RecognitionRuleBuilder {
             return parent != null ? parent.getVar() : null;
         }
 
-        public void setSource(String source) {
+        public void setSource( String source ) {
             this.source = source;
         }
 

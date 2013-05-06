@@ -175,7 +175,14 @@ public class DLogicTransformer {
         }
 
         public void visit( OWLObjectAllValuesFrom ce ) {
-            DNF.peek().add( factory.getOWLObjectAllValuesFrom( ce.getProperty(), toDNF( ce.getFiller() ) ) );
+//            DNF.peek().add( factory.getOWLObjectAllValuesFrom( ce.getProperty(), toDNF( ce.getFiller() ) ) );
+            DNF.peek().add(
+                    factory.getOWLObjectComplementOf(
+                            factory.getOWLObjectSomeValuesFrom( ce.getProperty(),
+                                    toDNF( factory.getOWLObjectComplementOf( ce.getFiller() ).getNNF() )
+                            )
+                    )
+            );
         }
 
         public void visit( OWLObjectMinCardinality ce ) {
