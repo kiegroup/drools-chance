@@ -9,6 +9,7 @@
 package org.w3._2002._07.owl;
 
 import java.io.Serializable;
+import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -346,5 +348,23 @@ public class ThingImpl
 
     public void setInstanceTriples(Graph instanceTriples) {
         this.instanceTriples = instanceTriples;
+    }
+
+
+    // In compliance with the Traiting Thing interface,
+    // these methods are not really needed
+    @Transient
+    public Map<String, Object> getFields() {
+        throw new UnsupportedOperationException( ThingImpl.class.getName() + " is not supposed to be used as a trait proxy" );
+    }
+
+    @Transient
+    public org.drools.semantics.Thing getCore() {
+        throw new UnsupportedOperationException( ThingImpl.class.getName() + " is not supposed to be used as a trait proxy" );
+    }
+
+    @Transient
+    public boolean isTop() {
+        throw new UnsupportedOperationException( ThingImpl.class.getName() + " is not supposed to be used as a trait proxy" );
     }
 }

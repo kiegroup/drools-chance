@@ -1,5 +1,8 @@
 package org.drools.semantics;
 
-public interface Thing extends com.clarkparsia.empire.SupportsRdfId {
+import org.drools.factmodel.traits.Trait;
+
+@Trait
+public interface Thing<K> extends com.clarkparsia.empire.SupportsRdfId, org.drools.factmodel.traits.Thing<K> {
 
 }

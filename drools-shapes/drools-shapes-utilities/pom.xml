@@ -18,6 +18,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-compiler</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>com.clarkparsia</groupId>
       <artifactId>Empire-core</artifactId>
       <!--version>0.7.3</version-->
@@ -54,13 +59,6 @@
       <!--version>1.0.6</version-->
     </dependency>
 
-
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-compiler</artifactId>
-      <!--version>5.5.1-SNAPSHOT</version-->
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 

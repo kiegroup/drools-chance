@@ -9,7 +9,7 @@ import com.clarkparsia.empire.annotation.Namespaces;
 
 @RdfsClass( value="tns:Thing" )
 @Namespaces({ "tns", "http://www.w3.org/2002/07/owl#" })
-public interface Thing extends org.drools.semantics.Thing, EmpireGenerated
+public interface Thing<K> extends org.drools.semantics.Thing<K>, EmpireGenerated
                                  
 {
 
