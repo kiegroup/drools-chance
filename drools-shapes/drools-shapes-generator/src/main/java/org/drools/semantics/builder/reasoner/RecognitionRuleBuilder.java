@@ -7,15 +7,18 @@ import org.drools.factmodel.traits.Thing;
 import org.drools.io.impl.ByteArrayResource;
 import org.drools.lang.DrlDumper;
 import org.drools.lang.api.CEDescrBuilder;
+import org.drools.lang.api.DeclareDescrBuilder;
 import org.drools.lang.api.DescrFactory;
 import org.drools.lang.api.PackageDescrBuilder;
 import org.drools.lang.api.PatternDescrBuilder;
 import org.drools.lang.api.RuleDescrBuilder;
+import org.drools.lang.api.TypeDeclarationDescrBuilder;
 import org.drools.lang.descr.AndDescr;
 import org.drools.lang.descr.AnnotatedBaseDescr;
 import org.drools.lang.descr.BaseDescr;
 import org.drools.lang.descr.OrDescr;
 import org.drools.rule.TypeDeclaration;
+import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.PropertyRelation;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -27,6 +30,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -46,7 +51,8 @@ public class RecognitionRuleBuilder {
 
         packBuilder.name( model.getDefaultPackage() );
 
-        packBuilder.newImport().target( Thing.class.getName() ).end();
+//        packBuilder.newImport().target( Thing.class.getName() ).end();
+//        packBuilder.newImport().target( org.w3._2002._07.owl.Thing.class.getName() ).end();
 
         createDeclares( onto, model, packBuilder );
 
@@ -72,16 +78,28 @@ public class RecognitionRuleBuilder {
 
     private void createDeclares( OWLOntology onto, OntoModel model, PackageDescrBuilder packBuilder ) {
 
-        packBuilder.newDeclare().type()
-                .name( Thing.class.getName() )
-                .newAnnotation( "typesafe" ).value( "false" ).end()
-            .end();
+        for ( Concept con : model.getConcepts() ) {
 
-        for ( OWLClass klass : onto.getClassesInSignature( true ) ) {
-            packBuilder.newDeclare().type()
-                    .name( model.getConcept( klass.getIRI().toQuotedString() ).getFullyQualifiedName() )
-                    .newAnnotation( TypeDeclaration.Kind.ID ).value( TypeDeclaration.Kind.TRAIT.name() ).end()
-                    .newAnnotation( "propertyReactive" ).end();
+            TypeDeclarationDescrBuilder dek = packBuilder.newDeclare().type();
+            dek
+                .name( con.getFullyQualifiedName() )
+                .newAnnotation( TypeDeclaration.Kind.ID ).value( TypeDeclaration.Kind.TRAIT.name() ).end()
+//                .newAnnotation( "propertyReactive" )
+            ;
+            for ( Concept sup : con.getSuperConcepts() ) {
+
+                dek.superType( sup.getFullyQualifiedName() );
+            }
+            for ( PropertyRelation prop : con.getProperties().values() ) {
+                if ( ! prop.isRestricted() && ! prop.isInherited() ) {
+//                    dek.newField( prop.getName() ).type( prop.getTarget().getFullyQualifiedName() ).end();
+                    dek.newField( prop.getName() )
+                            .type( List.class.getName() )
+                            .initialValue( "new java.util.ArrayList()" )
+                            .newAnnotation( "unsupportedGenericType" ).value( prop.getTarget().getFullyQualifiedName() ).end()
+                            .end();
+                }
+            }
 
         }
     }
@@ -139,7 +157,7 @@ public class RecognitionRuleBuilder {
 //            .end();
     }
 
-    private void processOrExpression( OWLClass klass, OWLClassExpression expr, CEDescrBuilder<CEDescrBuilder<RuleDescrBuilder, AndDescr>, OrDescr> or, OntoModel model, BuildStack context ) {
+    private void processOrExpression( OWLClass klass, OWLClassExpression expr, CEDescrBuilder<? extends CEDescrBuilder, OrDescr> or, OntoModel model, BuildStack context ) {
         OWLObjectUnionOf intersect = (OWLObjectUnionOf) expr;
         for ( OWLClassExpression arg : intersect.getOperands() ) {
             processAndExpression( klass, arg, or, model, context );
@@ -169,58 +187,70 @@ public class RecognitionRuleBuilder {
                               OntoModel model,
                               BuildStack context ) {
 
-        pb.type( org.drools.factmodel.traits.Thing.class.getCanonicalName( ) )
+        pb.type( getRootClass() )
                 .bind( context.getScopedIdentifier(), "core", true )
-                .constraint( "top == true" );
+        ;
+
+        String parent = context.peekParent();
+
+        String source = context.getSource();
+        if ( source != null ) {
+            pb.constraint( "core memberOf " + source );
+        }
 
         if ( excludedClass != null ) {
-                pb.constraint( "this not isA " + model.getConcept( excludedClass.getIRI().toQuotedString() ).getFullyQualifiedName() + ".class" );
+            pb.constraint( "this not isA " + model.getConcept( excludedClass.getIRI().toQuotedString() ).getFullyQualifiedName() + ".class" );
         }
     }
 
-    private void processAtomExpression( OWLClassExpression expr,
-                                        CEDescrBuilder<? extends CEDescrBuilder, AndDescr> and,
-                                        PatternDescrBuilder<? extends CEDescrBuilder<? extends CEDescrBuilder, ? extends BaseDescr>> pb,
-                                        OntoModel model,
-                                        BuildStack context ) {
-        if ( ! expr.isAnonymous() ) {
+    private void processAtomExpression(OWLClassExpression expr,
+                                       CEDescrBuilder<? extends CEDescrBuilder, AndDescr> and,
+                                       PatternDescrBuilder<? extends CEDescrBuilder<? extends CEDescrBuilder, ? extends BaseDescr>> pb,
+                                       OntoModel model,
+                                       BuildStack context) {
+        if (!expr.isAnonymous()) {
 
             OWLClass klass = expr.asOWLClass();
-            pb.constraint( "this isA " + model.getConcept( klass.getIRI().toQuotedString() ).getFullyQualifiedName() + ".class" );
+            pb.constraint("this isA " + model.getConcept(klass.getIRI().toQuotedString()).getFullyQualifiedName() + ".class");
 
-        } else if ( expr instanceof OWLObjectComplementOf ) {
+        } else if (expr instanceof OWLObjectComplementOf) {
 
             OWLObjectComplementOf neg = (OWLObjectComplementOf) expr;
             OWLClass klass = neg.getOperand().asOWLClass();
-            pb.constraint( "this not isA " + model.getConcept( klass.getIRI().toQuotedString() ).getFullyQualifiedName() + ".class" );
+            pb.constraint("this not isA " + model.getConcept(klass.getIRI().toQuotedString()).getFullyQualifiedName() + ".class");
 
-        } else if ( expr instanceof OWLObjectSomeValuesFrom ) {
+        } else if (expr instanceof OWLObjectSomeValuesFrom) {
 
             OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) expr;
 
-            PropertyRelation prop = model.getProperty( some.getProperty().asOWLObjectProperty().getIRI().toQuotedString() );
+            PropertyRelation prop = model.getProperty(some.getProperty().asOWLObjectProperty().getIRI().toQuotedString());
 
-            String propKey = context.getPropertyKey( prop.getName() );
-//            if ( ! context.isPropertyBound( propKey ) ) {
-//                context.bindProperty( prop.getName() );
-//                pb.bind( propKey, prop.getName(), false );
-//            }
+            String propKey = context.getPropertyKey(prop.getName());
+            if (!context.isPropertyBound(propKey)) {
+                context.bindProperty(prop.getName());
+//                pb.bind( propKey, "this#" + prop.getDomain().getFullyQualifiedName() + "." + prop.getName(), false );
+                pb.bind(propKey, "fields[ \"" + prop.getName() + "\" ]", false);
+            }
 
 
             context.push();
-            PatternDescrBuilder<? extends CEDescrBuilder<? extends CEDescrBuilder, ? extends BaseDescr>> sub = and.pattern();
-                initPattern( sub, null, model, context );
-                sub.constraint( "core memberOf " + context.getScopedIdentifier() + "." + prop.getName() );
+            context.setSource(propKey);
+            processOrExpression(null, some.getFiller(), and.exists().or(), model, context);
+            context.resetSource();
             context.pop();
 
         } else {
 
             context.push();
             PatternDescrBuilder<? extends CEDescrBuilder<? extends CEDescrBuilder, ? extends BaseDescr>> sub = and.pattern();
-            initPattern( sub, null, model, context );
+            initPattern(sub, null, model, context);
             context.pop();
 
         }
+    }
+
+    public String getRootClass() {
+        return org.w3._2002._07.owl.Thing.class.getName();
     }
 
 
@@ -228,6 +258,7 @@ public class RecognitionRuleBuilder {
 
         private int counter = 0;
         private Stack<BuildContext> vars = new Stack<BuildContext>();
+        private String source;
 
         private BuildStack() {
             push();
@@ -259,6 +290,25 @@ public class RecognitionRuleBuilder {
 
         public String getPropertyKey( String prop ) {
             return vars.peek().getPropertyKey( prop );
+        }
+
+        public String peekParent() {
+            BuildContext temp = vars.pop();
+            BuildContext parent = vars.size() > 0 ? vars.peek() : null;
+            vars.push( temp );
+            return parent != null ? parent.getVar() : null;
+        }
+
+        public void setSource(String source) {
+            this.source = source;
+        }
+
+        public String getSource() {
+            return source;
+        }
+
+        public void resetSource() {
+            source = null;
         }
     }
 

@@ -56,7 +56,7 @@ public class DLogicTransformer {
         return defs;
     }
 
-    public OWLClassExpression toDNF(OWLClassExpression in) {
+    public OWLClassExpression toDNF( OWLClassExpression in ) {
         OWLClassExpression nnf = in.getNNF();
         DNFVisitor visitor = new DNFVisitor();
         nnf.accept( visitor );
@@ -78,7 +78,7 @@ public class DLogicTransformer {
 
         public OWLClassExpression getDNF() {
             Set<OWLClassExpression> set = new HashSet( DNF.pop() );
-            if ( set.size() == 1 ) {
+            if ( set.size() == 1 && set.iterator().next() instanceof OWLObjectUnionOf ) {
                 return set.iterator().next();
             } else {
                 return factory.getOWLObjectUnionOf( set );

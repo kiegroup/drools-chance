@@ -16,11 +16,17 @@
 
 package org.drools.semantics.lang.dl;
 
+import org.drools.ClassObjectFilter;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.event.rule.ObjectInsertedEvent;
+import org.drools.event.rule.ObjectRetractedEvent;
+import org.drools.event.rule.ObjectUpdatedEvent;
+import org.drools.event.rule.WorkingMemoryEventListener;
+import org.drools.factmodel.traits.Entity;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ByteArrayResource;
@@ -41,6 +47,7 @@ import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -95,6 +102,7 @@ public class DL_7_RuleTest {
 
         String drl2 = "package t.x \n" +
                 "import org.drools.factmodel.traits.Entity;\n" +
+                "import org.drools.factmodel.traits.Thing;\n" +
                 "" +
                 "rule Init when \n" +
                 "then \n" +
@@ -116,8 +124,9 @@ public class DL_7_RuleTest {
         if ( kBuilder.hasErrors() ) {
             fail( kBuilder.getErrors().toString() );
         }
-
-        StatefulKnowledgeSession kSession = createSession( kBuilder );
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
         kSession.fireAllRules();
 
         for ( Object o : kSession.getObjects() ) {
@@ -141,8 +150,8 @@ public class DL_7_RuleTest {
         PackageDescrBuilder packBuilder = DescrFactory.newPackage().name( "org.test" )
                 .newRule().name( "org.test" )
                 .lhs().and().or()
-                        .and().pattern().type( "Cheese" ).end().pattern().type( "Meat" ).end().end()
-                        .and().pattern().type( "Car" ).end().end()
+                        .and().pattern().type( "Integer" ).end().pattern().type( "Long" ).end().end()
+                        .and().pattern().type( "String" ).end().end()
                 .end().end().end()
                 .rhs("")
                 .end()
@@ -190,6 +199,55 @@ public class DL_7_RuleTest {
                 "</rdf:RDF>\n" +
                 "\n";
 
+        String drl2 = "package t.x; \n" +
+                "import org.drools.factmodel.traits.Entity; \n" +
+                "" +
+                "declare Entity end\n" +
+                "" +
+                "rule Init \n" +
+                "when \n" +
+                "then \n" +
+                "   Entity e1 = new Entity( \"X\" ); \n" +
+                "   insert( e1 );\n" +
+                "   Entity e2 = new Entity( \"Y\"); \n" +
+                "   insert( e2 );\n" +
+                " " +
+                "   D d1 = don( e1, D.class, true ); \n" +
+                "   F f2 = don( e2, F.class, true ); \n" +
+                " " +
+                "   modify ( d1 ) { \n" +
+                "      getObjProp().add( f2.getCore() );" +
+                "   } \n" +
+                "   modify ( f2.getCore() ) {} \n " +
+                "end \n" +
+                "" +
+                "" +
+                "rule Shed \n" +
+                "when \n" +
+                "   $s : String( this == \"go\") \n" +
+                "   $x : E( $objs : objProp ) \n" +
+                "   $y : F( $z : core memberOf $objs ) \n" +
+                "then \n" +
+                "   retract( $s ); \n" +
+                "   System.out.println( \"SUCCESS : E has been recognized \" );\n" +
+                "   shed( $y, F.class );" +
+                "end \n" +
+                "" +
+                "" +
+                "rule Shed_2 \n" +
+                "when \n" +
+                "   $s : String( this == \"go2\") \n" +
+                "   $x : E( $objs : objProp ) \n" +
+                "   $y : F( $z : core memberOf $objs ) \n" +
+                "then \n" +
+                "   retract( $s ); \n" +
+                "   System.out.println( \"SUCCESS : E has been recognized \" );\n" +
+                "   modify ( $x ) {\n" +
+                "       getObjProp().remove( $z ); \n" +
+                "   }\n" +
+                "   modify ( $y ) {} " +
+                "end \n";
+
 
         Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
 
@@ -202,13 +260,84 @@ public class DL_7_RuleTest {
 
         String drl = new RecognitionRuleBuilder().createDRL( onto, ontoModel );
 
+        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
+
+        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
+        if ( kBuilder.hasErrors() ) {
+            fail( kBuilder.getErrors().toString() );
+        }
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+
+
+        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+        kSession.fireAllRules();
+
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( Entity.class ) ) ) {
+            Entity e = (Entity) o;
+            if ( e.getId().equals( "X" ) ) {
+                assertTrue( e.hasTrait( "t.x.D" ) );
+                assertTrue( e.hasTrait( "t.x.E" ) );
+                assertFalse( e.hasTrait( "t.x.F" ) );
+                assertEquals( 1, ( (List) e._getDynamicProperties().get( "objProp" ) ).size() );
+            } else if ( e.getId().equals(  "Y" ) ) {
+                assertTrue( e.hasTrait( "t.x.F" ) );
+                assertFalse( e.hasTrait( "t.x.D" ) );
+                assertFalse( e.hasTrait( "t.x.E" ) );
+            } else {
+                fail( "Unrecognized entity in WM" );
+            }
+        }
+
+
+        kSession.insert( "go" );
+        kSession.fireAllRules();
+
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( Entity.class ) ) ) {
+            Entity e = (Entity) o;
+            if ( e.getId().equals( "X" ) ) {
+                assertTrue( e.hasTrait( "t.x.D" ) );
+                assertFalse( e.hasTrait( "t.x.E" ) );
+                assertFalse( e.hasTrait( "t.x.F" ) );
+                assertEquals( 1, ( (List) e._getDynamicProperties().get( "objProp" ) ).size() );
+            } else if ( e.getId().equals(  "Y" ) ) {
+                assertFalse( e.hasTrait( "t.x.F" ) );
+                assertFalse( e.hasTrait( "t.x.D" ) );
+                assertFalse( e.hasTrait( "t.x.E" ) );
+            } else {
+                fail( "Unrecognized entity in WM" );
+            }
+
+        }
+
+
+        kSession = kbase.newStatefulKnowledgeSession();
+        kSession.fireAllRules();
+
+        kSession.insert( "go2" );
+        kSession.fireAllRules();
+
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( Entity.class ) ) ) {
+            Entity e = (Entity) o;
+            if ( e.getId().equals( "X" ) ) {
+                assertTrue( e.hasTrait( "t.x.D" ) );
+                assertFalse( e.hasTrait( "t.x.E" ) );
+                assertFalse( e.hasTrait( "t.x.F" ) );
+                assertEquals( 0, ( (List) e._getDynamicProperties().get( "objProp" ) ).size() );
+            } else if ( e.getId().equals(  "Y" ) ) {
+                assertTrue( e.hasTrait( "t.x.F" ) );
+                assertFalse( e.hasTrait( "t.x.D" ) );
+                assertFalse( e.hasTrait( "t.x.E" ) );
+            } else {
+                fail( "Unrecognized entity in WM" );
+            }
+
+        }
+
+
 
     }
-
-
-
-
-
 
 
     @Test
@@ -220,7 +349,7 @@ public class DL_7_RuleTest {
 
         Map<OWLClassExpression, OWLClassExpression> dnf = new DLogicTransformer( onto ).getDefinitions();
 
-        String ns = "http://t#";
+        String ns = "http://t/x#";
         OWLClassExpression a = fac.getOWLClass( IRI.create( ns + "A" ) );
         OWLClassExpression b = fac.getOWLClass( IRI.create( ns + "B" ) );
         OWLClassExpression c = fac.getOWLClass( IRI.create( ns + "C" ) );
@@ -234,10 +363,10 @@ public class DL_7_RuleTest {
         assertNotNull( d );
         assertNotNull( e );
         assertNotNull( f );
-        assertTrue(dnf.containsKey(a));
-        assertTrue(dnf.containsKey(b));
-        assertTrue(dnf.containsKey(c));
-        assertTrue(dnf.containsKey(d));
+        assertTrue( dnf.containsKey( a ) );
+        assertTrue( dnf.containsKey( b ) );
+        assertTrue( dnf.containsKey( c ) );
+        assertTrue( dnf.containsKey( d ) );
         assertTrue( dnf.containsKey( e ) );
         assertTrue( dnf.containsKey( f ) );
 
@@ -277,11 +406,6 @@ public class DL_7_RuleTest {
     }
 
 
-    private StatefulKnowledgeSession createSession( KnowledgeBuilder kBuilder ) {
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
-        return kbase.newStatefulKnowledgeSession();
-    }
 
 
 }
