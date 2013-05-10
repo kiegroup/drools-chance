@@ -16,6 +16,7 @@
 
 package org.drools.semantics.util.area;
 
+import org.drools.util.CodedHierarchy;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Set;
@@ -29,5 +30,24 @@ public interface Area<C,P> {
     public BitSet getAreaCode();
 
     public BitSet getElementRootCode();
+
+    public void setAreaCode(BitSet areaCode);
+
+    public String getNodeName();
+
+    public Set<AreaNode<C,P>> getImmediateParents();
+
+    public Set<P> getKeys();
+
+    public CodedHierarchy<C> getConHir();
+
+    public BitSet getRootBitSet();
+
+    public void setRoots( Set<C> roots );
+
+    public void addElement(C concept, BitSet code);
+
+    //added by mh
+    public Set<C> getOverlappingElements();
 
 }

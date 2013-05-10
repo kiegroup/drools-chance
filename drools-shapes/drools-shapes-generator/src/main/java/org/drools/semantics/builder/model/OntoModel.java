@@ -22,10 +22,12 @@ import org.drools.semantics.builder.model.hierarchy.ModelHierarchyProcessor;
 import org.drools.semantics.builder.model.hierarchy.NullModelProcessor;
 import org.drools.semantics.builder.model.hierarchy.OptimizedModelProcessor;
 import org.drools.semantics.builder.model.hierarchy.VariantModelProcessor;
+import org.drools.semantics.util.area.AreaNode;
 import org.drools.semantics.util.area.AreaTxn;
 import org.drools.util.CodedHierarchy;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface OntoModel extends Cloneable {
@@ -120,4 +122,5 @@ public interface OntoModel extends Cloneable {
     public void buildAreaTaxonomy();
 
     public AreaTxn<Concept,PropertyRelation> getAreaTaxonomy();
+
 }

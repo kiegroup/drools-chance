@@ -16,14 +16,11 @@
 
 package org.drools.semantics.builder.model;
 
+import org.drools.semantics.util.area.Area;
 import org.drools.semantics.util.area.AreaNode;
 import org.drools.semantics.util.area.AreaTxnImpl;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ConceptAreaTxn extends AreaTxnImpl<Concept,PropertyRelation> {
 
@@ -45,8 +42,8 @@ public class ConceptAreaTxn extends AreaTxnImpl<Concept,PropertyRelation> {
     }
 
     @Override
-    protected Map<Set<PropertyRelation>, AreaNode<Concept,PropertyRelation>> initNodes() {
-        Map<Set<PropertyRelation>, AreaNode<Concept,PropertyRelation>> areaNodes = new HashMap<Set<PropertyRelation>, AreaNode<Concept,PropertyRelation>>();
+    protected Map<Set<PropertyRelation>, Area<Concept,PropertyRelation>> initNodes() {
+        Map<Set<PropertyRelation>, Area<Concept,PropertyRelation>> areaNodes = new HashMap<Set<PropertyRelation>, Area<Concept,PropertyRelation>>();
         for ( Concept cct : getInElements() ) {
 
             if( ! cct.isAnonymous() ) {
@@ -59,7 +56,7 @@ public class ConceptAreaTxn extends AreaTxnImpl<Concept,PropertyRelation> {
 
                 if( ! areaNodes.containsKey( hs ) ) {
                     //it is a new area so create an empty entry for that
-                    areaNodes.put( hs, new AreaNode( hs ) );
+                    areaNodes.put( hs, new ConceptAreaNode(hs));
                 }
                 //add the concept to the corresponding area
                 areaNodes.get( hs ).addElement( cct, cct.getTypeCode() );
@@ -72,7 +69,7 @@ public class ConceptAreaTxn extends AreaTxnImpl<Concept,PropertyRelation> {
     protected void buildAreas() {
         super.buildAreas();
 
-        for ( AreaNode<Concept,PropertyRelation> node : getAreas().values() ) {
+        for ( Area<Concept,PropertyRelation> node : getAreas() ) {
             for ( Concept c : node.getElements() ) {
                 c.setAreaCode( node.getAreaCode() );
             }

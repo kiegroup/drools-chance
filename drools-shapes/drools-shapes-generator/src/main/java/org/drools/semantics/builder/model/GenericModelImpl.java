@@ -2,6 +2,7 @@
 package org.drools.semantics.builder.model;
 
 
+import org.drools.semantics.util.area.AreaNode;
 import org.drools.semantics.util.area.AreaTxn;
 import org.drools.util.CodedHierarchy;
 import org.drools.util.HierarchyEncoder;
@@ -347,4 +348,5 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         }
         return areaTxn;
     }
+
 }

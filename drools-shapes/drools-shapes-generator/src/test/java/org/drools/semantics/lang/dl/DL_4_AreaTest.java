@@ -19,21 +19,14 @@ package org.drools.semantics.lang.dl;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactoryImpl;
-import org.drools.semantics.builder.model.Concept;
-import org.drools.semantics.builder.model.OntoModel;
-import org.drools.semantics.builder.model.PropertyRelation;
+import org.drools.semantics.builder.model.*;
 import org.drools.semantics.util.area.Area;
 import org.drools.semantics.util.area.AreaNode;
 import org.drools.semantics.util.area.AreaTxn;
-import org.drools.semantics.builder.model.ConceptAreaTxn;
 import org.drools.util.HierarchyEncoderImpl;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -174,23 +167,42 @@ public class DL_4_AreaTest {
             assertTrue( HierarchyEncoderImpl.supersetOrEqualset( n7.getAreaCode(), n0.getAreaCode() ) );
 
 
-//
-//
-//            PartialAreaTxnImpl parea = new PartialAreaTxnImpl( area.getAreas(), area.getEncoderArea() );
-//            Set<Concept> olpc = parea.getOverlappingCodes();
-//
-//            List<String> olp = Arrays.asList(
-//                    "FecalFluidSample",
-//                    "BodyFluidSample",
-//                    "BloodSpecimen",
-//                    "AcellularBlSpecimen",
-//                    "SerumSpecimen",
-//                    "SerumSpecFromBlProd" );
-
-//            Assert.assertTrue( olp.size() == olpc.size() );
-//            for( Concept cct: olpc ) {
-//                Assert.assertTrue( olp.contains( cct.getName() ) );
-//            }
+            //Overlap area test unit
+            res = ResourceFactory.newClassPathResource( "ontologies/specimen_subarea.owl" );
+            model = DLFactoryImpl.getInstance().buildModel( "partest", res, OntoModel.Mode.NONE );
+            Concept rc00 = model.getConcept( "<http://www.semanticweb.org/mamad/ontologies/2013/3/specimen#specimen>" );
+            Concept oc00 = model.getConcept( "<http://www.semanticweb.org/mamad/ontologies/2013/3/specimen#fecal_fluid_sample>" );
+            Concept oc01 = model.getConcept( "<http://www.semanticweb.org/mamad/ontologies/2013/3/specimen#body_fluid_sample>" );
+            Concept oc02 = model.getConcept( "<http://www.semanticweb.org/mamad/ontologies/2013/3/specimen#blood_specimen>" );
+            Concept oc03 = model.getConcept( "<http://www.semanticweb.org/mamad/ontologies/2013/3/specimen#acellular_bl_specimen>" );
+            Concept oc04 = model.getConcept( "<http://www.semanticweb.org/mamad/ontologies/2013/3/specimen#serum_specimen>" );
+            Concept oc05 = model.getConcept( "<http://www.semanticweb.org/mamad/ontologies/2013/3/specimen#serum_spec_from_bl_prod>" );
+            areaTxn = model.getAreaTaxonomy();
+            assertEquals(areaTxn.getAreas().size(),2);
+            Iterator ai = areaTxn.getAreas().iterator();
+            Area ca = (ConceptAreaNode)ai.next();
+            if(ca.getElements().contains(rc00)){
+                assertTrue(ca.getOverlappingElements().size()==0);
+                ca = (ConceptAreaNode)ai.next();
+                assertTrue(ca.getOverlappingElements().size()==6);
+                assertTrue(ca.getOverlappingElements().contains(oc00));
+                assertTrue(ca.getOverlappingElements().contains(oc01));
+                assertTrue(ca.getOverlappingElements().contains(oc02));
+                assertTrue(ca.getOverlappingElements().contains(oc03));
+                assertTrue(ca.getOverlappingElements().contains(oc04));
+                assertTrue(ca.getOverlappingElements().contains(oc05));
+            }
+            else{
+                assertTrue(ca.getOverlappingElements().size()==6);
+                assertTrue(ca.getOverlappingElements().contains(oc00));
+                assertTrue(ca.getOverlappingElements().contains(oc01));
+                assertTrue(ca.getOverlappingElements().contains(oc02));
+                assertTrue(ca.getOverlappingElements().contains(oc03));
+                assertTrue(ca.getOverlappingElements().contains(oc04));
+                assertTrue(ca.getOverlappingElements().contains(oc05));
+                ca = (ConceptAreaNode)ai.next();
+                assertTrue(ca.getOverlappingElements().size()==0);
+            }
 
         } catch ( Exception e ) {
             e.printStackTrace();
