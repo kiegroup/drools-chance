@@ -30,6 +30,7 @@ import com.clarkparsia.empire.EmpireGenerated;
 import com.clarkparsia.empire.annotation.Namespaces;
 import com.clarkparsia.empire.annotation.RdfsClass;
 import com.sun.xml.bind.CycleRecoverable;
+import org.drools.semantics.NamedEntity;
 import org.drools.semantics.UIdAble;
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
 import org.jvnet.jaxb2_commons.lang.CopyTo;
@@ -86,7 +87,7 @@ import thewebsemantic.RdfType;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ThingImpl
     extends UIdAble
-        implements Serializable, Cloneable, CycleRecoverable, CopyTo, Equals, HashCode, MergeFrom, Thing, EmpireGenerated {
+        implements NamedEntity, Serializable, Cloneable, CycleRecoverable, CopyTo, Equals, HashCode, MergeFrom, Thing, EmpireGenerated {
 
 //    protected String dyEntryType;
     @XmlAttribute( required = false, name = "idref" )
@@ -366,5 +367,16 @@ public class ThingImpl
     @Transient
     public boolean isTop() {
         throw new UnsupportedOperationException( ThingImpl.class.getName() + " is not supposed to be used as a trait proxy" );
+    }
+
+    @Transient
+    public String getName() {
+        return dyEntryId;
+    }
+
+    public void setName( String name ) {
+        if ( getDyEntryId() == null ) {
+            setDyEntryId( name );
+        }
     }
 }

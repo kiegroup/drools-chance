@@ -165,6 +165,16 @@ public final class NameUtils {
         return BUILTIN_DATATYPES_MAP.get( type );
     }
 
+    public static String builtInTypeToWrappingJavaType( String type ) {
+        type = type.replaceAll( "xsd:", "" );
+        String klass = BUILTIN_DATATYPES_MAP.get( type );
+        if ( HOLDER_TYPES_MAP.containsKey( klass ) ) {
+            return HOLDER_TYPES_MAP.get( klass ).getName();
+        } else {
+            return klass;
+        }
+    }
+
     public static Class<?> holderClass( String type ) {
         return HOLDER_TYPES_MAP.get( type );
     }

@@ -20,7 +20,7 @@ public class ModelFactory {
 
 
     public enum CompileTarget {
-        BASE, JAVA, DRL, JAR, GRAPH, XSD, XSDX, WORKSET;
+        BASE, JAVA, DRL, RL, JAR, GRAPH, XSD, XSDX, WORKSET;
     }
 
 

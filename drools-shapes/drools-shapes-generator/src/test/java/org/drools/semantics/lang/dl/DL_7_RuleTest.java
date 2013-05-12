@@ -22,11 +22,6 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
-import org.drools.event.rule.ObjectInsertedEvent;
-import org.drools.event.rule.ObjectRetractedEvent;
-import org.drools.event.rule.ObjectUpdatedEvent;
-import org.drools.event.rule.WorkingMemoryEventListener;
-import org.drools.factmodel.traits.Entity;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ByteArrayResource;
@@ -34,11 +29,12 @@ import org.drools.lang.DrlDumper;
 import org.drools.lang.api.DescrFactory;
 import org.drools.lang.api.PackageDescrBuilder;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.semantics.NamedIndividual;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.reasoner.DLogicTransformer;
-import org.drools.semantics.builder.reasoner.RecognitionRuleBuilder;
+import org.drools.semantics.builder.reasoner.TemplateRecognitionRuleBuilder;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -74,7 +70,7 @@ public class DL_7_RuleTest {
                 OntoModel.Mode.NONE,
                 DLFactory.defaultAxiomGenerators );
 
-        String drl = new RecognitionRuleBuilder().createDRL( pizza, pizzaModel );
+        String drl = new TemplateRecognitionRuleBuilder().createDRL( pizza, pizzaModel );
 
         System.err.println( "***********************************************************************" );
         System.err.println( drl );
@@ -94,19 +90,19 @@ public class DL_7_RuleTest {
                 OntoModel.Mode.NONE,
                 DLFactory.defaultAxiomGenerators );
 
-        String drl = new RecognitionRuleBuilder().createDRL( onto, ontoModel );
+        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
         KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
 
 
         String drl2 = "package t.x \n" +
-                "import org.drools.factmodel.traits.Entity;\n" +
+                "import org.drools.semantics.NamedIndividual;\n" +
                 "import org.drools.factmodel.traits.Thing;\n" +
                 "" +
                 "rule Init when \n" +
                 "then \n" +
-                "   Entity e = new Entity();\n" +
+                "   NamedIndividual e = new NamedIndividual();\n" +
                 "   insert( e ); \n" +
                 "   don( e, W.class ); \n" +
                 "end \n" +
@@ -142,6 +138,74 @@ public class DL_7_RuleTest {
         }
 
     }
+
+
+
+
+
+    @Test
+    public void testOneOfWithNamedIndividuals() {
+        String owl = "Prefix(owl:=<http://www.w3.org/2002/07/owl#>)\n" +
+                     "Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)\n" +
+                     "Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)\n" +
+                     "Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)\n" +
+                     "Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)\n" +
+                     "\n" +
+                     "\n" +
+                     "Ontology(<http://t/x>\n" +
+                     "\n" +
+                     "Declaration(Class(<http://t/x#X>))\n" +
+                     "Declaration(Class(<http://t/x#Y>))\n" +
+                     "EquivalentClasses(<http://t/x#Y> ObjectIntersectionOf(ObjectOneOf(<http://t/x#b> <http://t/x#a>) <http://t/x#X>))\n" +
+                     "Declaration(NamedIndividual(<http://t/x#a>))\n" +
+                     "Declaration(NamedIndividual(<http://t/x#b>))\n" +
+                     ")";
+
+        String drl2 = "package t.x \n" +
+                      "import org.drools.semantics.NamedIndividual;\n" +
+                      "import org.drools.factmodel.traits.Thing;\n" +
+                      "" +
+                      "rule Init when \n" +
+                      "then \n" +
+                      "   NamedIndividual e = new NamedIndividual( \"http://t/x#a\" );\n" +
+                      "   insert( e ); \n" +
+                      "   don( e, X.class, true ); \n" +
+                      "end \n" +
+                      "";
+
+        Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
+        OWLOntology onto = factory.parseOntology( res );
+        OntoModel ontoModel = factory.buildModel( "test",
+                res,
+                OntoModel.Mode.NONE,
+                DLFactory.defaultAxiomGenerators );
+
+        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
+
+        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
+
+        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
+        if ( kBuilder.hasErrors() ) {
+            fail( kBuilder.getErrors().toString() );
+        }
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+        kSession.fireAllRules();
+
+        for ( Object o : kSession.getObjects() ) {
+            System.err.println( o );
+        }
+
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
+            NamedIndividual e = (NamedIndividual) o;
+            assertTrue( ( (NamedIndividual) o ).hasTrait( "t.x.Y" ) );
+        }
+
+
+    }
+
 
 
 
@@ -200,16 +264,16 @@ public class DL_7_RuleTest {
                 "\n";
 
         String drl2 = "package t.x; \n" +
-                "import org.drools.factmodel.traits.Entity; \n" +
+                "import org.drools.semantics.NamedIndividual; \n" +
                 "" +
-                "declare Entity end\n" +
+                "declare NamedIndividual end\n" +
                 "" +
                 "rule Init \n" +
                 "when \n" +
                 "then \n" +
-                "   Entity e1 = new Entity( \"X\" ); \n" +
+                "   NamedIndividual e1 = new NamedIndividual( \"X\" ); \n" +
                 "   insert( e1 );\n" +
-                "   Entity e2 = new Entity( \"Y\"); \n" +
+                "   NamedIndividual e2 = new NamedIndividual( \"Y\"); \n" +
                 "   insert( e2 );\n" +
                 " " +
                 "   D d1 = don( e1, D.class, true ); \n" +
@@ -258,7 +322,7 @@ public class DL_7_RuleTest {
                 OntoModel.Mode.NONE,
                 DLFactory.defaultAxiomGenerators );
 
-        String drl = new RecognitionRuleBuilder().createDRL( onto, ontoModel );
+        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
         KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
@@ -274,8 +338,8 @@ public class DL_7_RuleTest {
         StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
         kSession.fireAllRules();
 
-        for ( Object o : kSession.getObjects( new ClassObjectFilter( Entity.class ) ) ) {
-            Entity e = (Entity) o;
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
+            NamedIndividual e = (NamedIndividual) o;
             if ( e.getId().equals( "X" ) ) {
                 assertTrue( e.hasTrait( "t.x.D" ) );
                 assertTrue( e.hasTrait( "t.x.E" ) );
@@ -294,8 +358,8 @@ public class DL_7_RuleTest {
         kSession.insert( "go" );
         kSession.fireAllRules();
 
-        for ( Object o : kSession.getObjects( new ClassObjectFilter( Entity.class ) ) ) {
-            Entity e = (Entity) o;
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
+            NamedIndividual e = (NamedIndividual) o;
             if ( e.getId().equals( "X" ) ) {
                 assertTrue( e.hasTrait( "t.x.D" ) );
                 assertFalse( e.hasTrait( "t.x.E" ) );
@@ -318,8 +382,8 @@ public class DL_7_RuleTest {
         kSession.insert( "go2" );
         kSession.fireAllRules();
 
-        for ( Object o : kSession.getObjects( new ClassObjectFilter( Entity.class ) ) ) {
-            Entity e = (Entity) o;
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
+            NamedIndividual e = (NamedIndividual) o;
             if ( e.getId().equals( "X" ) ) {
                 assertTrue( e.hasTrait( "t.x.D" ) );
                 assertFalse( e.hasTrait( "t.x.E" ) );
@@ -342,7 +406,7 @@ public class DL_7_RuleTest {
 
 
     @Test
-    public void testExampleDNFQuantifiersOnly() {
+    public void testExaTemplateRecognitionBuildermpleDNFQuantifiersOnly() {
 
         String owl = "" +
                      "<?xml version=\"1.0\"?>\n" +
@@ -373,19 +437,19 @@ public class DL_7_RuleTest {
                      "\n";
 
         String drl2 = "package t.x; \n" +
-                      "import org.drools.factmodel.traits.Entity; \n" +
+                      "import org.drools.semantics.NamedIndividual; \n" +
                       "import org.w3._2002._07.owl.Thing; \n" +
                       "" +
-                      "declare Entity end\n" +
+                      "declare NamedIndividual end\n" +
                       "" +
                       "rule Init \n" +
                       "when \n" +
                       "then \n" +
-                      "   Entity e1 = new Entity( \"X\" ); \n" +
+                      "   NamedIndividual e1 = new NamedIndividual( \"X\" ); \n" +
                       "   insert( e1 );\n" +
-                      "   Entity e2 = new Entity( \"Y\" ); \n" +
+                      "   NamedIndividual e2 = new NamedIndividual( \"Y\" ); \n" +
                       "   insert( e2 );\n" +
-                      "   Entity e3 = new Entity( \"Z\" ); \n" +
+                      "   NamedIndividual e3 = new NamedIndividual( \"Z\" ); \n" +
                       "   insert( e3 );\n" +
                       " " +
                       "   D d1 = don( e1, D.class, true ); \n" +
@@ -416,7 +480,7 @@ public class DL_7_RuleTest {
                 OntoModel.Mode.NONE,
                 DLFactory.defaultAxiomGenerators );
 
-        String drl = new RecognitionRuleBuilder().createDRL( onto, ontoModel );
+        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
         KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
@@ -432,8 +496,8 @@ public class DL_7_RuleTest {
         StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
         kSession.fireAllRules();
 
-        for ( Object o : kSession.getObjects( new ClassObjectFilter( Entity.class ) ) ) {
-            Entity e = (Entity) o;
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
+            NamedIndividual e = (NamedIndividual) o;
             if ( e.getId().equals( "X" ) ) {
                 assertTrue( e.hasTrait( "t.x.D" ) );
                 assertTrue( e.hasTrait( "t.x.E" ) );
@@ -451,6 +515,214 @@ public class DL_7_RuleTest {
 
 
     }
+
+
+
+
+
+
+    @Test
+    public void testExampleDNFDataProperties() {
+
+        String owl = "<?xml version=\"1.0\"?>\n" +
+                     "<!DOCTYPE rdf:RDF [\n" +
+                     "    <!ENTITY owl \"http://www.w3.org/2002/07/owl#\" >\n" +
+                     "    <!ENTITY xsd \"http://www.w3.org/2001/XMLSchema#\" >\n" +
+                     "    <!ENTITY rdfs \"http://www.w3.org/2000/01/rdf-schema#\" >\n" +
+                     "    <!ENTITY rdf \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" >\n" +
+                     "]>\n" +
+                     "<rdf:RDF xmlns=\"http://t/x#\"\n" +
+                     "     xml:base=\"http://t/x\"\n" +
+                     "     xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n" +
+                     "     xmlns:owl=\"http://www.w3.org/2002/07/owl#\"\n" +
+                     "     xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\"\n" +
+                     "     xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                     "    <owl:Ontology rdf:about=\"http://t/x\"/>\n" +
+                     "    <owl:DatatypeProperty rdf:about=\"http://t/x#dataProp\">\n" +
+                     "        <rdfs:range rdf:resource=\"&xsd;string\"/>\n" +
+                     "    </owl:DatatypeProperty>\n" +
+                     "    <owl:Class rdf:about=\"http://t/x#E\">\n" +
+                     "        <owl:equivalentClass>\n" +
+                     "            <owl:Class>\n" +
+                     "                <owl:intersectionOf rdf:parseType=\"Collection\">\n" +
+                     "                    <owl:Class>\n" +
+                     "                        <owl:unionOf rdf:parseType=\"Collection\">\n" +
+                     "                            <owl:Restriction>\n" +
+                     "                                <owl:onProperty rdf:resource=\"http://t/x#dataProp\"/>\n" +
+                     "                                <owl:hasValue>a</owl:hasValue>\n" +
+                     "                            </owl:Restriction>\n" +
+                     "                            <owl:Restriction>\n" +
+                     "                                <owl:onProperty rdf:resource=\"http://t/x#dataProp\"/>\n" +
+                     "                                <owl:hasValue>b</owl:hasValue>\n" +
+                     "                            </owl:Restriction>\n" +
+                     "                        </owl:unionOf>\n" +
+                     "                    </owl:Class>\n" +
+                     "                    <owl:Restriction>\n" +
+                     "                        <owl:onProperty rdf:resource=\"http://t/x#dataProp\"/>\n" +
+                     "                        <owl:someValuesFrom rdf:resource=\"&xsd;string\"/>\n" +
+                     "                    </owl:Restriction>\n" +
+                     "                    <owl:Restriction>\n" +
+                     "                        <owl:onProperty rdf:resource=\"http://t/x#dataProp\"/>\n" +
+                     "                        <owl:allValuesFrom rdf:resource=\"&xsd;string\"/>\n" +
+                     "                    </owl:Restriction>\n" +
+                     "                </owl:intersectionOf>\n" +
+                     "            </owl:Class>\n" +
+                     "        </owl:equivalentClass>\n" +
+                     "    </owl:Class>\n" +
+                     "</rdf:RDF>\n";
+
+        String drl2 = "package t.x; \n" +
+                      "import org.drools.semantics.NamedIndividual; \n" +
+                      "import org.w3._2002._07.owl.Thing; \n" +
+                      "" +
+                      "declare NamedIndividual end\n" +
+                      "" +
+                      "rule Init \n" +
+                      "when \n" +
+                      "then \n" +
+                      "   NamedIndividual e1 = new NamedIndividual( \"X\" ); \n" +
+                      "   insert( e1 );\n" +
+                      "   RootThing t = don( e1, RootThing.class, true ); \n" +
+                      "   modify ( t ) { \n" +
+                      "      getDataProp().add( \"a\" )," +
+                      "      getDataProp().add( \"c\" );" +
+                      "   } \n" +
+                      "end \n" +
+                      "" +
+                      "rule Log \n" +
+                      "when \n" +
+                      "   $x : E() \n" +
+                      "then \n" +
+                      "   System.out.println( \"RECOGNIZED \" + $x ); \n" +
+                      "end" ;
+
+        Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
+
+        OWLOntology onto = factory.parseOntology( res );
+
+        OntoModel ontoModel = factory.buildModel( "test",
+                res,
+                OntoModel.Mode.NONE,
+                DLFactory.defaultAxiomGenerators );
+
+        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
+
+        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
+
+        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
+        if ( kBuilder.hasErrors() ) {
+            fail( kBuilder.getErrors().toString() );
+        }
+
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+
+        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+        kSession.fireAllRules();
+
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
+            assertTrue( ((NamedIndividual) o).hasTrait( "t.x.E" ) );
+        }
+
+    }
+
+
+
+
+    @Test
+    public void testMixedDataTypes() {
+
+        String owl = "<?xml version=\"1.0\"?>\n" +
+                     "<!DOCTYPE rdf:RDF [\n" +
+                     "    <!ENTITY owl \"http://www.w3.org/2002/07/owl#\" >\n" +
+                     "    <!ENTITY xsd \"http://www.w3.org/2001/XMLSchema#\" >\n" +
+                     "    <!ENTITY rdfs \"http://www.w3.org/2000/01/rdf-schema#\" >\n" +
+                     "    <!ENTITY rdf \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" >\n" +
+                     "]>\n" +
+                     "<rdf:RDF xmlns=\"http://t/x#\"\n" +
+                     "     xml:base=\"http://t/x\"\n" +
+                     "     xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n" +
+                     "     xmlns:owl=\"http://www.w3.org/2002/07/owl#\"\n" +
+                     "     xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\"\n" +
+                     "     xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                     "    <owl:Ontology rdf:about=\"http://t/x\"/>\n" +
+                     "    <owl:DatatypeProperty rdf:about=\"http://t/x#dataProp\">\n" +
+                     "        <rdfs:range rdf:resource=\"&xsd;string\"/>\n" +
+                     "    </owl:DatatypeProperty>\n" +
+                     "    <owl:Class rdf:about=\"http://t/x#E\">\n" +
+                     "        <owl:equivalentClass>\n" +
+                     "            <owl:Restriction>\n" +
+                     "                <owl:onProperty rdf:resource=\"http://t/x#dataProp\"/>\n" +
+                     "                <owl:someValuesFrom>\n" +
+                     "                    <rdfs:Datatype>\n" +
+                     "                        <owl:unionOf rdf:parseType=\"Collection\">\n" +
+                     "                            <rdf:Description rdf:about=\"&xsd;int\"/>\n" +
+                     "                            <rdf:Description rdf:about=\"&xsd;string\"/>\n" +
+                     "                        </owl:unionOf>\n" +
+                     "                    </rdfs:Datatype>\n" +
+                     "                </owl:someValuesFrom>\n" +
+                     "            </owl:Restriction>\n" +
+                     "        </owl:equivalentClass>\n" +
+                     "    </owl:Class>\n" +
+                     "</rdf:RDF>";
+
+        String drl2 = "package t.x; \n" +
+                      "import org.drools.semantics.NamedIndividual; \n" +
+                      "import org.w3._2002._07.owl.Thing; \n" +
+                      "" +
+                      "declare NamedIndividual end\n" +
+                      "" +
+                      "rule Init \n" +
+                      "when \n" +
+                      "then \n" +
+                      "   NamedIndividual e1 = new NamedIndividual( \"X\" ); \n" +
+                      "   insert( e1 );\n" +
+                      "   RootThing t = don( e1, RootThing.class, true ); \n" +
+                      "   modify ( t ) { \n" +
+                      "      getDataProp().add( new Integer(42) )," +
+                      "      getDataProp().add( \"Hello\" )," +
+                      "      getDataProp().add( 23.0 );" +
+                      "   } \n" +
+                      "end \n" +
+                      "" +
+                      "rule Log \n" +
+                      "when \n" +
+                      "   $x : E() \n" +
+                      "then \n" +
+                      "   System.out.println( \"RECOGNIZED \" + $x ); \n" +
+                      "end" ;
+
+        Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
+
+        OWLOntology onto = factory.parseOntology( res );
+
+        OntoModel ontoModel = factory.buildModel( "test",
+                res,
+                OntoModel.Mode.NONE,
+                DLFactory.defaultAxiomGenerators );
+
+        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
+
+        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
+        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
+
+        System.err.println( kBuilder.getErrors() );
+        assertFalse( kBuilder.hasErrors() );
+
+        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+
+        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+        kSession.fireAllRules();
+
+        for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
+            assertTrue( ((NamedIndividual) o).hasTrait( "t.x.E" ) );
+        }
+
+    }
+
 
 
 
