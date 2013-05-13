@@ -91,9 +91,6 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
                 }
             }
         }
-        
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, internalProxy, "synchFields", "()V");
 
         return size + 2;
     }
