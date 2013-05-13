@@ -19,7 +19,7 @@
 
  declare trait @{context}Input
 
-     @foreach{ fldName : fields.keySet }
+     @foreach{ fldName : fields.keySet() }
         @{fldName}   :  @{mapDatatype(fields.get(fldName))}
      @end{}
 
@@ -30,12 +30,12 @@
  dialect "mvel"
  when
     @{context}Input(
-       @foreach{ fldName : fields.keySet }
+       @foreach{ fldName : fields.keySet() }
           _@{fldName}   :  @{fldName}
        @end{','}
     )
  then
-    @foreach{ fldName : fields.keySet }
+    @foreach{ fldName : fields.keySet() }
         drools.getEntryPoint("in_@{compactUpperCase(fldName)}").insert(_@{fldName});
     @end{}
  end

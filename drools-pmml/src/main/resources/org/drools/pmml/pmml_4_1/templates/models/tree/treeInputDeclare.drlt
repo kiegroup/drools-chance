@@ -25,7 +25,7 @@
 @declare{'treeInputDeclare'}
 
 declare @{context}TreeToken extends TreeToken
-    @foreach{ inputField : fields.keySet }
+    @foreach{ inputField : fields.keySet() }
         v@{inputField}   : @{mapDatatype(fields[inputField])}
         m@{inputField}   : boolean
     @end{}

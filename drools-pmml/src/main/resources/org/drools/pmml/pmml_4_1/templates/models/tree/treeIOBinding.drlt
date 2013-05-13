@@ -26,7 +26,7 @@
 
 rule "Tree Input Link @{context}"
 when
-    @foreach{ inputField : fields.keySet }
+    @foreach{ inputField : fields.keySet() }
         @{inputField}( context == "@{context}", @{inputField} : value, m@{inputField} : missing, valid == true || ( valid == false && missing == true) )
     @end{}
 then
@@ -40,7 +40,7 @@ then
                                                        new java.util.HashMap(),
                                                        1.0,
                                                        0.0,
-                                                       @foreach{ inputField : fields.keySet } @{inputField}, m@{inputField} @end{','},
+                                                       @foreach{ inputField : fields.keySet() } @{inputField}, m@{inputField} @end{','},
                                                        null
                                                        );
     insertLogical( tok );
