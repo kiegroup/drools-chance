@@ -226,6 +226,7 @@
           <outputDirectory>${pom.basedir}</outputDirectory>
           <ontology>${pom.basedir}/src/main/resources/sem_rules.owl</ontology>
           <modelName>semrule</modelName>
+          <axiomInference>lite</axiomInference>
           <generateInterfaces>true</generateInterfaces>
           <generateInterfaceJar>true</generateInterfaceJar>
           <generateTraitDRL>true</generateTraitDRL>

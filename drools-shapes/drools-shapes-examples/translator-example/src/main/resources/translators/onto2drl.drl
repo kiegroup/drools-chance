@@ -17,7 +17,8 @@ global PackageDescr pack;
  Notice : ESSENTIAL!!
     Allows to access properties defined in the implementing classes only
 */
-declare Thing @typesafe(false) end
+declare org.drools.factmodel.traits.Thing @typesafe(false) end
+declare org.w3._2002._07.owl.Thing @typesafe(false) end
 
 
 
