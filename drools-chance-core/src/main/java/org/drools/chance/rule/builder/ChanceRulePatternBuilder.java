@@ -171,6 +171,7 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                         patternDescr,
                         pattern,
                         b,
+                        null,
                         mvelCtx);
             }
 
@@ -200,6 +201,7 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                         patternDescr,
                         pattern,
                         constr,
+                        result,
                         mvelCtx);
             } else {
                 // This declaration already exists, so throw an Exception

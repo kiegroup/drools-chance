@@ -129,10 +129,6 @@ public class ImperfectBeanFieldTest {
         geez.set( drlCheddar, "name", "cheddar" );
         assertNotNull( drlCheese );
 
-
-
-        assertEquals( 28, store.size() );
-
     }
 
     private void logStore(TripleStore store) {
