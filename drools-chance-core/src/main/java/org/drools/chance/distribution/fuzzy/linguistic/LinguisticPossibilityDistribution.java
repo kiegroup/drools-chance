@@ -78,4 +78,8 @@ public class LinguisticPossibilityDistribution<T extends Number>
     public void setNormalized(boolean normalized) {
         this.normalized = normalized;
     }
+
+    public Degree getCumulative( Number object ) {
+        return null;
+    }
 }

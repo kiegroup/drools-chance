@@ -38,8 +38,6 @@ import org.mvel2.Macro;
 public class Chance {
 
 
-
-
     public static void initialize() {
 
         ChanceStrategyFactory.initDefaults();

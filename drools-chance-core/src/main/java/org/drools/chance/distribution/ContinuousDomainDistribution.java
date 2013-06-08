@@ -16,6 +16,10 @@
 
 package org.drools.chance.distribution;
 
+import org.drools.chance.degree.Degree;
+
 public interface ContinuousDomainDistribution<T> {
+
+    public Degree getCumulative( T object );
 
 }

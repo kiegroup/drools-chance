@@ -16,7 +16,11 @@
 
 package org.drools.chance.distribution;
 
+import org.drools.chance.degree.Degree;
+
+import java.util.Set;
+
 public interface ContinuousProbabilityDistribution<T> extends
-        DiscreteDomainDistribution<T>, ProbabilityDistribution<T> {
+        ContinuousDomainDistribution<T>, ProbabilityDistribution<T> {
 
 }

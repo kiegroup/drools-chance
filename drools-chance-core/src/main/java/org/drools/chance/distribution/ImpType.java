@@ -23,6 +23,7 @@ public enum ImpType {
     TBM                 ("TBM"),
     DISCRETE            ("discrete"),
     DIRICHLET           ("dirichlet"),
+    GAUSSIAN            ("gaussian"),
     BASIC               ("basic"),
     MVL                 ("many-valued");
 

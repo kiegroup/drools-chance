@@ -16,6 +16,7 @@
 
 package org.drools.chance.common;
 
+import org.drools.chance.distribution.probability.gaussian.GaussianDistributionStrategyFactory;
 import org.drools.chance.rule.constraint.core.connectives.ConnectiveFactory;
 import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.linguistic.FuzzyConnectiveFactory;
 import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.mvl.ManyValuedConnectiveFactory;
@@ -76,11 +77,17 @@ public class ChanceStrategyFactory<T> {
         cacheConnective.put(
                 new Pair<ImpKind, ImpType>( ImpKind.FUZZINESS, ImpType.MVL ),
                 new ManyValuedConnectiveFactory() );
+
         cacheConnective.put(
                 new Pair<ImpKind, ImpType>( ImpKind.FUZZINESS, ImpType.BASIC ),
                 new ManyValuedConnectiveFactory() );
+
         cacheConnective.put(
                 new Pair<ImpKind, ImpType>( ImpKind.PROBABILITY, ImpType.BASIC ),
+                new ManyValuedConnectiveFactory() );
+
+        cacheConnective.put(
+                new Pair<ImpKind, ImpType>( ImpKind.PROBABILITY, ImpType.GAUSSIAN ),
                 new ManyValuedConnectiveFactory() );
     }
 
@@ -177,6 +184,13 @@ public class ChanceStrategyFactory<T> {
         try {
             DistributionStrategyFactory factory7 = (DistributionStrategyFactory) Class.forName( "org.drools.chance.distribution.belief.discrete.TBMStrategyFactory" ).newInstance();
             ChanceStrategyFactory.register( factory7.getImp_Kind(), factory7.getImp_Model(), factory7 );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
+        try {
+            DistributionStrategyFactory factory8 = (DistributionStrategyFactory) Class.forName( "org.drools.chance.distribution.probability.gaussian.GaussianDistributionStrategyFactory" ).newInstance();
+            ChanceStrategyFactory.register( factory8.getImp_Kind(), factory8.getImp_Model(), factory8 );
         } catch ( Exception e ) {
             e.printStackTrace();
         }

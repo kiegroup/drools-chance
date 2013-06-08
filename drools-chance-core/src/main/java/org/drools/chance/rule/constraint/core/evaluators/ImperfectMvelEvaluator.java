@@ -2,6 +2,7 @@ package org.drools.chance.rule.constraint.core.evaluators;
 
 import org.drools.base.ValueType;
 import org.drools.base.evaluators.Operator;
+import org.drools.chance.distribution.ContinuousDomainDistribution;
 import org.drools.chance.rule.builder.ChanceOperators;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
@@ -62,7 +63,16 @@ public class ImperfectMvelEvaluator extends BaseImperfectEvaluator {
                 }
             }
         } else {
-            throw new UnsupportedOperationException( "Unable to match a value with a continuous distribution!" );
+            Degree x;
+            if ( getOperator().equals( Operator.EQUAL ) ||  getOperator().equals( ChanceOperators.EQUAL_IMP )) {
+                return negated ? deg.True() : deg.False();
+            }
+            if ( getOperator().equals( Operator.LESS_OR_EQUAL ) || getOperator().equals( Operator.LESS ) ) {
+                x = (( ContinuousDomainDistribution ) leftDist ).getCumulative( rightValue );
+            } else {
+                x = baseDegree.True().sub( (( ContinuousDomainDistribution ) leftDist ).getCumulative( rightValue ) );
+            }
+            return negated ? baseDegree.True().sub( x ) : x;
         }
         return deg;
     }
