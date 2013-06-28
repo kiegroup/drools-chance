@@ -343,6 +343,49 @@ public class TaskInteractionTest {
 
         kSession.dispose();
     }
+    
+    @Test
+    public void test0sInteraction() {
+
+
+        Thread slave = new Thread() {
+            public void run() {
+                kSession.insert( "interaction test 0s 1" );
+                kSession.insert( "interaction test 0s 2" );
+                kSession.insert( "interaction test 0s 3" );
+                kSession.insert( "interaction test 0s 4" );
+                kSession.insert( "interaction test 0s 5" );
+                kSession.insert( "interaction test 0s 6" );
+                kSession.fireUntilHalt();
+            }
+        };
+
+        slave.start();
+
+
+        try {
+            Thread.sleep( 5000 );
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        kSession.halt();
+
+        try {
+            slave.join();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
+        report( kSession, System.err );
+        assertEquals( 0, kSession.getObjects().size() );
+
+        System.err.println( kSession.getGlobal( "list" ) );
+        System.err.println( kSession.getGlobal( "taskLog" ) );
+
+
+        kSession.dispose();
+    }
 
 
     @Test
