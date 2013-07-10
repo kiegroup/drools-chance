@@ -171,7 +171,7 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                         patternDescr,
                         pattern,
                         b,
-                        null,
+                        new ConstraintConnectiveDescr(  ),
                         mvelCtx);
             }
 
