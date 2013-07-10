@@ -7,6 +7,7 @@ import org.drools.util.CodedHierarchy;
 import org.drools.util.HierarchyEncoder;
 import org.drools.util.HierarchyEncoderImpl;
 import org.drools.util.HierarchySorter;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +24,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     private String defaultPackage;
 
     private String defaultNamespace;
+
+    private OWLOntology ontology;
 
     private String name;
 
@@ -51,6 +54,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     public Object clone() {
         GenericModelImpl twin = newInstance();
         twin.setDefaultPackage( defaultPackage );
+        twin.setOntology( ontology );
         twin.setName( name );
         twin.setMode(mode);
         twin.setConcepts( new LinkedHashMap<String, Concept>( concepts ) );
@@ -59,6 +63,13 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         return twin;
     }
 
+    public OWLOntology getOntology() {
+        return ontology;
+    }
+
+    public void setOntology( OWLOntology ontology ) {
+        this.ontology = ontology;
+    }
 
     public String getDefaultPackage() {
         return defaultPackage;
@@ -79,6 +90,7 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     public void setDefaultNamespace(String namespace) {
         this.defaultNamespace = namespace;
     }
+
 
     public String getDefaultPackagee() {
         return defaultPackage;

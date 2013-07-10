@@ -24,6 +24,7 @@ import org.drools.semantics.builder.model.hierarchy.OptimizedModelProcessor;
 import org.drools.semantics.builder.model.hierarchy.VariantModelProcessor;
 import org.drools.semantics.util.area.AreaTxn;
 import org.drools.util.CodedHierarchy;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.List;
 import java.util.Set;
@@ -49,6 +50,10 @@ public interface OntoModel extends Cloneable {
         }
     }
 
+
+    public OWLOntology getOntology();
+
+    public void setOntology( OWLOntology onto );
 
     public String getDefaultPackage();
         

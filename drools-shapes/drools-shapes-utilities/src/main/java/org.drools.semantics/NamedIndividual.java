@@ -14,11 +14,11 @@ public class NamedIndividual extends Entity implements NamedEntity {
         super( name );
     }
 
-    public String getName() {
+    public String get__IndividualName() {
         return getId();
     }
 
-    public void setName( String name ) {
-        if ( getName() == null ) { setId( name ); }
+    public void set__IndividualName( String name ) {
+        if ( get__IndividualName() == null ) { setId( name ); }
     }
 }

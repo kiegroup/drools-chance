@@ -186,7 +186,7 @@ public class SimpleTest {
             );
 
 
-
+            Object xyz = onto.getSubClassAxiomsForSubClass( ts );
             assertEquals( 4, onto.getSubClassAxiomsForSubClass( ts ).size() );
 
 

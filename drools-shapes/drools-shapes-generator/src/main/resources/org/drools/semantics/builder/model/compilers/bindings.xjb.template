@@ -100,8 +100,8 @@
         @end{}
 
         <dsp:accessors>
-        @foreach{ propKey : properties[ concept.name ].keySet }
-            @code{ prop = properties[ concept.name ][ propKey ] }
+        @foreach{ propKey : properties[ concept.iri ].keySet }
+            @code{ prop = properties[ concept.iri ][ propKey ] }
             @if{ prop.transient }
                 <dsp:accessor name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" primitive="@{prop.target.primitive}"
                               min="@{prop.minCard}" max="@{prop.maxCard}"
@@ -118,8 +118,8 @@
         @end{}
         </dsp:accessors>
 
-        @foreach{ propKey : properties[ concept.name ].keySet }
-            @code{ prop = properties[ concept.name ][ propKey ] }
+        @foreach{ propKey : properties[ concept.iri ].keySet }
+            @code{ prop = properties[ concept.iri ][ propKey ] }
             @if{ ! prop.transient }
 
 

@@ -19,6 +19,8 @@
 
 package org.drools.semantics.utils;
 
+import org.drools.semantics.Literal;
+
 import javax.xml.ws.Holder;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -636,7 +638,7 @@ public final class NameUtils {
             return box ? "java.lang.Short" : "short";
 
         } else if ( "xsd:anySimpleType".equals( dataType ) ) {
-            return "java.lang.Object";
+            return Literal.class.getName();
         } else if ( "xsd:boolean".equals( dataType ) ) {
 
             return box ? "java.lang.Boolean" : "boolean" ;

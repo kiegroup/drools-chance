@@ -19,6 +19,7 @@ package org.drools.semantics.builder.model;
 
 import org.drools.semantics.util.area.AreaTxn;
 import org.drools.util.CodedHierarchy;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,14 @@ public abstract class ModelImpl implements OntoModel {
 
     private OntoModel innerModel;
 
+
+    public OWLOntology getOntology() {
+        return innerModel.getOntology();
+    }
+
+    public void setOntology( OWLOntology onto ) {
+        innerModel.setOntology( onto );
+    }
 
     public String getName() {
         return innerModel.getName();

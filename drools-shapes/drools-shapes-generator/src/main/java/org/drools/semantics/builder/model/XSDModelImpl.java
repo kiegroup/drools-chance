@@ -11,6 +11,8 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
@@ -64,6 +66,24 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
         }
 
         dox.addContent( root );
+
+        OWLOntology current = getOntology().getOWLOntologyManager().getOntology( IRI.create( tgtNamespace ) );
+        if ( current != null ) {
+            System.out.println( current.getOntologyID() + " imports " + current.getImports() );
+        Set<OWLOntology> imports = current.getImports();
+            for ( OWLOntology onto : imports ) {
+                System.out.println( " \t\t importing " + Namespace.getNamespace( onto.getOntologyID().getOntologyIRI().toURI().toString() ) );
+                String ns = onto.getOntologyID().getOntologyIRI().toURI().toString();
+                if ( getNamespace( ns ) != null ) {
+                    addImport( dox, Namespace.getNamespace( ns ) );
+                }
+            }
+        }
+
+        if ( ! getNamespace( "tns" ).getURI().equals( NamespaceUtils.removeLastSeparator( tgtNamespace ) ) ) {
+            addImport( dox, getNamespace( "tns" ), true );
+        }
+
         return dox;
     }
 
@@ -243,7 +263,7 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
 //        return getXSDSchema();
 //    }
 
-    private Document getXSDSchema( Namespace altNamespace ) {
+    public Document getXSDSchema( Namespace altNamespace ) {
         if ( schemas.containsKey( altNamespace ) ) {
             return schemas.get( altNamespace );
         } else {
@@ -261,7 +281,14 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
 
 
 
-    private void addImport( Document dox, Namespace altNamespace ) {
+    public void addImport( Document dox, Namespace altNamespace ) {
+        addImport( dox, altNamespace, false );
+    }
+
+    public void addImport( Document dox, Namespace altNamespace, boolean forceTNS ) {
+        if ( ! forceTNS && altNamespace.equals( getNamespace( "tns" ) ) ) {
+            return;
+        }
         List<Element> imports = dox.getRootElement().getChildren( "import", NamespaceUtils.getNamespaceByPrefix( "xsd" ) );
         for ( Element e : imports ) {
             if ( e.getAttributeValue( "namespace" ).equals( altNamespace.getURI() ) ) {

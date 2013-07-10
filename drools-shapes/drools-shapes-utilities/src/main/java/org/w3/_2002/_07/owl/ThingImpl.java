@@ -218,7 +218,7 @@ public class ThingImpl
         return draftCopy;
     }
 
-    public Object createNewInstance() {
+    public java.lang.Object createNewInstance() {
         return new ThingImpl();
     }
 
@@ -370,11 +370,11 @@ public class ThingImpl
     }
 
     @Transient
-    public String getName() {
+    public String get__IndividualName() {
         return dyEntryId;
     }
 
-    public void setName( String name ) {
+    public void set__IndividualName( String name ) {
         if ( getDyEntryId() == null ) {
             setDyEntryId( name );
         }

@@ -16,8 +16,6 @@
 
 package org.drools.semantics.builder.model;
 
-import org.w3._2002._07.owl.Thing;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -31,8 +29,6 @@ public class DRLModelImpl extends ModelImpl implements DRLModel {
     DRLModelImpl() {
 
     }
-
-
 
 
     private Map<String, String> traits = new HashMap<String, String>();

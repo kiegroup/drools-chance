@@ -35,6 +35,7 @@ import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.reasoner.DLogicTransformer;
 import org.drools.semantics.builder.reasoner.TemplateRecognitionRuleBuilder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -60,6 +61,7 @@ public class DL_7_RuleTest {
     protected DLFactory factory = DLFactoryBuilder.newDLFactoryInstance();
 
     @Test
+    @Ignore
     public void testPizzaOntologyRecognition() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/pizza.owl" );
 
@@ -144,6 +146,7 @@ public class DL_7_RuleTest {
 
 
     @Test
+    @Ignore
     public void testOneOfWithNamedIndividuals() {
         String owl = "Prefix(owl:=<http://www.w3.org/2002/07/owl#>)\n" +
                      "Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)\n" +

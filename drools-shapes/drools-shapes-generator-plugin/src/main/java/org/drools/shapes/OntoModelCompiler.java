@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -142,7 +143,7 @@ public class OntoModelCompiler {
 
 
     public enum AXIOM_INFERENCE {
-        LITE( DLFactory.liteAxiomGenerators ), DEFAULT( DLFactory.defaultAxiomGenerators ), FULL( DLFactory.fullAxiomGenerators );
+        LITE( DLFactory.liteAxiomGenerators ), DEFAULT( DLFactory.defaultAxiomGenerators ), FULL( DLFactory.fullAxiomGenerators ), NONE( DLFactory.minimalAxiomGenerators );
 
         private List<InferredAxiomGenerator<? extends OWLAxiom>> gens;
 

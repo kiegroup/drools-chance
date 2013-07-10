@@ -92,6 +92,22 @@ public interface DLFactory {
                             new InferredSubObjectPropertyAxiomGenerator()
                     ) ) );
 
+    public static final List<InferredAxiomGenerator<? extends OWLAxiom>> minimalAxiomGenerators = Collections.unmodifiableList(
+            new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
+                    Arrays.asList(
+//                            new InferredClassAssertionAxiomGenerator(),
+//                            new InferredDataPropertyCharacteristicAxiomGenerator(),
+//                            new InferredEquivalentClassAxiomGenerator(),
+//                            new InferredEquivalentDataPropertiesAxiomGenerator(),
+//                            new InferredEquivalentObjectPropertyAxiomGenerator(),
+//                            new InferredInverseObjectPropertiesAxiomGenerator(),
+//                            new InferredObjectPropertyCharacteristicAxiomGenerator(),
+//                            new InferredPropertyAssertionGenerator(),
+                            new InferredSubClassAxiomGenerator()
+//                            new InferredSubDataPropertyAxiomGenerator(),
+//                            new InferredSubObjectPropertyAxiomGenerator()
+                    ) ) );
+
     public OWLOntology parseOntology( Resource resource );
 
 

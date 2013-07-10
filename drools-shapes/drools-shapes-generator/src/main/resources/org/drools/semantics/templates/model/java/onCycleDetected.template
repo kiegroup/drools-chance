@@ -21,7 +21,7 @@
 @declare{'onCycleDetect'}
 
 
-    public Object onCycleDetected( com.sun.xml.bind.CycleRecoverable.Context context ) {
+    public java.lang.Object onCycleDetected( com.sun.xml.bind.CycleRecoverable.Context context ) {
 
            @{ name + "Impl"} x = new @{ name + "Impl"}();
                x.setDyEntryId( null );

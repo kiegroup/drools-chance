@@ -53,6 +53,7 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
         StatefulKnowledgeSession kSession = buildKnowledgeSession( theory );
 
         OntoModel baseModel = ModelFactory.newModel( name, mode );
+        baseModel.setOntology( ontoDescr );
         baseModel.setClassLoader( classLoader );
 
         baseModel.setDefaultPackage(NameUtils.namespaceURIToPackage(ontoDescr.getOntologyID().getOntologyIRI().toString()) );

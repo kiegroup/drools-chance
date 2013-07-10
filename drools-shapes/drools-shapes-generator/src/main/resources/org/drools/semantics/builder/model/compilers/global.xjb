@@ -37,7 +37,13 @@
     <javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:date"/>
     <javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:dateTime"/>
     <javaType name="java.util.Date" parseMethod="org.drools.semantics.utils.NameUtils.unmarshalDate" printMethod="org.drools.semantics.utils.NameUtils.marshalDate" xmlType="xsd:time"/>
+    <javaType name="org.drools.semantics.Literal" hasNsContext="true"
+              xmlType="xsd:anySimpleType"
+              parseMethod="org.drools.semantics.utils.LiteralDatatypeConverter.parseLiteral"
+              printMethod="org.drools.semantics.utils.LiteralDatatypeConverter.printLiteral"
+        />
   </globalBindings>
+
 
   <bindings node="/xsd:schema" schemaLocation="owlThing.xsd">
     <bindings node="//xsd:complexType[@name='Thing']">

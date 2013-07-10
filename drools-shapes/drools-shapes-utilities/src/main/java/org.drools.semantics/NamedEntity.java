@@ -3,8 +3,8 @@ package org.drools.semantics;
 
 public interface NamedEntity {
 
-    public String getName();
+    public String get__IndividualName();
 
-    public void setName( String n );
+    public void set__IndividualName( String n );
 
 }

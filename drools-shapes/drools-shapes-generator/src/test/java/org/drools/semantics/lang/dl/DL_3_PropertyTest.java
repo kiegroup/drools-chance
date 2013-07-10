@@ -19,7 +19,14 @@ package org.drools.semantics.lang.dl;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.model.JavaInterfaceModel;
+import org.drools.semantics.builder.model.JavaInterfaceModelImpl;
+import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.SemanticXSDModel;
+import org.drools.semantics.builder.model.compilers.JavaInterfaceModelCompiler;
+import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
+import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompiler;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -43,5 +50,25 @@ public class DL_3_PropertyTest {
 
         assertTrue( results.isHierarchyConsistent() );
 
+    }
+
+    @Test
+    public void testPropertyLiteral() {
+        OntoModel results = factory.buildModel( "subProps",
+                ResourceFactory.newClassPathResource("ontologies/subProps.owl"),
+                OntoModel.Mode.OPTIMIZED );
+
+        System.out.println( results );
+
+        SemanticXSDModelCompiler xcompiler = (SemanticXSDModelCompiler) ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
+        SemanticXSDModel xmlModel = (SemanticXSDModel) xcompiler.compile( results );
+
+        xmlModel.streamAll( System.err );
+
+        JavaInterfaceModelCompiler jimc = (JavaInterfaceModelCompiler) ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAVA );
+        JavaInterfaceModel jim = (JavaInterfaceModel) jimc.compile( results );
+
+
+         System.out.println( (( JavaInterfaceModelImpl.InterfaceHolder) jim.getTrait( "org.jboss.drools.semantics.diamond2.X" ) ).getSource() );
     }
 }

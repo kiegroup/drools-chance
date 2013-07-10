@@ -86,7 +86,7 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
         Set<String> dependencies = new HashSet<String>();
         dependencies.add( NamespaceUtils.removeLastSeparator( con.getChosenSuperConcept().getNamespace() ) );
-        for ( PropertyRelation prop : con.getEffectiveProperties() ) {
+        for ( PropertyRelation prop : con.getEffectiveBaseProperties() ) {
             if ( ! prop.getTarget().isPrimitive() ) {
                 dependencies.add( NamespaceUtils.removeLastSeparator( prop.getTarget().getNamespace() ) );
             }
@@ -142,9 +142,9 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
     private Element buildProperties( Concept con, Map<String, PropertyRelation> props, Element root, boolean includeTransient, boolean excludeInherited ) {
 
         Namespace xsdNs = ( (XSDModel) getModel() ).getNamespace( "xsd" );
-        String name = con.getName();
+        String iri = con.getIri();
 
-        propCache.put( name, props );
+        propCache.put( iri, props );
 
         Element seq = isUseImplementation() ?
                 new Element( "sequence", xsdNs )
@@ -213,6 +213,13 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
 
             prop.setAttribute( "minOccurs", rel.getMinCard().toString() );
             prop.setAttribute( "maxOccurs", rel.getMaxCard() == null ? "unbounded" : rel.getMaxCard().toString() );
+
+
+            if ( ! tgt.isPrimitive() ) {
+                String relTargetNamespace = NamespaceUtils.removeLastSeparator( tgt.getNamespace() );
+                ((XSDModelImpl) getModel()).addImport( ((XSDModelImpl) getModel()).getXSDSchema(), Namespace.getNamespace( relTargetNamespace ) );
+            }
+
 
             seq.addContent( prop );
         }
