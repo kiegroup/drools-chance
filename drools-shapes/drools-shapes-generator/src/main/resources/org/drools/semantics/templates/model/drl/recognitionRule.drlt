@@ -137,7 +137,7 @@ accumulate ( @code{ context.push() } @includeNamed{ 'defOr'; expr=expr.filler; t
 
 
 @declare{ 'oneOOf' }
-    , name @foreach{ ind : expr.individuals } == "@{ ind.IRI }" @end{ '||' }
+    , get__IndividualName() @foreach{ ind : expr.individuals } == "@{ ind.IRI }" @end{ '||' }
 @end{}
 
 
