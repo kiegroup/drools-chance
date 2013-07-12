@@ -17,17 +17,16 @@
 package org.drools.pmml.pmml_4_1.predictive.models;
 
 
-import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
-import org.drools.runtime.ClassObjectFilter;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.After;
 import org.junit.Test;
+import org.kie.api.definition.type.FactType;
+import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class ClusteringTest extends DroolsAbstractPMMLTest {
@@ -46,20 +45,20 @@ public class ClusteringTest extends DroolsAbstractPMMLTest {
     @Test
     public void testCenterBasedClustering() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld0" ).insert( "y" );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( 2.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld0" ).insert( "y" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( 2.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( -1.0 );
 
         kSession.fireAllRules();
         
         System.err.println( reportWMObjects( kSession ) );
 
-        FactType mu = kSession.getKnowledgeBase().getFactType( packageName, "DistanceMembership" );
+        FactType mu = kSession.getKieBase().getFactType( packageName, "DistanceMembership" );
         Collection mus = kSession.getObjects( new ClassObjectFilter( mu.getFactClass()) );
         assertTrue( mus.size() > 0 );
         for ( Object x : mus ) {

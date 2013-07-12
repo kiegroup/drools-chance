@@ -39,17 +39,17 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSchemaWithValidValues() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(2.2);
+        getKSession().getEntryPoint("in_Feat1").insert(2.2);
         getKSession().fireAllRules();
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat1"),
                 true, false,"Test_MLP",2.2);
         refreshKSession();
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(5);
+        getKSession().getEntryPoint("in_Feat2").insert(5);
         getKSession().fireAllRules();
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat2"),
                 true, false,"Test_MLP",5);
@@ -60,16 +60,16 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSchemaWithOutliers() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(0.24);
+        getKSession().getEntryPoint("in_Feat1").insert(0.24);
         getKSession().fireAllRules();
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat1"),
                 true, false,"Test_MLP",1.0);
         refreshKSession();
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(999.9);
+        getKSession().getEntryPoint("in_Feat1").insert(999.9);
         getKSession().fireAllRules();
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat1"),
                 true, false,"Test_MLP",6.9);
@@ -83,11 +83,11 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSchemaWithInvalid() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
 
         //invalid as missing
-        getKSession().getWorkingMemoryEntryPoint("in_Feat1").insert(-37.0);
+        getKSession().getEntryPoint("in_Feat1").insert(-37.0);
         getKSession().fireAllRules();
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat1"),
                 false,false,null,-37.0);
@@ -97,7 +97,7 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
 
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(-1);
+        getKSession().getEntryPoint("in_Feat2").insert(-1);
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
@@ -114,10 +114,10 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSchemaWithMissing() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat2").insert(0);
+        getKSession().getEntryPoint("in_Feat2").insert(0);
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
@@ -134,21 +134,21 @@ public class MiningSchemaTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSchemaWithMixedIntervalAndValues() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat3").insert(4.0);
+        getKSession().getEntryPoint("in_Feat3").insert(4.0);
         getKSession().fireAllRules();
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat3"),
                 true, false,"Test_MLP",4.0);
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat3").insert(7.78);
+        getKSession().getEntryPoint("in_Feat3").insert(7.78);
         getKSession().fireAllRules();
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat3"),
                 true, false,"Test_MLP",7.78);
 
-        getKSession().getWorkingMemoryEntryPoint("in_Feat3").insert(6.2);
+        getKSession().getEntryPoint("in_Feat3").insert(6.2);
         getKSession().fireAllRules();
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"Feat3"),
                 false, false,"Test_MLP",6.2);

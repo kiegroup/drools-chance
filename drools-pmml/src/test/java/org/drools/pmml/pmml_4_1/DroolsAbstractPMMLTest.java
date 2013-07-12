@@ -17,22 +17,32 @@
 package org.drools.pmml.pmml_4_1;
 
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuleBaseConfiguration;
-import org.drools.builder.*;
-import org.drools.common.DefaultFactHandle;
-import org.drools.common.EventFactHandle;
-import org.drools.conf.EventProcessingOption;
-import org.drools.definition.type.FactType;
-import org.drools.io.ResourceFactory;
-import org.drools.runtime.ClassObjectFilter;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
-import org.drools.runtime.rule.QueryResults;
-import org.drools.runtime.rule.Variable;
+import org.drools.core.RuleBaseConfiguration;
+import org.drools.core.common.DefaultFactHandle;
+import org.drools.core.common.EventFactHandle;
+import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.definition.type.FactType;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.api.runtime.rule.FactHandle;
+import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.Variable;
+import org.kie.internal.KnowledgeBase;
+import org.kie.internal.KnowledgeBaseFactory;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderError;
+import org.kie.internal.builder.KnowledgeBuilderErrors;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -78,7 +88,7 @@ public abstract class DroolsAbstractPMMLTest {
 
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
 
-        kbuilder.add(ResourceFactory.newClassPathResource("org/drools/informer/informer-changeset.xml"), ResourceType.CHANGE_SET);
+        kbuilder.add( ResourceFactory.newClassPathResource( "org/drools/informer/informer-changeset.xml" ), ResourceType.CHANGE_SET);
 
 
 
@@ -168,7 +178,7 @@ public abstract class DroolsAbstractPMMLTest {
         PriorityQueue<String> queue = new PriorityQueue<String>();
         for (FactHandle fh : session.getFactHandles()) {
             Object o;
-            if (fh instanceof EventFactHandle) {
+            if (fh instanceof EventFactHandle ) {
                 EventFactHandle efh = (EventFactHandle) fh;
                 queue.add("\t " + efh.getStartTimestamp() + "\t" + efh.getObject().toString() + "\n");
             } else {

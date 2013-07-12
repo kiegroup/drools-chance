@@ -17,12 +17,11 @@
 package org.drools.pmml.pmml_4_1.transformations;
 
 
-import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.kie.api.definition.type.FactType;
 
 
 public class MapValuesTest extends DroolsAbstractPMMLTest {
@@ -35,7 +34,7 @@ public class MapValuesTest extends DroolsAbstractPMMLTest {
     @Before
     public void setUp() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
     }
 
     @After
@@ -52,9 +51,9 @@ public class MapValuesTest extends DroolsAbstractPMMLTest {
 //        FactType hair = getKbase().getFactType(packageName,"HairColor");
         FactType out = getKbase().getFactType(packageName,"Mapped");
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(18);
-        getKSession().getWorkingMemoryEntryPoint("in_Height").insert(80.0);
-        getKSession().getWorkingMemoryEntryPoint("in_HairColor").insert("red");
+        getKSession().getEntryPoint( "in_Age" ).insert(18);
+        getKSession().getEntryPoint( "in_Height" ).insert(80.0);
+        getKSession().getEntryPoint( "in_HairColor" ).insert("red");
 
         getKSession().fireAllRules();
 
@@ -65,9 +64,9 @@ public class MapValuesTest extends DroolsAbstractPMMLTest {
 
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(33);
-        getKSession().getWorkingMemoryEntryPoint("in_Height").insert(120.0);
-        getKSession().getWorkingMemoryEntryPoint("in_HairColor").insert("black");
+        getKSession().getEntryPoint( "in_Age" ).insert(33);
+        getKSession().getEntryPoint( "in_Height" ).insert(120.0);
+        getKSession().getEntryPoint( "in_HairColor" ).insert("black");
 
         getKSession().fireAllRules();
 

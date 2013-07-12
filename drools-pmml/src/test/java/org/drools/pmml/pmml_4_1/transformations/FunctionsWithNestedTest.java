@@ -35,7 +35,7 @@ public class FunctionsWithNestedTest extends DroolsAbstractPMMLTest {
     @Before
     public void setUp() throws Exception {
         setKSession(getModelSession(source, VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
     }
 
     @After
@@ -46,7 +46,7 @@ public class FunctionsWithNestedTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testFunctions() throws Exception {
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(10.0);
+        getKSession().getEntryPoint("in_Age").insert(10.0);
 
 
         getKSession().fireAllRules();

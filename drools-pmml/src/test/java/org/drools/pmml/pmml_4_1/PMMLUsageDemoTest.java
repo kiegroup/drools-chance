@@ -1,20 +1,19 @@
 package org.drools.pmml.pmml_4_1;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuleBaseConfiguration;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.conf.EventProcessingOption;
-import org.drools.io.ResourceFactory;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.QueryResults;
-import org.drools.runtime.rule.Variable;
+import org.drools.core.RuleBaseConfiguration;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.Variable;
+import org.kie.internal.KnowledgeBase;
+import org.kie.internal.KnowledgeBaseFactory;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -64,7 +63,7 @@ public class PMMLUsageDemoTest {
 
         // One entry-point per input field
         //      field name "xyz" => entry point name "in_Xyz"
-        kSession.getWorkingMemoryEntryPoint( "in_Temp" ).insert( 22.0 );
+        kSession.getEntryPoint( "in_Temp" ).insert( 22.0 );
         kSession.fireAllRules();
 
         // Query results
@@ -117,14 +116,14 @@ public class PMMLUsageDemoTest {
                 ;
 
 
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder( kSession.getKnowledgeBase() );
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder( kSession.getKieBase() );
 
         kbuilder.add( ResourceFactory.newByteArrayResource( extraDrl.getBytes() ), ResourceType.DRL );
         if ( kbuilder.hasErrors() ) {
             fail( kbuilder.getErrors().toString() );
         }
 
-        kSession.getKnowledgeBase().addKnowledgePackages( kbuilder.getKnowledgePackages() );
+        kSession.getKieBase().addKnowledgePackages( kbuilder.getKnowledgePackages() );
 
         kSession.insert( "trigger" );
         kSession.fireAllRules();

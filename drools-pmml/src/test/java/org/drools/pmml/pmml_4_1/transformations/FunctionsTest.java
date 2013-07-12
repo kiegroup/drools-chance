@@ -36,7 +36,7 @@ public class FunctionsTest extends DroolsAbstractPMMLTest {
     @Before
     public void setUp() throws Exception {
         setKSession(getModelSession(source, VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
     }
 
     @After
@@ -47,8 +47,8 @@ public class FunctionsTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testFunctions() throws Exception {
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(30);
-        getKSession().getWorkingMemoryEntryPoint("in_Age2").insert(2);
+        getKSession().getEntryPoint("in_Age").insert(30);
+        getKSession().getEntryPoint("in_Age2").insert(2);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(getKbase().getFactType(packageName,"MappedAge"),true,false, null,30);

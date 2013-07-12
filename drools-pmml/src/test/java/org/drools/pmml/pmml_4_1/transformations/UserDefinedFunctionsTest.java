@@ -17,12 +17,12 @@
 package org.drools.pmml.pmml_4_1.transformations;
 
 
-import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
-import org.drools.runtime.ClassObjectFilter;
-import org.drools.runtime.rule.FactHandle;
 import org.junit.After;
 import org.junit.Test;
+import org.kie.api.definition.type.FactType;
+import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.api.runtime.rule.FactHandle;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -45,11 +45,11 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     public void testFunctions1() throws Exception {
 
         setKSession( getModelSession( source3, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         FactType userAge1 = getKbase().getFactType( packageName, "UserAge1" );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 10 );
 
         getKSession().fireAllRules();
 
@@ -61,11 +61,11 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     public void testFunctions2() throws Exception {
 
         setKSession( getModelSession( source3, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         FactType userAge2 = getKbase().getFactType( packageName, "UserAge2" );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 10 );
 
         getKSession().fireAllRules();
 
@@ -77,11 +77,11 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     public void testFunctions3() throws Exception {
 
         setKSession( getModelSession( source3, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         FactType userAge3 = getKbase().getFactType( packageName, "UserAge3" );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 10 );
 
         getKSession().fireAllRules();
 
@@ -93,11 +93,11 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     public void testFunctions4() throws Exception {
 
         setKSession( getModelSession( source3, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         FactType userAge4 = getKbase().getFactType( packageName, "UserAge4" );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 10 );
 
         getKSession().fireAllRules();
 
@@ -109,11 +109,11 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     public void testFunctions5() throws Exception {
 
         setKSession( getModelSession( source3, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         FactType userAge5 = getKbase().getFactType( packageName, "UserAge5" );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 10 );
 
         getKSession().fireAllRules();
 
@@ -124,11 +124,11 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     public void testFunctions6() throws Exception {
 
         setKSession( getModelSession( source3, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         FactType userAge6 = getKbase().getFactType( packageName, "UserAge6" );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 10 );
 
         getKSession().fireAllRules();
 
@@ -140,11 +140,11 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     public void testFunctionsNested() throws Exception {
 
         setKSession( getModelSession( source1, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         FactType userAge1 = getKbase().getFactType( packageName, "UserAge" );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10.0 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 10.0 );
 
         getKSession().fireAllRules();
 
@@ -158,11 +158,11 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     public void testComplexFunctionsNested() throws Exception {
 
         setKSession( getModelSession( source2, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         FactType userAge1 = getKbase().getFactType( packageName, "UserAge" );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10.0 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 10.0 );
 
         getKSession().fireAllRules();
 
@@ -174,12 +174,12 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     public void testComplexFunctionsNested2() throws Exception {
 
         setKSession( getModelSession( source2, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         FactType userAge1 = getKbase().getFactType( packageName, "UserAge" );
         FactType userAge2 = getKbase().getFactType( packageName, "UserAgeComplex" );
 
-        FactHandle h = getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 10.0 );
+        FactHandle h = getKSession().getEntryPoint( "in_Age" ).insert( 10.0 );
 
         getKSession().fireAllRules();
 
@@ -198,13 +198,13 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
 
         assertEquals( 0, getKSession().getFactCount() );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 20.0 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 20.0 );
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus( userAge1, true, false, null, 9570.0 );
         checkFirstDataFieldOfTypeStatus( userAge2, true, false, null, 115.2 );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 30.0 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 30.0 );
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus( userAge1, true, false, null, 12870.0 );

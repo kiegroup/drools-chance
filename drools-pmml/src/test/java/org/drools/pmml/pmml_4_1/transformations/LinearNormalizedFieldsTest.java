@@ -17,7 +17,7 @@
 package org.drools.pmml.pmml_4_1.transformations;
 
 
-import org.drools.definition.type.FactType;
+import org.kie.api.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +37,7 @@ public class LinearNormalizedFieldsTest extends DroolsAbstractPMMLTest {
     public void setUp() throws Exception {
 
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
     }
 
     @After
@@ -56,12 +56,12 @@ public class LinearNormalizedFieldsTest extends DroolsAbstractPMMLTest {
         FactType age2 = getKbase().getFactType(packageName,"Age_norm2");
         FactType age3 = getKbase().getFactType(packageName,"Age_norm3");
 
-        assertNotNull(getKSession().getWorkingMemoryEntryPoint("in_Age"));
-        assertNull(getKSession().getWorkingMemoryEntryPoint("in_Age_mis"));
-        assertNull(getKSession().getWorkingMemoryEntryPoint("in_Age_norm"));
+        assertNotNull(getKSession().getEntryPoint( "in_Age" ));
+        assertNull(getKSession().getEntryPoint( "in_Age_mis" ));
+        assertNull(getKSession().getEntryPoint( "in_Age_norm" ));
 
         //value is "missing" for age, so should be mapped by the mapMissingTo policy
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(-1);
+        getKSession().getEntryPoint( "in_Age" ).insert(-1);
         getKSession().fireAllRules();
 
 
@@ -90,7 +90,7 @@ public class LinearNormalizedFieldsTest extends DroolsAbstractPMMLTest {
         FactType age3 = getKbase().getFactType(packageName,"Age_norm3");
 
         //value is an outlier
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(-100);
+        getKSession().getEntryPoint( "in_Age" ).insert(-100);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(age,true,false, null,-100);
@@ -106,7 +106,7 @@ public class LinearNormalizedFieldsTest extends DroolsAbstractPMMLTest {
 
 
         //value is an outlier
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(1000);
+        getKSession().getEntryPoint( "in_Age" ).insert(1000);
         getKSession().fireAllRules();
 
 
@@ -129,7 +129,7 @@ public class LinearNormalizedFieldsTest extends DroolsAbstractPMMLTest {
         FactType age = getKbase().getFactType(packageName,"Age");
         FactType age1 = getKbase().getFactType(packageName,"Age_norm");
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(30);
+        getKSession().getEntryPoint( "in_Age" ).insert(30);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(age,true,false, null,30);
@@ -140,7 +140,7 @@ public class LinearNormalizedFieldsTest extends DroolsAbstractPMMLTest {
 
         refreshKSession();
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(90);
+        getKSession().getEntryPoint( "in_Age" ).insert(90);
         getKSession().fireAllRules();
 
 

@@ -17,27 +17,31 @@
 package org.drools.pmml.pmml_4_1.predictive.models;
 
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuleBaseConfiguration;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.conf.EventProcessingOption;
-import org.drools.definition.type.FactType;
-import org.drools.io.ResourceFactory;
-import org.drools.io.impl.ByteArrayResource;
+import org.dmg.pmml.pmml_4_1.descr.MISSINGVALUESTRATEGY;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.TreeModel;
+import org.drools.core.RuleBaseConfiguration;
+import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.pmml.pmml_4_1.PMML4Compiler;
-import org.dmg.pmml.pmml_4_1.descr.*;
-import org.drools.runtime.ClassObjectFilter;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.After;
 import org.junit.Test;
+import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.definition.type.FactType;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.internal.KnowledgeBase;
+import org.kie.internal.KnowledgeBaseFactory;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class DecisionTreeTest extends DroolsAbstractPMMLTest {
 
@@ -57,19 +61,19 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSimpleTree() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
 //        kSession.addEventListener( new org.drools.event.rule.DebugAgendaEventListener() );
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld5" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld5" );
         
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( 30.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( 60.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "false" );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld4" ).insert( "optA" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( 30.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( 60.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "false" );
+        kSession.getEntryPoint( "in_Fld4" ).insert( "optA" );
 
         kSession.fireAllRules();
 
@@ -83,7 +87,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     
     
     protected Object getToken( StatefulKnowledgeSession kSession ) {
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
         assertNotNull( tok );
         Collection c = kSession.getObjects( new ClassObjectFilter( tok.getFactClass() ) );
         assertEquals( 1, c.size() );
@@ -94,17 +98,17 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     @Test
     public void testMissingTree() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( 45.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( 60.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "optA" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( 45.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( 60.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "optA" );
 
         kSession.fireAllRules();
 
@@ -124,17 +128,17 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     @Test
     public void testMissingTreeWeighted1() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "optA" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "optA" );
 
         kSession.fireAllRules();
 
@@ -156,17 +160,17 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     @Test
     public void testMissingTreeWeighted2() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "miss" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "miss" );
 
         kSession.fireAllRules();
 
@@ -217,18 +221,18 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         }
         StatefulKnowledgeSession kSession = compile( theory );
         setKSession( kSession );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
         
         
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( 70.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( 40.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "miss" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( 70.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( 40.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "miss" );
 
         kSession.fireAllRules();
 
@@ -261,18 +265,18 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         }
         StatefulKnowledgeSession kSession = compile( theory );
         setKSession( kSession );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
 
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "miss" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "miss" );
 
         kSession.fireAllRules();
 
@@ -307,18 +311,18 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         }
         StatefulKnowledgeSession kSession = compile( theory );
         setKSession( kSession );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
 
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "optA" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "optA" );
 
         kSession.fireAllRules();
 
@@ -353,18 +357,18 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         }
         StatefulKnowledgeSession kSession = compile( theory );
         setKSession( kSession );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
 
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "optA" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "optA" );
 
         kSession.fireAllRules();
 
@@ -398,18 +402,18 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         }
         StatefulKnowledgeSession kSession = compile( theory );
         setKSession( kSession );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
 
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( 45.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( 90.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "miss" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( 45.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( 90.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "miss" );
 
         kSession.fireAllRules();
 
@@ -443,18 +447,18 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         }
         StatefulKnowledgeSession kSession = compile( theory );
         setKSession( kSession );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
 
 
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "miss" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "miss" );
 
         kSession.fireAllRules();
 
@@ -472,17 +476,17 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSimpleTreeOutput() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld9" );
-        FactType tok = kSession.getKnowledgeBase().getFactType( packageName, "TreeToken" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld9" );
+        FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( -1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "optA" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( -1.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "optA" );
 
         kSession.fireAllRules();
 
@@ -495,9 +499,9 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
 
         checkFirstDataFieldOfTypeStatus(tgt, true, false, "Missing", "tgtX" );
 
-        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "OutClass" ),
+        checkFirstDataFieldOfTypeStatus( kSession.getKieBase().getFactType( packageName, "OutClass" ),
                     true, false, "Missing", "tgtX" );
-        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "OutProb" ),
+        checkFirstDataFieldOfTypeStatus( kSession.getKieBase().getFactType( packageName, "OutProb" ),
                     true, false, "Missing", 0.8 );
 
 

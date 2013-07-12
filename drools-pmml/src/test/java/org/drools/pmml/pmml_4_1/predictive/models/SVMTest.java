@@ -17,11 +17,11 @@
 package org.drools.pmml.pmml_4_1.predictive.models;
 
 
-import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.After;
 import org.junit.Test;
+import org.kie.api.definition.type.FactType;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -43,38 +43,38 @@ public class SVMTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSVM() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        FactType ztype = kSession.getKnowledgeBase().getFactType( packageName, "Z" );
+        FactType ztype = kSession.getKieBase().getFactType( packageName, "Z" );
         assertNotNull( ztype );
 
-        kSession.getWorkingMemoryEntryPoint( "in_X" ).insert( 0.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Y" ).insert( 0.0 );
+        kSession.getEntryPoint( "in_X" ).insert( 0.0 );
+        kSession.getEntryPoint( "in_Y" ).insert( 0.0 );
         kSession.fireAllRules();
         checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "yes" );
 
 
-        kSession.getWorkingMemoryEntryPoint( "in_X" ).insert( 0.23 );
-        kSession.getWorkingMemoryEntryPoint( "in_Y" ).insert( 0.75 );
+        kSession.getEntryPoint( "in_X" ).insert( 0.23 );
+        kSession.getEntryPoint( "in_Y" ).insert( 0.75 );
         kSession.fireAllRules();
         checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "no" );
 
 
-        kSession.getWorkingMemoryEntryPoint( "in_X" ).insert( 0.85 );
+        kSession.getEntryPoint( "in_X" ).insert( 0.85 );
         kSession.fireAllRules();
         checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "yes" );
 
         System.err.println( reportWMObjects(kSession)  );
 
 
-        kSession.getWorkingMemoryEntryPoint( "in_Y" ).insert( -0.12 );
+        kSession.getEntryPoint( "in_Y" ).insert( -0.12 );
         kSession.fireAllRules();
         checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "no" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_X" ).insert( 7.85 );
+        kSession.getEntryPoint( "in_X" ).insert( 7.85 );
         kSession.fireAllRules();
         checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "yes" );
     }
@@ -84,26 +84,26 @@ public class SVMTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSVM1vN() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        FactType ztype = kSession.getKnowledgeBase().getFactType( packageName, "Z" );
+        FactType ztype = kSession.getKieBase().getFactType( packageName, "Z" );
         assertNotNull( ztype );
 
 
-        kSession.getWorkingMemoryEntryPoint( "in_X" ).insert( 0.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Y" ).insert( 0.0 );
+        kSession.getEntryPoint( "in_X" ).insert( 0.0 );
+        kSession.getEntryPoint( "in_Y" ).insert( 0.0 );
         kSession.fireAllRules();
 
         System.err.println( reportWMObjects(kSession)  );
 
         checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "no" );
 
-        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "OutZ" ),
+        checkFirstDataFieldOfTypeStatus( kSession.getKieBase().getFactType( packageName, "OutZ" ),
                                                 true, false, "SVMXORMODEL", "no" );
-        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "ProbZNo" ),
+        checkFirstDataFieldOfTypeStatus( kSession.getKieBase().getFactType( packageName, "ProbZNo" ),
                                                 true, false, "SVMXORMODEL", 0.7357588 );
 
     }
@@ -111,26 +111,26 @@ public class SVMTest extends DroolsAbstractPMMLTest {
     @Test
     public void testSVM1v1() throws Exception {
         setKSession( getModelSession( source3, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        FactType ztype = kSession.getKnowledgeBase().getFactType( packageName, "Z" );
+        FactType ztype = kSession.getKieBase().getFactType( packageName, "Z" );
         assertNotNull( ztype );
 
 
-        kSession.getWorkingMemoryEntryPoint( "in_X" ).insert( 0.63 );
-        kSession.getWorkingMemoryEntryPoint( "in_Y" ).insert( 0.0 );
+        kSession.getEntryPoint( "in_X" ).insert( 0.63 );
+        kSession.getEntryPoint( "in_Y" ).insert( 0.0 );
         kSession.fireAllRules();
 
         System.err.println( reportWMObjects(kSession)  );
 
         checkFirstDataFieldOfTypeStatus( ztype, true, false, "SVMXORMODEL", "yes" );
 
-        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "OutZ" ),
+        checkFirstDataFieldOfTypeStatus( kSession.getKieBase().getFactType( packageName, "OutZ" ),
                                                 true, false, "SVMXORMODEL", "yes" );
-        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "ProbZYes" ),
+        checkFirstDataFieldOfTypeStatus( kSession.getKieBase().getFactType( packageName, "ProbZYes" ),
                                                 true, false, "SVMXORMODEL", 0.872057 );
 
 

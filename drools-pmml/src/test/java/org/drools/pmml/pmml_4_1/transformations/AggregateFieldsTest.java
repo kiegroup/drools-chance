@@ -18,11 +18,11 @@ package org.drools.pmml.pmml_4_1.transformations;
 
 
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
-import org.drools.runtime.rule.WorkingMemoryEntryPoint;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.kie.api.runtime.rule.SessionEntryPoint;
 
 
 public class AggregateFieldsTest extends DroolsAbstractPMMLTest {
@@ -36,7 +36,7 @@ public class AggregateFieldsTest extends DroolsAbstractPMMLTest {
     @Before
     public void setUp() throws Exception {
         setKSession(getModelSession(source, VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
     }
 
     @After
@@ -50,9 +50,9 @@ public class AggregateFieldsTest extends DroolsAbstractPMMLTest {
     //FIXME I used to keep all null-context fields... but then memory would blow up. Now I keep only the last one, but then I must override that for accumulates...
     public void testAggregate() throws Exception {
 
-        getKSession().getWorkingMemoryEntryPoint("in_Limit").insert(18);
+        getKSession().getEntryPoint("in_Limit").insert(18);
 
-        WorkingMemoryEntryPoint ep = getKSession().getWorkingMemoryEntryPoint("in_Age");
+        SessionEntryPoint ep = getKSession().getEntryPoint("in_Age");
             ep.insert(10);
             ep.insert(20);
             ep.insert(30);

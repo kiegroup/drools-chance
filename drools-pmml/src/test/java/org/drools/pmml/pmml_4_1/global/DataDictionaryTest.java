@@ -18,12 +18,13 @@ package org.drools.pmml.pmml_4_1.global;
 
 
 import junit.framework.Assert;
-import org.drools.definition.type.FactType;
+import org.kie.api.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
-import org.drools.runtime.ClassObjectFilter;
-import org.drools.runtime.rule.WorkingMemoryEntryPoint;
+import org.kie.api.runtime.ClassObjectFilter;
+import org.drools.core.WorkingMemoryEntryPoint;
 import org.junit.After;
 import org.junit.Test;
+import org.kie.api.runtime.rule.SessionEntryPoint;
 
 
 public class DataDictionaryTest extends DroolsAbstractPMMLTest {
@@ -42,7 +43,7 @@ public class DataDictionaryTest extends DroolsAbstractPMMLTest {
     @Test
     public void testDataTypes() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
         FactType gender = getKbase().getFactType(packageName,"Gender");
         FactType noclaims = getKbase().getFactType(packageName,"NoOfClaims");
@@ -115,7 +116,7 @@ public class DataDictionaryTest extends DroolsAbstractPMMLTest {
     public void testEntryPoints() throws Exception {
 
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
         FactType gender = getKbase().getFactType(packageName,"Gender");
         FactType noclaims = getKbase().getFactType(packageName,"NoOfClaims");
@@ -124,19 +125,19 @@ public class DataDictionaryTest extends DroolsAbstractPMMLTest {
         FactType agecar = getKbase().getFactType(packageName,"AgeOfCar");
         FactType amklaims = getKbase().getFactType(packageName,"AmountOfClaims");
 
-        Assert.assertEquals(7, getKSession().getWorkingMemoryEntryPoints().size());
+        Assert.assertEquals(7, getKSession().getEntryPoints().size());
 
-        WorkingMemoryEntryPoint gender_ep = getKSession().getWorkingMemoryEntryPoint("in_Gender");
+        SessionEntryPoint gender_ep = getKSession().getEntryPoint("in_Gender");
             Assert.assertNotNull(gender_ep);
-        WorkingMemoryEntryPoint noclaims_ep = getKSession().getWorkingMemoryEntryPoint("in_NoOfClaims");
+        SessionEntryPoint noclaims_ep = getKSession().getEntryPoint("in_NoOfClaims");
             Assert.assertNotNull(noclaims_ep);
-        WorkingMemoryEntryPoint scrambled_ep = getKSession().getWorkingMemoryEntryPoint("in_Scrambled");
+        SessionEntryPoint scrambled_ep = getKSession().getEntryPoint("in_Scrambled");
             Assert.assertNotNull(scrambled_ep);
-        WorkingMemoryEntryPoint domicile_ep = getKSession().getWorkingMemoryEntryPoint("in_Domicile");
+        SessionEntryPoint domicile_ep = getKSession().getEntryPoint("in_Domicile");
             Assert.assertNotNull(domicile_ep);
-        WorkingMemoryEntryPoint agecar_ep = getKSession().getWorkingMemoryEntryPoint("in_AgeOfCar");
+        SessionEntryPoint agecar_ep = getKSession().getEntryPoint("in_AgeOfCar");
             Assert.assertNotNull(agecar_ep);
-        WorkingMemoryEntryPoint amklaims_ep = getKSession().getWorkingMemoryEntryPoint("in_AmountOfClaims");
+        SessionEntryPoint amklaims_ep = getKSession().getEntryPoint("in_AmountOfClaims");
             Assert.assertNotNull(amklaims_ep);
 
         gender_ep.insert("M");

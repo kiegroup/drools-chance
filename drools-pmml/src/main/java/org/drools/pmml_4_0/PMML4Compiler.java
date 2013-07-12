@@ -1,7 +1,7 @@
 package org.drools.pmml_4_0;
 
-import org.drools.compiler.PMMLCompiler;
-import org.drools.compiler.PackageRegistry;
+import org.drools.compiler.compiler.PMMLCompiler;
+import org.drools.compiler.compiler.PackageRegistry;
 
 import java.io.InputStream;
 import java.util.Map;

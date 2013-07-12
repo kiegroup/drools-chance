@@ -17,11 +17,11 @@
 package org.drools.pmml.pmml_4_1.transformations;
 
 
-import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kie.api.definition.type.FactType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,7 +37,7 @@ public class AliasedFieldsTest extends DroolsAbstractPMMLTest {
     @Before
     public void setUp() throws Exception {
         setKSession(getModelSession(source, VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
     }
 
     @After
@@ -69,14 +69,14 @@ public class AliasedFieldsTest extends DroolsAbstractPMMLTest {
         assertNotNull( alias );
         assertNotNull( aliasmm );
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( 33 );
+        getKSession().getEntryPoint( "in_Age" ).insert( 33 );
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus( alias, true, false, null, 33 );
 
         refreshKSession();
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Age" ).insert( -1 );
+        getKSession().getEntryPoint( "in_Age" ).insert( -1 );
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus( alias, true, true, null, -1 );

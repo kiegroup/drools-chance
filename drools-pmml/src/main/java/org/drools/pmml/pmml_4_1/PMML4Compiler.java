@@ -16,15 +16,36 @@
 
 package org.drools.pmml.pmml_4_1;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuleBaseConfiguration;
-import org.drools.builder.*;
-import org.drools.compiler.PackageRegistry;
-import org.drools.conf.EventProcessingOption;
-import org.drools.io.Resource;
-import org.drools.io.ResourceFactory;
-import org.drools.runtime.StatefulKnowledgeSession;
+import org.dmg.pmml.pmml_4_1.descr.AssociationModel;
+import org.dmg.pmml.pmml_4_1.descr.BaselineModel;
+import org.dmg.pmml.pmml_4_1.descr.ClusteringModel;
+import org.dmg.pmml.pmml_4_1.descr.Extension;
+import org.dmg.pmml.pmml_4_1.descr.GeneralRegressionModel;
+import org.dmg.pmml.pmml_4_1.descr.MiningModel;
+import org.dmg.pmml.pmml_4_1.descr.NaiveBayesModel;
+import org.dmg.pmml.pmml_4_1.descr.NearestNeighborModel;
+import org.dmg.pmml.pmml_4_1.descr.NeuralNetwork;
+import org.dmg.pmml.pmml_4_1.descr.PMML;
+import org.dmg.pmml.pmml_4_1.descr.RegressionModel;
+import org.dmg.pmml.pmml_4_1.descr.RuleSetModel;
+import org.dmg.pmml.pmml_4_1.descr.Scorecard;
+import org.dmg.pmml.pmml_4_1.descr.SequenceModel;
+import org.dmg.pmml.pmml_4_1.descr.SupportVectorMachineModel;
+import org.dmg.pmml.pmml_4_1.descr.TextModel;
+import org.dmg.pmml.pmml_4_1.descr.TimeSeriesModel;
+import org.dmg.pmml.pmml_4_1.descr.TreeModel;
+import org.drools.compiler.compiler.PMMLCompiler;
+import org.drools.compiler.compiler.PackageRegistry;
+import org.drools.core.RuleBaseConfiguration;
+import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
+import org.kie.internal.KnowledgeBase;
+import org.kie.internal.KnowledgeBaseFactory;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
@@ -34,12 +55,18 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.dmg.pmml.pmml_4_1.descr.*;
-
-public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
+public class PMML4Compiler implements PMMLCompiler {
 
 
     public static final String PMML = "org.dmg.pmml.pmml_4_1.descr";
@@ -211,22 +238,6 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     };
 
 
-    protected static boolean informerLoaded = false;
-    protected static final String[] INFORMER_TEMPLATES = new String[] {        
-            "informer/informer_imports.drlt",
-            "informer/modelQuestionnaire.drlt",
-            "informer/modelAddQuestionsToQuestionnaire.drlt",
-            "informer/modelQuestion.drlt",
-            "informer/modelMultiQuestion.drlt",
-            "informer/modelQuestionBinding.drlt",
-            "informer/modelQuestionRebinding.drlt" ,
-            "informer/modelCreateByBinding.drlt",
-            "informer/modelInvalidAnswer.drlt",
-            "informer/modelOutputBinding.drlt",
-            "informer/modelRevalidate.drlt"
-    };
-
-
 
     protected static final String RESOURCE_PATH = BASE_PACK;
     protected static final String TEMPLATE_PATH = "/" + RESOURCE_PATH + "/templates/";
@@ -255,7 +266,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 		visitor = KnowledgeBaseFactory.newKnowledgeBase( conf );
 
         // TODO before rules can be structured, I need to double-check the incremental rule base assembly
-        kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(  );
+        kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         if ( visitorRules == false ) {
             kBuilder.add( ResourceFactory.newClassPathResource( VISITOR_RULES ), ResourceType.DRL );
             visitorRules = true;
@@ -263,10 +274,6 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
         if ( compilerRules == false ) {
             kBuilder.add( ResourceFactory.newClassPathResource( COMPILER_RULES ), ResourceType.DRL );
             compilerRules = true;
-        }
-        if ( informerRules == false ) {
-            kBuilder.add( ResourceFactory.newClassPathResource( INFORMER_RULES ), ResourceType.DRL );
-            informerRules = true;
         }
 
         if ( kBuilder.hasErrors() ) {
@@ -428,14 +435,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             for ( Object p : inner ) {
                 if ( p instanceof Extension ) {
                     Extension x = (Extension) p;
-                    for ( Object c : x.getContent() ) {
-                        if ( ! informerLoaded && c instanceof Element && ((Element) c).getTagName().equals( "Surveyable" ) ) {
-                            for ( String ntempl : INFORMER_TEMPLATES ) {
-                                prepareTemplate( ntempl );
-                            }
-                            informerLoaded = true;
-                        }
-                    }
+                    for ( Object c : x.getContent() ) {                    }
                 }
             }
         }

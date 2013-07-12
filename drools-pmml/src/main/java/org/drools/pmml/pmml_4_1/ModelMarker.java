@@ -17,8 +17,8 @@
 package org.drools.pmml.pmml_4_1;
 
 
-import org.drools.definition.type.Position;
-import org.drools.definition.type.PropertyReactive;
+import org.kie.api.definition.type.Position;
+import org.kie.api.definition.type.PropertyReactive;
 
 @PropertyReactive
 public class ModelMarker {

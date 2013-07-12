@@ -17,11 +17,11 @@
 package org.drools.pmml.pmml_4_1.transformations;
 
 
-import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kie.api.definition.type.FactType;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -36,7 +36,7 @@ public class DiscretizeFieldsTest extends DroolsAbstractPMMLTest {
     @Before
     public void setUp() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
     }
 
     @After
@@ -51,10 +51,10 @@ public class DiscretizeFieldsTest extends DroolsAbstractPMMLTest {
         FactType age = getKbase().getFactType(packageName,"Age");
         FactType cat = getKbase().getFactType(packageName,"AgeCategories");
 
-        assertNotNull(getKSession().getWorkingMemoryEntryPoint("in_Age"));
+        assertNotNull(getKSession().getEntryPoint("in_Age"));
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(-1);
+        getKSession().getEntryPoint("in_Age").insert(-1);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(age, true, true, null, -1);
@@ -64,7 +64,7 @@ public class DiscretizeFieldsTest extends DroolsAbstractPMMLTest {
         this.refreshKSession();
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(1);
+        getKSession().getEntryPoint("in_Age").insert(1);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(age, true, false, null, 1);
@@ -74,7 +74,7 @@ public class DiscretizeFieldsTest extends DroolsAbstractPMMLTest {
         this.refreshKSession();
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(9);
+        getKSession().getEntryPoint("in_Age").insert(9);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(age, true, false, null, 9);
@@ -86,7 +86,7 @@ public class DiscretizeFieldsTest extends DroolsAbstractPMMLTest {
         this.refreshKSession();
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(30);
+        getKSession().getEntryPoint("in_Age").insert(30);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(age, true, false, null, 30);
@@ -98,7 +98,7 @@ public class DiscretizeFieldsTest extends DroolsAbstractPMMLTest {
         this.refreshKSession();
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(90);
+        getKSession().getEntryPoint("in_Age").insert(90);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(age, true, false, null, 90);
@@ -109,7 +109,7 @@ public class DiscretizeFieldsTest extends DroolsAbstractPMMLTest {
         this.refreshKSession();
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(3000);
+        getKSession().getEntryPoint("in_Age").insert(3000);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(age, true, false, null, 3000);
@@ -120,7 +120,7 @@ public class DiscretizeFieldsTest extends DroolsAbstractPMMLTest {
         this.refreshKSession();
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_Age").insert(19);
+        getKSession().getEntryPoint("in_Age").insert(19);
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(age, true, false, null, 19);

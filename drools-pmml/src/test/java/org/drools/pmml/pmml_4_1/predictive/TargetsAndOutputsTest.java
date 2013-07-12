@@ -39,10 +39,10 @@ public class TargetsAndOutputsTest extends DroolsAbstractPMMLTest {
     @Test
     public void testTarget1() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(4);
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(3.5);
+        getKSession().getEntryPoint("in_PetalNumber").insert(4);
+        getKSession().getEntryPoint("in_PetalLength").insert(3.5);
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
@@ -59,10 +59,10 @@ public class TargetsAndOutputsTest extends DroolsAbstractPMMLTest {
     @Test
     public void testOutputValue() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(4);
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(3.5);
+        getKSession().getEntryPoint("in_PetalNumber").insert(4);
+        getKSession().getEntryPoint("in_PetalLength").insert(3.5);
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
@@ -79,10 +79,10 @@ public class TargetsAndOutputsTest extends DroolsAbstractPMMLTest {
     @Test
     public void testOutputDisplayValue() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(4);
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(3.5);
+        getKSession().getEntryPoint("in_PetalNumber").insert(4);
+        getKSession().getEntryPoint("in_PetalLength").insert(3.5);
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));
@@ -96,10 +96,10 @@ public class TargetsAndOutputsTest extends DroolsAbstractPMMLTest {
     @Test
     public void testOutputResidual() throws Exception {
         setKSession(getModelSession( source, VERBOSE ) );
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
 
-        getKSession().getWorkingMemoryEntryPoint("in_PetalNumber").insert(4);
-        getKSession().getWorkingMemoryEntryPoint("in_PetalLength").insert(3.5);
+        getKSession().getEntryPoint("in_PetalNumber").insert(4);
+        getKSession().getEntryPoint("in_PetalLength").insert(3.5);
         getKSession().fireAllRules();
 
         System.err.println(reportWMObjects(getKSession()));

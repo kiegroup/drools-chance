@@ -17,18 +17,20 @@
 package org.drools.pmml.pmml_4_1.global;
 
 
-import org.drools.definition.KnowledgePackage;
-import org.drools.pmml.pmml_4_1.PMML4Helper;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.pmml.pmml_4_1.PMML4Compiler;
-import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.pmml.pmml_4_1.PMML4Helper;
 import org.junit.Test;
+import org.kie.internal.definition.KnowledgePackage;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class HeaderTest extends DroolsAbstractPMMLTest {
@@ -79,7 +81,7 @@ public class HeaderTest extends DroolsAbstractPMMLTest {
 
 
         StatefulKnowledgeSession ksession = getSession(theory);
-        KnowledgePackage pack = ksession.getKnowledgeBase().getKnowledgePackage("org.drools.pmml.pmml_4_1.test");
+        KnowledgePackage pack = ksession.getKieBase().getKnowledgePackage("org.drools.pmml.pmml_4_1.test");
         assertNotNull(pack);
 
         ksession.dispose();

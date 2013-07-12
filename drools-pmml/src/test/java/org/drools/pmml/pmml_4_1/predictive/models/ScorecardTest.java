@@ -17,12 +17,12 @@
 package org.drools.pmml.pmml_4_1.predictive.models;
 
 
-import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
-import org.drools.runtime.ClassObjectFilter;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.After;
 import org.junit.Test;
+import org.kie.api.definition.type.FactType;
+import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -48,15 +48,15 @@ public class ScorecardTest extends DroolsAbstractPMMLTest {
     @Test
     public void testScorecard() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        kSession.getWorkingMemoryEntryPoint( "in_Age" ).insert( 33.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Occupation" ).insert( "SKYDIVER" );
-        kSession.getWorkingMemoryEntryPoint( "in_ResidenceState" ).insert( "KN" );
-        kSession.getWorkingMemoryEntryPoint( "in_ValidLicense" ).insert( true );
+        kSession.getEntryPoint( "in_Age" ).insert( 33.0 );
+        kSession.getEntryPoint( "in_Occupation" ).insert( "SKYDIVER" );
+        kSession.getEntryPoint( "in_ResidenceState" ).insert( "KN" );
+        kSession.getEntryPoint( "in_ValidLicense" ).insert( true );
 
         kSession.fireAllRules();  //init model
 
@@ -91,14 +91,14 @@ public class ScorecardTest extends DroolsAbstractPMMLTest {
     @Test
     public void testScorecardOutputs() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        kSession.getWorkingMemoryEntryPoint( "in_Cage" ).insert( "engineering" );
-        kSession.getWorkingMemoryEntryPoint( "in_Age" ).insert( 25 );
-        kSession.getWorkingMemoryEntryPoint( "in_Wage" ).insert( 500.0 );
+        kSession.getEntryPoint( "in_Cage" ).insert( "engineering" );
+        kSession.getEntryPoint( "in_Age" ).insert( 25 );
+        kSession.getEntryPoint( "in_Wage" ).insert( 500.0 );
 
         kSession.fireAllRules();  //init model
 

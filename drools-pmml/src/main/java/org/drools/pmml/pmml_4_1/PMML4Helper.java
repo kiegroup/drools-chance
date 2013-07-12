@@ -16,13 +16,26 @@
 
 package org.drools.pmml.pmml_4_1;
 
-import org.drools.base.TypeResolver;
+import org.dmg.pmml.pmml_4_1.descr.COMPAREFUNCTION;
+import org.dmg.pmml.pmml_4_1.descr.DATATYPE;
+import org.dmg.pmml.pmml_4_1.descr.DataField;
+import org.dmg.pmml.pmml_4_1.descr.REGRESSIONNORMALIZATIONMETHOD;
+import org.dmg.pmml.pmml_4_1.descr.RESULTFEATURE;
+import org.dmg.pmml.pmml_4_1.descr.Value;
+import org.drools.core.base.TypeResolver;
 
-import org.dmg.pmml.pmml_4_1.descr.*;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 
 public class PMML4Helper {

@@ -17,13 +17,11 @@
 package org.drools.pmml.pmml_4_1.predictive.models;
 
 
-import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.After;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
+import org.kie.api.definition.type.FactType;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 public class SimpleRegressionTest extends DroolsAbstractPMMLTest {
 
@@ -43,16 +41,16 @@ public class SimpleRegressionTest extends DroolsAbstractPMMLTest {
     @Test
     public void testRegression() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld4" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld4" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( 0.9 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( 0.3 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "x" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( 0.9 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( 0.3 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "x" );
         kSession.fireAllRules();
 
         double x = 0.5
@@ -72,25 +70,25 @@ public class SimpleRegressionTest extends DroolsAbstractPMMLTest {
     @Test
     public void testClassification() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
         StatefulKnowledgeSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
-        FactType tgt = kSession.getKnowledgeBase().getFactType( packageName, "Fld4" );
+        FactType tgt = kSession.getKieBase().getFactType( packageName, "Fld4" );
 
-        kSession.getWorkingMemoryEntryPoint( "in_Fld1" ).insert( 1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld2" ).insert( 1.0 );
-        kSession.getWorkingMemoryEntryPoint( "in_Fld3" ).insert( "x" );
+        kSession.getEntryPoint( "in_Fld1" ).insert( 1.0 );
+        kSession.getEntryPoint( "in_Fld2" ).insert( 1.0 );
+        kSession.getEntryPoint( "in_Fld3" ).insert( "x" );
         kSession.fireAllRules();
 
         System.err.println( reportWMObjects( kSession ) );
 
-        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "RegOut" ),
+        checkFirstDataFieldOfTypeStatus( kSession.getKieBase().getFactType( packageName, "RegOut" ),
                                             true, false, "LinReg", "catC" );
-        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "RegProb" ),
+        checkFirstDataFieldOfTypeStatus( kSession.getKieBase().getFactType( packageName, "RegProb" ),
                                             true, false, "LinReg", 0.709228 );
-        checkFirstDataFieldOfTypeStatus( kSession.getKnowledgeBase().getFactType( packageName, "RegProbA" ),
+        checkFirstDataFieldOfTypeStatus( kSession.getKieBase().getFactType( packageName, "RegProbA" ),
                                             true, false, "LinReg", 0.010635 );
 
 

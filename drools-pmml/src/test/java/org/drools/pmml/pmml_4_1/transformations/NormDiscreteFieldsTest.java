@@ -17,11 +17,11 @@
 package org.drools.pmml.pmml_4_1.transformations;
 
 
-import org.drools.definition.type.FactType;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kie.api.definition.type.FactType;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -37,7 +37,7 @@ public class NormDiscreteFieldsTest extends DroolsAbstractPMMLTest {
     @Before
     public void setUp() throws Exception {
         setKSession(getModelSession(source,VERBOSE));
-        setKbase(getKSession().getKnowledgeBase());
+        setKbase(getKSession().getKieBase());
     }
 
 
@@ -53,10 +53,10 @@ public class NormDiscreteFieldsTest extends DroolsAbstractPMMLTest {
         FactType val1 = getKbase().getFactType(packageName,"IsValue1");
         FactType val2 = getKbase().getFactType(packageName,"IsValue2");
 
-        assertNotNull(getKSession().getWorkingMemoryEntryPoint("in_CatField"));
+        assertNotNull(getKSession().getEntryPoint( "in_CatField" ));
 
         //value is "missing" for age, so should be mapped by the mapMissingTo policy
-        getKSession().getWorkingMemoryEntryPoint("in_CatField").insert("Value1");
+        getKSession().getEntryPoint( "in_CatField" ).insert("Value1");
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(fld, true, false, null, "Value1");
@@ -65,7 +65,7 @@ public class NormDiscreteFieldsTest extends DroolsAbstractPMMLTest {
 
         refreshKSession();
 
-        getKSession().getWorkingMemoryEntryPoint("in_CatField").insert("Value2");
+        getKSession().getEntryPoint( "in_CatField" ).insert("Value2");
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(fld, true, false, null, "Value2");
@@ -76,7 +76,7 @@ public class NormDiscreteFieldsTest extends DroolsAbstractPMMLTest {
 
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_CatField").insert("Value3");
+        getKSession().getEntryPoint( "in_CatField" ).insert("Value3");
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(fld, true, false, null, "Value3");
@@ -86,7 +86,7 @@ public class NormDiscreteFieldsTest extends DroolsAbstractPMMLTest {
         refreshKSession();
 
 
-        getKSession().getWorkingMemoryEntryPoint("in_CatField").insert("Value0");
+        getKSession().getEntryPoint( "in_CatField" ).insert("Value0");
         getKSession().fireAllRules();
 
         checkFirstDataFieldOfTypeStatus(fld, false, true, null, "Value0");

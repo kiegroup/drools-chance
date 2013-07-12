@@ -18,13 +18,13 @@ package org.drools.pmml.pmml_4_1.global;
 
 
 import junit.framework.Assert;
-import org.drools.common.EventFactHandle;
-import org.drools.definition.type.FactType;
+import org.drools.core.common.EventFactHandle;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
-import org.drools.runtime.ClassObjectFilter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kie.api.definition.type.FactType;
+import org.kie.api.runtime.ClassObjectFilter;
 
 import java.util.Collection;
 
@@ -41,7 +41,7 @@ public class ConstrainedDataDictionaryTest extends DroolsAbstractPMMLTest {
     @Before
     public void setUp() throws Exception {
         setKSession( getModelSession( source, VERBOSE ) );
-        setKbase( getKSession().getKnowledgeBase() );
+        setKbase( getKSession().getKieBase() );
     }
 
     @After
@@ -97,10 +97,10 @@ public class ConstrainedDataDictionaryTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testProperties() throws Exception {
-        getKSession().getWorkingMemoryEntryPoint("in_Vallued").insert(1);
-        getKSession().getWorkingMemoryEntryPoint("in_Intervalled").insert(8.3);
-        getKSession().getWorkingMemoryEntryPoint("in_Cat").insert("aa");
-        getKSession().getWorkingMemoryEntryPoint("in_Sort").insert(1);
+        getKSession().getEntryPoint( "in_Vallued" ).insert(1);
+        getKSession().getEntryPoint( "in_Intervalled" ).insert(8.3);
+        getKSession().getEntryPoint( "in_Cat" ).insert("aa");
+        getKSession().getEntryPoint( "in_Sort" ).insert(1);
 
         getKSession().fireAllRules();
 
@@ -174,12 +174,12 @@ public class ConstrainedDataDictionaryTest extends DroolsAbstractPMMLTest {
 
     @Test
     public void testContinuousDomainAsInsert() throws Exception {
-        getKSession().getWorkingMemoryEntryPoint("in_Vallued").insert(1);
+        getKSession().getEntryPoint( "in_Vallued" ).insert(1);
 
-        getKSession().getWorkingMemoryEntryPoint("in_Intervalled").insert(8.3);
+        getKSession().getEntryPoint( "in_Intervalled" ).insert(8.3);
 
-        getKSession().getWorkingMemoryEntryPoint("in_DefaultValid").insert(1);
-        getKSession().getWorkingMemoryEntryPoint("in_DefaultInvalid").insert(1);
+        getKSession().getEntryPoint( "in_DefaultValid" ).insert(1);
+        getKSession().getEntryPoint( "in_DefaultInvalid" ).insert(1);
 
         getKSession().fireAllRules();
 
