@@ -24,6 +24,7 @@ import org.drools.compiler.PackageRegistry;
 import org.drools.conf.EventProcessingOption;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
+import org.drools.io.impl.ClassPathResource;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
@@ -248,7 +249,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 
 
-    private static void initVisitor() {
+    private static void initVisitor() throws IOException {
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
             conf.setEventProcessingMode( EventProcessingOption.STREAM );
             //conf.setConflictResolver(LifoConflictResolver.getInstance());
@@ -265,7 +266,10 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             compilerRules = true;
         }
         if ( informerRules == false ) {
-            kBuilder.add( ResourceFactory.newClassPathResource( INFORMER_RULES ), ResourceType.DRL );
+            Resource res = ResourceFactory.newClassPathResource( INFORMER_RULES );
+            if ( res != null && new File( (( ClassPathResource) res).getPath() ).exists() ) {
+                kBuilder.add( res, ResourceType.DRL );
+            }
             informerRules = true;
         }
 
@@ -280,7 +284,11 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     public String generateTheory( PMML pmml ) {
         StringBuilder sb = new StringBuilder();
 
-        checkBuildingResources( pmml );
+        try {
+            checkBuildingResources( pmml );
+        } catch ( IOException e ) {
+            throw new IllegalStateException( "Unable to build visitor" );
+        }
 
         StatefulKnowledgeSession visitorSession = visitor.newStatefulKnowledgeSession();
 
@@ -332,7 +340,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
         }
     }
 
-    private static void checkBuildingResources( PMML pmml ) {
+    private static void checkBuildingResources( PMML pmml ) throws IOException {
 
         if ( registry == null ) {
             initRegistry();
