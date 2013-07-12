@@ -38,6 +38,7 @@
     <module>drools-informer-core</module>
     <module>drools-informer-loader</module>
     <module>drools-informer-interaction</module>
+    <module>drools-informer-pmml</module>
     <module>human-task-helpers</module>
   </modules>
 

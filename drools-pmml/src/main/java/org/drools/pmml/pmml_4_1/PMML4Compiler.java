@@ -22,6 +22,7 @@ import org.drools.RuleBaseConfiguration;
 import org.drools.builder.*;
 import org.drools.compiler.PackageRegistry;
 import org.drools.conf.EventProcessingOption;
+import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.mvel2.templates.SimpleTemplateRegistry;
@@ -449,10 +450,14 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     private static void prepareTemplate( String ntempl ) {
         try {
             String path = TEMPLATE_PATH + ntempl;
-            InputStream stream = ResourceFactory.newClassPathResource(path, PMML4Compiler.class).getInputStream();
-
-            registry.addNamedTemplate( path.substring(path.lastIndexOf('/') + 1),
-                    TemplateCompiler.compileTemplate(stream));
+            Resource res = ResourceFactory.newClassPathResource(path, PMML4Compiler.class);
+            if ( res != null ) {
+                InputStream stream = res.getInputStream();
+                if ( stream != null ) {
+                    registry.addNamedTemplate( path.substring(path.lastIndexOf('/') + 1),
+                                               TemplateCompiler.compileTemplate(stream));
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

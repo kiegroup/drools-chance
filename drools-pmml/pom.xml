@@ -40,6 +40,13 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-informer-core</artifactId>
       <version>${chance.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-informer-pmml</artifactId>
+      <version>${chance.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
