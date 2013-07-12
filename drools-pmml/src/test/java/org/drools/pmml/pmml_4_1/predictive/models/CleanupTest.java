@@ -18,7 +18,7 @@ package org.drools.pmml.pmml_4_1.predictive.models;
 
 
 import junit.framework.Assert;
-import org.drools.agent.ChangeSetHelperImpl;
+//import org.drools.agent.ChangeSetHelperImpl;
 
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.junit.Test;
