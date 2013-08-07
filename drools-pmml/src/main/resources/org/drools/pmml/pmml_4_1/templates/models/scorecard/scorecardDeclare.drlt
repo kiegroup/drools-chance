@@ -28,6 +28,7 @@
  as in decision trees. The containment is then used to update data and aggregate scores independently, preserving truth maintenance }
 
 declare ScoreCard
+@propertyReactive
     modelName   : String @key
     score       : double
     holder      : ScoreCardData
@@ -38,12 +39,13 @@ end
 
 
 declare ScoreRank
-    rank   : java.util.Map
+    scoreCard   : ScoreCard
+    rank        : java.util.Map
 end
 
 declare ScoreCardData
 @propertyReactive
-    modelName   : String @key
+    modelName       : String @key
 end
 
 declare Score
@@ -70,6 +72,7 @@ declare ScoreRow extends Score
 end
 
 declare CodeScore
+    scoreCard       : ScoreCard @key
     code            : String    @key
     score           : double
 end
