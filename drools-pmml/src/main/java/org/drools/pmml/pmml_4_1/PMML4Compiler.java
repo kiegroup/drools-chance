@@ -399,12 +399,35 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
         }
 
         if ( ! informerLoaded && needsInformerExtension( pmml ) ) {
+            if ( ! informerRules ) {
+                resetVisitor( pmml );
+            }
             for ( String ntempl : INFORMER_TEMPLATES ) {
                 prepareTemplate( ntempl );
             }
             informerLoaded = true;
         }
 
+    }
+
+    private static void resetVisitor( PMML pmml ) throws IOException {
+        visitor = null;
+        visitorRules = false;
+        compilerRules = false;
+        informerRules = false;
+
+        clusteringLoaded = false;
+        globalLoaded = false;
+        informerLoaded = false;
+        miningLoaded = false;
+        neuralLoaded = false;
+        scorecardLoaded = false;
+        simpleRegLoaded = false;
+        svmLoaded = false;
+        transformationLoaded = false;
+        treeLoaded = false;
+
+        checkBuildingResources( pmml );
     }
 
 
