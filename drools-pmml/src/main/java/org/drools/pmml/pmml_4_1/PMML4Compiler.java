@@ -248,7 +248,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 
 
-    private static void initVisitor() throws IOException {
+    private static void initVisitor( PMML pmml ) throws IOException {
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
             conf.setEventProcessingMode( EventProcessingOption.STREAM );
             //conf.setConflictResolver(LifoConflictResolver.getInstance());
@@ -264,13 +264,13 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             kBuilder.add( ResourceFactory.newClassPathResource( COMPILER_RULES ), ResourceType.DRL );
             compilerRules = true;
         }
-        if ( informerRules == false ) {
+        if ( informerRules == false && needsInformerExtension( pmml ) ) {
             Resource res = ResourceFactory.newClassPathResource( INFORMER_RULES, PMML4Compiler.class );
             try {
-                if ( res != null && new File( (( ClassPathResource) res).getURL().toURI() ).exists() ) {
+                if ( res != null && (( ClassPathResource) res).getURL().openConnection().getContentType() != null ) {
                     kBuilder.add( res, ResourceType.DRL );
                 }
-            } catch ( URISyntaxException e ) {
+            } catch ( IOException e ) {
                 throw new IOException( "Unable to check for informer rules " + e.getMessage() );
             }
             informerRules = true;
@@ -349,7 +349,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             initRegistry();
         }
         if ( visitor == null ) {
-            initVisitor();
+            initVisitor( pmml );
         }
 
         for ( Object o : pmml.getAssociationModelsAndBaselineModelsAndClusteringModels() ) {
@@ -398,6 +398,17 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             }
         }
 
+        if ( ! informerLoaded && needsInformerExtension( pmml ) ) {
+            for ( String ntempl : INFORMER_TEMPLATES ) {
+                prepareTemplate( ntempl );
+            }
+            informerLoaded = true;
+        }
+
+    }
+
+
+    protected static boolean needsInformerExtension( PMML pmml ) {
         for ( Object o : pmml.getAssociationModelsAndBaselineModelsAndClusteringModels() ) {
             List inner;
             if ( o instanceof AssociationModel ) {
@@ -440,23 +451,16 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
                 if ( p instanceof Extension ) {
                     Extension x = (Extension) p;
                     for ( Object c : x.getContent() ) {
-                        if ( ! informerLoaded && c instanceof Element && ((Element) c).getTagName().equals( "Surveyable" ) ) {
-                            for ( String ntempl : INFORMER_TEMPLATES ) {
-                                prepareTemplate( ntempl );
-                            }
-                            informerLoaded = true;
+                        if ( c instanceof Element && ((Element) c).getTagName().equals( "Surveyable" ) ) {
+                            return true;
                         }
                     }
                 }
             }
+
         }
-
-        
-        
-        
+        return false;
     }
-
-
 
     private static void prepareTemplate( String ntempl ) {
         try {
