@@ -36,6 +36,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.*;
 
 import org.dmg.pmml.pmml_4_1.descr.*;
@@ -47,8 +48,6 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     public static final String BASE_PACK = PMML4Compiler.class.getPackage().getName().replace('.','/');
 
 
-    
-    
     public static final String VISITOR_RULES  = BASE_PACK + "/pmml_visitor.drl";
     public static boolean visitorRules = false;
     
@@ -266,9 +265,13 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             compilerRules = true;
         }
         if ( informerRules == false ) {
-            Resource res = ResourceFactory.newClassPathResource( INFORMER_RULES );
-            if ( res != null && new File( (( ClassPathResource) res).getPath() ).exists() ) {
-                kBuilder.add( res, ResourceType.DRL );
+            Resource res = ResourceFactory.newClassPathResource( INFORMER_RULES, PMML4Compiler.class );
+            try {
+                if ( res != null && new File( (( ClassPathResource) res).getURL().toURI() ).exists() ) {
+                    kBuilder.add( res, ResourceType.DRL );
+                }
+            } catch ( URISyntaxException e ) {
+                throw new IOException( "Unable to check for informer rules " + e.getMessage() );
             }
             informerRules = true;
         }
