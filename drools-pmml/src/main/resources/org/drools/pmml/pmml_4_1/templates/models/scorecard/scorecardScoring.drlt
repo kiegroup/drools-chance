@@ -72,9 +72,9 @@ when
     $cs : CodeScore( scoreCard == $sc, ! $map.containsKey( code ), $s : score, $c : code )
     not CodeScore( scoreCard == $sc, ! $map.containsKey( code ), score > $s )
 then
-    $r.getRank().put( $c, $s );
-    modify ( $cs ) {}
-    modify ( $r ) {}
+    modify ( $r ) {
+        getRank().put( $c, $s );
+    }
 end
 
 
