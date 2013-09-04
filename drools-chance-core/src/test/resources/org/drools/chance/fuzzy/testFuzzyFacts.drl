@@ -15,6 +15,8 @@
  */
 package org.drools.chance.test;
 
+import org.drools.factmodel.traits.Traitable;
+
 import org.drools.chance.factmodel.Imperfect;
 import org.drools.chance.factmodel.LinguisticPartition;
 
@@ -98,7 +100,7 @@ end
 
 
 declare CoreX
-
+@Traitable
     name    : String    = "philip"
 
     weight  : Double    = 65.0

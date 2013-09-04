@@ -1,6 +1,7 @@
 package org.drools.chance.reteoo.builder;
 
 
+import org.drools.base.ValueType;
 import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
 import org.drools.chance.reteoo.nodes.*;
 import org.drools.common.BaseNode;
@@ -29,9 +30,17 @@ public class ChanceNodeFactory implements NodeFactory {
     }
 
     public ObjectTypeNode buildObjectTypeNode( int id, EntryPointNode objectSource, ObjectType objectType, BuildContext context ) {
-        ChanceObjectTypeNode otn = new ChanceObjectTypeNode( id, objectSource, objectType, context );
-        otn.setImperfect( ChanceObjectTypeNode.isImperfect( objectType ) );
-        return otn;
+        if ( objectType.getValueType().equals( ValueType.TRAIT_TYPE ) ) {
+            ChanceTraitObjectTypeNode otn = new ChanceTraitObjectTypeNode( id, objectSource, objectType, context );
+            otn.setImperfect( ChanceObjectTypeNode.isImperfect( objectType ) );
+            return otn;
+        } else {
+            ChanceObjectTypeNode otn = new ChanceObjectTypeNode( id, objectSource, objectType, context );
+            otn.setImperfect( ChanceObjectTypeNode.isImperfect( objectType ) );
+            return otn;
+        }
+
+
     }
 
     public JoinNode buildJoinNode( int id, LeftTupleSource leftInput, ObjectSource rightInput, BetaConstraints binder, BuildContext context ) {

@@ -11,6 +11,8 @@ public class ChanceRuleBuilder extends ReteooRuleBuilder {
 
         this.utils.addBuilder( ChanceGroupElement.class,
                 new ChanceGroupElementBuilder() );
+        this.utils.addBuilder( GroupElement.class,
+                new GroupElementBuilder() );
         this.utils.addBuilder( Pattern.class,
                 new ChancePatternBuilder() );
         this.utils.addBuilder( EvalCondition.class,
