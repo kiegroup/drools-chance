@@ -232,7 +232,9 @@ public class ChanceRulePatternBuilder extends PatternBuilder {
                 return true;
             }
 
-            InternalReadAccessor extractor = getFieldReadAccessor( context, rel, pattern.getObjectType(), rel.getLeft().toString(), null, false );
+            String left = rel.getLeft() instanceof BindingDescr ? ( (BindingDescr) rel.getLeft() ).getExpression() : rel.getLeft().toString();
+
+            InternalReadAccessor extractor = getFieldReadAccessor( context, rel, pattern.getObjectType(), left, null, false );
             if ( extractor != null ) {
                 if ( extractor.getExtractToClass().isAssignableFrom( ImperfectField.class ) ) {
                     return true;

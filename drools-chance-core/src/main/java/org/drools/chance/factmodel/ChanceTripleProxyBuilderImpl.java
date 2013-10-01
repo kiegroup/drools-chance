@@ -255,8 +255,8 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
         if ( isSoftField ) {
             if ( ! mixinGetSet.containsKey( BuildUtils.getterName( field.getName(), field.getTypeName() ) ) ) {
-                buildSoftGetter( cw, field.getTarget(), masterName, getterName, false );
-                buildSoftSetter( cw, field.getTarget(), masterName, setterName, false );
+                buildSoftGetter( cw, field.getTarget(), masterName, getTrait(), core, getterName, false );
+                buildSoftSetter( cw, field.getTarget(), masterName, getTrait(), core, setterName, false );
             } else {
                 //
             }
@@ -292,7 +292,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
 
 
-    protected void buildExtendedMethods(ClassWriter cw, ClassDefinition trait, ClassDefinition core ) {
+    protected void buildExtendedMethods(ClassWriter cw, ClassDefinition trait, ClassDefinition core, long mask ) {
         buildSynchFields( cw, TraitFactory.getProxyName(trait, core), core.getName(), getTrait() );
     }
 
@@ -300,7 +300,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
     protected void buildSynchFields( ClassWriter cw, String proxyName, String coreName, ClassDefinition def ) {
         {
-            MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "synchFields", "()V", null, null);
+            MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "synchFields", Type.getMethodDescriptor( Type.VOID_TYPE, new Type[] { Type.BOOLEAN_TYPE } ), null, null);
             mv.visitCode();
 
             boolean hasLinguistic = false;
@@ -536,6 +536,8 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
             buildSoftGetter( cw,
                     ifld,
                     wrapperName,
+                    getTrait(),
+                    core,
                     BuildUtils.getterName( ifld.getName(), ifld.getTypeName() ) + "Core",
                     true);
         } else {
@@ -835,6 +837,8 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
             buildSoftSetter( cw,
                     ifld,
                     wrapperName,
+                    getTrait(),
+                    core,
                     BuildUtils.setterName( ifld.getName(), ifld.getTypeName() ) + "Core",
                     true);
         } else {

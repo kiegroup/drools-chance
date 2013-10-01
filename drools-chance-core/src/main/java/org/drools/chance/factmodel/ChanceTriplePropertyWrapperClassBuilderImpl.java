@@ -48,8 +48,8 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
 
 
-    protected int initSoftFields( MethodVisitor mv, String wrapperName, ClassDefinition trait, long mask ) {
-        int stackSize = super.initSoftFields( mv, wrapperName, trait, mask );
+    protected int initSoftFields( MethodVisitor mv, String wrapperName, ClassDefinition trait, ClassDefinition core, long mask ) {
+        int stackSize = super.initSoftFields( mv, wrapperName, trait, core, mask );
 
         for ( FieldDefinition field : trait.getFieldsDefinitions() ) {
             if ( isVirtual( field ) ) continue;

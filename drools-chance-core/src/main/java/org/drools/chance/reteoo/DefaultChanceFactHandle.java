@@ -24,7 +24,7 @@ public class DefaultChanceFactHandle extends DefaultFactHandle implements Chance
     }
 
     public DefaultChanceFactHandle(int id, int identityHashCode, Object object, long recency, WorkingMemoryEntryPoint wmEntryPoint) {
-        super(id, identityHashCode, object, recency, wmEntryPoint);
+        super(id, identityHashCode, object, recency, wmEntryPoint, false);
     }
 
     public DefaultChanceFactHandle(int id, String wmEntryPointId, int identityHashCode, int objectHashCode, long recency, Object object) {

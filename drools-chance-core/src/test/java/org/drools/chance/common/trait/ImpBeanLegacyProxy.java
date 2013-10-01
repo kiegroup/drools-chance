@@ -27,6 +27,7 @@ import org.drools.core.util.TripleFactory;
 import org.drools.core.util.TripleFactoryImpl;
 import org.drools.core.util.TripleStore;
 import org.drools.factmodel.traits.TraitProxy;
+import org.drools.factmodel.traits.TraitableBean;
 import org.drools.factmodel.traits.TripleBasedBean;
 import org.drools.factmodel.traits.TripleBasedTypes;
 
@@ -59,7 +60,7 @@ public class ImpBeanLegacyProxy extends TraitProxy implements ImpBean {
         return ImpBean.class.getName();
     }
 
-    public Object getObject() {
+    public TraitableBean getObject() {
         return object;
     }
 
