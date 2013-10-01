@@ -83,9 +83,9 @@ end
         @code{ count++; }
     @end{} @end{}
       @if{ count > 1 } ( @end{}
-      @{rootClass}( @{ context.scopedIdentifier } := core      @if{ source != null }, core memberOf @{ source } @end{}    @if{ target != null }, this not isA @{target}.class @end{}
+      @{rootClass}( @{ context.scopedIdentifier } := core      @if{ source != null }, core memberOf @{ source } @end{}    @if{ target != null } /*, this not isA @{target}.class */ @end{}
                     @foreach{ arg : expr.operands } @if{ ! arg.anonymous }, this isA @{ getConcept( arg.IRI.toQuotedString()).fullyQualifiedName }.class
-                        @elseif{ arg instanceof OWLObjectComplementOf && ! arg.operand.anonymous }, this not isA @{ getConcept( arg.operand.IRI.toQuotedString()).fullyQualifiedName }.class
+                        @elseif{ arg instanceof OWLObjectComplementOf && ! arg.operand.anonymous } /*, this not isA @{ getConcept( arg.operand.IRI.toQuotedString()).fullyQualifiedName }.class */
                         @elseif{ arg instanceof OWLQuantifiedObjectRestriction || arg instanceof OWLObjectCardinalityRestriction } @includeNamed{ 'propBinding'; arg=arg; data=false; }
                         @elseif{ arg instanceof OWLObjectOneOf } @includeNamed{ 'oneOOf'; expr=arg; }
                         @elseif{ arg instanceof OWLQuantifiedDataRestriction || arg instanceof OWLDataCardinalityRestriction } @includeNamed{ 'propBinding'; arg=arg; data=true; }
