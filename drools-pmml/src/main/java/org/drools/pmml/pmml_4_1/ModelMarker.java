@@ -19,8 +19,10 @@ package org.drools.pmml.pmml_4_1;
 
 import org.drools.definition.type.Position;
 import org.drools.definition.type.PropertyReactive;
+import org.drools.factmodel.traits.Traitable;
 
 @PropertyReactive
+@Traitable
 public class ModelMarker {
 
     @Position(0)
