@@ -34,33 +34,39 @@ import org.dmg.pmml.pmml_4_1.descr.SupportVectorMachineModel;
 import org.dmg.pmml.pmml_4_1.descr.TextModel;
 import org.dmg.pmml.pmml_4_1.descr.TimeSeriesModel;
 import org.dmg.pmml.pmml_4_1.descr.TreeModel;
-import org.drools.compiler.compiler.PMMLCompiler;
-import org.drools.compiler.compiler.PackageRegistry;
-import org.drools.core.RuleBaseConfiguration;
-import org.kie.api.conf.EventProcessingOption;
-import org.kie.api.io.Resource;
-import org.kie.api.io.ResourceType;
-import org.kie.internal.KnowledgeBase;
-import org.kie.internal.KnowledgeBaseFactory;
-import org.kie.internal.builder.KnowledgeBuilder;
-import org.kie.internal.builder.KnowledgeBuilderFactory;
-import org.kie.internal.io.ResourceFactory;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.drools.KnowledgeBase;
+import org.drools.KnowledgeBaseFactory;
+import org.drools.RuleBaseConfiguration;
+import org.drools.builder.KnowledgeBuilder;
+import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.builder.KnowledgeBuilderResult;
+import org.drools.builder.ResourceType;
+import org.drools.compiler.PMMLCompiler;
+import org.drools.compiler.PackageRegistry;
+import org.drools.conf.EventProcessingOption;
+import org.drools.io.Resource;
+import org.drools.io.ResourceFactory;
+import org.drools.io.impl.ClassPathResource;
+import org.drools.runtime.StatefulKnowledgeSession;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
-import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -70,6 +76,7 @@ public class PMML4Compiler implements PMMLCompiler {
 
 
     public static final String PMML = "org.dmg.pmml.pmml_4_1.descr";
+    public static final String SCHEMA_PATH = "xsd/org/dmg/pmml/pmml_4_1/pmml-4-1.xsd";
     public static final String BASE_PACK = PMML4Compiler.class.getPackage().getName().replace('.','/');
 
 
@@ -248,6 +255,9 @@ public class PMML4Compiler implements PMMLCompiler {
     private static KnowledgeBuilder kBuilder;
     private static KnowledgeBase visitor;
 
+    private static List<KnowledgeBuilderResult> visitorBuildResults = new ArrayList<KnowledgeBuilderResult>();
+    private List<KnowledgeBuilderResult> results;
+
     private PMML4Helper helper;
 
 
@@ -259,7 +269,7 @@ public class PMML4Compiler implements PMMLCompiler {
 
 
 
-    private static void initVisitor() {
+    private static void initVisitor( PMML pmml ) {
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
             conf.setEventProcessingMode( EventProcessingOption.STREAM );
             //conf.setConflictResolver(LifoConflictResolver.getInstance());
@@ -277,7 +287,7 @@ public class PMML4Compiler implements PMMLCompiler {
         }
 
         if ( kBuilder.hasErrors() ) {
-            throw new IllegalStateException( "Unable to add rules to knowledge base " + kBuilder.getErrors().toString() );
+            visitorBuildResults.addAll( kBuilder.getErrors() );
         } else {
             visitor.addKnowledgePackages( kBuilder.getKnowledgePackages() );
         }
@@ -287,7 +297,12 @@ public class PMML4Compiler implements PMMLCompiler {
     public String generateTheory( PMML pmml ) {
         StringBuilder sb = new StringBuilder();
 
-        checkBuildingResources( pmml );
+        try {
+            checkBuildingResources( pmml );
+        } catch ( IOException e ) {
+            this.results.add( new PMMLError( e.getMessage() ) );
+            return null;
+        }
 
         StatefulKnowledgeSession visitorSession = visitor.newStatefulKnowledgeSession();
 
@@ -298,7 +313,7 @@ public class PMML4Compiler implements PMMLCompiler {
         visitorSession.setGlobal( "theory", sb );
 
         long now = System.currentTimeMillis();
-        visitorSession.insert( pmml );
+            visitorSession.insert( pmml );
             visitorSession.fireAllRules();
         long delta = System.currentTimeMillis() - now;
 //        System.out.println( "PMML compiled in " + delta );
@@ -339,13 +354,13 @@ public class PMML4Compiler implements PMMLCompiler {
         }
     }
 
-    private static void checkBuildingResources( PMML pmml ) {
+    private static void checkBuildingResources( PMML pmml ) throws IOException {
 
         if ( registry == null ) {
             initRegistry();
         }
         if ( visitor == null ) {
-            initVisitor();
+            initVisitor( pmml );
         }
 
         for ( Object o : pmml.getAssociationModelsAndBaselineModelsAndClusteringModels() ) {
@@ -394,56 +409,33 @@ public class PMML4Compiler implements PMMLCompiler {
             }
         }
 
-        for ( Object o : pmml.getAssociationModelsAndBaselineModelsAndClusteringModels() ) {
-            List inner;
-            if ( o instanceof AssociationModel ) {
-                inner = ((AssociationModel) o).getExtensionsAndMiningSchemasAndOutputs();
-            } else if ( o instanceof BaselineModel ) {
-                inner = ((BaselineModel) o).getExtensionsAndTestDistributionsAndMiningSchemas();
-            } else if ( o instanceof ClusteringModel ) {
-                inner = ((ClusteringModel) o).getExtensionsAndClustersAndComparisonMeasures();
-            } else if ( o instanceof GeneralRegressionModel ) {
-                inner = ((GeneralRegressionModel) o).getExtensionsAndParamMatrixesAndPPMatrixes();
-            } else if ( o instanceof MiningModel ) {
-                inner = ((MiningModel) o).getExtensionsAndMiningSchemasAndOutputs();
-            } else if ( o instanceof NaiveBayesModel ) {
-                inner = ((NaiveBayesModel) o).getExtensionsAndBayesOutputsAndBayesInputs();
-            } else if ( o instanceof NearestNeighborModel ) {
-                inner = ((NearestNeighborModel) o).getExtensionsAndKNNInputsAndComparisonMeasures();
-            } else if ( o instanceof NeuralNetwork ) {
-                inner = ((NeuralNetwork) o).getExtensionsAndNeuralLayersAndNeuralInputs();
-            } else if ( o instanceof RegressionModel ) {
-                inner = ((RegressionModel) o).getExtensionsAndRegressionTablesAndMiningSchemas();
-            } else if ( o instanceof RuleSetModel ) {
-                inner = ((RuleSetModel) o).getExtensionsAndRuleSetsAndMiningSchemas();
-            } else if ( o instanceof Scorecard ) {
-                inner = ((Scorecard) o).getExtensionsAndCharacteristicsAndMiningSchemas();
-            } else if ( o instanceof SequenceModel ) {
-                inner = ((SequenceModel) o).getExtensionsAndSequencesAndMiningSchemas();
-            } else if ( o instanceof SupportVectorMachineModel ) {
-                inner = ((SupportVectorMachineModel) o).getExtensionsAndSupportVectorMachinesAndVectorDictionaries();
-            } else if ( o instanceof TextModel ) {
-                inner = ((TextModel) o).getExtensionsAndDocumentTermMatrixesAndTextCorpuses();
-            } else if ( o instanceof TimeSeriesModel ) {
-                inner = ((TimeSeriesModel) o).getExtensionsAndMiningSchemasAndOutputs();
-            } else if ( o instanceof TreeModel ) {
-                inner = ((TreeModel) o).getExtensionsAndNodesAndMiningSchemas();
-            } else {
-                //should not happen
-                inner = Collections.emptyList();
-            }
-            for ( Object p : inner ) {
-                if ( p instanceof Extension ) {
-                    Extension x = (Extension) p;
-                    for ( Object c : x.getContent() ) {                    }
-                }
-            }
-        }
-
-        
-        
-        
     }
+
+    private static void resetVisitor( PMML pmml ) throws IOException {
+        visitor = null;
+        visitorRules = false;
+        compilerRules = false;
+        informerRules = false;
+
+        clusteringLoaded = false;
+        globalLoaded = false;
+        miningLoaded = false;
+        neuralLoaded = false;
+        scorecardLoaded = false;
+        simpleRegLoaded = false;
+        svmLoaded = false;
+        transformationLoaded = false;
+        treeLoaded = false;
+
+        try {
+            checkBuildingResources( pmml );
+        } catch ( IOException ioe ) {
+            visitorBuildResults.clear();
+            visitorBuildResults.add( new PMMLError( ioe.getMessage() ) );
+        }
+    }
+
+
 
 
 
@@ -471,6 +463,7 @@ public class PMML4Compiler implements PMMLCompiler {
 
 
     public String compile(InputStream source, Map<String,PackageRegistry> registries) {
+        this.results = new ArrayList<KnowledgeBuilderResult>();
         PMML pmml = loadModel( PMML, source );
         if ( registries != null ) {
             if ( registries.containsKey( helper.getPack() ) ) {
@@ -480,11 +473,21 @@ public class PMML4Compiler implements PMMLCompiler {
             }
 
         }
-        return generateTheory( pmml );
+        if ( getResults().isEmpty() ) {
+            return generateTheory( pmml );
+        } else {
+            return null;
+        }
+    }
+
+    public List<KnowledgeBuilderResult> getResults() {
+        List<KnowledgeBuilderResult> combinedResults = new ArrayList<KnowledgeBuilderResult>( this.results );
+        combinedResults.addAll( visitorBuildResults );
+        return combinedResults;
     }
 
 
-	public void dump( String s, OutputStream ostream ) {
+    public void dump( String s, OutputStream ostream ) {
 		// write to outstream
 		Writer writer = null;
 		try {
@@ -519,12 +522,24 @@ public class PMML4Compiler implements PMMLCompiler {
 	 */
 	public PMML loadModel( String model, InputStream source ) {
 		try {
-			JAXBContext jc = JAXBContext.newInstance( model );
+            SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+            Schema schema = null;
+            try {
+                schema = sf.newSchema( Thread.currentThread().getContextClassLoader().getResource( SCHEMA_PATH ) );
+            } catch ( SAXException e ) {
+                e.printStackTrace();
+                visitorBuildResults.add( new PMMLWarning( ResourceFactory.newInputStreamResource( source ), "Could not validate PMML document :" + e.getMessage() ) );
+            }
+
+            JAXBContext jc = JAXBContext.newInstance( model );
 			Unmarshaller unmarshaller = jc.createUnmarshaller();
+            if ( schema != null ) {
+                unmarshaller.setSchema( schema );
+            }
 
 			return (PMML) unmarshaller.unmarshal( source );
 		} catch ( JAXBException e ) {
-			e.printStackTrace();
+			this.results.add( new PMMLError( e.toString() ) );
 			return null;
 		}
 

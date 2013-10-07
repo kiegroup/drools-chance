@@ -1,9 +1,11 @@
 package org.drools.pmml_4_0;
 
-import org.drools.compiler.compiler.PMMLCompiler;
-import org.drools.compiler.compiler.PackageRegistry;
+import org.drools.builder.KnowledgeBuilderResult;
+import org.drools.compiler.PMMLCompiler;
+import org.drools.compiler.PackageRegistry;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 
@@ -19,6 +21,10 @@ public class PMML4Compiler implements PMMLCompiler {
 
     public String compile( InputStream inputStream, Map<String, PackageRegistry> stringPackageRegistryMap ) {
         return compiler.compile( inputStream, stringPackageRegistryMap );
+    }
+
+    public List<KnowledgeBuilderResult> getResults() {
+        return compiler.getResults();
     }
 
 }
