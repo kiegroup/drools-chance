@@ -31,20 +31,24 @@ import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
 import org.w3c.dom.Element;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.*;
-import java.net.URISyntaxException;
 import java.util.*;
 
 import org.dmg.pmml.pmml_4_1.descr.*;
+import org.xml.sax.SAXException;
 
 public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 
     public static final String PMML = "org.dmg.pmml.pmml_4_1.descr";
+    public static final String SCHEMA_PATH = "xsd/org/dmg/pmml/pmml_4_1/pmml-4-1.xsd";
     public static final String BASE_PACK = PMML4Compiler.class.getPackage().getName().replace('.','/');
 
 
@@ -237,6 +241,9 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     private static KnowledgeBuilder kBuilder;
     private static KnowledgeBase visitor;
 
+    private static List<KnowledgeBuilderResult> visitorBuildResults = new ArrayList<KnowledgeBuilderResult>();
+    private List<KnowledgeBuilderResult> results;
+
     private PMML4Helper helper;
 
 
@@ -248,7 +255,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 
 
-    private static void initVisitor( PMML pmml ) throws IOException {
+    private static void initVisitor( PMML pmml ) throws IOException, IllegalStateException {
         RuleBaseConfiguration conf = new RuleBaseConfiguration();
             conf.setEventProcessingMode( EventProcessingOption.STREAM );
             //conf.setConflictResolver(LifoConflictResolver.getInstance());
@@ -271,13 +278,14 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
                     kBuilder.add( res, ResourceType.DRL );
                 }
             } catch ( IOException e ) {
-                throw new IOException( "Unable to check for informer rules " + e.getMessage() );
+                e.printStackTrace();
+                visitorBuildResults.add( new PMMLError( e.getMessage() ) );
             }
             informerRules = true;
         }
 
         if ( kBuilder.hasErrors() ) {
-            throw new IllegalStateException( "Unable to add rules to knowledge base " + kBuilder.getErrors().toString() );
+            visitorBuildResults.addAll( kBuilder.getErrors() );
         } else {
             visitor.addKnowledgePackages( kBuilder.getKnowledgePackages() );
         }
@@ -290,7 +298,8 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
         try {
             checkBuildingResources( pmml );
         } catch ( IOException e ) {
-            throw new IllegalStateException( "Unable to build visitor" );
+            this.results.add( new PMMLError( e.getMessage() ) );
+            return null;
         }
 
         StatefulKnowledgeSession visitorSession = visitor.newStatefulKnowledgeSession();
@@ -302,7 +311,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
         visitorSession.setGlobal( "theory", sb );
 
         long now = System.currentTimeMillis();
-        visitorSession.insert( pmml );
+            visitorSession.insert( pmml );
             visitorSession.fireAllRules();
         long delta = System.currentTimeMillis() - now;
 //        System.out.println( "PMML compiled in " + delta );
@@ -427,7 +436,12 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
         transformationLoaded = false;
         treeLoaded = false;
 
-        checkBuildingResources( pmml );
+        try {
+            checkBuildingResources( pmml );
+        } catch ( IOException ioe ) {
+            visitorBuildResults.clear();
+            visitorBuildResults.add( new PMMLError( ioe.getMessage() ) );
+        }
     }
 
 
@@ -509,6 +523,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
 
     public String compile(InputStream source, Map<String,PackageRegistry> registries) {
+        this.results = new ArrayList<KnowledgeBuilderResult>();
         PMML pmml = loadModel( PMML, source );
         if ( registries != null ) {
             if ( registries.containsKey( helper.getPack() ) ) {
@@ -518,11 +533,21 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             }
 
         }
-        return generateTheory( pmml );
+        if ( getResults().isEmpty() ) {
+            return generateTheory( pmml );
+        } else {
+            return null;
+        }
+    }
+
+    public List<KnowledgeBuilderResult> getResults() {
+        List<KnowledgeBuilderResult> combinedResults = new ArrayList<KnowledgeBuilderResult>( this.results );
+        combinedResults.addAll( visitorBuildResults );
+        return combinedResults;
     }
 
 
-	public void dump( String s, OutputStream ostream ) {
+    public void dump( String s, OutputStream ostream ) {
 		// write to outstream
 		Writer writer = null;
 		try {
@@ -557,12 +582,24 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 	 */
 	public PMML loadModel( String model, InputStream source ) {
 		try {
-			JAXBContext jc = JAXBContext.newInstance( model );
+            SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+            Schema schema = null;
+            try {
+                schema = sf.newSchema( Thread.currentThread().getContextClassLoader().getResource( SCHEMA_PATH ) );
+            } catch ( SAXException e ) {
+                e.printStackTrace();
+                visitorBuildResults.add( new PMMLWarning( ResourceFactory.newInputStreamResource( source ), "Could not validate PMML document :" + e.getMessage() ) );
+            }
+
+            JAXBContext jc = JAXBContext.newInstance( model );
 			Unmarshaller unmarshaller = jc.createUnmarshaller();
+            if ( schema != null ) {
+                unmarshaller.setSchema( schema );
+            }
 
 			return (PMML) unmarshaller.unmarshal( source );
 		} catch ( JAXBException e ) {
-			e.printStackTrace();
+			this.results.add( new PMMLError( e.toString() ) );
 			return null;
 		}
 
