@@ -249,6 +249,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
 
     public PMML4Compiler() {
         super();
+        results = new ArrayList<KnowledgeBuilderResult>();
         helper = new PMML4Helper();
             helper.setPack( "org.drools.pmml.pmml_4_1.test" );
     }
