@@ -20,6 +20,7 @@ package org.drools.pmml.pmml_4_1.predictive.models;
 import junit.framework.Assert;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
+import org.drools.ObjectFilter;
 import org.drools.agent.ChangeSetHelperImpl;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentConfiguration;
@@ -32,13 +33,15 @@ import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
+import org.drools.pmml.pmml_4_1.ModelMarker;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.QueryResults;
-import org.drools.runtime.rule.Variable;
-import org.junit.After;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CleanupTest extends DroolsAbstractPMMLTest {
 
@@ -62,11 +65,8 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         StatefulKnowledgeSession kSession = loadModel( source1 );
         assertTrue( kSession.getObjects().size() > 0 );
 
-        QueryResults qres = kSession.getQueryResults( "modelMarker", "Neuiris", Variable.v );
+        Collection qres = getModelMarker( kSession, "Neuiris" );
         assertEquals( 1, qres.size() );
-
-        Object marker = qres.iterator().next().get( "$mm" );
-        assertNotNull( marker );
 
         kSession.getWorkingMemoryEntryPoint( "enable_Neuiris" ).insert( Boolean.FALSE );
         kSession.fireAllRules();
@@ -77,17 +77,22 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         kSession.dispose();
     }
 
+    private Collection getModelMarker( final StatefulKnowledgeSession kSession, final String modelName ) {
+        return kSession.getObjects( new ObjectFilter() {
+            public boolean accept( Object o ) {
+                return o instanceof ModelMarker && modelName.equals( ((ModelMarker) o).getModelName() );
+            }
+        } );
+    }
+
 
     @Test
     public void testReenableANN() {
         setKSession( loadModel( source1 ) );
         assertTrue( getKSession().getObjects().size() > 0 );
 
-        QueryResults qres = getKSession().getQueryResults( "modelMarker", "Neuiris", Variable.v );
+        Collection qres = getModelMarker( getKSession(), "Neuiris" );
         assertEquals( 1, qres.size() );
-
-        Object marker = qres.iterator().next().get( "$mm" );
-        assertNotNull( marker );
 
         getKSession().getWorkingMemoryEntryPoint( "enable_Neuiris" ).insert( Boolean.FALSE );
 
@@ -125,11 +130,8 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         StatefulKnowledgeSession kSession = loadModel( source2 );
         assertTrue( kSession.getObjects().size() > 0 );
 
-        QueryResults qres = kSession.getQueryResults( "modelMarker", "TreeTest", Variable.v );
+        Collection qres = getModelMarker( kSession, "TreeTest" );
         assertEquals( 1, qres.size() );
-
-        Object marker = qres.iterator().next().get( "$mm" );
-        assertNotNull( marker );
 
         kSession.getWorkingMemoryEntryPoint( "enable_TreeTest" ).insert(Boolean.FALSE);
         kSession.fireAllRules();
@@ -146,11 +148,8 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         StatefulKnowledgeSession kSession = loadModel( source3 );
         assertTrue( kSession.getObjects().size() > 0 );
 
-        QueryResults qres = kSession.getQueryResults( "modelMarker", "LinReg", Variable.v );
+        Collection qres = getModelMarker( kSession, "LinReg" );
         assertEquals( 1, qres.size() );
-
-        Object marker = qres.iterator().next().get( "$mm" );
-        assertNotNull( marker );
 
         kSession.getWorkingMemoryEntryPoint( "enable_LinReg" ).insert(Boolean.FALSE);
         kSession.fireAllRules();
@@ -167,11 +166,8 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         StatefulKnowledgeSession kSession = loadModel( source4 );
         assertTrue( kSession.getObjects().size() > 0 );
 
-        QueryResults qres = kSession.getQueryResults( "modelMarker", "CenterClustering", Variable.v );
+        Collection qres = getModelMarker( kSession, "CenterClustering" );
         assertEquals( 1, qres.size() );
-
-        Object marker = qres.iterator().next().get( "$mm" );
-        assertNotNull( marker );
 
         kSession.getWorkingMemoryEntryPoint( "enable_CenterClustering" ).insert(Boolean.FALSE);
         kSession.fireAllRules();
@@ -188,11 +184,8 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         StatefulKnowledgeSession kSession = loadModel( source5 );
         assertTrue( kSession.getObjects().size() > 0 );
 
-        QueryResults qres = kSession.getQueryResults( "modelMarker", "SVMXORModel", Variable.v );
+        Collection qres = getModelMarker( kSession, "SVMXORModel" );
         assertEquals( 1, qres.size() );
-
-        Object marker = qres.iterator().next().get( "$mm" );
-        assertNotNull( marker );
 
         kSession.getWorkingMemoryEntryPoint( "enable_SVMXORModel" ).insert(Boolean.FALSE);
         kSession.fireAllRules();
@@ -209,11 +202,8 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
         StatefulKnowledgeSession kSession = loadModel( source6 );
         assertTrue( kSession.getObjects().size() > 0 );
 
-        QueryResults qres = kSession.getQueryResults( "modelMarker", "SampleScore", Variable.v );
+        Collection qres = getModelMarker( kSession, "SampleScore" );
         assertEquals( 1, qres.size() );
-
-        Object marker = qres.iterator().next().get( "$mm" );
-        assertNotNull( marker );
 
         kSession.getWorkingMemoryEntryPoint( "enable_SampleScore" ).insert(Boolean.FALSE);
         kSession.fireAllRules();
@@ -261,7 +251,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         kSession.fireAllRules();
 
-        assertEquals( 41, kBase.getKnowledgePackage( packageName ).getRules().size() );
+        assertEquals( 40, kBase.getKnowledgePackage( packageName ).getRules().size() );
 
         System.out.println( "************************ REMOVING resource 2 ");
 

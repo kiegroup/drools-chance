@@ -22,7 +22,7 @@
 
 @declare{'neuralLinkSynapsesRule'}
 
-rule "LinkSynapses"
+rule "LinkSynapses_@{name}"
 when
     Stym( $ctx : context, $index : index, $val : value )
     Synapse( context == $ctx, source == $index, $target : target, $w : weight )

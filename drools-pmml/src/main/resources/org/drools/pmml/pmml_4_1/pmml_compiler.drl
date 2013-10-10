@@ -95,7 +95,6 @@ salience 9990
 when
     $h : Header( )
 then
-    applyTemplate( "commonQueries.drlt", $h, registry, Collections.emptyMap(), theory );
 
     retract( $h );
 end
@@ -1855,7 +1854,7 @@ then
 
     applyTemplate( "neuralBeans.drlt", null, registry, null, theory );
 
-    applyTemplate( "neuralLinkSynapses.drlt", null, registry, null, theory );
+    applyTemplate( "neuralLinkSynapses.drlt", null, registry, map, theory );
 
     modify ( $stat ) {
         setNeuralNetwork( true );

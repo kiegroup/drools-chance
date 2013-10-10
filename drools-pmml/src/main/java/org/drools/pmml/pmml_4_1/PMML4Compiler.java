@@ -50,6 +50,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
     public static final String PMML = "org.dmg.pmml.pmml_4_1.descr";
     public static final String SCHEMA_PATH = "xsd/org/dmg/pmml/pmml_4_1/pmml-4-1.xsd";
     public static final String BASE_PACK = PMML4Compiler.class.getPackage().getName().replace('.','/');
+    public static final String BASE_TEST_PACK = "org.drools.pmml.pmml_4_1.test";
 
 
     public static final String VISITOR_RULES  = BASE_PACK + "/pmml_visitor.drl";
@@ -68,7 +69,6 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             "global/pmml_header.drlt",
             "global/pmml_import.drlt",
             "global/modelMark.drlt",
-            "global/commonQueries.drlt",
 
             "global/dataDefinition/common.drlt",
             "global/dataDefinition/rootDataField.drlt",
@@ -251,7 +251,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
         super();
         results = new ArrayList<KnowledgeBuilderResult>();
         helper = new PMML4Helper();
-            helper.setPack( "org.drools.pmml.pmml_4_1.test" );
+            helper.setPack( BASE_TEST_PACK );
     }
 
 
