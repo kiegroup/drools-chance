@@ -169,11 +169,14 @@ end
 rule "Invalid_meta"
 dialect "mvel"
 when
-    exists EnableSurvey()
+    EnableSurvey( $model : modelName )
 then
     //System.err.println("Found Mined Field " + $fld.name );
-    applyTemplate( "modelInvalidAnswer.drlt", utils, registry, java.util.Collections.emptyMap(), theory );
-    applyTemplate( "modelRevalidate.drlt", utils, registry, java.util.Collections.emptyMap(), theory );
+    HashMap map = new HashMap( 3 );
+        map.put( "name", $model );
+
+    applyTemplate( "modelInvalidAnswer.drlt", utils, registry, map, theory );
+    applyTemplate( "modelRevalidate.drlt", utils, registry, map, theory );
 end
 
 
