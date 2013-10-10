@@ -30,10 +30,16 @@ import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.pmml.pmml_4_1.ModelMarker;
+import org.drools.pmml.pmml_4_1.PMML4Compiler;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
+import org.drools.runtime.rule.QueryResults;
 import org.drools.runtime.rule.Variable;
 import org.junit.After;
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -160,6 +166,38 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         System.err.println( reportWMObjects( getKSession() ) );
 
         Assert.assertEquals( 0.44, queryDoubleField( "Cold", "MockCold" ), 1e-6 );
+    }
+
+    @Test
+    public void testClearOutput() throws Exception {
+        setKSession( getModelSession( source7, VERBOSE ) );
+        setKbase( getKSession().getKnowledgeBase() );
+
+        getKSession().fireAllRules();  //init model
+
+        getKSession().getWorkingMemoryEntryPoint( "in_Temp" ).insert( 28.0 );
+
+        getKSession().fireAllRules();
+
+        Assert.assertEquals( 0.44, queryDoubleField( "Cold", "MockCold" ), 1e-6 );
+
+        for ( Object o : getKSession().getObjects() ) {
+            System.out.println( o );
+        }
+
+        FactType tempKlass = getKSession().getKnowledgeBase().getFactType( "org.drools.pmml.pmml_4_1.test", "Temp" );
+        Collection temps = getKSession().getObjects( new ClassObjectFilter( tempKlass.getFactClass() ) );
+        Iterator iter = temps.iterator();
+        Object temp = iter.next();
+
+        if ( tempKlass.get( temp, "value" ) != null ) {
+            temp = iter.next();
+        }
+        getKSession().retract( getKSession().getFactHandle( temp ) );
+        getKSession().fireAllRules();
+
+        QueryResults results = getKSession().getQueryResults( "Cold", "MockCold", Variable.v );
+        assertEquals( 0, results.size() );
     }
 
 

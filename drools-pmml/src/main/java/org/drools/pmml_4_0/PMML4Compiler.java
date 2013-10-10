@@ -27,4 +27,8 @@ public class PMML4Compiler implements PMMLCompiler {
         return compiler.getResults();
     }
 
+    public void clearResults() {
+        compiler.clearResults();
+    }
+
 }

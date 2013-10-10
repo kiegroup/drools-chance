@@ -534,7 +534,7 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
             }
 
         }
-        if ( getResults().isEmpty() ) {
+        if ( visitorBuildResults.isEmpty() && results.isEmpty() ) {
             return generateTheory( pmml );
         } else {
             return null;
@@ -547,6 +547,10 @@ public class PMML4Compiler implements org.drools.compiler.PMMLCompiler {
         return combinedResults;
     }
 
+
+    public void clearResults() {
+        this.results.clear();
+    }
 
     public void dump( String s, OutputStream ostream ) {
 		// write to outstream
