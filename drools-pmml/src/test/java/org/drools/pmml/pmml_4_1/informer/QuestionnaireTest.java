@@ -353,14 +353,14 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         getKSession().fireAllRules();
 
-        getKSession().getWorkingMemoryEntryPoint( "in_Feat2" ).insert( 5 );
+        getKSession().getWorkingMemoryEntryPoint( "in_PetalNum" ).insert( 5 );
 
         getKSession().fireAllRules();
 
         System.err.println( reportWMObjects( getKSession() ) );
 
 
-        FactType type = getKbase().getFactType( packageName, "Feat2" );
+        FactType type = getKbase().getFactType( packageName, "PetalNum" );
         checkFirstDataFieldOfTypeStatus( type, false, false, "Neuiris", 5 );
 
         assertEquals( 4, getKSession().getObjects(new ClassObjectFilter( InvalidAnswer.class ) ).size() );
@@ -397,15 +397,14 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
     public void testMultipleModels() throws Exception {
         setKSession( getModelSession( new String[] { source, source2 }, true ) );
         setKbase(getKSession().getKnowledgeBase());
-        FactType petalNumType = getKbase().getFactType( packageName, "Feat2" );
+        FactType petalNumType = getKbase().getFactType( packageName, "PetalNum" );
         FactType out = getKbase().getFactType( packageName, "OutSepLen" );
         FactType sepalType = getKbase().getFactType( packageName, "SepalLen" );
-
-
 
         getKSession().fireAllRules();
 
         getKSession().getWorkingMemoryEntryPoint( "in_Feat2" ).insert( 4 );
+        getKSession().getWorkingMemoryEntryPoint( "in_PetalNum" ).insert( 4 );
 
         getKSession().getWorkingMemoryEntryPoint( "in_PetalWid" ).insert( 1 );
         getKSession().getWorkingMemoryEntryPoint( "in_SepalWid" ).insert( 30 );
@@ -413,9 +412,6 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 
         // one question for each model is not answered
         getKSession().fireAllRules();
-
-        System.err.println(reportWMObjects(getKSession()));
-
 
 
         checkFirstDataFieldOfTypeStatus( petalNumType, false, false, "Neuiris", 4 );
@@ -427,13 +423,12 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         System.out.println("\n\n\n\n\n\n\n\n Before 2 \n");
 
 
-        Answer ans1 = new Answer(getQId("Neuiris","Feat2"),"40");
+        Answer ans1 = new Answer(getQId("Neuiris","PetalNum"),"40");
         getKSession().insert(ans1);
         getKSession().fireAllRules();
 
 
-//        System.err.println(reportWMObjects(getKSession()));
-
+        System.err.println(reportWMObjects(getKSession()));
 
 
         checkFirstDataFieldOfTypeStatus(petalNumType,true,false,"Neuiris",40);
@@ -450,7 +445,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
         System.out.println("\n\n\n\n\n\n\n\n Before 3 \n");
 
 
-        Answer ans2 = new Answer(getQId("Neuiris","Feat2"),"-7");
+        Answer ans2 = new Answer(getQId("Neuiris","PetalNum"),"-7");
         getKSession().insert(ans2);
 
         getKSession().fireAllRules();
@@ -477,7 +472,7 @@ public class QuestionnaireTest extends DroolsAbstractPMMLTest {
 //
 //
 //
-        Answer ans3 = new Answer(getQId("Neuiris","Feat2"),"101");
+        Answer ans3 = new Answer(getQId("Neuiris","PetalNum"),"101");
         getKSession().insert(ans3);
 
         getKSession().fireAllRules();

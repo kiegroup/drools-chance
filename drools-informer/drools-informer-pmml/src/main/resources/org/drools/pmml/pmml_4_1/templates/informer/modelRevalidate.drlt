@@ -32,7 +32,7 @@ salience 50
 when
     question : Question(questionId : id, answerType != null, answer : answer != null ) @watch(*)
 	association : DomainModelAssociation(questionId == questionId, object : object, property : property, lastAnswer == answer )
-	$bean : DataField( this == object, valid == false )
+	$bean : DataField( this == object, valid == false, context == "@{name}" )
 then
 //    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> REVAL : " + $bean + " on " + association + " sue to " + question );
 
