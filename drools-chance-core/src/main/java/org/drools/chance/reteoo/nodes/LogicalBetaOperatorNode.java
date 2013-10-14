@@ -109,19 +109,13 @@ public class LogicalBetaOperatorNode extends LeftTupleSource
     public void attach( BuildContext context ) {
         attach();
 
-        for ( int i = 0, length = context.getWorkingMemories().length; i < length; i++ ) {
-            final InternalWorkingMemory workingMemory = context.getWorkingMemories()[i];
-            final PropagationContext propagationContext = new PropagationContextImpl( workingMemory.getNextPropagationIdCounter(),
-                    PropagationContext.RULE_ADDITION,
-                    null,
-                    null,
-                    null );
+    }
 
-            this.leftInput.updateSink( this,
-                    propagationContext,
-                    workingMemory );
-        }
-
+    @Override
+    public void updateSinkOnAttach( BuildContext context, PropagationContext propagationContext, InternalWorkingMemory workingMemory ) {
+        this.leftInput.updateSink( this,
+                                   propagationContext,
+                                   workingMemory );
     }
 
 
