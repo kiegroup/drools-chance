@@ -1,6 +1,6 @@
 package org.drools.pmml.pmml_4_1;
 
-import org.drools.compiler.DroolsError;
+import org.drools.compiler.compiler.DroolsError;
 
 public class PMMLError extends DroolsError {
 

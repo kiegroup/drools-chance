@@ -1,8 +1,8 @@
 package org.drools.pmml_4_0;
 
-import org.drools.builder.KnowledgeBuilderResult;
-import org.drools.compiler.PMMLCompiler;
-import org.drools.compiler.PackageRegistry;
+import org.drools.compiler.compiler.PMMLCompiler;
+import org.drools.compiler.compiler.PackageRegistry;
+import org.kie.internal.builder.KnowledgeBuilderResult;
 
 import java.io.InputStream;
 import java.util.List;
@@ -25,6 +25,11 @@ public class PMML4Compiler implements PMMLCompiler {
 
     public List<KnowledgeBuilderResult> getResults() {
         return compiler.getResults();
+    }
+
+    @Override
+    public void clearResults() {
+        compiler.clearResults();
     }
 
 }

@@ -22,7 +22,7 @@ import org.dmg.pmml.pmml_4_1.descr.DataField;
 import org.dmg.pmml.pmml_4_1.descr.REGRESSIONNORMALIZATIONMETHOD;
 import org.dmg.pmml.pmml_4_1.descr.RESULTFEATURE;
 import org.dmg.pmml.pmml_4_1.descr.Value;
-import org.drools.base.TypeResolver;
+import org.drools.core.base.TypeResolver;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -1019,4 +1019,7 @@ public class PMML4Helper {
     }
 
 
+    public void reset() {
+        definedModelBeans = new HashSet<String>();
+    }
 }

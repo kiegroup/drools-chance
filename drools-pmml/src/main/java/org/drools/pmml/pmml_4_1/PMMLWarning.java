@@ -1,7 +1,7 @@
 package org.drools.pmml.pmml_4_1;
 
-import org.drools.compiler.DroolsWarning;
-import org.drools.io.Resource;
+import org.drools.compiler.compiler.DroolsWarning;
+import org.kie.api.io.Resource;
 
 public class PMMLWarning extends DroolsWarning {
 
