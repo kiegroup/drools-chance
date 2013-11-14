@@ -50,7 +50,7 @@ when
         ?@{ funName }( @foreach{ arg : funArgs } @{arg} @end{ ',' } , $ctx, $return ; )
     @end{}
 then
-//    System.out.println( "READY TO BUILD @{name} ");
+    System.out.println( "READY TO BUILD @{name} ");
 
     @{name} x = new @{ name }();
 

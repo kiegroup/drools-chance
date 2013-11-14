@@ -17,27 +17,14 @@
 package org.drools.pmml.pmml_4_1;
 
 
-import org.dmg.pmml.pmml_4_1.descr.PMML;
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuleBaseConfiguration;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderError;
-import org.drools.builder.KnowledgeBuilderErrors;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.conf.EventProcessingOption;
-import org.drools.io.ResourceFactory;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import org.kie.api.io.ResourceType;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.io.ResourceFactory;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class PMMLErrorTest {
 
@@ -54,7 +41,7 @@ public class PMMLErrorTest {
                       "</PMML>";
 
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( ResourceFactory.newByteArrayResource( pmlm.getBytes() ),ResourceType.PMML );
+        kbuilder.add( ResourceFactory.newByteArrayResource( pmlm.getBytes() ), ResourceType.PMML );
 
         System.out.print( kbuilder.getErrors() );
         assertTrue( kbuilder.hasErrors() );

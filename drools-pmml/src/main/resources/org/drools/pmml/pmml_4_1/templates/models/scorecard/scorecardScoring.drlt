@@ -52,7 +52,7 @@ when
                 $sum : sum( $below ? ($base - $val) : ($val - $base) ) )
 then
 //    System.out.println( "The CUMULATED score for code " + $code + " from set " + $set + " is >>> " + $sum );
-    insertLogical( new CodeScore( $code, $sum.doubleValue() ) );
+    insertLogical( new CodeScore( $card, $code, $sum.doubleValue() ) );
 end
 
 
@@ -60,18 +60,18 @@ rule "Detect Scorecard ReasonCode Change"
 salience -12
 when
     $sc : ScoreCard( enableRC == true, $map : ranking )
-    exists CodeScore( $c : code, score != $map.get( $c ) )
+    exists CodeScore( scoreCard == $sc, $c : code, score != $map.get( $c ) )
 then
-    insert( new ScoreRank( new java.util.LinkedHashMap() ) );
+    insert( new ScoreRank( $sc, new java.util.LinkedHashMap() ) );
 end
 
 
 rule "Sort Scorecard Reason Codes"
-salience -13
+salience -14
 when
-    $r : ScoreRank( $keys : rank.keySet() )
-    $cs : CodeScore( $c : code not memberOf $keys, $s : score )
-    not CodeScore( score > $s, code not memberOf $keys )
+    $r : ScoreRank( $sc : scoreCard, $map : rank )
+    $cs : CodeScore( scoreCard == $sc, ! $map.containsKey( code ), $s : score, $c : code )
+    not CodeScore( scoreCard == $sc, ! $map.containsKey( code ), score > $s )
 then
     modify ( $r ) {
         getRank().put( $c, $s );
@@ -83,7 +83,7 @@ rule "Integrate Scorecard ReasonCode Map"
 salience -15
 when
     $s : ScoreCard( enableRC == true )
-    $x : ScoreRank( $map : rank )
+    $x : ScoreRank( scoreCard == $s, $map : rank )
 then
     retract( $x );
     modify ( $s ) {

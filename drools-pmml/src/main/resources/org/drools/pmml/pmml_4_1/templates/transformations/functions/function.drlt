@@ -30,10 +30,11 @@
 @declare{'customFunction'}
 
 @code{ String fld; }
+
 query @{name}( @foreach{ param : params } @{ mapDatatype( param.dataType ) } @{ param.name }  @end{','} , String $ctx, @{ mapDatatype( dataType, true ) } $return )
 
         @foreach{ field : innerFields }
-        @code{ if ( isInnerFieldName( field ) ) { fld = field; } else { fld = compactUpperCase( name ) + "_" + compactUpperCase( field ); } }
+            @code{ if ( isInnerFieldName( field ) ) { fld = field; } else { fld = compactUpperCase( name ) + "_" + compactUpperCase( field ); } }
             @{ fld  }( valid == true, missing == false, $ctx := context, @{ exprFieldMap.get( field ) } : value )
         @end{}
 
@@ -48,9 +49,9 @@ rule "@{name}_Goal"
 @code{ int j = 0; }
 @@activationListener('direct')
 when
-    $q : org.drools.base.DroolsQuery( name == "@{name}", @foreach{ param : params } @{ param.name } : elements[@{j++}] @end{ ', ' }, $ctx : elements[@{j++}] )
+    $q : org.drools.core.base.DroolsQuery( name == "@{name}", @foreach{ param : params } @{ param.name } : elements[@{j++}] @end{ ', ' }, $ctx : elements[@{j++}] )
 then
-//    System.out.println( "QUERY @{name} SIDE EFFECT triggered by " + $q );
+   System.out.println( "QUERY @{name} SIDE EFFECT triggered by " + $q );
 
     @code{ String pn; }
     @foreach{ param : params }
@@ -71,7 +72,7 @@ when
     @code{ pn2 = compactUpperCase( name ) + "_" + compactUpperCase( param.name ); }
         var@{k++} : @{pn2}(  $ctx := context )
     @end{}
-    not org.drools.base.DroolsQuery( name == "@{name}", $ctx memberOf elements )
+    not org.drools.core.base.DroolsQuery( name == "@{name}", $ctx memberOf elements )
 then
 //    System.out.println( "Now I can Cleanup @{name}" );
     @code{ k = 0; }

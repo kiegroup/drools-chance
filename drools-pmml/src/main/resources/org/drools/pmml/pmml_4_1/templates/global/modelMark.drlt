@@ -28,7 +28,7 @@ then
     insertLogical( mark );
 end
 
-rule "Enable/Disable Model"
+rule "Enable/Disable Model_@{name}"
 when
     $flag : Boolean() from entry-point "enable_@{name}"
     $mark : ModelMarker( modelName == "@{name}", enabled != $flag )

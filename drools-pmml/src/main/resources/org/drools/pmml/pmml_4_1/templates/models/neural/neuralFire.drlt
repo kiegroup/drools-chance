@@ -54,6 +54,9 @@ when
                     @if{ needsNormal } normalized == true, @end{}
                     $index : index,
                     $val : value != null )
+    accumulate( $c : Charge( context == @{ ctx }, index == $neur.index, $in : value ),
+                    $num : count( $c );
+                    $num == $neur.fanIn )
 then
     Stym y = new Stym();
         y.setContext( @{ctx} );

@@ -24,7 +24,7 @@ import org.kie.api.runtime.ClassObjectFilter;
 import org.drools.core.WorkingMemoryEntryPoint;
 import org.junit.After;
 import org.junit.Test;
-import org.kie.api.runtime.rule.SessionEntryPoint;
+import org.kie.api.runtime.rule.EntryPoint;
 
 
 public class DataDictionaryTest extends DroolsAbstractPMMLTest {
@@ -127,17 +127,17 @@ public class DataDictionaryTest extends DroolsAbstractPMMLTest {
 
         Assert.assertEquals(7, getKSession().getEntryPoints().size());
 
-        SessionEntryPoint gender_ep = getKSession().getEntryPoint("in_Gender");
+        EntryPoint gender_ep = getKSession().getEntryPoint("in_Gender");
             Assert.assertNotNull(gender_ep);
-        SessionEntryPoint noclaims_ep = getKSession().getEntryPoint("in_NoOfClaims");
+        EntryPoint noclaims_ep = getKSession().getEntryPoint("in_NoOfClaims");
             Assert.assertNotNull(noclaims_ep);
-        SessionEntryPoint scrambled_ep = getKSession().getEntryPoint("in_Scrambled");
+        EntryPoint scrambled_ep = getKSession().getEntryPoint("in_Scrambled");
             Assert.assertNotNull(scrambled_ep);
-        SessionEntryPoint domicile_ep = getKSession().getEntryPoint("in_Domicile");
+        EntryPoint domicile_ep = getKSession().getEntryPoint("in_Domicile");
             Assert.assertNotNull(domicile_ep);
-        SessionEntryPoint agecar_ep = getKSession().getEntryPoint("in_AgeOfCar");
+        EntryPoint agecar_ep = getKSession().getEntryPoint("in_AgeOfCar");
             Assert.assertNotNull(agecar_ep);
-        SessionEntryPoint amklaims_ep = getKSession().getEntryPoint("in_AmountOfClaims");
+        EntryPoint amklaims_ep = getKSession().getEntryPoint("in_AmountOfClaims");
             Assert.assertNotNull(amklaims_ep);
 
         gender_ep.insert("M");

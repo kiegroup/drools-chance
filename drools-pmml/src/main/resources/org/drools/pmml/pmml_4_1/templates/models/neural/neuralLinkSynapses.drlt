@@ -22,9 +22,9 @@
 
 @declare{'neuralLinkSynapsesRule'}
 
-rule "LinkSynapses"
+rule "LinkSynapses_@{name}"
 when
-    Stym( $ctx : context, $index : index, $val : value )
+    Stym( $ctx : context == "@{name}", $index : index, $val : value )
     Synapse( context == $ctx, source == $index, $target : target, $w : weight )
 then
     Charge c = new Charge();

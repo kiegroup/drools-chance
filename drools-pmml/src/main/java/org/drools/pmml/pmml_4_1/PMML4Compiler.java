@@ -26,7 +26,10 @@ import org.dmg.pmml.pmml_4_1.descr.TreeModel;
 import org.drools.compiler.compiler.PMMLCompiler;
 import org.drools.compiler.compiler.PackageRegistry;
 import org.drools.core.RuleBaseConfiguration;
+import org.drools.core.event.DebugWorkingMemoryEventListener;
 import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.event.rule.DebugAgendaEventListener;
+import org.kie.api.event.rule.DefaultRuleRuntimeEventListener;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.KnowledgeBase;
@@ -48,6 +51,11 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -292,7 +300,9 @@ public class PMML4Compiler implements PMMLCompiler {
             return null;
         }
 
+
         StatefulKnowledgeSession visitorSession = visitor.newStatefulKnowledgeSession();
+        visitorSession.addEventListener( new DefaultRuleRuntimeEventListener() );
 
         helper.reset();
         visitorSession.setGlobal( "registry", registry );
@@ -309,7 +319,20 @@ public class PMML4Compiler implements PMMLCompiler {
 
         String modelEvaluatingRules = sb.toString();
 
+
+//        try {
+//            File f = new File( "/home/davide/Projects/Git/drools6/drools-chance/drools-pmml/src/test/java/org/drools/pmml/pmml_4_1/testAddRemove.drl" );
+//            f.createNewFile();
+//            FileOutputStream baos = new FileOutputStream( f ) ;
+//            baos.write( modelEvaluatingRules.getBytes() );
+//            baos.flush();
+//            baos.close();
+//        } catch ( Exception e ) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+
         visitorSession.dispose();
+
 
         return modelEvaluatingRules;
 	}

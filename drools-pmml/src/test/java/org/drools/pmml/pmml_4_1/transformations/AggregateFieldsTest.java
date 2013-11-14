@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.kie.api.runtime.rule.SessionEntryPoint;
+import org.kie.api.runtime.rule.EntryPoint;
 
 
 public class AggregateFieldsTest extends DroolsAbstractPMMLTest {
@@ -52,7 +52,7 @@ public class AggregateFieldsTest extends DroolsAbstractPMMLTest {
 
         getKSession().getEntryPoint("in_Limit").insert(18);
 
-        SessionEntryPoint ep = getKSession().getEntryPoint("in_Age");
+        EntryPoint ep = getKSession().getEntryPoint("in_Age");
             ep.insert(10);
             ep.insert(20);
             ep.insert(30);

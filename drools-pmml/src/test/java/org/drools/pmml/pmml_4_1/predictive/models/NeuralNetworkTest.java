@@ -66,47 +66,6 @@ public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
         getKSession().dispose();
     }
 
-    
-    
-    @Test
-    public void testANNFromSource() throws Exception {
-
-        KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        knowledgeBuilder.add( ResourceFactory.newClassPathResource( "org/drools/informer/informer-changeset.xml" ), ResourceType.CHANGE_SET);
-
-        knowledgeBuilder.add( new ClassPathResource("org/drools/pmml/pmml_4_1/ann_rules.drl"), ResourceType.DRL );
-        if ( knowledgeBuilder.hasErrors() ) {
-            fail(knowledgeBuilder.getErrors().toString());
-        }
-        
-        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
-        kBase.addKnowledgePackages( knowledgeBuilder.getKnowledgePackages() );
-        
-        StatefulKnowledgeSession kSession = kBase.newStatefulKnowledgeSession();
-        setKSession( kSession );
-
-//        kSession.addEventListener( new DebugAgendaEventListener() );
-//        kSession.addEventListener( new DebugWorkingMemoryEventListener() );
-
-        kSession.fireAllRules();  //init model
-
-
-        kSession.getEntryPoint( "in_Gender" ).insert("male");
-        kSession.getEntryPoint( "in_NoOfClaims" ).insert("3");
-        kSession.getEntryPoint( "in_Scrambled" ).insert(7);
-        kSession.getEntryPoint( "in_Domicile" ).insert("urban");
-        kSession.getEntryPoint( "in_AgeOfCar" ).insert(8.0);
-
-        kSession.fireAllRules();
-
-        Thread.sleep(200);
-        System.err.println(reportWMObjects(kSession));
-
-
-    }
-
-
-
 
     @Test
     public void testANN() throws Exception {

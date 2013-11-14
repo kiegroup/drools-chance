@@ -46,7 +46,7 @@ import static org.junit.Assert.fail;
 public class DecisionTreeTest extends DroolsAbstractPMMLTest {
 
 
-    private static final boolean VERBOSE = true;
+    private static final boolean VERBOSE = false;
     private static final String source1 = "org/drools/pmml/pmml_4_1/test_tree_simple.xml";
     private static final String source2 = "org/drools/pmml/pmml_4_1/test_tree_missing.xml";
     private static final String packageName = "org.drools.pmml.pmml_4_1.test";

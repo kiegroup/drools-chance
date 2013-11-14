@@ -1855,7 +1855,7 @@ then
 
     applyTemplate( "neuralBeans.drlt", null, registry, null, theory );
 
-    applyTemplate( "neuralLinkSynapses.drlt", null, registry, null, theory );
+    applyTemplate( "neuralLinkSynapses.drlt", null, registry, map, theory );
 
     modify ( $stat ) {
         setNeuralNetwork( true );
@@ -2455,7 +2455,9 @@ query compilePredicate( java.util.List $parent, String $pred, Object $src )
     ( (
         $src  := CompoundPredicate( this memberOf $parent, $sub : simplePredicatesAndCompoundPredicatesAndSimpleSetPredicates, booleanOperator == "surrogate" )
         and
-        $pred := String() from accumulate( compilePredicate( $sub, $p, $xx ; )
+        $pred := String() from accumulate( $xx := Object() from $sub
+                                           and
+                                           compilePredicate( $sub, $p, $xx ; )
                                            and
                                            ?compilePredicateForMissing( $sub, $m, $xx ; ),
                                            init( String x = ""; String m = "true"; boolean first = true; ),

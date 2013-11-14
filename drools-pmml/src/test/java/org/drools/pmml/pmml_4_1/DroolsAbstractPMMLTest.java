@@ -88,9 +88,7 @@ public abstract class DroolsAbstractPMMLTest {
 
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
 
-        kbuilder.add( ResourceFactory.newClassPathResource( "org/drools/informer/informer-changeset.xml" ), ResourceType.CHANGE_SET);
-
-
+//        kbuilder.add( ResourceFactory.newClassPathResource( "org/drools/informer/informer-changeset.xml" ), ResourceType.CHANGE_SET);
 
         if (! verbose) {
             for ( String pmmlSource : pmmlSources ) {

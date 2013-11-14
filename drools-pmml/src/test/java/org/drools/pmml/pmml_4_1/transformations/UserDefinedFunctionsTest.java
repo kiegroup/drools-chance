@@ -30,6 +30,7 @@ import static junit.framework.Assert.assertEquals;
 public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
 
     private static final boolean VERBOSE = false;
+    private static final String source0  = "org/drools/pmml/pmml_4_1/test_user_functions_simple.xml";
     private static final String source1  = "org/drools/pmml/pmml_4_1/test_user_functions_nested.xml";
     private static final String source2  = "org/drools/pmml/pmml_4_1/test_user_functions_complex.xml";
     private static final String source3 = "org/drools/pmml/pmml_4_1/test_user_functions_simpleTransformations.xml";
@@ -42,9 +43,24 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
 
 
     @Test
+    public void testFunctions0() throws Exception {
+
+        setKSession( getModelSession( source0, VERBOSE ) );
+        setKbase( getKSession().getKieBase() );
+
+        FactType userAge1 = getKbase().getFactType( packageName, "UserAge" );
+
+        getKSession().getEntryPoint( "in_Age" ).insert( 10 );
+
+        getKSession().fireAllRules();
+
+        checkFirstDataFieldOfTypeStatus( userAge1, true, false, null, 22.0 );
+    }
+
+    @Test
     public void testFunctions1() throws Exception {
 
-        setKSession( getModelSession( source3, VERBOSE ) );
+        setKSession( getModelSession( source3, true ) );
         setKbase( getKSession().getKieBase() );
 
         FactType userAge1 = getKbase().getFactType( packageName, "UserAge1" );
@@ -157,7 +173,7 @@ public class UserDefinedFunctionsTest extends DroolsAbstractPMMLTest {
     @Test
     public void testComplexFunctionsNested() throws Exception {
 
-        setKSession( getModelSession( source2, VERBOSE ) );
+        setKSession( getModelSession( source2, true ) );
         setKbase( getKSession().getKieBase() );
 
         FactType userAge1 = getKbase().getFactType( packageName, "UserAge" );
