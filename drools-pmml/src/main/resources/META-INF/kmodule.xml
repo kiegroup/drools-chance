@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://jboss.org/kie/6.0.0/kmodule">
+
+  <kbase name="PMML" packages="org.drools.pmml.pmml_4_1" eventProcessingMode="stream"/>
+
+</kmodule>

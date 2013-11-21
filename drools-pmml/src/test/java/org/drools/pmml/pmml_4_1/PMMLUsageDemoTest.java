@@ -91,7 +91,7 @@ public class PMMLUsageDemoTest {
 
         String extraDrl = "package org.drools.pmml.pmml_4_1.test;" +
                 "" +
-                "import org.drools.factmodel.traits.Entity;" +
+                "import org.drools.core.factmodel.traits.Entity;" +
                 "" +
                 "rule \"Init\" " +
                 "when " +
