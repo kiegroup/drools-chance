@@ -20,28 +20,19 @@ package org.drools.pmml.pmml_4_1.predictive.models;
 import org.dmg.pmml.pmml_4_1.descr.MISSINGVALUESTRATEGY;
 import org.dmg.pmml.pmml_4_1.descr.PMML;
 import org.dmg.pmml.pmml_4_1.descr.TreeModel;
-import org.drools.core.RuleBaseConfiguration;
-import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.pmml.pmml_4_1.PMML4Compiler;
 import org.junit.After;
 import org.junit.Test;
-import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.definition.type.FactType;
-import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.ClassObjectFilter;
-import org.kie.internal.KnowledgeBase;
-import org.kie.internal.KnowledgeBaseFactory;
-import org.kie.internal.builder.KnowledgeBuilder;
-import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.api.runtime.KieSession;
 import org.kie.internal.io.ResourceFactory;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 public class DecisionTreeTest extends DroolsAbstractPMMLTest {
 
@@ -62,7 +53,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     public void testSimpleTree() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
 //        kSession.addEventListener( new org.drools.event.rule.DebugAgendaEventListener() );
 
@@ -86,7 +77,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     
     
     
-    protected Object getToken( StatefulKnowledgeSession kSession ) {
+    protected Object getToken( KieSession kSession ) {
         FactType tok = kSession.getKieBase().getFactType( packageName, "TreeToken" );
         assertNotNull( tok );
         Collection c = kSession.getObjects( new ClassObjectFilter( tok.getFactClass() ) );
@@ -99,7 +90,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     public void testMissingTree() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
@@ -129,7 +120,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     public void testMissingTreeWeighted1() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
@@ -161,7 +152,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     public void testMissingTreeWeighted2() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
@@ -187,22 +178,6 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
 
 
 
-
-    private StatefulKnowledgeSession compile( String drl ) {
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
-        if ( kbuilder.hasErrors() ) {
-            fail( kbuilder.getErrors().toString() );
-        }        
-        RuleBaseConfiguration conf = new RuleBaseConfiguration();
-        conf.setEventProcessingMode( EventProcessingOption.STREAM );
-        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase( conf );
-        kBase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
-        return kBase.newStatefulKnowledgeSession();
-    }
-    
-
-
     @Test
     public void testMissingTreeDefault() throws Exception {
         PMML4Compiler compiler = new PMML4Compiler(); 
@@ -214,12 +189,9 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
                 tree.setMissingValueStrategy( MISSINGVALUESTRATEGY.DEFAULT_CHILD );
             }
         }
-        
-        String theory = compiler.generateTheory( pmml );
-        if ( VERBOSE ) {
-            System.out.println( theory );
-        }
-        StatefulKnowledgeSession kSession = compile( theory );
+
+        KieSession kSession = getSession( compiler.generateTheory( pmml ) );
+
         setKSession( kSession );
         setKbase( getKSession().getKieBase() );
 
@@ -263,7 +235,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         if ( VERBOSE ) {
             System.out.println( theory );
         }
-        StatefulKnowledgeSession kSession = compile( theory );
+        KieSession kSession = getSession( theory );
         setKSession( kSession );
         setKbase( getKSession().getKieBase() );
 
@@ -309,7 +281,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         if ( VERBOSE ) {
             System.out.println( theory );
         }
-        StatefulKnowledgeSession kSession = compile( theory );
+        KieSession kSession = getSession( theory );
         setKSession( kSession );
         setKbase( getKSession().getKieBase() );
 
@@ -355,7 +327,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         if ( VERBOSE ) {
             System.out.println( theory );
         }
-        StatefulKnowledgeSession kSession = compile( theory );
+        KieSession kSession = getSession( theory );
         setKSession( kSession );
         setKbase( getKSession().getKieBase() );
 
@@ -400,7 +372,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         if ( VERBOSE ) {
             System.out.println( theory );
         }
-        StatefulKnowledgeSession kSession = compile( theory );
+        KieSession kSession = getSession( theory );
         setKSession( kSession );
         setKbase( getKSession().getKieBase() );
 
@@ -445,7 +417,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
         if ( VERBOSE ) {
             System.out.println( theory );
         }
-        StatefulKnowledgeSession kSession = compile( theory );
+        KieSession kSession = getSession( theory );
         setKSession( kSession );
         setKbase( getKSession().getKieBase() );
 
@@ -477,7 +449,7 @@ public class DecisionTreeTest extends DroolsAbstractPMMLTest {
     public void testSimpleTreeOutput() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 

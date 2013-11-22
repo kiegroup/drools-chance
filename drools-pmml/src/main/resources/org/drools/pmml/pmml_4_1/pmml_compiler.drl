@@ -95,8 +95,6 @@ salience 9990
 when
     $h : Header( )
 then
-    applyTemplate( "commonQueries.drlt", $h, registry, Collections.emptyMap(), theory );
-
     retract( $h );
 end
 

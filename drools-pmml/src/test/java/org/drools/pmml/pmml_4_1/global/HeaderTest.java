@@ -21,8 +21,9 @@ import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.pmml.pmml_4_1.PMML4Compiler;
 import org.drools.pmml.pmml_4_1.PMML4Helper;
 import org.junit.Test;
+import org.kie.api.definition.KiePackage;
+import org.kie.api.runtime.KieSession;
 import org.kie.internal.definition.KnowledgePackage;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -80,8 +81,8 @@ public class HeaderTest extends DroolsAbstractPMMLTest {
 
 
 
-        StatefulKnowledgeSession ksession = getSession(theory);
-        KnowledgePackage pack = ksession.getKieBase().getKnowledgePackage("org.drools.pmml.pmml_4_1.test");
+        KieSession ksession = getSession( theory );
+        KiePackage pack = ksession.getKieBase().getKiePackage( "org.drools.pmml.pmml_4_1.test" );
         assertNotNull(pack);
 
         ksession.dispose();

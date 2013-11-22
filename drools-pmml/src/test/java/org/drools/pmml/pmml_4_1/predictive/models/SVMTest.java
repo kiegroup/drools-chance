@@ -21,7 +21,7 @@ import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.junit.After;
 import org.junit.Test;
 import org.kie.api.definition.type.FactType;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.api.runtime.KieSession;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -44,7 +44,7 @@ public class SVMTest extends DroolsAbstractPMMLTest {
     public void testSVM() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
@@ -85,7 +85,7 @@ public class SVMTest extends DroolsAbstractPMMLTest {
     public void testSVM1vN() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
@@ -112,7 +112,7 @@ public class SVMTest extends DroolsAbstractPMMLTest {
     public void testSVM1v1() throws Exception {
         setKSession( getModelSession( source3, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 

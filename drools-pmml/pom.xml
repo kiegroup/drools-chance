@@ -27,17 +27,23 @@
   <name>Drools :: PMML - Compiler </name>
   <description>Support for PMML-Encoded Predictive Models</description>
 
+  <properties>
+    <drools.version>6.1.0-SNAPSHOT</drools.version>
+  </properties>
+
+
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-compiler</artifactId>
-      <version>6.1.0-SNAPSHOT</version>
+      <version>${drools.version}</version>
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-core</artifactId>
-      <version>6.1.0-SNAPSHOT</version>
+      <version>${drools.version}</version>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -106,52 +112,15 @@
         </configuration>
       </plugin>
 
-      <!--
       <plugin>
-          <groupId>org.apache.ws.jaxme</groupId>
-          <artifactId>maven-jaxme-plugin</artifactId>
-          <executions>
-              <execution>
-                  <goals>
-                      <goal>jaxme</goal>
-                  </goals>
-              </execution>
-          </executions>
-          <configuration>
-              <schemas>
-                  <value>src/main/xsd/org/drools/pmml_4_1/pmml-4-0.xsd</value>
-              </schemas>
-              <packageName>
-                   org.drools.pmml.pmml_4_1.descr
-              </packageName>
-              <bindings>
-                  <value>
-                      src/main/jxb/bindings.xjb
-                  </value>
-              </bindings>
-
-              <target>
-                  src/main/java
-              </target>
-              <extension>
-                  true
-              </extension>
-          </configuration>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-maven-plugin</artifactId>
+        <version>${drools.version}</version>
+        <extensions>true</extensions>
       </plugin>
-      -->
 
-
-      <!--
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-                <source>1.5</source>
-                <target>1.5</target>
-            </configuration>
-        </plugin>
-      -->
     </plugins>
+
   </build>
 
 </project>

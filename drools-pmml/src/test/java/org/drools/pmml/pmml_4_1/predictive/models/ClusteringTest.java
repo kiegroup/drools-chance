@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.kie.api.definition.type.FactType;
 import org.kie.api.runtime.ClassObjectFilter;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.api.runtime.KieSession;
 
 import java.util.Collection;
 
@@ -46,7 +46,7 @@ public class ClusteringTest extends DroolsAbstractPMMLTest {
     public void testCenterBasedClustering() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 

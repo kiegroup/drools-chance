@@ -17,28 +17,25 @@
 package org.drools.pmml.pmml_4_1.predictive.models;
 
 
-import org.drools.core.factmodel.traits.Thing;
-import org.drools.core.io.impl.ByteArrayResource;
-import org.drools.core.io.impl.ChangeSetImpl;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.drools.pmml.pmml_4_1.ModelMarker;
 import org.junit.Test;
-import org.kie.api.io.Resource;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieScanner;
+import org.kie.api.builder.Message;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.kie.internal.KnowledgeBase;
 import org.kie.internal.KnowledgeBaseFactory;
-import org.kie.internal.agent.KnowledgeAgent;
-import org.kie.internal.agent.KnowledgeAgentConfiguration;
-import org.kie.internal.agent.KnowledgeAgentFactory;
-import org.kie.internal.agent.conf.NewInstanceOption;
-import org.kie.internal.agent.conf.UseKnowledgeBaseClassloaderOption;
+import org.kie.internal.builder.InternalKieBuilder;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
-
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -55,43 +52,58 @@ public class MultipleModelTest extends DroolsAbstractPMMLTest {
     private static final String packageName = "org.drools.pmml.pmml_4_1.test";
 
     @Test
-    public void testIncrementalBuilding() throws Exception {
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-//        kbuilder.add( ResourceFactory.newClassPathResource( "org/drools/informer/informer-changeset.xml" ), ResourceType.CHANGE_SET );
-        if ( kbuilder.hasErrors() ) {
-            fail( kbuilder.getErrors().toString() );
-        }
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
+    public void testCompositeBuilding() throws Exception {
+        KieServices ks = KieServices.Factory.get();
+        KieFileSystem kfs = ks.newKieFileSystem();
 
+        kfs.write( "src/main/resources/" + source1.replace( ".xml", ".pmml" ), ResourceFactory.newClassPathResource( source1 ).setResourceType( ResourceType.PMML ) );
+        kfs.write( "src/main/resources/" + source2.replace( ".xml", ".pmml" ), ResourceFactory.newClassPathResource( source2 ).setResourceType( ResourceType.PMML ) );
 
-        KnowledgeBuilder kb1 = KnowledgeBuilderFactory.newKnowledgeBuilder( kbase );
-        kb1.add( ResourceFactory.newClassPathResource( source1 ), ResourceType.PMML );
-        if ( kb1.hasErrors() ) { fail( kb1.getErrors().toString() ); }
+        KieBuilder kb = ks.newKieBuilder( kfs );
+        kb.buildAll();
 
-        kbase.addKnowledgePackages( kb1.getKnowledgePackages() );
+        KieSession kSession = ks.newKieContainer( ks.getRepository().getDefaultReleaseId() ).newKieSession();
 
-
-        KnowledgeBuilder kb2 = KnowledgeBuilderFactory.newKnowledgeBuilder( kbase );
-        kb2.add( ResourceFactory.newClassPathResource( source2 ), ResourceType.PMML );
-        if ( kb2.hasErrors() ) { fail( kb2.getErrors().toString() ); }
-
-        kbase.addKnowledgePackages( kb2.getKnowledgePackages() );
-
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
         kSession.fireAllRules();
 
         System.err.println(reportWMObjects(kSession));
 
         assertEquals( 2, kSession.getObjects( new ClassObjectFilter( ModelMarker.class ) ).size() );
-//        assertEquals( 2, kSession.getObjects( new ClassObjectFilter( Questionnaire.class ) ).size() );
         assertEquals( 11, kSession.getObjects( new ClassObjectFilter( kSession.getKieBase().getFactType( packageName, "Synapse" ).getFactClass() ) ).size() );
 
         kSession.dispose();
-
     }
 
 
+    @Test
+    public void testIncrementalBuilding() throws Exception {
+        KieServices ks = KieServices.Factory.get();
+        KieFileSystem kfs = ks.newKieFileSystem();
+
+        kfs.write( "src/main/resources/" + source1.replace( ".xml", ".pmml" ), ResourceFactory.newClassPathResource( source1 ).setResourceType( ResourceType.PMML ) );
+
+        KieBuilder kb = ks.newKieBuilder( kfs );
+        kb.buildAll();
+
+        KieContainer kc = ks.newKieContainer( ks.getRepository().getDefaultReleaseId() );
+        KieSession kSession = kc.newKieSession();
+
+
+        String source2Path = "src/main/resources/" + source2.replace( ".xml", ".pmml" );
+        kfs.write( source2Path, ResourceFactory.newClassPathResource( source2 ).setResourceType( ResourceType.PMML ) );
+        (( InternalKieBuilder ) kb ).createFileSet( source2Path ).build();
+
+
+
+        kSession.fireAllRules();
+
+        System.err.println(reportWMObjects(kSession));
+
+        assertEquals( 2, kSession.getObjects( new ClassObjectFilter( ModelMarker.class ) ).size() );
+        assertEquals( 11, kSession.getObjects( new ClassObjectFilter( kSession.getKieBase().getFactType( packageName, "Synapse" ).getFactClass() ) ).size() );
+
+        kSession.dispose();
+    }
 
 
 

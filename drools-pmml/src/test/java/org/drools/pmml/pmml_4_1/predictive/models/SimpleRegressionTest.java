@@ -21,7 +21,7 @@ import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.junit.After;
 import org.junit.Test;
 import org.kie.api.definition.type.FactType;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.api.runtime.KieSession;
 
 public class SimpleRegressionTest extends DroolsAbstractPMMLTest {
 
@@ -42,7 +42,7 @@ public class SimpleRegressionTest extends DroolsAbstractPMMLTest {
     public void testRegression() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
@@ -71,7 +71,7 @@ public class SimpleRegressionTest extends DroolsAbstractPMMLTest {
     public void testClassification() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 

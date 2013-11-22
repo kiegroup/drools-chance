@@ -18,23 +18,14 @@ package org.drools.pmml.pmml_4_1.predictive.models;
 
 
 import junit.framework.Assert;
-import org.drools.core.io.impl.ClassPathResource;
 import org.drools.pmml.pmml_4_1.DroolsAbstractPMMLTest;
 import org.junit.After;
 import org.junit.Test;
 import org.kie.api.definition.type.FactType;
-import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.rule.Variable;
-import org.kie.internal.KnowledgeBase;
-import org.kie.internal.KnowledgeBaseFactory;
-import org.kie.internal.builder.KnowledgeBuilder;
-import org.kie.internal.builder.KnowledgeBuilderFactory;
-import org.kie.internal.io.ResourceFactory;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class NeuralNetworkTest extends DroolsAbstractPMMLTest {
 

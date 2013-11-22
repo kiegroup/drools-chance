@@ -17,24 +17,27 @@
 package org.drools.pmml.pmml_4_1;
 
 
-import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.common.DefaultFactHandle;
 import org.drools.core.common.EventFactHandle;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieRepository;
+import org.kie.api.builder.Message;
+import org.kie.api.builder.model.KieBaseModel;
+import org.kie.api.builder.model.KieModuleModel;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.definition.type.FactType;
+import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.Variable;
-import org.kie.internal.KnowledgeBase;
-import org.kie.internal.KnowledgeBaseFactory;
-import org.kie.internal.builder.KnowledgeBuilder;
-import org.kie.internal.builder.KnowledgeBuilderError;
-import org.kie.internal.builder.KnowledgeBuilderErrors;
-import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -50,75 +53,58 @@ import java.util.PriorityQueue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 
 public abstract class DroolsAbstractPMMLTest {
 
 
     public static final String PMML = PMML4Compiler.PMML;
-    public static final String BASE_PACK = DroolsAbstractPMMLTest.class.getPackage().getName().replace('.','/');
+    public static final String BASE_PACK = DroolsAbstractPMMLTest.class.getPackage().getName();
 
+    public static final String RESOURCE_PATH = "src/main/resources/" + BASE_PACK.replace('.','/') + "/";
+    public static final String DEFAULT_KIEBASE = "PMML_Test";
 
-
-
-    public static final String RESOURCE_PATH = BASE_PACK;
-
-
-
-
-    private StatefulKnowledgeSession kSession;
-    private KnowledgeBase kbase;
-    private static PMML4Compiler compiler = new PMML4Compiler();
-
-
-
-
+    private KieSession kSession;
+    private KieBase kbase;
 
     public DroolsAbstractPMMLTest() {
         super();
     }
 
-    protected StatefulKnowledgeSession getModelSession(String pmmlSource, boolean verbose) {
+    protected KieSession getModelSession(String pmmlSource, boolean verbose) {
         return getModelSession(new String[] {pmmlSource}, verbose);
     }
 
+    protected KieSession getModelSession( String[] pmmlSources, boolean verbose ) {
+        KieServices ks = KieServices.Factory.get();
+        KieRepository kr = ks.getRepository();
+        KieFileSystem kfs = ks.newKieFileSystem();
 
-    protected StatefulKnowledgeSession getModelSession(String[] pmmlSources, boolean verbose) {
-
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-
-//        kbuilder.add( ResourceFactory.newClassPathResource( "org/drools/informer/informer-changeset.xml" ), ResourceType.CHANGE_SET);
-
-        if (! verbose) {
-            for ( String pmmlSource : pmmlSources ) {
-                kbuilder.add(ResourceFactory.newClassPathResource(pmmlSource),ResourceType.PMML);
-            }
-        } else {
-
-            try {
-                for ( String pmmlSource : pmmlSources ) {
-                    String src = compiler.compile( ResourceFactory.newClassPathResource( pmmlSource ).getInputStream(), null );
-                    kbuilder.add( ResourceFactory.newByteArrayResource( src.getBytes() ), ResourceType.DRL );
-                    System.out.println(src);
-                }
-            } catch (IOException e) {
-                fail(e.getMessage());
-            }
+        for ( int j = 0; j < pmmlSources.length; j++ ) {
+            Resource res = ResourceFactory.newClassPathResource( pmmlSources[ j ] ).setResourceType( ResourceType.PMML );
+            kfs.write( "src/main/resources/" + pmmlSources[ j ].replace( ".xml", ".pmml" ) , res );
         }
 
+        KieModuleModel model = ks.newKieModuleModel();
+        KieBaseModel kbModel = model.newKieBaseModel( DEFAULT_KIEBASE )
+                .setDefault( true )
+                .addPackage( BASE_PACK )
+                .setEventProcessingMode( EventProcessingOption.STREAM );
 
-        KnowledgeBuilderErrors errors = kbuilder.getErrors();
-        if ( errors.size() > 0 ) {
-            throw new IllegalArgumentException( "Could not parse knowledge : " + errors.toString() );
+        kfs.writeKModuleXML( model.toXML() );
+        System.out.println( model.toXML() );
+
+        KieBuilder kb = ks.newKieBuilder( kfs );
+
+        kb.buildAll();
+        if ( kb.getResults().hasMessages( Message.Level.ERROR ) ) {
+            throw new RuntimeException( "Build Errors:\n" + kb.getResults().toString() );
         }
-        RuleBaseConfiguration conf = new RuleBaseConfiguration();
-        conf.setEventProcessingMode( EventProcessingOption.STREAM );
-        //conf.setConflictResolver(LifoConflictResolver.getInstance());
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase( conf );
-        kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
-        return kbase.newStatefulKnowledgeSession();
 
+        KieContainer kContainer = ks.newKieContainer( kr.getDefaultReleaseId() );
+
+        KieBase kieBase = kContainer.getKieBase();
+        return kieBase.newKieSession();
     }
 
 
@@ -130,49 +116,62 @@ public abstract class DroolsAbstractPMMLTest {
 
 
 
-    protected StatefulKnowledgeSession getSession(String theory) {
-        KnowledgeBase kbase = readKnowledgeBase(new ByteArrayInputStream(theory.getBytes()));
-        return kbase != null ? kbase.newStatefulKnowledgeSession() : null;
+    protected KieSession getSession(String theory) {
+        KieBase kbase = readKnowledgeBase( new ByteArrayInputStream( theory.getBytes() ) );
+        return kbase != null ? kbase.newKieSession() : null;
     }
 
     protected void refreshKSession() {
-        if (getKSession() != null)
+        if ( getKSession() != null ) {
             getKSession().dispose();
-        setKSession(getKbase().newStatefulKnowledgeSession());
-    }
-
-
-
-
-
-
-
-
-    private static KnowledgeBase readKnowledgeBase(InputStream theory) {
-        return readKnowledgeBase(Arrays.asList(theory));
-    }
-
-    private static KnowledgeBase readKnowledgeBase(List<InputStream> theory) {
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        for (InputStream is : theory)
-            kbuilder.add(ResourceFactory.newInputStreamResource(is), ResourceType.DRL);
-        KnowledgeBuilderErrors errors = kbuilder.getErrors();
-        if (errors.size() > 0) {
-            for (KnowledgeBuilderError error: errors) {
-                System.err.println(error);
-            }
-            throw new IllegalArgumentException("Could not parse knowledge.");
         }
-        RuleBaseConfiguration conf = new RuleBaseConfiguration();
-        conf.setEventProcessingMode(EventProcessingOption.STREAM);
-        conf.setAssertBehaviour(RuleBaseConfiguration.AssertBehaviour.EQUALITY);
-        //conf.setConflictResolver(LifoConflictResolver.getInstance());
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase(conf);
-        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
-        return kbase;
+        setKSession( getKbase().newKieSession());
     }
 
-    public String reportWMObjects(StatefulKnowledgeSession session) {
+
+
+
+
+
+
+
+    private static KieBase readKnowledgeBase( InputStream theory ) {
+        return readKnowledgeBase( Arrays.asList( theory ) );
+    }
+
+    private static KieBase readKnowledgeBase( List<InputStream> theory ) {
+        KieServices ks = KieServices.Factory.get();
+        KieRepository kr = ks.getRepository();
+        KieFileSystem kfs = ks.newKieFileSystem();
+
+        for ( int j = 0; j < theory.size(); j++ ) {
+            Resource res = ks.getResources().newInputStreamResource( theory.get( j ) );
+            kfs.write( RESOURCE_PATH + "source_" + j + ".drl", res );
+        }
+
+        KieModuleModel model = ks.newKieModuleModel();
+        KieBaseModel kbModel = model.newKieBaseModel( DEFAULT_KIEBASE )
+                .setDefault( true )
+                .addPackage( BASE_PACK )
+                .setEventProcessingMode( EventProcessingOption.STREAM );
+
+        kfs.writeKModuleXML( model.toXML() );
+
+        KieBuilder kb = ks.newKieBuilder( kfs );
+
+        kb.buildAll();
+        if ( kb.getResults().hasMessages( Message.Level.ERROR ) ) {
+            throw new RuntimeException( "Build Errors:\n" + kb.getResults().toString() );
+        }
+
+        KieContainer kContainer = ks.newKieContainer( kr.getDefaultReleaseId() );
+
+        return kContainer.getKieBase();
+    }
+
+
+
+    public String reportWMObjects(KieSession session) {
         PriorityQueue<String> queue = new PriorityQueue<String>();
         for (FactHandle fh : session.getFactHandles()) {
             Object o;
@@ -191,14 +190,6 @@ public abstract class DroolsAbstractPMMLTest {
         ans += " ---------------- END WM -----------\n";
         return ans;
     }
-
-
-
-
-
-
-
-
 
 
     private void dump(String s, OutputStream ostream) {
@@ -227,24 +218,19 @@ public abstract class DroolsAbstractPMMLTest {
 
 
 
-
-
-
-
-
-    public StatefulKnowledgeSession getKSession() {
+    public KieSession getKSession() {
         return kSession;
     }
 
-    public void setKSession(StatefulKnowledgeSession kSession) {
+    public void setKSession( KieSession kSession ) {
         this.kSession = kSession;
     }
 
-    public KnowledgeBase getKbase() {
+    public KieBase getKbase() {
         return kbase;
     }
 
-    public void setKbase(KnowledgeBase kbase) {
+    public void setKbase( KieBase kbase ) {
         this.kbase = kbase;
     }
 

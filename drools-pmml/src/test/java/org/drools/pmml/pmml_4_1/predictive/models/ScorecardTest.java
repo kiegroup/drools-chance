@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.kie.api.definition.type.FactType;
 import org.kie.api.runtime.ClassObjectFilter;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.api.runtime.KieSession;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -49,7 +49,7 @@ public class ScorecardTest extends DroolsAbstractPMMLTest {
     public void testScorecard() throws Exception {
         setKSession( getModelSession( source1, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 
@@ -92,7 +92,7 @@ public class ScorecardTest extends DroolsAbstractPMMLTest {
     public void testScorecardOutputs() throws Exception {
         setKSession( getModelSession( source2, VERBOSE ) );
         setKbase( getKSession().getKieBase() );
-        StatefulKnowledgeSession kSession = getKSession();
+        KieSession kSession = getKSession();
 
         kSession.fireAllRules();  //init model
 

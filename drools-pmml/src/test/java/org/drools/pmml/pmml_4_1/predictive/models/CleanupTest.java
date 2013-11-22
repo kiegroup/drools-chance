@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class CleanupTest extends DroolsAbstractPMMLTest {
-
+//
 //
 //    private static final String source1 = "org/drools/pmml/pmml_4_1//test_ann_iris_prediction.xml";
 //    private static final String source2 = "org/drools/pmml/pmml_4_1//test_tree_simple.xml";
@@ -511,7 +511,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 //        KnowledgeAgent kagent = KnowledgeAgentFactory.newKnowledgeAgent( "testPmml", kbase, kaConfig );
 //        return kagent;
 //    }
-
-
+//
+//
 
 }

@@ -27,14 +27,11 @@ import org.drools.compiler.compiler.PMMLCompiler;
 import org.drools.compiler.compiler.PackageRegistry;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.event.DebugWorkingMemoryEventListener;
-import org.kie.api.KieBase;
-import org.kie.api.KieServices;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.event.rule.DebugAgendaEventListener;
 import org.kie.api.event.rule.DefaultRuleRuntimeEventListener;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
 import org.kie.internal.KnowledgeBase;
 import org.kie.internal.KnowledgeBaseFactory;
 import org.kie.internal.builder.KnowledgeBuilder;
@@ -96,7 +93,6 @@ public class PMML4Compiler implements PMMLCompiler {
             "global/pmml_header.drlt",
             "global/pmml_import.drlt",
             "global/modelMark.drlt",
-            "global/commonQueries.drlt",
 
             "global/dataDefinition/common.drlt",
             "global/dataDefinition/rootDataField.drlt",
@@ -250,7 +246,8 @@ public class PMML4Compiler implements PMMLCompiler {
 
 
     private static TemplateRegistry registry;
-    private static KieBase visitor;
+    private static KnowledgeBuilder kBuilder;
+    private static KnowledgeBase visitor;
 
     private static List<KnowledgeBuilderResult> visitorBuildResults = new ArrayList<KnowledgeBuilderResult>();
     private List<KnowledgeBuilderResult> results;
@@ -268,8 +265,27 @@ public class PMML4Compiler implements PMMLCompiler {
 
 
     private static void initVisitor( PMML pmml ) {
-        KieServices ks = KieServices.Factory.get();
-        visitor = ks.getKieClasspathContainer().getKieBase( "PMML" );
+        RuleBaseConfiguration conf = new RuleBaseConfiguration();
+            conf.setEventProcessingMode( EventProcessingOption.STREAM );
+            //conf.setConflictResolver(LifoConflictResolver.getInstance());
+		visitor = KnowledgeBaseFactory.newKnowledgeBase( conf );
+
+        // TODO before rules can be structured, I need to double-check the incremental rule base assembly
+        kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        if ( visitorRules == false ) {
+            kBuilder.add( ResourceFactory.newClassPathResource( VISITOR_RULES ), ResourceType.DRL );
+            visitorRules = true;
+        }
+        if ( compilerRules == false ) {
+            kBuilder.add( ResourceFactory.newClassPathResource( COMPILER_RULES ), ResourceType.DRL );
+            compilerRules = true;
+        }
+
+        if ( kBuilder.hasErrors() ) {
+            visitorBuildResults.addAll( kBuilder.getErrors() );
+        } else {
+            visitor.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+        }
     }
 
 
@@ -284,7 +300,8 @@ public class PMML4Compiler implements PMMLCompiler {
         }
 
 
-        KieSession visitorSession = visitor.newKieSession();
+        StatefulKnowledgeSession visitorSession = visitor.newStatefulKnowledgeSession();
+        visitorSession.addEventListener( new DefaultRuleRuntimeEventListener() );
 
         helper.reset();
         visitorSession.setGlobal( "registry", registry );
