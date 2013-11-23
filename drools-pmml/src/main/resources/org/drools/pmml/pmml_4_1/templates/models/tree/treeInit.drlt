@@ -65,7 +65,8 @@ when
     accumulate( TreeNode( id memberOf $children, $sub : counts, $x : recordCount > 0 ),
                           $subs : collectList( $sub ),
                           $num  : count( $sub ),
-                          $tot  : sum( $x )
+                          $tot  : sum( $x );
+                          $num == $numChi
                           )
     $map : java.util.Map() from accumulate ( $kj : String() from $keys
                  and accumulate( $m : Map() from $subs, $x : sum( $m[ $kj ] != null ? $m[ $kj ] : 0 ) ),

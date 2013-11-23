@@ -31,6 +31,7 @@ when
     SVM( context == $ctx, $svmId : svmId == "@{svmId}", $bias : bias, $numKernel : numSvs, target == "@{posCat}", alt == "@{negCat}" )
     accumulate( $k : KernelEval( svmId == $svmId, $v : value ),
                 $num : count( $k ),
+                $kernels : collectList( $k ),
                 $sum : sum( $v );
                 $num == $numKernel
                 @if{ ! simple && oneVSmany } , $sum.doubleValue() + $bias > @{threshold} @end{} )

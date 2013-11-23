@@ -77,7 +77,7 @@ when
                                  results.keySet not contains "@{id}",
                                  @{missings} )
 then
-//    System.out.println( "UNKNOWN found at @{id}, collecting for later evaluation !!!! " );
+    System.out.println( "UNKNOWN found at @{id}, collecting for later evaluation !!!! " );
     modify ( $tok ) { getResults().put( "@{id}", $out ); }
 end
 
