@@ -97,7 +97,7 @@ public class MultipleModelTest extends DroolsAbstractPMMLTest {
                 "rule \"TraitX\"\n" +
                 "salience 1000\n" +
                 "when\n" +
-                "    $mm : ModelMarker( modelName == \"x\" , enabled == true )\n" +
+                "    $mm : ModelMarker( modelName == \"x\" , enabled == true ) @watch(!*) \n" +
                 "then\n" +
                 "    ISurveyableTrait surv = don( $mm, ISurveyableTrait.class, true );\n" +
                 "    modify ( surv ) {\n" +
@@ -161,9 +161,9 @@ public class MultipleModelTest extends DroolsAbstractPMMLTest {
             System.out.println( "**" +  o );
         }
 
-        assertEquals( 5, ksession.getObjects().size() );
+        assertEquals( 4, ksession.getObjects().size() );
         assertEquals( 2, ksession.getObjects(new ClassObjectFilter( ModelMarker.class )).size() );
-        assertEquals( 2, ksession.getObjects(new ClassObjectFilter( Thing.class )).size() );
+        assertEquals( 1, ksession.getObjects(new ClassObjectFilter( Thing.class )).size() );
 
         ksession.dispose();
         kagent.dispose();

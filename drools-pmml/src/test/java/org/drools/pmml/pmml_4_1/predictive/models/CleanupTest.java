@@ -73,7 +73,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         System.err.println(reportWMObjects(kSession));
 
-        assertEquals( 2, kSession.getObjects().size() );
+        assertEquals( 1, kSession.getObjects().size() );
         kSession.dispose();
     }
 
@@ -100,7 +100,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         System.err.println(reportWMObjects(getKSession()));
 
-        assertEquals( 2, getKSession().getObjects().size() );
+        assertEquals( 1, getKSession().getObjects().size() );
 
         getKSession().getWorkingMemoryEntryPoint( "enable_Neuiris" ).insert( Boolean.TRUE );
         getKSession().fireAllRules();
@@ -118,7 +118,7 @@ public class CleanupTest extends DroolsAbstractPMMLTest {
 
         Assert.assertEquals(24.0, queryIntegerField("OutSepLen", "Neuiris"));
 
-        assertEquals( 62, getKSession().getObjects().size() );
+        assertEquals( 61, getKSession().getObjects().size() );
 
         getKSession().dispose();
     }
