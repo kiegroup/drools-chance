@@ -47,6 +47,10 @@ public class JavaInterfaceModelCompilerImpl extends ModelCompilerImpl implements
             return;
         }
 
+        if ( ( model.getMode() == OntoModel.Mode.NONE || model.getMode() == OntoModel.Mode.DATABASE ) && con.isAbstrakt() ) {
+            return;
+        }
+
         CompiledTemplate template = registry.getNamedTemplate( templateName );
 
         String name = con.getFullyQualifiedName();

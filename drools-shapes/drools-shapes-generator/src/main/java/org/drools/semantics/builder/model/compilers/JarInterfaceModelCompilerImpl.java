@@ -21,14 +21,19 @@ import com.clarkparsia.empire.SupportsRdfId;
 import com.clarkparsia.empire.annotation.Namespaces;
 import com.clarkparsia.empire.annotation.RdfProperty;
 import com.clarkparsia.empire.annotation.RdfsClass;
+import org.drools.definition.type.PropertyReactive;
 import org.drools.factmodel.BuildUtils;
+import org.drools.factmodel.traits.Trait;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.builder.model.*;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.mvel2.asm.*;
+import thewebsemantic.Namespace;
+import thewebsemantic.RdfType;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlID;
@@ -114,7 +119,20 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             }
             av0.visitEnd();
         }
-
+        {
+            av0 = cw.visitAnnotation( Type.getDescriptor( Namespace.class ), true);
+            av0.visit( "value", params.get( "namespace" ) );
+        }
+        {
+            av0 = cw.visitAnnotation( Type.getDescriptor( RdfType.class ), true);
+            av0.visit( "value", "" + params.get( "name" ) + params.get( "namespace" ) );
+        }
+        {
+            av0 = cw.visitAnnotation( Type.getDescriptor( Trait.class ), true);
+        }
+        {
+            av0 = cw.visitAnnotation( Type.getDescriptor( PropertyReactive.class ), true);
+        }
 
         for ( String propKey : props.keySet() ) {
             PropertyRelation rel = props.get( propKey );
@@ -150,14 +168,18 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                     av0 = mv.visitAnnotation( Type.getDescriptor( RdfProperty.class ), true );
                     av0.visit( "value", "tns:" + propName );
                     av0.visitEnd();
-                    if ( rel.isSimple() ) {
+                    if ( rel.getTarget().isPrimitive() ) {
                         av0 = mv.visitAnnotation( Type.getDescriptor( Basic.class ), true );
                         av0.visitEnd();
                     } else {
-                        av0 = mv.visitAnnotation( Type.getDescriptor( OneToMany.class ), true );
+                        if ( rel.getMaxCard() == null || rel.getMaxCard() > 1 ) {
+                            av0 = mv.visitAnnotation( Type.getDescriptor( OneToMany.class ), true );
+                        } else {
+                            av0 = mv.visitAnnotation( Type.getDescriptor( ManyToOne.class ), true );
+                        }
                         {
                             AnnotationVisitor av1 = av0.visitArray( "cascade" );
-                            av1.visitEnum( null, Type.getDescriptor( CascadeType.class ), "PERSIST" );
+                            av1.visitEnum( null, Type.getDescriptor( CascadeType.class ), "ALL" );
                             av1.visitEnd();
                         }
                         av0.visitEnd();

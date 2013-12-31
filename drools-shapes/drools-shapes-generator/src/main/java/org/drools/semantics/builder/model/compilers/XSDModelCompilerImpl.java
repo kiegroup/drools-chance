@@ -102,7 +102,16 @@ public class XSDModelCompilerImpl extends ModelCompilerImpl implements XSDModelC
                 element,
                 el,
                 dependencies );
-        getModel().addTrait( name, descr );
+
+        if ( model.getMode() != OntoModel.Mode.FLAT && model.getMode() != OntoModel.Mode.NONE && model.getMode() != OntoModel.Mode.DATABASE ) {
+            getModel().addTrait( name, descr );
+        } else {
+            if ( ! con.isAbstrakt() ) {
+                getModel().addTrait( name, descr );
+            }
+        }
+
+
 
 
 

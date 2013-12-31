@@ -167,10 +167,13 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
         String prefix = ((XSDModel) getModel()).mapNamespaceToPrefix( ns );
         try {
             String template = readFile( "bindings.xjb.template" );
+            Collection<Concept> cons = filterConceptsByNS( getModel().getConcepts(), ns );
+            cons = filterUnneedecConcepts( cons, model );
+
             Map<String,Object> vars = new HashMap<String,Object>();
             vars.put( "package", NameUtils.namespaceURIToPackage( ns ) );
             vars.put( "namespace", ns );
-            vars.put( "concepts", filterConceptsByNS( getModel().getConcepts(), ns ) );
+            vars.put( "concepts", cons );
             vars.put( "flat", getModel().getMode() != OntoModel.Mode.HIERARCHY );
             vars.put( "properties", propCache );
             vars.put( "modelName", getModel().getName() );
@@ -190,6 +193,20 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             return null;
         }
 
+    }
+
+    private Collection<Concept> filterUnneedecConcepts( Collection<Concept> cons, CompiledOntoModel model ) {
+        ArrayList<Concept> filtered = new ArrayList<Concept>( cons.size() );
+        for ( Concept c : cons ) {
+            if ( model.getMode() != OntoModel.Mode.FLAT && model.getMode() != OntoModel.Mode.NONE && model.getMode() != OntoModel.Mode.DATABASE ) {
+                filtered.add( c );
+            } else {
+                if ( ! c.isAbstrakt() ) {
+                    filtered.add( c );
+                }
+            }
+        }
+        return filtered;
     }
 
 
@@ -295,7 +312,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
 
 
 
-    private Object filterConceptsByNS( List<Concept> concepts, String ns ) {
+    private Collection<Concept> filterConceptsByNS( List<Concept> concepts, String ns ) {
         List<Concept> filtered = new ArrayList<Concept>();
         for ( Concept con : concepts ) {
             if ( NamespaceUtils.compareNamespaces(con.getNamespace(), ns) ) {

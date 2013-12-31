@@ -40,6 +40,7 @@ import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
@@ -224,6 +225,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             String typeIri = individualTypesCache.get( iri.toQuotedString() );
             Concept klass = hierachicalModel.getConcept( typeIri );
             if ( klass == null ) {
+                System.out.println( "found individual with no class " + iri );
                 System.exit( -1 );
             }
 
@@ -1197,10 +1199,22 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         boolean dirty = false;
         for ( OWLNamedIndividual ind : ontoDescr.getIndividualsInSignature( true ) ) {
 
-            declareAnonymousIndividualSupertypes( ontoDescr, factory, ind );
-
             OWLOntology defining = lookupDefiningOntology( ontoDescr, ind );
+
+            declareAnonymousIndividualSupertypes( defining, factory, ind );
+
+            System.out.println( "Defining ontology :  " + defining );
+            for ( OWLAxiom ax : defining.getAxioms( AxiomType.CLASS_ASSERTION ) ) {
+                System.out.println( ax );
+            }
+
+            System.out.println("Getting types for individual " + ind.getIRI() );
             Set<OWLClassExpression> types = ind.getTypes( defining );
+            System.out.println("Found types in defining ontology" + types );
+            if ( types.isEmpty() ) {
+                ind.getTypes( ontoDescr.getImportsClosure() );
+                System.out.println("Found types in all ontologies " + ontoDescr.getImportsClosure() + " >> " + types );
+            }
 
             types = simplify( types, defining );
             if ( types.size() > 1 ) {
@@ -1218,7 +1232,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 if ( types.iterator().hasNext() ) {
                     individualTypesCache.put( ind.getIRI().toQuotedString(), types.iterator().next().asOWLClass().getIRI().toQuotedString() );
                 } else {
-                    System.out.println( "WARNING no type detected " );
+
+                    System.out.println( "WARNING no type detected for individual " + ind.getIRI().toQuotedString() );
                 }
             }
 

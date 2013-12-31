@@ -702,7 +702,7 @@ public class DL_8_ModelTest {
     @Test
     public void testKMR2Ontology() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/kmr2/KMR_Ontology2.ttl" );
-        OntoModel results = factory.buildModel( "kmr2", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "kmr2", res, OntoModel.Mode.FLAT, DLFactory.liteAxiomGenerators );
         assertNotNull(results);
 
         checkConceptEncoding(results);
@@ -713,7 +713,7 @@ public class DL_8_ModelTest {
     @Test
     public void testAnonymousClassIndividual() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/anonClassIndividual.owl" );
-        OntoModel results = factory.buildModel( "test", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "test", res, OntoModel.Mode.FLAT, DLFactory.liteAxiomGenerators );
         assertNotNull(results);
 
         checkConceptEncoding( results );
@@ -736,7 +736,7 @@ public class DL_8_ModelTest {
     @Test
     public void testOutOfDomainProperty() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/outOfDomainProperty.owl" );
-        OntoModel results = factory.buildModel( "test", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "test", res, OntoModel.Mode.FLAT, DLFactory.liteAxiomGenerators );
         assertNotNull(results);
 
         checkConceptEncoding( results );
@@ -764,6 +764,20 @@ public class DL_8_ModelTest {
 
         checkConceptEncoding( results );
     }
+
+
+    @Test
+    @Ignore
+    public void testDatabaseModel() {
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/dbModel.owl" );
+        OntoModel results = factory.buildModel( "DB", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
+        assertNotNull(results);
+
+        checkConceptEncoding( results );
+
+
+    }
+
 
 
     private boolean checkConceptEncoding( OntoModel results ) {

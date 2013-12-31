@@ -78,10 +78,7 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
         populatedModel.buildAreaTaxonomy();
 
-        if ( populatedModel.getMode() != OntoModel.Mode.NONE ) {
-            //TODO Improve...
-            populatedModel.getMode().getProcessor().process( populatedModel );
-        }
+        populatedModel.getMode().getProcessor().process( populatedModel );
 
         reportSessionStatus( kSession );
 

@@ -7,6 +7,8 @@ public interface Thing<K> extends com.clarkparsia.empire.SupportsRdfId, org.droo
 
     public String get__IndividualName();
 
-    public void set__IndividualName( String s );
+    public void set__IndividualName( String name );
+
+    public String getFullName();
 
 }

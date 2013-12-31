@@ -204,7 +204,7 @@ public class DL_4_AreaTest {
         try {
 
             Resource res = ResourceFactory.newClassPathResource( "ontologies/hardware.owl" );
-            OntoModel model = DLFactoryImpl.getInstance().buildModel( "hw", res, OntoModel.Mode.NONE );
+            OntoModel model = DLFactoryImpl.getInstance().buildModel( "hw", res, OntoModel.Mode.FLAT );
 
             AreaTxn<Concept,PropertyRelation> areaTxn = model.getAreaTaxonomy();
 
