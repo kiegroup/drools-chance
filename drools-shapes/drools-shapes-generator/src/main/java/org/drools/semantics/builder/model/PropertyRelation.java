@@ -16,6 +16,7 @@
 
 package org.drools.semantics.builder.model;
 
+import com.hp.hpl.jena.sparql.function.library.min;
 import org.drools.definition.type.Position;
 import org.drools.semantics.utils.NameUtils;
 
@@ -24,7 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PropertyRelation extends Relation {
+public class PropertyRelation extends Relation implements Cloneable {
 
     @Position(3)
     protected String name;
@@ -139,6 +140,26 @@ public class PropertyRelation extends Relation {
         return property.replace( "<", "" ).replace( ">", "" );
     }
 
+
+    public PropertyRelation clone() {
+        PropertyRelation rel = new PropertyRelation( this.subject, this.property, this.object, this.name );
+        rel.minCard = this.minCard;
+        rel.maxCard = this.maxCard;
+        rel.target = this.target;
+        rel.domain = this.domain;
+        rel.addableTarget = this.addableTarget;
+
+        rel.restricted = this.restricted;
+        rel.inherited = this.inherited;
+        rel.simple = this.simple;
+        rel.inverse = this.inverse;
+
+        rel.baseProperty = this.baseProperty;
+        rel.restrictedProperties = new ArrayList<PropertyRelation>( this.restrictedProperties );
+        rel.chains = new HashSet<List<PropertyRelation>>( this.chains );
+
+        return rel;
+    }
 
     public PropertyRelation getBaseProperty() {
         if ( baseProperty == this ) {

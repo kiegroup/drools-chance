@@ -68,7 +68,7 @@ public class DL_7_RuleTest {
 
         OntoModel pizzaModel = factory.buildModel( "pizza",
                 res,
-                OntoModel.Mode.NONE,
+                OntoModel.Mode.FLAT,
                 DLFactory.defaultAxiomGenerators );
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( pizza, pizzaModel );

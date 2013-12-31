@@ -33,8 +33,11 @@ import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.w3._2002._07.owl.Thing;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -81,6 +84,19 @@ public class ShapeCaster
 
     public void setOutputDirectory(File outputDirectory) {
         this.outputDirectory = outputDirectory;
+    }
+
+    /**
+     * @parameter
+     */
+    private String persistenceTemplate;
+
+    public String getPersistenceTemplate() {
+        return persistenceTemplate;
+    }
+
+    public void setPersistenceTemplate(String persistenceTemplate) {
+        this.persistenceTemplate = persistenceTemplate;
     }
 
 
@@ -295,7 +311,7 @@ public class ShapeCaster
 
 
         if ( isGenerateDefaultImplClasses() ) {
-            compiler.streamXSDsWithBindings( true );
+            compiler.streamXSDsWithBindings( true, persistenceTemplate );
         }
 
         if ( isGenerateIndividuals() ) {
@@ -367,9 +383,20 @@ public class ShapeCaster
 
 
     private OntoModel processOntology( OntoModel.Mode mode ) throws MojoExecutionException {
+        InputStream ontologyStream = null;
         File ontoFile = new File( ontology );
-        if ( ! ontoFile.exists() ) {
-            throw new MojoExecutionException( " Ontology file not found : " + ontology );
+        if ( ontoFile.exists() ) {
+            try {
+                ontologyStream = new FileInputStream( new File( ontology ) );
+            } catch ( FileNotFoundException e ) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                ontologyStream = ResourceFactory.newClassPathResource( ontology ).getInputStream();
+            } catch ( IOException e ) {
+                //
+            }
         }
 
         DLFactory factory = DLFactoryBuilder.newDLFactoryInstance();
@@ -381,9 +408,13 @@ public class ShapeCaster
         Resource[] res = new Resource[ n ];
         int j = 0;
         for ( String imp : ontologyImports ) {
-            res[j++] = ResourceFactory.newFileResource( imp );
+            if ( new File( imp ).exists() ) {
+                res[j++] = ResourceFactory.newFileResource( imp );
+            } else {
+                res[j++] = ResourceFactory.newClassPathResource( imp );
+            }
         }
-        res[j] = ResourceFactory.newFileResource( ontology );
+        res[j] = ResourceFactory.newInputStreamResource( ontologyStream );
 
         return factory.buildModel( getModelName(),
                                    res,

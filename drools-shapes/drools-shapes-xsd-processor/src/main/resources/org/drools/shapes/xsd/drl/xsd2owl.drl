@@ -44,7 +44,7 @@ end
 function OWLDatatype mapXsdDatatype( QName qn, OWLDataFactory factory ) {
     String px = qn.getNamespaceURI() + "#";
         if ( px.equals( Namespaces.XSD.toString() ) ) {
-            if ( "IDREF".equals( qn.getLocalPart() ) || "ID".equals( qn.getLocalPart() ) ) {
+            if ( "IDREF".equals( qn.getLocalPart() ) || "ID".equals( qn.getLocalPart() ) || "QName".equals( qn.getLocalPart() ) ) {
                 return OWL2DatatypeImpl.getDatatype( OWL2Datatype.getDatatype( IRI.create( px, "anyURI" ) ) );
             } else if ( "anyType".equals( qn.getLocalPart() ) || "anySimpleType".equals( qn.getLocalPart() ) ) {
                 return factory.getTopDatatype();

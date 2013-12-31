@@ -6,6 +6,11 @@
         return "@{typeName}";
     }
 
+    @javax.persistence.Transient
+    public java.lang.String getFullName() {
+        return "@{package}.@{typeName}";
+    }
+
     @javax.xml.bind.annotation.XmlTransient
     private static java.util.List<java.lang.String> @{typeName}PropertyNames;
     {

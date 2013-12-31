@@ -9,6 +9,9 @@
 package org.w3._2002._07.owl;
 
 import java.io.Serializable;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -30,6 +33,13 @@ import com.clarkparsia.empire.EmpireGenerated;
 import com.clarkparsia.empire.annotation.Namespaces;
 import com.clarkparsia.empire.annotation.RdfsClass;
 import com.sun.xml.bind.CycleRecoverable;
+import org.drools.factmodel.traits.LogicalTypeInconsistencyException;
+import org.drools.factmodel.traits.TraitFieldTMS;
+import org.drools.factmodel.traits.TraitFieldTMSImpl;
+import org.drools.factmodel.traits.TraitType;
+import org.drools.factmodel.traits.TraitTypeMap;
+import org.drools.factmodel.traits.Traitable;
+import org.drools.factmodel.traits.TraitableBean;
 import org.drools.semantics.NamedEntity;
 import org.drools.semantics.UIdAble;
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
@@ -85,9 +95,10 @@ import thewebsemantic.RdfType;
 @Entity(name = "ThingImpl")
 @Table(name = "THINGIMPL")
 @Inheritance(strategy = InheritanceType.JOINED)
+@Traitable
 public class ThingImpl
     extends UIdAble
-        implements NamedEntity, Serializable, Cloneable, CycleRecoverable, CopyTo, Equals, HashCode, MergeFrom, Thing, EmpireGenerated {
+        implements NamedEntity, Serializable, Cloneable, CycleRecoverable, CopyTo, Equals, HashCode, MergeFrom, Thing, EmpireGenerated, TraitableBean<ThingImpl, ThingImpl>, TraitType {
 
 //    protected String dyEntryType;
     @XmlAttribute( required = false, name = "idref" )
@@ -332,9 +343,12 @@ public class ThingImpl
 
     @XmlTransient
     private Graph allTriples;
+
     @XmlTransient
     private Graph instanceTriples;
 
+
+    @javax.persistence.Transient
     public Graph getAllTriples() {
         return allTriples;
     }
@@ -343,6 +357,7 @@ public class ThingImpl
         this.allTriples = allTriples;
     }
 
+    @javax.persistence.Transient
     public Graph getInstanceTriples() {
         return instanceTriples;
     }
@@ -353,20 +368,19 @@ public class ThingImpl
 
 
     // In compliance with the Traiting Thing interface,
-    // these methods are not really needed
     @Transient
     public Map<String, Object> getFields() {
-        throw new UnsupportedOperationException( ThingImpl.class.getName() + " is not supposed to be used as a trait proxy" );
+        throw new UnsupportedOperationException( ThingImpl.class.getName() + " should support a field accessor, TODO" );
     }
 
     @Transient
     public org.drools.semantics.Thing getCore() {
-        throw new UnsupportedOperationException( ThingImpl.class.getName() + " is not supposed to be used as a trait proxy" );
+        return this;
     }
 
     @Transient
     public boolean isTop() {
-        throw new UnsupportedOperationException( ThingImpl.class.getName() + " is not supposed to be used as a trait proxy" );
+        return false;
     }
 
     @Transient
@@ -378,5 +392,123 @@ public class ThingImpl
         if ( getDyEntryId() == null ) {
             setDyEntryId( name );
         }
+    }
+
+    @Transient
+    public String getFullName() {
+        return Thing.class.getName();
+    }
+
+
+    @XmlTransient
+    private TraitFieldTMS __$$field_Tms$$;
+    @XmlTransient
+    private Map<String,Object> __$$dynamic_properties_map$$;
+    @XmlTransient
+    private Map<String, org.drools.factmodel.traits.Thing<ThingImpl>> __$$dynamic_traits_map$$;
+
+
+    @Transient
+    public Map<String, Object> _getDynamicProperties() {
+        return  __$$dynamic_properties_map$$;
+    }
+
+    public void _setDynamicProperties(Map map) {
+        __$$dynamic_properties_map$$ = map;
+    }
+
+    public void _setTraitMap(Map map) {
+        __$$dynamic_traits_map$$ = map;
+    }
+
+    @Transient
+    public Map<String, org.drools.factmodel.traits.Thing<ThingImpl>> _getTraitMap() {
+        return __$$dynamic_traits_map$$;
+    }
+
+    public void addTrait(String type, org.drools.factmodel.traits.Thing proxy) throws LogicalTypeInconsistencyException {
+        ((TraitTypeMap) _getTraitMap()).putSafe(type, proxy);
+    }
+
+    @Transient
+    public org.drools.factmodel.traits.Thing getTrait(String type) {
+        return _getTraitMap().get( type );
+    }
+
+
+    public boolean hasTrait( String type ) {
+        return  __$$dynamic_traits_map$$ != null && __$$dynamic_traits_map$$.containsKey( type );
+    }
+
+    public boolean hasTraits() {
+        return __$$dynamic_traits_map$$ != null && ! __$$dynamic_traits_map$$.isEmpty();
+    }
+
+    public Collection<org.drools.factmodel.traits.Thing<ThingImpl>> removeTrait( String type ) {
+        if (  __$$dynamic_traits_map$$ != null ) {
+            return ((TraitTypeMap)_getTraitMap()).removeCascade(type);
+        } else {
+            return null;
+        }
+    }
+
+    public Collection<org.drools.factmodel.traits.Thing<ThingImpl>> removeTrait( BitSet typeCode ) {
+        if (  __$$dynamic_traits_map$$ != null ) {
+            return ((TraitTypeMap)_getTraitMap()).removeCascade( typeCode );
+        } else {
+            return null;
+        }
+    }
+
+    @Transient
+    public Collection<String> getTraits() {
+        if (  __$$dynamic_traits_map$$ != null ) {
+            return _getTraitMap().keySet();
+        } else {
+            return Collections.emptySet();
+        }
+    }
+
+    @Transient
+    public Collection<org.drools.factmodel.traits.Thing> getMostSpecificTraits() {
+        if ( __$$dynamic_traits_map$$ == null ) {
+            return Collections.EMPTY_LIST;
+        }
+        return ((TraitTypeMap) __$$dynamic_traits_map$$).getMostSpecificTraits();
+    }
+
+    @Transient
+    public BitSet getCurrentTypeCode() {
+        if ( __$$dynamic_traits_map$$ == null ) {
+            return null;
+        }
+        return ((TraitTypeMap) __$$dynamic_traits_map$$).getCurrentTypeCode();
+    }
+
+    public void _setBottomTypeCode( BitSet bottomTypeCode ) {
+        ((TraitTypeMap) __$$dynamic_traits_map$$).setBottomCode( bottomTypeCode );
+    }
+
+    @Transient
+    public TraitFieldTMS _getFieldTMS() {
+        if ( __$$field_Tms$$ == null ) {
+            __$$field_Tms$$ = new TraitFieldTMSImpl();
+        }
+        return __$$field_Tms$$;
+    }
+
+    @Transient
+    public BitSet getTypeCode() {
+        throw new UnsupportedOperationException( "Shapes generated classes can't predict the type code at compile time" );
+    }
+
+    @Transient
+    public boolean isVirtual() {
+        return false;
+    }
+
+    @Transient
+    public String getTraitName() {
+        return getFullName();
     }
 }

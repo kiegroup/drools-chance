@@ -47,6 +47,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -269,7 +270,7 @@ public class OntoModelCompiler {
 
         streamJavaInterfaces( false );
 
-        streamXSDsWithBindings( true );
+        streamXSDsWithBindings( true, null );
         mojo( options, variant );
 
         List<Diagnostic<? extends JavaFileObject>> diagnostics = doCompile();
@@ -352,8 +353,11 @@ public class OntoModelCompiler {
 
 
 
-
     public boolean streamXSDsWithBindings( boolean includePersistenceConfiguration ) {
+        return streamXSDsWithBindings( includePersistenceConfiguration, null );
+    }
+
+    public boolean streamXSDsWithBindings( boolean includePersistenceConfiguration, String persistenceTemplatePath ) {
         SemanticXSDModelCompiler xcompiler = (SemanticXSDModelCompiler) ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
         SemanticXSDModel xmlModel = (SemanticXSDModel) xcompiler.compile( model );
 
@@ -366,6 +370,16 @@ public class OntoModelCompiler {
             success = xmlModel.streamBindings( getMetaInfDir() );
 
             if ( includePersistenceConfiguration ) {
+                if ( persistenceTemplatePath != null ) {
+                    File persistenceTemplate = new File( persistenceTemplatePath );
+                    if ( persistenceTemplate.exists() ) {
+                        InputStream is = new FileInputStream( persistenceTemplate );
+                        byte[] data = new byte[ is.available() ];
+                        is.read( data );
+                        xmlModel.setPersistenceXml( new String( data ) );
+                        is.close();
+                    }
+                }
                 success = success && streamPersistenceConfigs( xcompiler, xmlModel );
             }
 

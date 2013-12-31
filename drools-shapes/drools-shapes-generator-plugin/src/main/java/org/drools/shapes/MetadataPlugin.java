@@ -69,6 +69,7 @@ public class MetadataPlugin extends Plugin {
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put( "klassName", co.target.shortName );
             map.put( "typeName", keyed.getAttribute( "name" ) );
+            map.put( "package", keyed.getAttribute( "package" ) );
             map.put( "supertypeName", keyed.getAttribute( "parent" ) );
             map.put( "propertyNames", propNames );
             map.put( "typeNames", typeNames );

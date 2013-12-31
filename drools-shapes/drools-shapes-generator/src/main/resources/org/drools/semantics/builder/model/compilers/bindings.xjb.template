@@ -62,6 +62,8 @@
         <annox:annotate>
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfsClass" value="@{concept.namespace}@{concept.name}" />
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.Namespaces" value="tns @{namespace}" />
+          <annox:annotate annox:class="org.drools.factmodel.traits.Traitable" />
+          <annox:annotate annox:class="org.drools.definition.type.PropertyReactive" />
           <annox:annotate annox:class="thewebsemantic.Namespace" value="@{namespace}" />
           <annox:annotate annox:class="thewebsemantic.RdfType" value="@{concept.namespace}@{concept.name}" />
           <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="@{concept.name}"/>
@@ -74,7 +76,7 @@
         ]]></ci:code>
 
 
-        <meta:type name="@{concept.name}" parent="@{concept.chosenSuperConcept.name}">
+        <meta:type name="@{concept.name}" package="@{concept.package}" parent="@{concept.chosenSuperConcept.name}">
         @foreach{ prop : concept.effectiveBaseProperties }
             <meta:property name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }">
                 @foreach{ subProp : concept.properties.values }
@@ -144,13 +146,15 @@
                     <annox:annotate>
                         <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfProperty" value="@{prop.iri}" />
                         <annox:annotate annox:class="thewebsemantic.RdfProperty" value="@{prop.iri}" />
+                        @if{ ! prop.simple }
                         <annox:annotate annox:class="javax.persistence.JoinTable" name="@{concept.name.toUpperCase()}IMPL_@{prop.name.toUpperCase()}" />
+                        @end{}
                     </annox:annotate>
 
 
                 @if{ ! prop.target.primitive }
+                    @if{ prop.maxCard == null || prop.maxCard > 1 } <hj:many-to-many/> @else{} <hj:many-to-one/> @end{}
 
-                    <hj:many-to-many/>
 
                     <annox:annotate target="field">
                             <annox:annotate target="field"
