@@ -31,6 +31,7 @@ import org.drools.factmodel.traits.TraitTripleProxyClassBuilderImpl;
 import org.mvel2.asm.*;
 
 import java.lang.reflect.Method;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +99,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
 
 
-    protected void buildProxyAccessor(long mask, ClassWriter cw, String masterName, ClassDefinition core, Map<String, Method> mixinGetSet, FieldDefinition field, boolean isSoftField ) {
+    protected void buildProxyAccessor(BitSet mask, ClassWriter cw, String masterName, ClassDefinition core, Map<String, Method> mixinGetSet, FieldDefinition field, boolean isSoftField ) {
         if ( field instanceof VirtualFieldDefinition) return;
         if ( ! ( field instanceof ImperfectFieldDefinition) ) {
 
@@ -152,7 +153,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
 
 
-    private void buildSupportFieldAccessors( long mask, ClassWriter cw, String masterName, ClassDefinition core, Map<String, Method> mixinGetSet, FieldDefinition supportField, boolean isSoftField ) {
+    private void buildSupportFieldAccessors( BitSet mask, ClassWriter cw, String masterName, ClassDefinition core, Map<String, Method> mixinGetSet, FieldDefinition supportField, boolean isSoftField ) {
 
         ImperfectFieldDefinition lingField = findSupportingField( getTrait(), supportField );
         MethodVisitor mv;
@@ -247,7 +248,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
     }
 
 
-    protected void buildDirectProxyAccessor( long mask, ClassWriter cw, String masterName, ClassDefinition core, Map<String,Method> mixinGetSet, DirectAccessFieldDefinition field, boolean isSoftField ) {
+    protected void buildDirectProxyAccessor( BitSet mask, ClassWriter cw, String masterName, ClassDefinition core, Map<String,Method> mixinGetSet, DirectAccessFieldDefinition field, boolean isSoftField ) {
         FieldVisitor fv;
         String getterName = BuildUtils.getterName( field.getName(), field.getTypeName() );
         String setterName = BuildUtils.setterName( field.getName(), field.getTypeName() );
@@ -292,7 +293,7 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
 
 
-    protected void buildExtendedMethods(ClassWriter cw, ClassDefinition trait, ClassDefinition core, long mask ) {
+    protected void buildExtendedMethods(ClassWriter cw, ClassDefinition trait, ClassDefinition core, BitSet mask ) {
         buildSynchFields( cw, TraitFactory.getProxyName(trait, core), core.getName(), getTrait() );
     }
 

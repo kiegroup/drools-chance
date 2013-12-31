@@ -27,6 +27,8 @@ import org.mvel2.asm.Label;
 import org.mvel2.asm.MethodVisitor;
 import org.mvel2.asm.Type;
 
+import java.util.BitSet;
+
 public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTriplePropertyWrapperClassBuilderImpl {
 
 
@@ -48,7 +50,7 @@ public class ChanceTriplePropertyWrapperClassBuilderImpl extends TraitTripleProp
 
 
 
-    protected int initSoftFields( MethodVisitor mv, String wrapperName, ClassDefinition trait, ClassDefinition core, long mask ) {
+    protected int initSoftFields( MethodVisitor mv, String wrapperName, ClassDefinition trait, ClassDefinition core, BitSet mask ) {
         int stackSize = super.initSoftFields( mv, wrapperName, trait, core, mask );
 
         for ( FieldDefinition field : trait.getFieldsDefinitions() ) {
