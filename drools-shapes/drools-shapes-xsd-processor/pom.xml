@@ -23,12 +23,12 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-shapes</artifactId>
-    <version>0.5.6.Final</version>
+    <version>0.6.x</version>
   </parent>
 
   <groupId>org.drools</groupId>
   <artifactId>drools-shapes-xsd-processor</artifactId>
-  <version>0.5.6.Final</version>
+  <version>0.6.x</version>
 
   <name>Drools :: XSD -> OWL2 converter</name>
   <description>Processes XSD schemas and infers an OWL2 conceptual model based on the original schema</description>
@@ -75,8 +75,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.semanticweb</groupId>
-      <artifactId>HermiT</artifactId>
+      <groupId>com.hermit-reasoner</groupId>
+      <artifactId>org.semanticweb.hermit</artifactId>
       <exclusions>
         <exclusion>
           <groupId>owlapi</groupId>
@@ -147,16 +147,6 @@
             <version>0.6.2</version>
           </dependency>
         </dependencies-->
-      </plugin>
-
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
       </plugin>
 
     </plugins>

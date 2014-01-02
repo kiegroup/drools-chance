@@ -16,26 +16,21 @@
 
 package org.drools.semantics.builder.model.inference;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.agent.KnowledgeAgent;
-import org.drools.agent.KnowledgeAgentConfiguration;
-import org.drools.agent.KnowledgeAgentFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.io.Resource;
-import org.drools.io.impl.ChangeSetImpl;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.utils.NameUtils;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.io.Resource;
+import org.kie.api.runtime.KieSession;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +45,7 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
                                  List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
                                  ClassLoader classLoader ) {
 
-        StatefulKnowledgeSession kSession = buildKnowledgeSession( theory );
+        KieSession kSession = buildKnowledgeSession( theory );
 
         OntoModel baseModel = ModelFactory.newModel( name, mode );
         baseModel.setOntology( ontoDescr );
@@ -87,37 +82,41 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
 
 
-    protected abstract OntoModel buildProperties( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
+    protected abstract OntoModel buildProperties( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
 
 
-    protected abstract OntoModel buildIndividuals( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
+    protected abstract OntoModel buildIndividuals( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
 
 
     protected abstract OntoModel buildClassLattice( OWLOntology ontoDescr,
-                                                    StatefulKnowledgeSession kSession,
+                                                    KieSession kSession,
                                                     Map<InferenceTask, Resource> theory,
                                                     OntoModel baseModel,
                                                     List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators );
 
 
-    protected abstract InferredOntologyGenerator initReasoner( StatefulKnowledgeSession kSession, OWLOntology ontoDescr, List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators );
+    protected abstract InferredOntologyGenerator initReasoner( KieSession kSession, OWLOntology ontoDescr, List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators );
 
 
-    private StatefulKnowledgeSession buildKnowledgeSession(Map<InferenceTask, Resource> theory) {
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+    private KieSession buildKnowledgeSession( Map<InferenceTask, Resource> theory ) {
+        KieServices ks = KieServices.Factory.get();
+        KieFileSystem kfs = ks.newKieFileSystem();
+        
         for ( InferenceTask task : theory.keySet() ) {
-            kbuilder.add( theory.get( task ), ResourceType.DRL );
-            if ( kbuilder.hasErrors() ) {
-                throw new RuntimeException( kbuilder.getErrors().toString() );
-            }
+            kfs.write( theory.get( task ).setResourceType( org.kie.api.io.ResourceType.DRL ) );
         }
-        kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
-        return kbase.newStatefulKnowledgeSession();
+        KieBuilder kieBuilder = ks.newKieBuilder( kfs );
+        kieBuilder.buildAll();
+        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+            throw new RuntimeException( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
+        }
+
+        KieBase kieBase = ks.newKieContainer( kieBuilder.getKieModule().getReleaseId() ).getKieBase();        
+        return kieBase.newKieSession();
     }
 
 
-    private void reportSessionStatus(StatefulKnowledgeSession kSession) {
+    private void reportSessionStatus(KieSession kSession) {
 
         System.err.println( "----------------------- WM " + kSession.getObjects().size() + " --------------------------");
         for ( Object o : kSession.getObjects() ) {

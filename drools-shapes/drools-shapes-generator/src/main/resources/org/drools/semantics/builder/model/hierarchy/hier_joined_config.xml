@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <solver>
-  <environmentMode>TRACE</environmentMode>
+
   <solutionClass>org.drools.semantics.builder.model.hierarchy.opt.OptimalHierarchy</solutionClass>
   <planningEntityClass>org.drools.semantics.builder.model.ConceptImplProxy</planningEntityClass>
 
   <scoreDirectorFactory>
-    <scoreDefinitionType>HARD_AND_SOFT</scoreDefinitionType>
+    <scoreDefinitionType>HARD_SOFT</scoreDefinitionType>
     <scoreDrl>/org/drools/semantics/builder/model/hierarchy/hier_joined_constraints.drl</scoreDrl>
   </scoreDirectorFactory>
 
@@ -27,7 +27,7 @@
       <simulatedAnnealingStartingTemperature>10hard/100soft</simulatedAnnealingStartingTemperature>
     </acceptor>
     <forager>
-      <minimalAcceptedSelection>50</minimalAcceptedSelection>
+      <acceptedCountLimit>50</acceptedCountLimit>
     </forager>
     <termination>
       <maximumUnimprovedStepCount>2</maximumUnimprovedStepCount>

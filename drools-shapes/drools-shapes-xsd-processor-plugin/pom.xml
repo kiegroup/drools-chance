@@ -23,12 +23,12 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-shapes</artifactId>
-    <version>0.5.6.Final</version>
+    <version>0.6.x</version>
   </parent>
 
   <groupId>org.drools</groupId>
   <artifactId>drools-shapes-xsd-processor-plugin</artifactId>
-  <version>0.5.6.Final</version>
+  <version>0.6.x</version>
   <packaging>maven-plugin</packaging>
 
   <name>Drools :: XSD -> OWL2 converter plugin</name>
@@ -49,18 +49,5 @@
     </dependency>
 
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

@@ -16,7 +16,8 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.definition.type.Position;
+
+import org.kie.api.definition.type.Position;
 
 @Deprecated
 public class SubsumptionGoal implements DLGoal {

@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-shapes</artifactId>
-    <version>0.5.6.Final</version>
+    <version>0.6.x</version>
   </parent>
 
   <groupId>org.drools</groupId>
@@ -45,11 +45,7 @@
       <artifactId>hibernate-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.common</groupId>
       <artifactId>hibernate-commons-annotations</artifactId>
     </dependency>
     <dependency>

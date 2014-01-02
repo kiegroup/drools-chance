@@ -1,0 +1,25 @@
+Prefix(:=<_>)
+Prefix(dc:=<http://purl.org/dc/elements/1.1/>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://jboss.org/drools/semantics/Example6>
+
+Declaration(Class(<_A>))
+Declaration(Class(<_B>))
+Declaration(Class(<_C>))
+Declaration(Class(<_D>))
+Declaration(ObjectProperty(<_myProp>))
+ObjectPropertyDomain(<_myProp> <_A>)
+ObjectPropertyRange(<_myProp> ObjectUnionOf(<_D> <_C>))
+Declaration(ObjectProperty(<_yourProp>))
+ObjectPropertyDomain(<_yourProp> ObjectIntersectionOf(<_C> <_B>))
+ObjectPropertyRange(<_yourProp> <_D>)
+DataPropertyDomain(<_zimple> ObjectUnionOf(<_D> <_B>))
+DataPropertyRange(<_zimple> xsd:int)
+Declaration(Datatype(xsd:int))
+)

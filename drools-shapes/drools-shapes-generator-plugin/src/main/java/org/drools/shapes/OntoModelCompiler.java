@@ -1,9 +1,7 @@
 package org.drools.shapes;
 
-import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.drools.rule.builder.dialect.asm.ClassGenerator;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.DRLModel;
@@ -11,19 +9,14 @@ import org.drools.semantics.builder.model.JarModel;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.SemanticXSDModel;
-import org.drools.semantics.builder.model.SubConceptOf;
-import org.drools.semantics.builder.model.XSDModel;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompiler;
-import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.drools.semantics.utils.NameUtils;
-import org.drools.semantics.utils.NamespaceUtils;
 import org.jvnet.hyperjaxb3.maven2.Hyperjaxb3Mojo;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
-import org.w3._2002._07.owl.Thing;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -51,11 +44,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 
 public class OntoModelCompiler {

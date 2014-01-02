@@ -16,7 +16,7 @@
 
 package org.drools.semantics.lang;
 
-import org.drools.io.ResourceFactory;
+import org.kie.api.KieServices;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
@@ -69,10 +69,11 @@ public class DLReasonerTemplateManager {
 
 
     private static void buildRegistry(TemplateRegistry registry, String[] traits) {
+        KieServices ks = KieServices.Factory.get();
         for (String ntempl : traits) {
             try {
                 String path = TEMPLATE_PATH + ntempl.replace( "/", SEP );
-                InputStream stream = ResourceFactory.newClassPathResource(path, DLReasonerTemplateManager.class).getInputStream();
+                InputStream stream = ks.getResources().newClassPathResource( path, DLReasonerTemplateManager.class ).getInputStream();
 
                 registry.addNamedTemplate( path.substring( path.lastIndexOf( File.separator ) + 1 ),
                         TemplateCompiler.compileTemplate(stream));

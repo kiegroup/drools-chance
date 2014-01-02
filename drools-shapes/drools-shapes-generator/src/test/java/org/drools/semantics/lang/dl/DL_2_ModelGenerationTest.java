@@ -76,7 +76,7 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testPropertiesGenerationExternal() {
-        String source = "fuzzyDL/DLex6.manchester";
+        String source = "fuzzyDL/DLex6.owl";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "ex6", res, OntoModel.Mode.FLAT );
@@ -201,7 +201,7 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testComplexAnonymous() {
-        String source = "fuzzyDL/DLex8.manchester";
+        String source = "fuzzyDL/DLex8.owl";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "ex8", res, OntoModel.Mode.FLAT );

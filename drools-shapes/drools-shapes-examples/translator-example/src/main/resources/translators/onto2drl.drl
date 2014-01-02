@@ -4,8 +4,8 @@ import org.w3._2002._07.owl.Thing;
 import org.semanticweb.ontologies._2012._1.rule_merged.*;
 import org.semanticweb.ontologies._2012._1.rules.*;
 import org.semanticweb.ontologies._2012._1.rule_example.*;
-import org.drools.lang.api.*;
-import org.drools.lang.descr.*;
+import org.drools.compiler.lang.api.*;
+import org.drools.compiler.lang.descr.*;
 import org.drools.semantics.UIdAble;
 
 
@@ -17,7 +17,7 @@ global PackageDescr pack;
  Notice : ESSENTIAL!!
     Allows to access properties defined in the implementing classes only
 */
-declare org.drools.factmodel.traits.Thing @typesafe(false) end
+declare org.drools.core.factmodel.traits.Thing @typesafe(false) end
 declare org.w3._2002._07.owl.Thing @typesafe(false) end
 
 

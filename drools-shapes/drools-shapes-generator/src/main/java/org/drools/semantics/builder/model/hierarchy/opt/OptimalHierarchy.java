@@ -1,20 +1,23 @@
 package org.drools.semantics.builder.model.hierarchy.opt;
 
 
-import org.drools.planner.api.domain.solution.PlanningEntityCollectionProperty;
-import org.drools.planner.core.score.buildin.hardandsoft.HardAndSoftScore;
-import org.drools.planner.core.solution.Solution;
 import org.drools.semantics.builder.model.ConceptImplProxy;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.PropertyRelation;
+import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
+import org.optaplanner.core.api.domain.solution.PlanningSolution;
+import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+import org.optaplanner.core.impl.solution.Solution;
 import org.w3._2002._07.owl.Thing;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
-public class OptimalHierarchy implements Solution<HardAndSoftScore> {
+@PlanningSolution
+public class OptimalHierarchy implements Solution<HardSoftScore> {
 
     private Collection<Concept> availableConcepts;
     private Collection<PropertyRelation> availableProperties;
@@ -23,8 +26,12 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
 
     private LinkedHashMap<String, ConceptImplProxy> inheritances;
 
-    private HardAndSoftScore score;
+    private HardSoftScore score;
 
+
+    public OptimalHierarchy() {
+
+    }
 
     public OptimalHierarchy( OntoModel model ) {
         availableConcepts = Collections.unmodifiableCollection( model.getConcepts() );
@@ -64,11 +71,11 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
     }
 
 
-    public HardAndSoftScore getScore() {
+    public HardSoftScore getScore() {
         return score;
     }
 
-    public void setScore(HardAndSoftScore score) {
+    public void setScore(HardSoftScore score) {
         this.score = score;
     }
 
@@ -77,11 +84,12 @@ public class OptimalHierarchy implements Solution<HardAndSoftScore> {
         return availableConcepts;
     }
 
-    public Solution<HardAndSoftScore> cloneSolution() {
+    public Solution<HardSoftScore> cloneSolution() {
         return new OptimalHierarchy( this );
     }
 
 
+    @ValueRangeProvider(id = "cons")
     public Collection<Concept> getAvailableConcepts() {
         return availableConcepts;
     }

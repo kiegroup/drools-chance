@@ -16,13 +16,13 @@
 
 package org.drools.semantics.builder;
 
-import org.drools.builder.ResourceType;
-import org.drools.io.Resource;
-import org.drools.io.impl.ByteArrayResource;
-import org.drools.io.impl.ClassPathResource;
+import org.drools.core.io.impl.ByteArrayResource;
+import org.drools.core.io.impl.ClassPathResource;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.inference.DelegateInferenceStrategy;
 import org.drools.semantics.builder.model.inference.ModelInferenceStrategy;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLOntologyDocumentSource;
 import org.semanticweb.owlapi.io.StreamDocumentSource;

@@ -17,30 +17,27 @@
 package org.drools.semantics.lang.dl;
 
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuleBaseConfiguration;
-import org.drools.RuleBaseConfiguration.AssertBehaviour;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.common.DefaultFactHandle;
-import org.drools.common.EventFactHandle;
+import org.drools.core.common.DefaultFactHandle;
+import org.drools.core.common.EventFactHandle;
 import org.drools.core.util.StringUtils;
-import org.drools.io.Resource;
-import org.drools.io.impl.ByteArrayResource;
-import org.drools.io.impl.ClassPathResource;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
-import org.drools.runtime.rule.QueryResults;
-import org.drools.runtime.rule.QueryResultsRow;
 import org.drools.semantics.builder.DLReasonerBuilder;
 import org.drools.semantics.builder.DLReasonerBuilderImpl;
-import org.drools.semantics.lang.dl.DLGoal;
-import org.drools.semantics.lang.dl.MinimizationProblem;
-import org.drools.semantics.lang.dl.RecognitionGoal;
-import org.drools.semantics.lang.dl.SubsumptionGoal;
 import org.junit.After;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.conf.EqualityBehaviorOption;
+import org.kie.api.io.KieResources;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.FactHandle;
+import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.QueryResultsRow;
+import org.kie.internal.KnowledgeBaseFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.FileOutputStream;
@@ -48,7 +45,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 
 /**
@@ -61,8 +61,8 @@ public class AbstractReasonerTestBase {
     protected DLReasonerBuilder factory = DLReasonerBuilderImpl.getInstance();
             
 
-    protected KnowledgeBase tableauKB;
-    protected StatefulKnowledgeSession ksession;
+    protected KieBase tableauKB;
+    protected KieSession ksession;
     protected Object mock;
 
 
@@ -72,6 +72,10 @@ public class AbstractReasonerTestBase {
 
 
     public OWLOntology init( String DLfile ) {
+        KieServices kieServices = KieServices.Factory.get();
+        KieResources kieResources = kieServices.getResources();
+        
+        
         // get ontology...
         if ( DLfile.equals( currentSource ) ) {
             reinit();
@@ -79,39 +83,37 @@ public class AbstractReasonerTestBase {
         }
 
 
-        OWLOntology ontologyDescr = factory.parseOntology( new ClassPathResource( DLfile ) );
+        OWLOntology ontologyDescr = factory.parseOntology( kieResources.newClassPathResource( DLfile ) );
         currentOntology = ontologyDescr;
         currentSource = DLfile;
 
 
         // compile tableau from DL...
-        ClassPathResource visitor =  new ClassPathResource( "FALC_TableauBuilderVisitor.drl" );
-            visitor.setResourceType( ResourceType.DRL );
-        ClassPathResource common =  new ClassPathResource( "FALC_CommonVisitor.drl" );
-            common.setResourceType( ResourceType.DRL );
+        Resource visitor =  kieResources.newClassPathResource( "FALC_TableauBuilderVisitor.drl" )
+                .setResourceType( ResourceType.DRL );
+        Resource common =  kieResources.newClassPathResource( "FALC_CommonVisitor.drl" )
+                .setResourceType( ResourceType.DRL );
         String tableau = factory.buildTableauRules( ontologyDescr,
                                                     new Resource[] { common, visitor } );
         System.err.println("<<<" + tableau + ">>>");
         assertFalse(StringUtils.isEmpty(tableau));
 
-        RuleBaseConfiguration kconf = new RuleBaseConfiguration();
-            kconf.setAssertBehaviour(AssertBehaviour.EQUALITY);
-        tableauKB = KnowledgeBaseFactory.newKnowledgeBase(kconf);
-        assertNotNull(tableauKB);
+        KieBaseConfiguration kconf = kieServices.newKieBaseConfiguration();
+            kconf.setOption( EqualityBehaviorOption.EQUALITY );
 
 
+        KieFileSystem kfs = kieServices.newKieFileSystem();
         // add main rulebase
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( new ByteArrayResource( tableau.getBytes() ),
-                      ResourceType.DRL);
-        kbuilder.add( new ClassPathResource("fuzzyDL/Main.drl"),
-                      ResourceType.DRL);
+        kfs.write( kieResources.newByteArrayResource( tableau.getBytes() ).setSourcePath( "tableau.drl" ).setResourceType( ResourceType.DRL ) );
+        kfs.write( kieResources.newClassPathResource( "fuzzyDL/Main.drl" ).setResourceType( ResourceType.DRL ) );
+        KieBuilder kieBuilder = kieServices.newKieBuilder( kfs );
+        kieBuilder.buildAll();
 
-        if ( kbuilder.hasErrors() ) {
-            fail( kbuilder.getErrors().toString() );
+        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+            fail( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
         }
 
-        tableauKB.addKnowledgePackages(kbuilder.getKnowledgePackages());
+        tableauKB = kieServices.newKieContainer( kieBuilder.getKieModule().getReleaseId() ).newKieBase( kconf );
         assertNotNull(tableauKB);
 
         reinit();
@@ -124,7 +126,7 @@ public class AbstractReasonerTestBase {
 
     public void reinit() {
         // get session and provide solver
-        ksession = tableauKB.newStatefulKnowledgeSession();
+        ksession = tableauKB.newKieSession();
         // just in case...
         ksession.fireAllRules();
 
@@ -227,11 +229,11 @@ public class AbstractReasonerTestBase {
 
 
 
-    public String reportWMObjects(StatefulKnowledgeSession session) {
+    public String reportWMObjects(KieSession session) {
         PriorityQueue<String> queue = new PriorityQueue<String>();
         for (FactHandle fh : session.getFactHandles()) {
             Object o;
-            if (fh instanceof EventFactHandle) {
+            if (fh instanceof EventFactHandle ) {
                 EventFactHandle efh = (EventFactHandle) fh;
                 queue.add("\t " + efh.getStartTimestamp() + "\t" + efh.getObject().toString() + "\n");
             } else {

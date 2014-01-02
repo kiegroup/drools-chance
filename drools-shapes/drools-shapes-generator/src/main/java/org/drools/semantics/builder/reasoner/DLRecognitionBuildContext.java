@@ -1,8 +1,8 @@
 package org.drools.semantics.builder.reasoner;
 
-import org.drools.lang.api.CEDescrBuilder;
-import org.drools.lang.api.PatternDescrBuilder;
-import org.drools.lang.descr.AnnotatedBaseDescr;
+import org.drools.compiler.lang.api.CEDescrBuilder;
+import org.drools.compiler.lang.api.PatternDescrBuilder;
+import org.drools.compiler.lang.descr.AnnotatedBaseDescr;
 
 import java.util.HashMap;
 import java.util.Map;

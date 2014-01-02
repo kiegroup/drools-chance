@@ -1,48 +1,23 @@
 package org.drools.semantics.builder.reasoner;
 
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.compiler.DrlParser;
-import org.drools.compiler.DroolsParserException;
-import org.drools.io.impl.ByteArrayResource;
-import org.drools.lang.DrlDumper;
-import org.drools.lang.api.CEDescrBuilder;
-import org.drools.lang.api.DescrFactory;
-import org.drools.lang.api.PackageDescrBuilder;
-import org.drools.lang.api.PatternDescrBuilder;
-import org.drools.lang.api.RuleDescrBuilder;
-import org.drools.lang.api.TypeDeclarationDescrBuilder;
-import org.drools.lang.descr.AndDescr;
-import org.drools.lang.descr.AnnotatedBaseDescr;
-import org.drools.lang.descr.BaseDescr;
-import org.drools.lang.descr.OrDescr;
-import org.drools.lang.descr.PackageDescr;
-import org.drools.rule.TypeDeclaration;
+import org.drools.compiler.compiler.DrlParser;
+import org.drools.compiler.compiler.DroolsParserException;
+import org.drools.compiler.lang.DrlDumper;
 import org.drools.semantics.builder.DLTemplateManager;
-import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
-import org.drools.semantics.builder.model.PropertyRelation;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.io.ResourceType;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRuntime;
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 public class TemplateRecognitionRuleBuilder {
 
@@ -91,10 +66,16 @@ public class TemplateRecognitionRuleBuilder {
 
         System.out.println( cleanWhites( drl ) );
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
-        if ( kBuilder.hasErrors() ) {
-            throw new IllegalStateException( kBuilder.getErrors().toString() );
+
+        KieServices kieServices = KieServices.Factory.get();
+        KieFileSystem kfs = kieServices.newKieFileSystem();
+        kfs.write( kieServices.getResources().newByteArrayResource( drl.getBytes() )
+                           .setSourcePath( "test.drl" )
+                           .setResourceType( ResourceType.DRL ) );
+        KieBuilder kieBuilder = kieServices.newKieBuilder( kfs );
+        kieBuilder.buildAll();
+        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+            throw new IllegalStateException( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
         }
 
         try {

@@ -1,8 +1,8 @@
 package org.drools.shapes.xsd;
 
 import com.sun.org.apache.xpath.internal.operations.Mod;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.FactHandle;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElements;
@@ -30,11 +30,11 @@ public class Jaxplorer {
         this.root = root;
     }
 
-    public void deepInsert( StatefulKnowledgeSession kSession ) {
+    public void deepInsert( KieSession kSession ) {
         deepInsert( root, kSession );
     }
 
-    protected void deepInsert( Object o, StatefulKnowledgeSession kSession ) {
+    protected void deepInsert( Object o, KieSession kSession ) {
         if ( o instanceof JAXBElement ) {
             kSession.insert( o );
             deepInsert( ((JAXBElement) o).getValue(), kSession );
@@ -68,7 +68,7 @@ public class Jaxplorer {
         }
     }
 
-    public void deepRetract( StatefulKnowledgeSession kSession ) {
+    public void deepRetract( KieSession kSession ) {
         for ( FactHandle h : handles ) {
             kSession.retract( h );
         }

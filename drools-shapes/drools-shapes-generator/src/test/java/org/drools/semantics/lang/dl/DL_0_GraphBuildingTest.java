@@ -16,21 +16,23 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.ClassObjectFilter;
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuleBaseConfiguration;
-import org.drools.RuleBaseConfiguration.AssertBehaviour;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.common.DefaultFactHandle;
-import org.drools.common.EventFactHandle;
-import org.drools.definition.type.FactType;
-import org.drools.io.impl.ClassPathResource;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
+import org.drools.core.RuleBaseConfiguration;
+import org.drools.core.common.DefaultFactHandle;
+import org.drools.core.common.EventFactHandle;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.conf.EqualityBehaviorOption;
+import org.kie.api.definition.type.FactType;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.FactHandle;
 
 import java.util.Collection;
 import java.util.PriorityQueue;
@@ -48,21 +50,27 @@ public class DL_0_GraphBuildingTest {
 
 
     @Test
+    @Ignore("needs abductive")
     public void testSequentialCreation() {
-        KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-            knowledgeBuilder.add( new ClassPathResource( "fuzzyDL/testLatticeBuilding.drl" ), ResourceType.DRL );
-        if ( knowledgeBuilder.hasErrors() ) {
-            fail( knowledgeBuilder.getErrors().toString() );
+        KieServices kieServices = KieServices.Factory.get();
+        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
+
+        kieFileSystem.write( kieServices.getResources().newClassPathResource( "fuzzyDL/testLatticeBuilding.drl" ).setResourceType( ResourceType.DRL ) );
+        KieBuilder kieBuilder = kieServices.newKieBuilder( kieFileSystem );
+        kieBuilder.buildAll();
+
+        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+            fail( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
         }
-        RuleBaseConfiguration rbC = new RuleBaseConfiguration();
-            rbC.setAssertBehaviour( AssertBehaviour.EQUALITY );
-        KnowledgeBase knowledgeBase = KnowledgeBaseFactory.newKnowledgeBase( rbC );
-            knowledgeBase.addKnowledgePackages( knowledgeBuilder.getKnowledgePackages() );
-        StatefulKnowledgeSession kSession = knowledgeBase.newStatefulKnowledgeSession();
 
-            kSession.fireAllRules();
+        KieBaseConfiguration rbC = kieServices.newKieBaseConfiguration();
+            rbC.setOption( EqualityBehaviorOption.EQUALITY );
+        KieBase knowledgeBase = kieServices.newKieContainer( kieBuilder.getKieModule().getReleaseId() ).newKieBase( rbC );
+        KieSession kSession = knowledgeBase.newKieSession();
 
-//        System.err.println( reportWMObjects( kSession ) );
+        kSession.fireAllRules();
+
+        System.err.println( reportWMObjects( kSession ) );
 
         FactType type = knowledgeBase.getFactType("org.drools.semantics.test","SubConceptOf");
         Collection facts = kSession.getObjects( new ClassObjectFilter( type.getFactClass() ) );
@@ -99,11 +107,11 @@ public class DL_0_GraphBuildingTest {
     }
 
 
-    public String reportWMObjects(StatefulKnowledgeSession session) {
+    public String reportWMObjects(KieSession session) {
         PriorityQueue<String> queue = new PriorityQueue<String>();
         for (FactHandle fh : session.getFactHandles()) {
             Object o;
-            if (fh instanceof EventFactHandle) {
+            if (fh instanceof EventFactHandle ) {
                 EventFactHandle efh = (EventFactHandle) fh;
                 queue.add("\t " + efh.getStartTimestamp() + "\t" + efh.getObject().toString() + "\n");
             } else {

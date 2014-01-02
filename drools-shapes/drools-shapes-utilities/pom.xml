@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-shapes</artifactId>
-    <version>0.5.6.Final</version>
+    <version>0.6.x</version>
   </parent>
 
   <groupId>org.drools</groupId>
   <artifactId>drools-shapes-utilities</artifactId>
-  <version>0.5.6.Final</version>
+  <version>0.6.x</version>
 
   <name>Drools :: Shapes Utilities</name>
 
@@ -25,83 +25,34 @@
     <dependency>
       <groupId>com.clarkparsia</groupId>
       <artifactId>Empire-core</artifactId>
-      <!--version>0.7.3</version-->
     </dependency>
 
     <dependency>
       <groupId>org.jvnet.hyperjaxb3</groupId>
       <artifactId>hyperjaxb3</artifactId>
-      <!--version>0.5.6</version-->
       <type>pom</type>
     </dependency>
 
     <dependency>
       <groupId>org.jvnet.hyperjaxb3</groupId>
       <artifactId>maven-hyperjaxb3-plugin</artifactId>
-      <!--version>0.5.6</version-->
     </dependency>
 
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
-      <!--version>2.2.4</version-->
     </dependency>
 
     <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
-      <!--version>1.1</version-->
     </dependency>
 
     <dependency>
       <groupId>thewebsemantic</groupId>
       <artifactId>jenabean</artifactId>
-      <!--version>1.0.6</version-->
     </dependency>
 
   </dependencies>
-
-
-  <!--repositories>
-    <repository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Repository Group</name>
-      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>Jenabean</id>
-      <url>http://jenabean.googlecode.com/svn/repo</url>
-    </repository>
-    <repository>
-      <id>EmpireRDF</id>
-      <url>https://github.com/EmpireRDF/mavenRepo/raw/master/releases</url>
-    </repository>
-    <repository>
-      <id>EmpireRDF-snapshot</id>
-      <url>https://github.com/EmpireRDF/mavenRepo/raw/master/snapshots</url>
-    </repository>
-  </repositories-->
-
-  <!--build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build-->
 
 </project>

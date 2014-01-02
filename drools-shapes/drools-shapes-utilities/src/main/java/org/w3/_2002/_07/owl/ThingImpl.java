@@ -8,38 +8,17 @@
 
 package org.w3._2002._07.owl;
 
-import java.io.Serializable;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import com.clarkparsia.empire.EmpireGenerated;
 import com.clarkparsia.empire.annotation.Namespaces;
 import com.clarkparsia.empire.annotation.RdfsClass;
 import com.sun.xml.bind.CycleRecoverable;
-import org.drools.factmodel.traits.LogicalTypeInconsistencyException;
-import org.drools.factmodel.traits.TraitFieldTMS;
-import org.drools.factmodel.traits.TraitFieldTMSImpl;
-import org.drools.factmodel.traits.TraitType;
-import org.drools.factmodel.traits.TraitTypeMap;
-import org.drools.factmodel.traits.Traitable;
-import org.drools.factmodel.traits.TraitableBean;
+import org.drools.core.factmodel.traits.LogicalTypeInconsistencyException;
+import org.drools.core.factmodel.traits.TraitFieldTMS;
+import org.drools.core.factmodel.traits.TraitFieldTMSImpl;
+import org.drools.core.factmodel.traits.TraitType;
+import org.drools.core.factmodel.traits.TraitTypeMap;
+import org.drools.core.factmodel.traits.Traitable;
+import org.drools.core.factmodel.traits.TraitableBean;
 import org.drools.semantics.NamedEntity;
 import org.drools.semantics.UIdAble;
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
@@ -55,6 +34,27 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
 import org.openrdf.model.Graph;
 import thewebsemantic.Namespace;
 import thewebsemantic.RdfType;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 
 /**
@@ -405,7 +405,7 @@ public class ThingImpl
     @XmlTransient
     private Map<String,Object> __$$dynamic_properties_map$$;
     @XmlTransient
-    private Map<String, org.drools.factmodel.traits.Thing<ThingImpl>> __$$dynamic_traits_map$$;
+    private Map<String, org.drools.core.factmodel.traits.Thing<ThingImpl>> __$$dynamic_traits_map$$;
 
 
     @Transient
@@ -422,16 +422,16 @@ public class ThingImpl
     }
 
     @Transient
-    public Map<String, org.drools.factmodel.traits.Thing<ThingImpl>> _getTraitMap() {
+    public Map<String, org.drools.core.factmodel.traits.Thing<ThingImpl>> _getTraitMap() {
         return __$$dynamic_traits_map$$;
     }
 
-    public void addTrait(String type, org.drools.factmodel.traits.Thing proxy) throws LogicalTypeInconsistencyException {
+    public void addTrait(String type, org.drools.core.factmodel.traits.Thing proxy) throws LogicalTypeInconsistencyException {
         ((TraitTypeMap) _getTraitMap()).putSafe(type, proxy);
     }
 
     @Transient
-    public org.drools.factmodel.traits.Thing getTrait(String type) {
+    public org.drools.core.factmodel.traits.Thing getTrait(String type) {
         return _getTraitMap().get( type );
     }
 
@@ -444,7 +444,7 @@ public class ThingImpl
         return __$$dynamic_traits_map$$ != null && ! __$$dynamic_traits_map$$.isEmpty();
     }
 
-    public Collection<org.drools.factmodel.traits.Thing<ThingImpl>> removeTrait( String type ) {
+    public Collection<org.drools.core.factmodel.traits.Thing<ThingImpl>> removeTrait( String type ) {
         if (  __$$dynamic_traits_map$$ != null ) {
             return ((TraitTypeMap)_getTraitMap()).removeCascade(type);
         } else {
@@ -452,7 +452,7 @@ public class ThingImpl
         }
     }
 
-    public Collection<org.drools.factmodel.traits.Thing<ThingImpl>> removeTrait( BitSet typeCode ) {
+    public Collection<org.drools.core.factmodel.traits.Thing<ThingImpl>> removeTrait( BitSet typeCode ) {
         if (  __$$dynamic_traits_map$$ != null ) {
             return ((TraitTypeMap)_getTraitMap()).removeCascade( typeCode );
         } else {
@@ -470,7 +470,7 @@ public class ThingImpl
     }
 
     @Transient
-    public Collection<org.drools.factmodel.traits.Thing> getMostSpecificTraits() {
+    public Collection<org.drools.core.factmodel.traits.Thing> getMostSpecificTraits() {
         if ( __$$dynamic_traits_map$$ == null ) {
             return Collections.EMPTY_LIST;
         }

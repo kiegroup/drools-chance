@@ -16,30 +16,16 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuleBaseConfiguration;
-import org.drools.common.InternalFactHandle;
-import org.drools.common.InternalWorkingMemory;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
-import org.drools.reteoo.AlphaNode;
-import org.drools.reteoo.ObjectSource;
-import org.drools.reteoo.builder.BuildContext;
-import org.drools.reteoo.builder.DefaultNodeFactory;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
-import org.drools.semantics.builder.model.*;
+import org.drools.semantics.builder.model.ModelFactory;
+import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.SemanticXSDModel;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
-import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
-import org.drools.spi.AlphaNodeFieldConstraint;
-import org.drools.spi.PropagationContext;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import java.io.File;
 
 import static junit.framework.Assert.assertEquals;
 

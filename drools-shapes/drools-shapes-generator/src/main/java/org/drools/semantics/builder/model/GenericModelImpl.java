@@ -3,10 +3,10 @@ package org.drools.semantics.builder.model;
 
 
 import org.drools.semantics.util.area.AreaTxn;
-import org.drools.util.CodedHierarchy;
-import org.drools.util.HierarchyEncoder;
-import org.drools.util.HierarchyEncoderImpl;
-import org.drools.util.HierarchySorter;
+import org.drools.core.util.CodedHierarchy;
+import org.drools.core.util.HierarchyEncoder;
+import org.drools.core.util.HierarchyEncoderImpl;
+import org.drools.core.util.HierarchySorter;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.ArrayList;

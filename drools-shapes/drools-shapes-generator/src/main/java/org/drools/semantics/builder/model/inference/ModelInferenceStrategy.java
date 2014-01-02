@@ -16,9 +16,8 @@
 
 package org.drools.semantics.builder.model.inference;
 
-import org.drools.io.Resource;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.model.OntoModel;
+import org.kie.api.io.Resource;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
@@ -36,7 +35,7 @@ public interface ModelInferenceStrategy {
                                  OWLOntology ontoDescr,
                                  OntoModel.Mode mode,
                                  Map<InferenceTask, Resource> theory,
-//                                 StatefulKnowledgeSession kSession,
+//                                 KieSession kSession,
                                  List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
                                  ClassLoader classLoader );
 

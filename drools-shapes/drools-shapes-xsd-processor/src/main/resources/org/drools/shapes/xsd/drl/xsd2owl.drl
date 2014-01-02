@@ -25,6 +25,7 @@ declare Link
 end
 
 declare Anon
+@propertyReactive
     cld : OpenAttrs @key
     sup : OpenAttrs @key
     kls : OWLClassExpression

@@ -1,7 +1,7 @@
 package org.drools.semantics.builder;
 
 
-import org.drools.io.Resource;
+import org.kie.api.io.Resource;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 public interface DLReasonerBuilder {

@@ -23,17 +23,17 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-shapes-examples</artifactId>
-    <version>0.5.6.Final</version>
+    <version>0.6.x</version>
   </parent>
 
   <name>Drools :: Shapes Construction Yard Example</name>
 
   <groupId>org.drools</groupId>
   <artifactId>conyard-example</artifactId>
-  <version>0.5.6.Final</version>
+  <version>0.6.x</version>
   <properties>
-    <drools.version>5.6.0-SNAPSHOT</drools.version>
-    <chance.version>0.5.6.Final</chance.version>
+    <drools.version>6.1.0-SNAPSHOT</drools.version>
+    <chance.version>0.6.x</chance.version>
     <jpa.provider>hibernate</jpa.provider>
     <!--jpa.provider>datanucleus</jpa.provider-->
   </properties>

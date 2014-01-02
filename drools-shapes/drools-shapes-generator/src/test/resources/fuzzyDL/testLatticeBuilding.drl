@@ -17,19 +17,14 @@
  package org.drools.semantics.test;
 
 import java.util.*;
-import org.drools.base.DroolsQuery;
+import org.drools.core.base.DroolsQuery;
 
 declare Relation
-	subject		    : String		@key    @position(0)
-	object		    : String		@key    @position(2)
+	subject		    : String		@key
+	object		    : String		@key
 end
 
 declare SubConceptOf extends Relation
-end
-
-declare PropertyRelation extends Relation
-    iri             : String        @key    @position(1)
-    predicate       : String
 end
 
 

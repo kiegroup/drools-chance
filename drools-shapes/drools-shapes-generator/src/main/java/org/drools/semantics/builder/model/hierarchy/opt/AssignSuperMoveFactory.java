@@ -1,12 +1,12 @@
 package org.drools.semantics.builder.model.hierarchy.opt;
 
 
-import org.drools.planner.core.heuristic.selector.move.factory.MoveListFactory;
-import org.drools.planner.core.move.Move;
-import org.drools.planner.core.score.director.ScoreDirector;
-import org.drools.planner.core.solution.Solution;
-import org.drools.semantics.builder.model.ConceptImplProxy;
 import org.drools.semantics.builder.model.Concept;
+import org.drools.semantics.builder.model.ConceptImplProxy;
+import org.optaplanner.core.impl.heuristic.selector.move.factory.MoveListFactory;
+import org.optaplanner.core.impl.move.Move;
+import org.optaplanner.core.impl.score.director.ScoreDirector;
+import org.optaplanner.core.impl.solution.Solution;
 
 import java.util.ArrayList;
 import java.util.Arrays;

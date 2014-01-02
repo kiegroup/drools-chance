@@ -1,11 +1,9 @@
 package org.drools.semantics.builder.model;
 
 
-import org.drools.planner.api.domain.entity.PlanningEntity;
-import org.drools.planner.api.domain.variable.PlanningVariable;
-import org.drools.planner.api.domain.variable.ValueRange;
-import org.drools.planner.api.domain.variable.ValueRangeType;
 import org.drools.semantics.builder.model.hierarchy.opt.ConceptStrengthEvaluator;
+import org.optaplanner.core.api.domain.entity.PlanningEntity;
+import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,6 +19,7 @@ public class ConceptImplProxy implements Cloneable {
     private Set<String> neededProperties;
     private Set<ConceptImplProxy> chosenSubs;
 
+    public ConceptImplProxy() {}
 
     protected ConceptImplProxy( Concept con, ConceptImplProxy sup ) {
         this.chosenSuper = sup;
@@ -63,8 +62,7 @@ public class ConceptImplProxy implements Cloneable {
 //        this.iri = iri;
 //    }
 
-    @PlanningVariable( strengthComparatorClass = ConceptStrengthEvaluator.class )
-    @ValueRange( type = ValueRangeType.FROM_SOLUTION_PROPERTY, solutionProperty = "cons" )
+    @PlanningVariable( strengthComparatorClass = ConceptStrengthEvaluator.class, valueRangeProviderRefs = {"cons"})
     public ConceptImplProxy getChosenSuper() {
         return chosenSuper;
     }

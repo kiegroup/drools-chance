@@ -20,9 +20,6 @@ package org.drools.semantics.builder.model.inference;
 
 import org.apache.commons.collections15.map.MultiKeyMap;
 import org.apache.log4j.Logger;
-import org.drools.io.Resource;
-import org.drools.runtime.ClassObjectFilter;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.Individual;
 import org.drools.semantics.builder.model.OntoModel;
@@ -30,7 +27,9 @@ import org.drools.semantics.builder.model.PropertyRelation;
 import org.drools.semantics.builder.model.SubConceptOf;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.utils.NamespaceUtils;
-import org.drools.util.HierarchySorter;
+import org.drools.core.util.HierarchySorter;
+import org.kie.api.io.Resource;
+import org.kie.api.runtime.KieSession;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -40,7 +39,6 @@ import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
@@ -185,7 +183,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
     @Override
-    protected OntoModel buildProperties( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierarchicalModel ) {
+    protected OntoModel buildProperties( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierarchicalModel ) {
 
         OWLDataFactory factory = ontoDescr.getOWLOntologyManager().getOWLDataFactory();
 
@@ -214,7 +212,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
     @Override
-    protected OntoModel buildIndividuals(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel) {
+    protected OntoModel buildIndividuals(OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel) {
 
 
         for ( OWLNamedIndividual individual : ontoDescr.getIndividualsInSignature( true ) ) {
@@ -1711,7 +1709,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
     protected OntoModel buildClassLattice( OWLOntology ontoDescr,
-                                           StatefulKnowledgeSession kSession,
+                                           KieSession kSession,
                                            Map<InferenceTask,
                                                    Resource> theory,
                                            OntoModel baseModel,
@@ -1945,7 +1943,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
 
-    private void addConceptsToModel(StatefulKnowledgeSession kSession, OWLOntology ontoDescr, OntoModel baseModel) {
+    private void addConceptsToModel(KieSession kSession, OWLOntology ontoDescr, OntoModel baseModel) {
         Set<OWLClass> kis = ontoDescr.getClassesInSignature( true );
         Set dek = ontoDescr.getAxioms( AxiomType.DECLARATION );
 
@@ -2114,7 +2112,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
     private void launchReasoner( boolean dirty,
-                                 StatefulKnowledgeSession kSession,
+                                 KieSession kSession,
                                  OWLOntology ontoDescr,
                                  List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators ) {
         if ( dirty ) {
@@ -2143,7 +2141,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
 
-    protected InferredOntologyGenerator initReasoner( StatefulKnowledgeSession kSession,
+    protected InferredOntologyGenerator initReasoner( KieSession kSession,
                                                       OWLOntology ontoDescr,
                                                       List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators ) {
 

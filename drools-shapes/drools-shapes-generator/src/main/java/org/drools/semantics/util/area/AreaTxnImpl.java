@@ -1,15 +1,12 @@
 package org.drools.semantics.util.area;
 
 import org.drools.semantics.builder.model.Concept;
-import org.drools.semantics.builder.model.OntoModel;
-import org.drools.semantics.builder.model.PropertyRelation;
-import org.drools.util.HierarchyEncoder;
-import org.drools.util.HierarchyEncoderImpl;
-import org.drools.util.HierarchySorter;
+import org.drools.core.util.HierarchyEncoder;
+import org.drools.core.util.HierarchyEncoderImpl;
+import org.drools.core.util.HierarchySorter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;

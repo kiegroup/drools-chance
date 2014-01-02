@@ -3,12 +3,7 @@ import com.clarkparsia.empire.EmpireOptions;
 import com.clarkparsia.empire.config.ConfigKeys;
 import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
 import com.clarkparsia.empire.sesametwo.RepositoryDataSourceFactory;
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.io.impl.ClassPathResource;
+import org.drools.core.io.impl.ClassPathResource;
 import org.drools.owl.conyard.Equipment;
 import org.drools.owl.conyard.EquipmentImpl;
 import org.drools.owl.conyard.Guest;
@@ -36,6 +31,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieSession;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -503,19 +505,25 @@ public class FactTest {
         Painting paintingFact = (Painting) refreshOnJPA( painting, painting.getRdfId(), em );
 
 
+        KieServices kieServices = KieServices.Factory.get();
+        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
+        KieBuilder kieBuilder = kieServices.newKieBuilder( kieFileSystem );
 
-
-        KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        builder.add( new ClassPathResource( "test/testFacts.drl" ), ResourceType.DRL );
-        if ( builder.hasErrors() ) {
-            fail( builder.getErrors().toString() );
+        kieFileSystem.write( kieServices.getResources()
+                                     .newClassPathResource( "test/testFacts.drl" )
+                                     .setSourcePath( "test.drl" )
+                                     .setResourceType( ResourceType.DRL ) );
+        kieBuilder.buildAll();
+        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+            fail( kieBuilder.getResults().getMessages( Message.Level.ERROR  ).toString() );
         }
 
-        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
-        kBase.addKnowledgePackages( builder.getKnowledgePackages() );
+        KieBase kBase = kieServices.newKieContainer( kieBuilder.getKieModule().getReleaseId() ).getKieBase();
 
         ArrayList ans = new ArrayList();
-        StatefulKnowledgeSession kSession = kBase.newStatefulKnowledgeSession();
+        KieSession kSession = kBase.newKieSession();
+
+
         kSession.setGlobal( "ans", ans );
 
         kSession.insert(paintingFact);

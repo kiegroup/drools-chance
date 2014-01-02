@@ -1,14 +1,11 @@
 package org.drools.semantics.builder.model.hierarchy.opt;
 
-import org.drools.planner.core.score.buildin.hardandsoft.HardAndSoftScoreHolder;
-import org.drools.planner.core.score.constraint.IntConstraintOccurrence;
-import org.drools.planner.core.score.constraint.ConstraintType;
 
 import org.drools.semantics.builder.model.*;
 import org.drools.semantics.builder.model.hierarchy.opt.*;
+import org.optaplanner.core.api.score.buildin.hardsoft.*;
 
-
-global HardAndSoftScoreHolder scoreHolder;
+global HardSoftScoreHolder scoreHolder;
 
 
 declare ChildOf
@@ -108,7 +105,7 @@ salience 10
 when
     ConceptImplProxy( $child : iri != "<http://www.w3.org/2002/07/owl#Thing>", chosenSuper!.iri == $child )
 then
-    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_HARD, 100, $child ) );
+    scoreHolder.addHardConstraintMatch(kcontext, -100);
 end
 
 rule "Loop"
@@ -116,7 +113,7 @@ salience 10
 when
     ChildOf( $self, $self ; )
 then
-    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_HARD, 100, $self ) );
+    scoreHolder.addHardConstraintMatch(kcontext, -100);
 end
 
 
@@ -127,7 +124,7 @@ when
     $n : Needs( $con, $prop ; )
     not Has( $con, $prop ; )
 then
-    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_HARD, 1, $n ) );
+    scoreHolder.addHardConstraintMatch(kcontext, -1);
 end
 
 
@@ -137,7 +134,7 @@ when
     $i : Has( $con, $pro ; )
     not Needs( $con, $prop ; )
 then
-    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_SOFT, 1, $i ) );
+    scoreHolder.addSoftConstraintMatch(kcontext, -1);
 end
 
 
@@ -146,49 +143,8 @@ salience -1
 when
     $r : Redefines( $con, $pro ; )
 then
-    insertLogical( new IntConstraintOccurrence( drools.getRule().getName(), ConstraintType.NEGATIVE_SOFT, 1, $r ) );
+    scoreHolder.addSoftConstraintMatch(kcontext, -1);
 end
-
-
-
-// ############################################################################
-// Calculate score
-// ############################################################################
-
-// Accumulate hard constraints
-rule "hardConstraintsBroken"
-        salience -5 // Do the other rules first (optional, for performance)
-    when
-        $hardTotal : Number() from accumulate(
-            IntConstraintOccurrence(constraintType == ConstraintType.NEGATIVE_HARD, $weight : weight),
-            sum($weight) // Vote for http://jira.jboss.com/jira/browse/JBRULES-1075
-        )
-    then
-        scoreHolder.setHardConstraintsBroken($hardTotal.intValue());
-end
-
-// Accumulate soft constraints
-rule "softConstraintsBroken"
-        salience -5 // Do the other rules first (optional, for performance)
-    when
-        $softTotal : Number() from accumulate(
-            IntConstraintOccurrence(constraintType == ConstraintType.NEGATIVE_SOFT, $weight : weight),
-            sum($weight) // Vote for http://jira.jboss.com/jira/browse/JBRULES-1075
-        )
-    then
-        scoreHolder.setSoftConstraintsBroken($softTotal.intValue());
-end
-
-
-
-
-
-
-
-
-
-
-
 
 
 // ############################################################################

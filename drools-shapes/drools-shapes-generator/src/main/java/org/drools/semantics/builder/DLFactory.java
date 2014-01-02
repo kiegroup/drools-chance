@@ -17,9 +17,9 @@
 package org.drools.semantics.builder;
 
 
-import org.drools.io.Resource;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.inference.ModelInferenceStrategy;
+import org.kie.api.io.Resource;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;

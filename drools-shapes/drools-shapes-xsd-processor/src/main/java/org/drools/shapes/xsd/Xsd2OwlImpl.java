@@ -1,15 +1,18 @@
 package org.drools.shapes.xsd;
 
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.RuntimeDroolsException;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.io.impl.ClassPathResource;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.Variable;
+import org.drools.core.RuntimeDroolsException;
+import org.drools.core.io.impl.ClassPathResource;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.conf.EqualityBehaviorOption;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.Variable;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -96,7 +99,7 @@ public class Xsd2OwlImpl implements Xsd2Owl {
         return instance;
     }
 
-    private KnowledgeBase kBase;
+    private KieBase kBase;
 
     private static List<InferredAxiomGenerator<? extends OWLAxiom>> fullAxiomGenerators;
 
@@ -125,14 +128,21 @@ public class Xsd2OwlImpl implements Xsd2Owl {
         System.out.println( "Created converter...." );
     }
 
-    private KnowledgeBase initKBase() {
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ClassPathResource( "org/drools/shapes/xsd/drl/xsd2owl.drl" ), ResourceType.DRL );
-        if ( kBuilder.hasErrors() ) {
-            throw new RuntimeDroolsException( kBuilder.getErrors().toString() );
+    private KieBase initKBase() {
+        KieServices kieServices = KieServices.Factory.get();
+        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
+
+        kieFileSystem.write( kieServices.getResources().newClassPathResource( "org/drools/shapes/xsd/drl/xsd2owl.drl" ).setResourceType( ResourceType.DRL ) );
+        KieBuilder kieBuilder = kieServices.newKieBuilder( kieFileSystem );
+        kieBuilder.buildAll();
+
+        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+            throw new RuntimeDroolsException( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
         }
-        kBase = KnowledgeBaseFactory.newKnowledgeBase();
-        kBase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+
+        KieBaseConfiguration rbC = kieServices.newKieBaseConfiguration();
+        rbC.setOption( EqualityBehaviorOption.EQUALITY );
+        KieBase kBase = kieServices.newKieContainer( kieBuilder.getKieModule().getReleaseId() ).newKieBase( rbC );
 
         return kBase;
     }
@@ -166,7 +176,7 @@ public class Xsd2OwlImpl implements Xsd2Owl {
 
     public OWLOntology transform( Schema schema, URL schemaURL, boolean verbose, boolean checkConsistency ) {
         System.out.println( "Transforming...." );
-        StatefulKnowledgeSession kSession = kBase.newStatefulKnowledgeSession();
+        KieSession kSession = kBase.newKieSession();
         OWLOntology ontology = null;
 
         try {
@@ -221,7 +231,7 @@ public class Xsd2OwlImpl implements Xsd2Owl {
                 targetNamespace : targetNamespace + "#";
     }
 
-    private void visit( Schema schema, URL schemaLocation, StatefulKnowledgeSession kSession, OWLOntologyManager manager ) throws MalformedURLException {
+    private void visit( Schema schema, URL schemaLocation, KieSession kSession, OWLOntologyManager manager ) throws MalformedURLException {
         for ( OpenAttrs ext : schema.getIncludeOrImportOrRedefine() ) {
             if ( ext instanceof Include ) {
                 Include include = (Include) ext;

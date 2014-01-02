@@ -62,7 +62,7 @@
         <annox:annotate>
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.RdfsClass" value="@{concept.namespace}@{concept.name}" />
           <annox:annotate annox:class="com.clarkparsia.empire.annotation.Namespaces" value="tns @{namespace}" />
-          <annox:annotate annox:class="org.drools.factmodel.traits.Traitable" />
+          <annox:annotate annox:class="org.drools.core.factmodel.traits.Traitable" />
           <annox:annotate annox:class="org.drools.definition.type.PropertyReactive" />
           <annox:annotate annox:class="thewebsemantic.Namespace" value="@{namespace}" />
           <annox:annotate annox:class="thewebsemantic.RdfType" value="@{concept.namespace}@{concept.name}" />

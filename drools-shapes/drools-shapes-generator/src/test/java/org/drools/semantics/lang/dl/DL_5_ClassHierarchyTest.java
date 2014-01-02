@@ -16,16 +16,13 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.io.Resource;
-import org.drools.io.ResourceFactory;
-import org.drools.planner.core.solver.DefaultSolver;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kie.api.KieServices;
+import org.kie.api.io.Resource;
 import org.w3._2002._07.owl.Thing;
 
 import static junit.framework.Assert.assertEquals;
@@ -45,8 +42,8 @@ public class DL_5_ClassHierarchyTest {
     @Test
     public void testHierarchyFromClassesExternal() {
 
-        String source = "fuzzyDL/DLex7.manchester";
-        Resource res = ResourceFactory.newClassPathResource( source );
+        String source = "fuzzyDL/DLex7.owl";
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "ex7", res, OntoModel.Mode.FLAT );
 
@@ -96,7 +93,7 @@ public class DL_5_ClassHierarchyTest {
     @Test
     public void testBodyHierarchy() {
         String source = "ontologies/bodyParts.ttl";
-        Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.HIERARCHY );
 
@@ -123,7 +120,7 @@ public class DL_5_ClassHierarchyTest {
     @Test
     public void testDiamondFlattenedHierarchy() {
         String source = "ontologies/diamondProp.manchester.owl";
-        Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.FLAT );
 
@@ -164,7 +161,7 @@ public class DL_5_ClassHierarchyTest {
     @Test
     public void testDiamondVariantHierarchy() {
         String source = "ontologies/diamondProp.manchester.owl";
-        Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.VARIANT );
 
@@ -213,7 +210,7 @@ public class DL_5_ClassHierarchyTest {
     public void testOptimizedHierarchyOnDiamond() {
 
         String source = "ontologies/diamondProp.manchester.owl";
-        Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.OPTIMIZED );
 
@@ -226,7 +223,7 @@ public class DL_5_ClassHierarchyTest {
     public void testOptimizedHierarchyOnConYard() {
 
         String source = "ontologies/conyard.ttl";
-        Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
 
@@ -238,7 +235,7 @@ public class DL_5_ClassHierarchyTest {
     public void testOptimizedHierarchyOnRule() {
 
         String source = "ontologies/rule_merged.owl";
-        Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
 
@@ -250,7 +247,7 @@ public class DL_5_ClassHierarchyTest {
     public void testOptimizedHierarchyOnRuleWithExample() {
 
         String source = "ontologies/sem_rules.owl";
-        Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
 

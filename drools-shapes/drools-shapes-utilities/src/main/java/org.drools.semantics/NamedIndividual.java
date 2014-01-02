@@ -1,7 +1,7 @@
 package org.drools.semantics;
 
-import org.drools.factmodel.traits.Entity;
-import org.drools.factmodel.traits.Traitable;
+import org.drools.core.factmodel.traits.Entity;
+import org.drools.core.factmodel.traits.Traitable;
 
 @Traitable
 public class NamedIndividual extends Entity implements NamedEntity {

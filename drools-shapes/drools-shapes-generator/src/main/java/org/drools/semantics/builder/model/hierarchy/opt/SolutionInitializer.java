@@ -1,11 +1,11 @@
 package org.drools.semantics.builder.model.hierarchy.opt;
 
 
-import org.drools.planner.core.phase.custom.CustomSolverPhaseCommand;
-import org.drools.planner.core.score.director.ScoreDirector;
 import org.drools.semantics.builder.model.ConceptImplProxy;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.PropertyRelation;
+import org.optaplanner.core.impl.phase.custom.CustomSolverPhaseCommand;
+import org.optaplanner.core.impl.score.director.ScoreDirector;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

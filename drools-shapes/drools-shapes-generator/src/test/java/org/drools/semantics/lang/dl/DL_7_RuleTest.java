@@ -16,27 +16,30 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.ClassObjectFilter;
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.io.Resource;
-import org.drools.io.ResourceFactory;
-import org.drools.io.impl.ByteArrayResource;
-import org.drools.lang.DrlDumper;
-import org.drools.lang.api.DescrFactory;
-import org.drools.lang.api.PackageDescrBuilder;
-import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.compiler.lang.DrlDumper;
+import org.drools.compiler.lang.api.DescrFactory;
+import org.drools.compiler.lang.api.PackageDescrBuilder;
+import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.semantics.NamedIndividual;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.reasoner.DLogicTransformer;
 import org.drools.semantics.builder.reasoner.TemplateRecognitionRuleBuilder;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.conf.EqualityBehaviorOption;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.ClassObjectFilter;
+import org.kie.api.runtime.KieSession;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -62,7 +65,7 @@ public class DL_7_RuleTest {
 
     @Test
     public void testPizzaOntologyRecognition() {
-        Resource res = ResourceFactory.newClassPathResource( "ontologies/pizza.owl" );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( "ontologies/pizza.owl" );
 
         OWLOntology pizza = factory.parseOntology( res );
 
@@ -82,7 +85,7 @@ public class DL_7_RuleTest {
 
     @Test
     public void testExampleDNFRecognition() {
-        Resource res = ResourceFactory.newClassPathResource( "ontologies/testDNF.owl" );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( "ontologies/testDNF.owl" );
 
         OWLOntology onto = factory.parseOntology( res );
 
@@ -93,13 +96,8 @@ public class DL_7_RuleTest {
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
-
-
         String drl2 = "package t.x \n" +
                 "import org.drools.semantics.NamedIndividual;\n" +
-                "import org.drools.factmodel.traits.Thing;\n" +
                 "" +
                 "rule Init when \n" +
                 "then \n" +
@@ -117,13 +115,7 @@ public class DL_7_RuleTest {
                 "   shed( $x, W.class ); \n " +
                 "end \n";
 
-        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
-        if ( kBuilder.hasErrors() ) {
-            fail( kBuilder.getErrors().toString() );
-        }
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+        KieSession kSession = createSession( drl, drl2 );
         kSession.fireAllRules();
 
         for ( Object o : kSession.getObjects() ) {
@@ -140,8 +132,33 @@ public class DL_7_RuleTest {
 
     }
 
+    private KieBase createKieBase( String... drls ) {
+        KieServices kieServices = KieServices.Factory.get();
+        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
 
+        int j = 0;
+        for ( String drl : drls ) {
+            kieFileSystem.write(
+                    kieServices.getResources().newByteArrayResource( drl.getBytes() )
+                            .setSourcePath( "test_" + ( j++ ) + ".drl" )
+                            .setResourceType( ResourceType.DRL ) );
+        }
+        KieBuilder kieBuilder = kieServices.newKieBuilder( kieFileSystem );
+        kieBuilder.buildAll();
 
+        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+            fail( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
+        }
+
+        KieBaseConfiguration rbC = kieServices.newKieBaseConfiguration();
+        rbC.setOption( EqualityBehaviorOption.EQUALITY );
+        KieBase knowledgeBase = kieServices.newKieContainer( kieBuilder.getKieModule().getReleaseId() ).newKieBase( rbC );
+        return knowledgeBase;
+    }
+
+    private KieSession createSession( String... drls ) {
+        return createKieBase( drls ).newKieSession();
+    }
 
 
     @Test
@@ -164,7 +181,6 @@ public class DL_7_RuleTest {
 
         String drl2 = "package t.x \n" +
                       "import org.drools.semantics.NamedIndividual;\n" +
-                      "import org.drools.factmodel.traits.Thing;\n" +
                       "" +
                       "rule Init when \n" +
                       "then \n" +
@@ -174,7 +190,7 @@ public class DL_7_RuleTest {
                       "end \n" +
                       "";
 
-        Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
+        Resource res = KieServices.Factory.get().getResources().newByteArrayResource( owl.getBytes() );
         OWLOntology onto = factory.parseOntology( res );
         OntoModel ontoModel = factory.buildModel( "test",
                 res,
@@ -183,17 +199,7 @@ public class DL_7_RuleTest {
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
-
-        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
-        if ( kBuilder.hasErrors() ) {
-            fail( kBuilder.getErrors().toString() );
-        }
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
-        kSession.fireAllRules();
+        KieSession kSession = createSession( drl, drl2 );
 
         for ( Object o : kSession.getObjects() ) {
             System.err.println( o );
@@ -314,7 +320,7 @@ public class DL_7_RuleTest {
                 "end \n";
 
 
-        Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
+        Resource res = KieServices.Factory.get().getResources().newByteArrayResource( owl.getBytes() );
 
         OWLOntology onto = factory.parseOntology( res );
 
@@ -325,19 +331,8 @@ public class DL_7_RuleTest {
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
-
-        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
-        if ( kBuilder.hasErrors() ) {
-            fail( kBuilder.getErrors().toString() );
-        }
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
-
-
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
-        kSession.fireAllRules();
+        KieBase kieBase = createKieBase( drl, drl2 );
+        KieSession kSession = kieBase.newKieSession();
 
         for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
             NamedIndividual e = (NamedIndividual) o;
@@ -377,7 +372,7 @@ public class DL_7_RuleTest {
         }
 
 
-        kSession = kbase.newStatefulKnowledgeSession();
+        kSession = kieBase.newKieSession();
         kSession.fireAllRules();
 
         kSession.insert( "go2" );
@@ -472,7 +467,7 @@ public class DL_7_RuleTest {
                       "   System.out.println( \"RECOGNIZED \" + $x ); \n" +
                       "end" ;
 
-        Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
+        Resource res = KieServices.Factory.get().getResources().newByteArrayResource( owl.getBytes() );
 
         OWLOntology onto = factory.parseOntology( res );
 
@@ -483,18 +478,7 @@ public class DL_7_RuleTest {
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
-
-        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
-        if ( kBuilder.hasErrors() ) {
-            fail( kBuilder.getErrors().toString() );
-        }
-
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
-
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+        KieSession kSession = createSession( drl, drl2 );
         kSession.fireAllRules();
 
         for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
@@ -597,7 +581,7 @@ public class DL_7_RuleTest {
                       "   System.out.println( \"RECOGNIZED \" + $x ); \n" +
                       "end" ;
 
-        Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
+        Resource res = KieServices.Factory.get().getResources().newByteArrayResource( owl.getBytes() );
 
         OWLOntology onto = factory.parseOntology( res );
 
@@ -608,18 +592,7 @@ public class DL_7_RuleTest {
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
-
-        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
-        if ( kBuilder.hasErrors() ) {
-            fail( kBuilder.getErrors().toString() );
-        }
-
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
-
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+        KieSession kSession = createSession( drl, drl2 );
         kSession.fireAllRules();
 
         for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
@@ -694,7 +667,7 @@ public class DL_7_RuleTest {
                       "   System.out.println( \"RECOGNIZED \" + $x ); \n" +
                       "end" ;
 
-        Resource res = ResourceFactory.newByteArrayResource( owl.getBytes() );
+        Resource res = KieServices.Factory.get().getResources().newByteArrayResource( owl.getBytes() );
 
         OWLOntology onto = factory.parseOntology( res );
 
@@ -705,17 +678,7 @@ public class DL_7_RuleTest {
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
-        kBuilder.add( new ByteArrayResource( drl2.getBytes() ), ResourceType.DRL );
-
-        System.err.println( kBuilder.getErrors() );
-        assertFalse( kBuilder.hasErrors() );
-
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
-
-        StatefulKnowledgeSession kSession = kbase.newStatefulKnowledgeSession();
+        KieSession kSession = createSession( drl, drl2 );
         kSession.fireAllRules();
 
         for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
@@ -732,7 +695,7 @@ public class DL_7_RuleTest {
 
     @Test
     public void testDNFConversion() {
-        Resource res = ResourceFactory.newClassPathResource( "ontologies/testDNF.owl" );
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( "ontologies/testDNF.owl" );
 
         OWLOntology onto = factory.parseOntology( res );
         OWLDataFactory fac = onto.getOWLOntologyManager().getOWLDataFactory();

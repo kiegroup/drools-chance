@@ -25,12 +25,12 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>droolsjbpm-parent</artifactId>
-    <version>5.6.0-SNAPSHOT</version>
+    <version>6.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.drools</groupId>
   <artifactId>drools-chance</artifactId>
-  <version>0.5.6.Final</version>
+  <version>0.6.x</version>
   <packaging>pom</packaging>
 
   <name>Drools Chance</name>
@@ -40,19 +40,15 @@
 
 
   <properties>
-    <chance.version>0.5.6.Final</chance.version>
-    <drools.version>5.6.0-SNAPSHOT</drools.version>
-    <planner.version>5.5.0.Final</planner.version>
+    <chance.version>0.6.x</chance.version>
+    <drools.version>6.1.0-SNAPSHOT</drools.version>
+    <planner.version>6.1.0-SNAPSHOT</planner.version>
   </properties>
 
 
   <modules>
-    <module>drools-pmml</module>
-    <module>drools-informer</module>
-    <module>drools-chance-core</module>
     <module>drools-shapes</module>
   </modules>
-
 
 
   <scm>
@@ -62,24 +58,16 @@
   </scm>
 
 
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-
   <dependencyManagement>
 
     <dependencies>
+
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>2.5.0</version>
+      </dependency>
+
 
       <dependency>
         <groupId>org.drools</groupId>
@@ -87,15 +75,9 @@
         <version>${drools.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.drools.planner</groupId>
-        <artifactId>drools-planner-core</artifactId>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-core</artifactId>
         <version>${planner.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-informer-core</artifactId>
-        <version>${chance.version}</version>
       </dependency>
 
       <dependency>
@@ -123,18 +105,24 @@
         <version>1.8.3</version>
       </dependency>
 
-      <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.16</version>
-      </dependency>
     </dependencies>
 
   </dependencyManagement>
 
 
   <repositories>
-    <!-- Bootstrap repository to locate the parent pom when the parent pom has not been build locally.     -->
+    <repository>
+      <id>jboss-releases-repository</id>
+      <name>JBoss Releases Repository</name>
+      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
+
+    <repository>
+      <id>jboss-snapshots-repository</id>
+      <name>JBoss Snapshot Repository</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+    </repository>
+
     <repository>
       <id>jboss-public-repository-group</id>
       <name>JBoss Public Repository Group</name>
@@ -167,6 +155,21 @@
       <name>Aduna Soft Maven Repository</name>
       <url>http://repo.aduna-software.org/maven2/releases</url>
     </repository>
+
+    <!--repository>
+      <id>choco-repository</id>
+      <name>Choco Repository</name>
+      <url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
+
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository-->
 
 
   </repositories>

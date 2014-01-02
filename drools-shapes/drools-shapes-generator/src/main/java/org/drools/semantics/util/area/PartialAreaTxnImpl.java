@@ -2,7 +2,7 @@ package org.drools.semantics.util.area;
 
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.PropertyRelation;
-import org.drools.util.HierarchyEncoder;
+import org.drools.core.util.HierarchyEncoder;
 
 import java.util.BitSet;
 import java.util.Collection;

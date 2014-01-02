@@ -36,7 +36,7 @@ import javax.persistence.Basic;
 @Namespaces({ "tns", "@{namespace}" })
 @thewebsemantic.Namespace( "@{namespace}" )
 @thewebsemantic.RdfType( "@{namespace}@{name}" )
-@org.drools.factmodel.traits.Trait
+@org.drools.core.factmodel.traits.Trait
 @org.drools.definition.type.PropertyReactive
 public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface != null} , @{ implInterface } @end{}
                                  @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{sup.package}.@{compactUpperCase( sup.name ) } @end{','} @end{}

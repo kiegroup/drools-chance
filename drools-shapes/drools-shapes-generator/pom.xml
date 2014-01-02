@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-shapes</artifactId>
-    <version>0.5.6.Final</version>
+    <version>0.6.x</version>
   </parent>
 
   <groupId>org.drools</groupId>
@@ -47,8 +47,8 @@
       <artifactId>drools-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.drools.planner</groupId>
-      <artifactId>drools-planner-core</artifactId>
+      <groupId>org.optaplanner</groupId>
+      <artifactId>optaplanner-core</artifactId>
     </dependency>
 
 
@@ -110,8 +110,8 @@
 
 
     <dependency>
-      <groupId>org.semanticweb</groupId>
-      <artifactId>HermiT</artifactId>
+      <groupId>com.hermit-reasoner</groupId>
+      <artifactId>org.semanticweb.hermit</artifactId>
       <exclusions>
         <exclusion>
           <groupId>owlapi</groupId>

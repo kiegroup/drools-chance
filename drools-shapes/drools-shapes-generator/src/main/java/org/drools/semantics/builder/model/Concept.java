@@ -18,7 +18,6 @@ package org.drools.semantics.builder.model;
 
 import org.drools.definition.type.Position;
 import org.drools.semantics.utils.NameUtils;
-import org.drools.util.HierarchyEncoderImpl;
 import org.semanticweb.owlapi.model.IRI;
 
 import java.util.*;

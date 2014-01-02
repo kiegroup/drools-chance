@@ -1,14 +1,14 @@
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.io.impl.ClassPathResource;
-import org.drools.lang.DrlDumper;
-import org.drools.lang.descr.PackageDescr;
-import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.compiler.lang.DrlDumper;
+import org.drools.compiler.lang.descr.PackageDescr;
 import org.drools.semantics.XMLSerializationHelper;
+import org.junit.Assert;
 import org.junit.Test;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.runtime.KieSession;
 import org.semanticweb.ontologies._2012._1.rule_example.Pattern1Type;
 import org.semanticweb.ontologies._2012._1.rule_example.Pattern1TypeImpl;
 import org.semanticweb.ontologies._2012._1.rule_merged.IndividualFactory;
@@ -37,35 +37,39 @@ public class IndividualsTest {
         Collection c = IndividualFactory.getIndividuals();
         assertEquals( 21, c.size() );
 
-        StatefulKnowledgeSession kSession = createSession();
+        KieSession kSession = createSession();
 
         PackageDescr pack = new PackageDescr();
         kSession.setGlobal( "pack", pack );
-
 
         for ( Object o : c ) {
             kSession.insert( o );
         }
         kSession.fireAllRules();
 
-
-
         String drl = new DrlDumper().dump( pack );
         System.err.println( drl );
     }
 
-    private StatefulKnowledgeSession createSession() {
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ClassPathResource( "translators/onto2drl.drl" ), ResourceType.DRL );
+    private KieSession createSession() {
 
-        if ( kBuilder.hasErrors() ) {
-            fail( kBuilder.getErrors().toString() );
+        KieServices kieServices = KieServices.Factory.get();
+        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
+        KieBuilder kieBuilder = kieServices.newKieBuilder( kieFileSystem );
+
+        kieFileSystem.write( kieServices.getResources()
+                                     .newClassPathResource( "translators/onto2drl.drl" )
+                                     .setSourcePath( "test.drl" )
+                                     .setResourceType( org.kie.api.io.ResourceType.DRL ) );
+        kieBuilder.buildAll();
+        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+            Assert.fail( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
         }
 
-        KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
-        kBase.addKnowledgePackages( kBuilder.getKnowledgePackages() );
+        KieBase kBase = kieServices.newKieContainer( kieBuilder.getKieModule().getReleaseId() ).getKieBase();
 
-        return kBase.newStatefulKnowledgeSession();
+        return kBase.newKieSession();
+
     }
 
 

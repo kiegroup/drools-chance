@@ -16,20 +16,22 @@
 
 package org.drools.semantics.trait.java.model;
 
-import junit.framework.Assert;
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.io.impl.ClassPathResource;
-import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.semantics.trait.java.model.domain.Human;
+import org.drools.semantics.trait.java.model.domain.IBreath_Impl;
+import org.drools.semantics.trait.java.model.domain.IEcho;
+import org.drools.semantics.trait.java.model.domain.IHuman;
+import org.drools.semantics.trait.java.model.domain.IPerson;
+import org.drools.semantics.trait.java.model.domain.IStudent;
+import org.drools.semantics.trait.java.model.domain.IStudent_Impl;
+import org.drools.semantics.trait.java.model.domain.IWorker;
 import org.drools.semantics.traits.java.IThing;
 import org.drools.semantics.traits.java.TraitMantle;
 import org.junit.Test;
-
-import org.drools.semantics.trait.java.model.domain.*;
-
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieSession;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -739,17 +741,16 @@ public class TestTraits {
      */
     public void testTraitsInRules() {
 
+        KieServices ks = KieServices.Factory.get();
+        KieFileSystem kfs = ks.newKieFileSystem();
 
+        kfs.write( ks.getResources()
+                           .newClassPathResource( "org/drools/semantics/trait/java/model/traitsExample.drl" )
+                           .setResourceType( ResourceType.DRL ) );
+        KieBuilder kieBuilder = ks.newKieBuilder( kfs );
+        kieBuilder.buildAll();
 
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add(new ClassPathResource("org/drools/semantics/trait/java/model/traitsExample.drl"), ResourceType.DRL);
-            System.out.println(kbuilder.getErrors());
-            Assert.assertEquals(0, kbuilder.getErrors().size());
-        KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-
-        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
-
-        StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession();
+        KieSession ksession = ks.newKieContainer( kieBuilder.getKieModule().getReleaseId() ).newKieSession();
 
         List list = new ArrayList();
         List toks = new ArrayList();

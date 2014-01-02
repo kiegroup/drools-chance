@@ -16,6 +16,7 @@
 
 package org.drools.semantics.lang.dl;
 
+import org.drools.core.util.HierarchyEncoderImpl;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactoryImpl;
@@ -23,10 +24,7 @@ import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.PropertyRelation;
 import org.drools.semantics.util.area.Area;
-import org.drools.semantics.util.area.AreaNode;
 import org.drools.semantics.util.area.AreaTxn;
-import org.drools.semantics.builder.model.ConceptAreaTxn;
-import org.drools.util.HierarchyEncoderImpl;
 import org.junit.Test;
 
 import java.util.Arrays;

@@ -1,0 +1,18 @@
+Prefix(:=<_>)
+Prefix(dc:=<http://purl.org/dc/elements/1.1/>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://jboss.org/drools/semantics/Example01>
+
+Declaration(Class(<_Human>))
+EquivalentClasses(<_Human> <_Man>)
+Declaration(Class(<_Man>))
+EquivalentClasses(<_Man> <_Human>)
+Declaration(Class(<_Robot>))
+EquivalentClasses(<_Robot> ObjectComplementOf(<_Human>))
+)

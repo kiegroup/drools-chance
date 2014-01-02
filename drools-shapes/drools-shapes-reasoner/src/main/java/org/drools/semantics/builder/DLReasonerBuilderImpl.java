@@ -1,13 +1,13 @@
 package org.drools.semantics.builder;
 
 
-import org.drools.KnowledgeBase;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.io.Resource;
-import org.drools.io.impl.BaseResource;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.lang.DLReasonerTemplateManager;
+import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.io.Resource;
+import org.kie.api.runtime.KieSession;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLOntologyDocumentSource;
 import org.semanticweb.owlapi.io.StreamDocumentSource;
@@ -60,18 +60,17 @@ public class DLReasonerBuilderImpl implements DLReasonerBuilder {
 
     public String buildTableauRules( OWLOntology ontologyDescr, Resource[] visitor ) {
 
-        KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        KieServices ks = KieServices.Factory.get();
+        KieFileSystem kfs = ks.newKieFileSystem();
         for ( Resource res : visitor ) {
-            knowledgeBuilder.add( res, ((BaseResource) res).getResourceType() );
+            kfs.write( res );
         }
-        if ( knowledgeBuilder.hasErrors() ) {
-            System.err.println( knowledgeBuilder.getErrors().toString() );
-            return null;
-        }
-        KnowledgeBase tabKB = knowledgeBuilder.newKnowledgeBase();
+        KieBuilder kieBuilder = ks.newKieBuilder( kfs );
+        kieBuilder.buildAll();
+        KieBase tabKB = ks.newKieContainer( kieBuilder.getKieModule().getReleaseId() ).getKieBase();
 
         if (tabKB != null) {
-            StatefulKnowledgeSession ksession = tabKB.newStatefulKnowledgeSession();
+            KieSession ksession = tabKB.newKieSession();
 
             StringBuilder out = new StringBuilder();
             ksession.setGlobal( "out", out );

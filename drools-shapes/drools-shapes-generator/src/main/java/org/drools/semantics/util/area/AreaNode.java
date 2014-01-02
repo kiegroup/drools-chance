@@ -1,7 +1,7 @@
 package org.drools.semantics.util.area;
 
-import org.drools.util.CodedHierarchy;
-import org.drools.util.CodedHierarchyImpl;
+import org.drools.core.util.CodedHierarchy;
+import org.drools.core.util.CodedHierarchyImpl;
 
 import java.util.BitSet;
 import java.util.Collection;

@@ -21,14 +21,10 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.RecognitionException;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
+import org.drools.compiler.rule.builder.dialect.java.parser.JavaLexer;
+import org.drools.compiler.rule.builder.dialect.java.parser.JavaParser;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
-import org.drools.io.impl.ByteArrayResource;
-import org.drools.rule.builder.dialect.java.parser.JavaLexer;
-import org.drools.rule.builder.dialect.java.parser.JavaParser;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.DLFactoryImpl;
@@ -48,12 +44,16 @@ import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.drools.semantics.util.SemanticWorkingSetConfigData;
-import org.drools.util.HierarchyEncoderImpl;
+import org.drools.core.util.HierarchyEncoderImpl;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message;
+import org.kie.api.io.ResourceType;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -247,11 +247,17 @@ public class DL_8_ModelTest {
 
         System.err.println( drl );
 
-        KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kBuilder.add( new ByteArrayResource( drl.getBytes() ), ResourceType.DRL );
+        KieServices ks = KieServices.Factory.get();
+        KieFileSystem kfs = ks.newKieFileSystem();
+        kfs.write( ks.getResources()
+                           .newByteArrayResource( drl.getBytes() )
+                           .setSourcePath( "test.drl" )
+                           .setResourceType( ResourceType.DRL ) );
+        KieBuilder kieBuilder = ks.newKieBuilder( kfs );
+        kieBuilder.buildAll();
 
-        if ( kBuilder.hasErrors() ) {
-            fail( kBuilder.getErrors().toString() );
+        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+            fail( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
         }
 
 
