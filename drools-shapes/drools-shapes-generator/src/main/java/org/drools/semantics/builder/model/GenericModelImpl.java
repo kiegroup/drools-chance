@@ -115,7 +115,12 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     public void addConcept( Concept con ) {
 
         try {
-            Class klass = Class.forName( con.getFullyQualifiedName(), true, getClassLoader() );
+            Class klass;
+            if ( getClassLoader() != null ) {
+                klass = Class.forName( con.getFullyQualifiedName(), true, getClassLoader() );
+            } else {
+                klass = Class.forName( con.getFullyQualifiedName() );
+            }
             con.setResolved( true );
             if ( klass.isInterface() ) {
                 con.setResolvedAs( Concept.Resolution.IFACE );

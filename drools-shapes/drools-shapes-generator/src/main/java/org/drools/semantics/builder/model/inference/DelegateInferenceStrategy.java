@@ -20,6 +20,13 @@ package org.drools.semantics.builder.model.inference;
 
 import org.apache.commons.collections15.map.MultiKeyMap;
 import org.apache.log4j.Logger;
+<<<<<<< HEAD
+=======
+import org.drools.io.Resource;
+import org.drools.runtime.ClassObjectFilter;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.semantics.builder.DLFactoryConfiguration;
+>>>>>>> 9afdb49... [Shapes] Improve configurability
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.Individual;
 import org.drools.semantics.builder.model.OntoModel;
@@ -183,7 +190,11 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
     @Override
+<<<<<<< HEAD
     protected OntoModel buildProperties( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierarchicalModel ) {
+=======
+    protected OntoModel buildProperties( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierarchicalModel, DLFactoryConfiguration conf ) {
+>>>>>>> 9afdb49... [Shapes] Improve configurability
 
         OWLDataFactory factory = ontoDescr.getOWLOntologyManager().getOWLDataFactory();
 
@@ -212,7 +223,11 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
     @Override
+<<<<<<< HEAD
     protected OntoModel buildIndividuals(OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel) {
+=======
+    protected OntoModel buildIndividuals(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel, DLFactoryConfiguration conf ) {
+>>>>>>> 9afdb49... [Shapes] Improve configurability
 
 
         for ( OWLNamedIndividual individual : ontoDescr.getIndividualsInSignature( true ) ) {
@@ -223,7 +238,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             String typeIri = individualTypesCache.get( iri.toQuotedString() );
             Concept klass = hierachicalModel.getConcept( typeIri );
             if ( klass == null ) {
-                System.out.println( "found individual with no class " + iri );
+                logger.error( "found individual with no class " + iri );
                 System.exit( -1 );
             }
 
@@ -796,7 +811,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                                 props.get( op.getIRI().toQuotedString() ) );
 
                         Concept con = conceptCache.get( rel.getSubject() );
-                        rel.setTarget( conceptCache.get(rel.getObject()) );
+                        rel.setTarget( conceptCache.get( rel.getObject() ) );
                         rel.setDomain( con );
 
                         con.addProperty( rel.getProperty(), rel.getName(), rel );
@@ -1057,7 +1072,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                             domain.getIRI(),
                             factory.getOWLStringLiteral("abstract") );
                     if ( logger.isDebugEnabled() ) { logger.debug("REPLACED ANON DOMAIN " + op + " with " + domain + ", was " + dom); }
-                    System.out.println("REPLACED ANON DOMAIN " + op + " with " + domain + ", was " + dom);
+                    logger.warn( "REPLACED ANON DOMAIN " + op + " with " + domain + ", was " + dom );
                     ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLDeclarationAxiom( domain ) ) );
                     ontoDescr.getOWLOntologyManager().applyChange( new AddAxiom( ontoDescr, factory.getOWLEquivalentClassesAxiom( domain, dom ) ) );
 
@@ -1201,17 +1216,17 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             declareAnonymousIndividualSupertypes( defining, factory, ind );
 
-            System.out.println( "Defining ontology :  " + defining );
+            logger.info( "Defining ontology :  " + defining );
             for ( OWLAxiom ax : defining.getAxioms( AxiomType.CLASS_ASSERTION ) ) {
-                System.out.println( ax );
+                logger.trace( ax );
             }
 
-            System.out.println("Getting types for individual " + ind.getIRI() );
+            logger.info( "Getting types for individual " + ind.getIRI() );
             Set<OWLClassExpression> types = ind.getTypes( defining );
-            System.out.println("Found types in defining ontology" + types );
+            logger.info( "Found types in defining ontology" + types );
             if ( types.isEmpty() ) {
                 ind.getTypes( ontoDescr.getImportsClosure() );
-                System.out.println("Found types in all ontologies " + ontoDescr.getImportsClosure() + " >> " + types );
+                logger.info( "Found types in all ontologies " + ontoDescr.getImportsClosure() + " >> " + types );
             }
 
             types = simplify( types, defining );
@@ -1231,7 +1246,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     individualTypesCache.put( ind.getIRI().toQuotedString(), types.iterator().next().asOWLClass().getIRI().toQuotedString() );
                 } else {
 
-                    System.out.println( "WARNING no type detected for individual " + ind.getIRI().toQuotedString() );
+                    logger.warn( "WARNING no type detected for individual " + ind.getIRI().toQuotedString() );
                 }
             }
 
@@ -1713,12 +1728,12 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                                            Map<InferenceTask,
                                                    Resource> theory,
                                            OntoModel baseModel,
-                                           List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators ) {
+                                           DLFactoryConfiguration conf ) {
 
         boolean dirty = true;
         OWLDataFactory factory = ontoDescr.getOWLOntologyManager().getOWLDataFactory();
 
-        launchReasoner( dirty, kSession, ontoDescr, axiomGenerators );
+        launchReasoner( dirty, kSession, ontoDescr, conf.getAxiomGens() );
 
 
         // reify complex superclasses, domains and ranges
@@ -1732,7 +1747,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         /************************************************************************************************************************************/
 
         // new classes have been added, classify the
-        launchReasoner( dirty, kSession, ontoDescr, axiomGenerators );
+        launchReasoner( dirty, kSession, ontoDescr, conf.getAxiomGens() );
 
         /************************************************************************************************************************************/
 
@@ -1742,7 +1757,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         /************************************************************************************************************************************/
 
         // new classes have been added, classify the
-        launchReasoner( dirty, kSession, ontoDescr, axiomGenerators );
+        if ( ! conf.isDisableFullReasoner() ) {
+            launchReasoner( dirty, kSession, ontoDescr, conf.getAxiomGens() );
+        }
 
         /************************************************************************************************************************************/
 

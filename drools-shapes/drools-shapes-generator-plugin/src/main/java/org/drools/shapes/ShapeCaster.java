@@ -22,6 +22,7 @@ import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.DRLModel;
 import org.drools.semantics.builder.model.JarModel;
 import org.drools.semantics.builder.model.ModelFactory;
@@ -155,7 +156,18 @@ public class ShapeCaster
         this.axiomInference = axiomInference;
     }
 
+    /**
+     * @parameter default-value="false"
+     */
+    private boolean disableFullReasoning;
 
+    public boolean isDisableFullReasoning() {
+        return disableFullReasoning;
+    }
+
+    public void setDisableFullReasoning( boolean disableFullReasoning ) {
+        this.disableFullReasoning = disableFullReasoning;
+    }
 
 
     /**
@@ -416,10 +428,15 @@ public class ShapeCaster
         }
         res[j] = ResourceFactory.newInputStreamResource( ontologyStream );
 
+        DLFactoryConfiguration conf = new DLFactoryConfiguration();
+        conf.setMode( mode );
+        conf.setAxiomGens( OntoModelCompiler.AXIOM_INFERENCE.valueOf( axiomInference.toUpperCase() ).getGenerators() );
+        conf.setDisableFullReasoner( this.disableFullReasoning );
+
         return factory.buildModel( getModelName(),
                                    res,
-                                   mode,
-                                   OntoModelCompiler.AXIOM_INFERENCE.valueOf( axiomInference.toUpperCase() ).getGenerators() );
+                                   conf,
+                                   Thread.currentThread().getContextClassLoader() );
     }
 
 

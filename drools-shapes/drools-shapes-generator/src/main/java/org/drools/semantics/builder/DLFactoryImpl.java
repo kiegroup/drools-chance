@@ -47,15 +47,7 @@ public class DLFactoryImpl implements DLFactory {
     private static DLFactoryImpl singleton;
 
 
-    public static final List<ModelInferenceStrategy.InferenceTask> defaultInferenceTasks = Collections.unmodifiableList(
-            new ArrayList<ModelInferenceStrategy.InferenceTask>(
-                    Arrays.asList(
-                            ModelInferenceStrategy.InferenceTask.COMMON,
-//                        ModelInferenceStrategy.InferenceTask.TABLEAU,
-//                        ModelInferenceStrategy.InferenceTask.CLASS_LATTICE_BUILD_AND_PRUNE,
-//                        ModelInferenceStrategy.InferenceTask.PROPERTY_MATCH
-                            ModelInferenceStrategy.InferenceTask.CLASS_LATTICE_PRUNE
-                    ) ) );
+
 
 
     private DLFactoryImpl() {
@@ -106,11 +98,10 @@ public class DLFactoryImpl implements DLFactory {
      * @param classLoader
      * @return
      */
-    private OntoModel doBuildModel(String name,
-                                   Resource[] res,
-                                   OntoModel.Mode mode,
-                                   List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
-                                   List<ModelInferenceStrategy.InferenceTask> tasks, ClassLoader classLoader) {
+    private OntoModel doBuildModel( String name,
+                                    Resource[] res,
+                                    DLFactoryConfiguration conf,
+                                    ClassLoader classLoader ) {
         OWLOntology ontoDescr = parseOntology( res );
 
         Map<ModelInferenceStrategy.InferenceTask, Resource> theory = new LinkedHashMap<ModelInferenceStrategy.InferenceTask, Resource>();
@@ -121,7 +112,7 @@ public class DLFactoryImpl implements DLFactory {
             theory.put( ModelInferenceStrategy.InferenceTask.COMMON, common );
 //        }
 
-        if ( tasks.contains( ModelInferenceStrategy.InferenceTask.TABLEAU ) ) {
+        if ( conf.getTasks().contains( ModelInferenceStrategy.InferenceTask.TABLEAU ) ) {
             ClassPathResource visitor =  new ClassPathResource( "FALC_TableauBuilderVisitor.drl" );
             visitor.setResourceType( ResourceType.DRL );
 
@@ -135,9 +126,8 @@ public class DLFactoryImpl implements DLFactory {
 
         return new DelegateInferenceStrategy().buildModel( name,
                 ontoDescr,
-                mode,
+                conf,
                 theory,
-                axiomGens,
                 classLoader );
 
     }
@@ -145,112 +135,22 @@ public class DLFactoryImpl implements DLFactory {
 
 
 
-
-    public OntoModel buildModel( String name, Resource res, OntoModel.Mode mode ) {
-        return buildModel( name,
-                new Resource[] { res },
-                mode,
-                defaultAxiomGenerators );
+    public OntoModel buildModel( String name, Resource res, DLFactoryConfiguration conf ) {
+        return buildModel( name, new Resource[] { res }, conf, null );
     }
 
-    public OntoModel buildModel( String name, Resource res, OntoModel.Mode mode, ClassLoader classLoader ) {
-        return buildModel( name,
-                new Resource[] { res },
-                mode,
-                defaultAxiomGenerators,
-                classLoader );
+    public OntoModel buildModel( String name, Resource res, DLFactoryConfiguration conf, ClassLoader classLoader ) {
+        return buildModel( name, new Resource[] { res }, conf, classLoader );
     }
 
-
-    public OntoModel buildModel( String name, Resource[] res, OntoModel.Mode mode ) {
-        return buildModel( name,
-                res,
-                mode,
-                defaultAxiomGenerators );
+    public OntoModel buildModel( String name, Resource[] res, DLFactoryConfiguration conf ) {
+        return buildModel( name, res, conf, null );
     }
 
-    public OntoModel buildModel( String name, Resource[] res, OntoModel.Mode mode, ClassLoader classLoader ) {
-        return buildModel( name,
-                res,
-                mode,
-                defaultAxiomGenerators,
-                classLoader );
-    }
-
-
-    public OntoModel buildModel( String name, Resource res, OntoModel.Mode mode, List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens ) {
-        return buildModel( name,
-                new Resource[] { res },
-                mode,
-                axiomGens );
-    }
-
-    public OntoModel buildModel( String name, Resource res, OntoModel.Mode mode, List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens, ClassLoader classLoader ) {
-        return buildModel( name,
-                new Resource[] { res },
-                mode,
-                axiomGens,
-                classLoader );
-    }
-
-
-    public OntoModel buildModel( String name, Resource[] res, OntoModel.Mode mode, List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens ) {
-        return buildModel( name,
-                res,
-                mode,
-                axiomGens,
-                defaultInferenceTasks );
-    }
-
-    public OntoModel buildModel( String name, Resource[] res, OntoModel.Mode mode, List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens, ClassLoader classLoader ) {
-        return buildModel( name,
-                res,
-                mode,
-                axiomGens,
-                defaultInferenceTasks,
-                classLoader );
-    }
-
-
-    public OntoModel buildModel( String name, Resource res, OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens, List<ModelInferenceStrategy.InferenceTask> tasks  ) {
-        return buildModel( name,
-                new Resource[] { res },
-                mode,
-                axiomGens,
-                tasks );
-    }
-
-    public OntoModel buildModel( String name, Resource res, OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens, List<ModelInferenceStrategy.InferenceTask> tasks,
-                                 ClassLoader classLoader ) {
-        return buildModel( name,
-                new Resource[] { res },
-                mode,
-                axiomGens,
-                tasks,
-                classLoader );
-    }
-
-    public OntoModel buildModel( String name, Resource[] res, OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens, List<ModelInferenceStrategy.InferenceTask> tasks  ) {
-        return doBuildModel(name,
-                res,
-                mode,
-                axiomGens,
-                tasks,
-                null );
-    }
-
-    public OntoModel buildModel( String name, Resource[] res, OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
-                                 List<ModelInferenceStrategy.InferenceTask> tasks,
-                                 ClassLoader classLoader ) {
+    public OntoModel buildModel( String name, Resource[] res, DLFactoryConfiguration conf, ClassLoader classLoader ) {
         return doBuildModel( name,
                 res,
-                mode,
-                axiomGens,
-                tasks,
+                conf,
                 classLoader );
     }
 

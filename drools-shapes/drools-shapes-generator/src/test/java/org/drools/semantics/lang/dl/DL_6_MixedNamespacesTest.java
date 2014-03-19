@@ -20,9 +20,14 @@ import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+<<<<<<< HEAD
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.SemanticXSDModel;
+=======
+import org.drools.semantics.builder.DLFactoryConfiguration;
+import org.drools.semantics.builder.model.*;
+>>>>>>> 9afdb49... [Shapes] Improve configurability
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.junit.Test;
@@ -47,7 +52,7 @@ public class DL_6_MixedNamespacesTest {
         Resource res = ResourceFactory.newClassPathResource(source1);
         Resource res2 = ResourceFactory.newClassPathResource(source2);
 
-        OntoModel results = factory.buildModel( "mixedModel", new Resource[] { res, res2 }, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "mixedModel", new Resource[] { res, res2 }, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
 
         System.out.println( results );
 

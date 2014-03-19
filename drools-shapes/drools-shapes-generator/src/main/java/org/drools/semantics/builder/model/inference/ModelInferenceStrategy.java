@@ -16,6 +16,12 @@
 
 package org.drools.semantics.builder.model.inference;
 
+<<<<<<< HEAD
+=======
+import org.drools.io.Resource;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.semantics.builder.DLFactoryConfiguration;
+>>>>>>> 9afdb49... [Shapes] Improve configurability
 import org.drools.semantics.builder.model.OntoModel;
 import org.kie.api.io.Resource;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -33,10 +39,13 @@ public interface ModelInferenceStrategy {
 
     public OntoModel buildModel( String name,
                                  OWLOntology ontoDescr,
-                                 OntoModel.Mode mode,
+                                 DLFactoryConfiguration conf,
                                  Map<InferenceTask, Resource> theory,
+<<<<<<< HEAD
 //                                 KieSession kSession,
                                  List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
+=======
+>>>>>>> 9afdb49... [Shapes] Improve configurability
                                  ClassLoader classLoader );
 
 

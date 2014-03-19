@@ -27,6 +27,7 @@ import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.DLFactoryImpl;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.DRLModel;
@@ -88,8 +89,8 @@ public class DL_8_ModelTest {
     public void testConyardComplexModelGeneration() {
 
         Resource res = ResourceFactory.newClassPathResource( "ontologies/conyard.ttl" );
-        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.FLAT,
-                DLFactoryImpl.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "conyard", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT,
+                                                                                                         DLFactoryConfiguration.liteAxiomGenerators ) );
 
         checkConceptEncoding( results );
 
@@ -236,7 +237,7 @@ public class DL_8_ModelTest {
         String source = "ontologies/kmr2" + File.separator + "kmr2_mini.owl";
         Resource res = ResourceFactory.newClassPathResource(source);
 
-        OntoModel results = factory.buildModel( "kmr2mini", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "kmr2mini", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
 
         checkConceptEncoding( results );
 
@@ -291,7 +292,7 @@ public class DL_8_ModelTest {
 //        String source = "org/drools/semantics/lang/dl/kmr2_mini.owl";
         String source = "ontologies/kmr2" + File.separator + "KMR_OntologySample.manchester.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
-        OntoModel results = factory.buildModel("ontologies/kmr2", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel("ontologies/kmr2", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.GRAPH );
         GraphModel gModel = (GraphModel) compiler.compile( results );
@@ -320,7 +321,7 @@ public class DL_8_ModelTest {
         String source = "ontologies/kmr2" + File.separator + "kmr2_mini.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "kmr2mini", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "kmr2mini", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
 
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSD );
@@ -335,7 +336,7 @@ public class DL_8_ModelTest {
         String source = "ontologies/kmr2" + File.separator + "kmr2_mini.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "kmr2mini", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "kmr2mini", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
 
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
@@ -398,7 +399,7 @@ public class DL_8_ModelTest {
         String source = "ontologies/kmr2" + File.separator + "kmr2_mini.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "kmr2mini", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "kmr2mini", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
 
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.WORKSET );
@@ -418,7 +419,7 @@ public class DL_8_ModelTest {
         Resource res = ResourceFactory.newClassPathResource(source);
 
 
-        OntoModel results = factory.buildModel("ontologies/kmr2", res, OntoModel.Mode.FLAT );
+        OntoModel results = factory.buildModel("ontologies/kmr2", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 
 
         ModelCompiler jcompiler =  ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
@@ -488,7 +489,7 @@ public class DL_8_ModelTest {
         //        String source = "kmr2" + File.separator + "KMR_Ontology.ttl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "wwtp", res, OntoModel.Mode.OPTIMIZED );
+        OntoModel results = factory.buildModel( "wwtp", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
         for ( Concept con : results.getConcepts() ) {
             if ( con.getIri().startsWith( "<java://" ) ) {
@@ -523,7 +524,7 @@ public class DL_8_ModelTest {
 //        String source = "rules.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "testRules", res, OntoModel.Mode.FLAT, DLFactoryImpl.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "testRules", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT, DLFactoryConfiguration.liteAxiomGenerators ) );
 
         checkConceptEncoding( results );
 
@@ -551,7 +552,7 @@ public class DL_8_ModelTest {
 //        String source = "rules.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "testRules", res, OntoModel.Mode.FLAT, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "testRules", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT, DLFactoryConfiguration.liteAxiomGenerators ) );
 
         System.out.println( results );
 
@@ -583,7 +584,7 @@ public class DL_8_ModelTest {
     public void testPartiallySpecifiedHierarchicalModelGeneration() {
 
         Resource res = ResourceFactory.newClassPathResource( "ontologies/missingDomRanHier.owl" );
-        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "partest", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.XSDX );
         SemanticXSDModel xsdModel;
@@ -607,7 +608,7 @@ public class DL_8_ModelTest {
     public void testNestedClassesByDisjunction() {
 
         Resource res = ResourceFactory.newClassPathResource( "ontologies/falseSubclass.owl" );
-        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
+        OntoModel results = factory.buildModel( "partest", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
         checkConceptEncoding( results );
 
@@ -658,7 +659,7 @@ public class DL_8_ModelTest {
     @Test
     public void testHardwareOntology() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/hardware.owl" );
-        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
+        OntoModel results = factory.buildModel( "partest", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
         checkConceptEncoding( results );
 
@@ -668,7 +669,7 @@ public class DL_8_ModelTest {
     @Test
     public void testPizzaOntology() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/pizza.owl" );
-        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
+        OntoModel results = factory.buildModel( "partest", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
         checkConceptEncoding( results );
 
@@ -680,7 +681,7 @@ public class DL_8_ModelTest {
     @Test
     public void testDataEnumRange() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/dataEnumRange.owl" );
-        OntoModel results = factory.buildModel( "partest", res, OntoModel.Mode.OPTIMIZED );
+        OntoModel results = factory.buildModel( "partest", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
         checkConceptEncoding( results );
 
@@ -708,7 +709,7 @@ public class DL_8_ModelTest {
     @Test
     public void testKMR2Ontology() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/kmr2/KMR_Ontology2.ttl" );
-        OntoModel results = factory.buildModel( "kmr2", res, OntoModel.Mode.FLAT, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "kmr2", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT, DLFactoryConfiguration.liteAxiomGenerators ) );
         assertNotNull(results);
 
         checkConceptEncoding(results);
@@ -719,7 +720,7 @@ public class DL_8_ModelTest {
     @Test
     public void testAnonymousClassIndividual() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/anonClassIndividual.owl" );
-        OntoModel results = factory.buildModel( "test", res, OntoModel.Mode.FLAT, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "test", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT, DLFactoryConfiguration.liteAxiomGenerators ) );
         assertNotNull(results);
 
         checkConceptEncoding( results );
@@ -742,7 +743,7 @@ public class DL_8_ModelTest {
     @Test
     public void testOutOfDomainProperty() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/outOfDomainProperty.owl" );
-        OntoModel results = factory.buildModel( "test", res, OntoModel.Mode.FLAT, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "test", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT, DLFactoryConfiguration.liteAxiomGenerators ) );
         assertNotNull(results);
 
         checkConceptEncoding( results );
@@ -765,7 +766,7 @@ public class DL_8_ModelTest {
     @Test
     public void testPeopleOntology() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/people.owl" );
-        OntoModel results = factory.buildModel( "people", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "people", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED, DLFactoryConfiguration.liteAxiomGenerators ) );
         assertNotNull( results );
 
         checkConceptEncoding( results );
@@ -776,7 +777,7 @@ public class DL_8_ModelTest {
     @Ignore
     public void testDatabaseModel() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/dbModel.owl" );
-        OntoModel results = factory.buildModel( "DB", res, OntoModel.Mode.NONE, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "DB", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE, DLFactoryConfiguration.liteAxiomGenerators ) );
         assertNotNull(results);
 
         checkConceptEncoding( results );

@@ -129,6 +129,12 @@ public class OptimalHierarchy implements Solution<HardSoftScore> {
         for ( ConceptImplProxy con : getCons() ) {
             Concept x = con.getConcept();
             Concept sup = con.getChosenSuper().getConcept();
+
+//            if ( x == sup ) {
+//                //TODO Check how this is possible
+//                sup = model.getConcept( Thing.IRI );
+//            }
+
             x.setChosenSuperConcept( sup );
 //            x.setChosenSuper( sup.getIri() );
             sup.getChosenSubConcepts().add( x );

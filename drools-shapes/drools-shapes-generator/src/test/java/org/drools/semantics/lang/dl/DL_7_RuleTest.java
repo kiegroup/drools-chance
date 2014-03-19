@@ -23,6 +23,7 @@ import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.semantics.NamedIndividual;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.reasoner.DLogicTransformer;
 import org.drools.semantics.builder.reasoner.TemplateRecognitionRuleBuilder;
@@ -70,9 +71,9 @@ public class DL_7_RuleTest {
         OWLOntology pizza = factory.parseOntology( res );
 
         OntoModel pizzaModel = factory.buildModel( "pizza",
-                res,
-                OntoModel.Mode.FLAT,
-                DLFactory.defaultAxiomGenerators );
+                                                   res,
+                                                   DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT,
+                                                                                            DLFactoryConfiguration.defaultAxiomGenerators ) );
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( pizza, pizzaModel );
 
@@ -90,9 +91,9 @@ public class DL_7_RuleTest {
         OWLOntology onto = factory.parseOntology( res );
 
         OntoModel ontoModel = factory.buildModel( "test",
-                res,
-                OntoModel.Mode.NONE,
-                DLFactory.defaultAxiomGenerators );
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
+                                                                                           DLFactoryConfiguration.defaultAxiomGenerators ) );
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
@@ -193,9 +194,9 @@ public class DL_7_RuleTest {
         Resource res = KieServices.Factory.get().getResources().newByteArrayResource( owl.getBytes() );
         OWLOntology onto = factory.parseOntology( res );
         OntoModel ontoModel = factory.buildModel( "test",
-                res,
-                OntoModel.Mode.NONE,
-                DLFactory.defaultAxiomGenerators );
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
+                                                                                           DLFactoryConfiguration.defaultAxiomGenerators ) );
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
@@ -325,9 +326,9 @@ public class DL_7_RuleTest {
         OWLOntology onto = factory.parseOntology( res );
 
         OntoModel ontoModel = factory.buildModel( "test",
-                res,
-                OntoModel.Mode.NONE,
-                DLFactory.defaultAxiomGenerators );
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
+                                                                                           DLFactoryConfiguration.defaultAxiomGenerators ) );
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
@@ -472,9 +473,9 @@ public class DL_7_RuleTest {
         OWLOntology onto = factory.parseOntology( res );
 
         OntoModel ontoModel = factory.buildModel( "test",
-                res,
-                OntoModel.Mode.NONE,
-                DLFactory.defaultAxiomGenerators );
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
+                                                                                           DLFactoryConfiguration.defaultAxiomGenerators ) );
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
@@ -586,9 +587,9 @@ public class DL_7_RuleTest {
         OWLOntology onto = factory.parseOntology( res );
 
         OntoModel ontoModel = factory.buildModel( "test",
-                res,
-                OntoModel.Mode.NONE,
-                DLFactory.defaultAxiomGenerators );
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
+                                                                                           DLFactoryConfiguration.defaultAxiomGenerators  ) );
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
@@ -672,9 +673,9 @@ public class DL_7_RuleTest {
         OWLOntology onto = factory.parseOntology( res );
 
         OntoModel ontoModel = factory.buildModel( "test",
-                res,
-                OntoModel.Mode.NONE,
-                DLFactory.defaultAxiomGenerators );
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
+                                                                                           DLFactoryConfiguration.defaultAxiomGenerators ) );
 
         String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
 
