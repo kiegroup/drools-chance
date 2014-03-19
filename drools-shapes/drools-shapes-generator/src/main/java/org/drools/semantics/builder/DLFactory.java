@@ -43,144 +43,28 @@ import java.util.List;
 public interface DLFactory {
 
 
-    public static final List<InferredAxiomGenerator<? extends OWLAxiom>> liteAxiomGenerators = Collections.unmodifiableList(
-            new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
-                    Arrays.asList(
-                            new InferredClassAssertionAxiomGenerator(),
-                            new InferredDataPropertyCharacteristicAxiomGenerator(),
-                            new InferredEquivalentClassAxiomGenerator(),
-//                            new InferredEquivalentDataPropertiesAxiomGenerator(),
-                            new InferredEquivalentObjectPropertyAxiomGenerator(),
-                            new InferredInverseObjectPropertiesAxiomGenerator(),
-//                            new InferredObjectPropertyCharacteristicAxiomGenerator(),
-//                            new InferredPropertyAssertionGenerator(),
-                            new InferredSubClassAxiomGenerator(),
-//                            new InferredSubDataPropertyAxiomGenerator(),
-                            new InferredSubObjectPropertyAxiomGenerator()
-                    )));
-
-
-    public static final List<InferredAxiomGenerator<? extends OWLAxiom>> defaultAxiomGenerators = Collections.unmodifiableList(
-            new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
-                    Arrays.asList(
-                            new InferredClassAssertionAxiomGenerator(),
-                            new InferredDataPropertyCharacteristicAxiomGenerator(),
-                            new InferredEquivalentClassAxiomGenerator(),
-//                            new InferredEquivalentDataPropertiesAxiomGenerator(),
-                            new InferredEquivalentObjectPropertyAxiomGenerator(),
-                            new InferredInverseObjectPropertiesAxiomGenerator(),
-//                            new InferredObjectPropertyCharacteristicAxiomGenerator(),
-                            new InferredPropertyAssertionGenerator(),
-                            new InferredSubClassAxiomGenerator(),
-                            new InferredSubDataPropertyAxiomGenerator(),
-                            new InferredSubObjectPropertyAxiomGenerator()
-                    ) ) );
-
-    public static final List<InferredAxiomGenerator<? extends OWLAxiom>> fullAxiomGenerators = Collections.unmodifiableList(
-            new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
-                    Arrays.asList(
-                            new InferredClassAssertionAxiomGenerator(),
-                            new InferredDataPropertyCharacteristicAxiomGenerator(),
-                            new InferredEquivalentClassAxiomGenerator(),
-                            new InferredEquivalentDataPropertiesAxiomGenerator(),
-                            new InferredEquivalentObjectPropertyAxiomGenerator(),
-                            new InferredInverseObjectPropertiesAxiomGenerator(),
-                            new InferredObjectPropertyCharacteristicAxiomGenerator(),
-                            new InferredPropertyAssertionGenerator(),
-                            new InferredSubClassAxiomGenerator(),
-                            new InferredSubDataPropertyAxiomGenerator(),
-                            new InferredSubObjectPropertyAxiomGenerator()
-                    ) ) );
-
-    public static final List<InferredAxiomGenerator<? extends OWLAxiom>> minimalAxiomGenerators = Collections.unmodifiableList(
-            new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
-                    Arrays.asList(
-//                            new InferredClassAssertionAxiomGenerator(),
-//                            new InferredDataPropertyCharacteristicAxiomGenerator(),
-//                            new InferredEquivalentClassAxiomGenerator(),
-//                            new InferredEquivalentDataPropertiesAxiomGenerator(),
-//                            new InferredEquivalentObjectPropertyAxiomGenerator(),
-//                            new InferredInverseObjectPropertiesAxiomGenerator(),
-//                            new InferredObjectPropertyCharacteristicAxiomGenerator(),
-//                            new InferredPropertyAssertionGenerator(),
-                            new InferredSubClassAxiomGenerator()
-//                            new InferredSubDataPropertyAxiomGenerator(),
-//                            new InferredSubObjectPropertyAxiomGenerator()
-                    ) ) );
 
     public OWLOntology parseOntology( Resource resource );
 
 
     public OntoModel buildModel( String name,
                                  Resource res,
-                                 OntoModel.Mode mode );
+                                 DLFactoryConfiguration conf );
 
     public OntoModel buildModel( String name,
                                  Resource res,
-                                 OntoModel.Mode mode,
+                                 DLFactoryConfiguration conf,
                                  ClassLoader classLoader );
 
 
     public OntoModel buildModel( String name,
                                  Resource[] res,
-                                 OntoModel.Mode mode );
+                                 DLFactoryConfiguration conf );
 
     public OntoModel buildModel( String name,
                                  Resource[] res,
-                                 OntoModel.Mode mode,
+                                 DLFactoryConfiguration conf,
                                  ClassLoader lodaer );
-
-
-    public OntoModel buildModel( String name,
-                                 Resource res,
-                                 OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens );
-
-    public OntoModel buildModel( String name,
-                                 Resource res,
-                                 OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
-                                 ClassLoader classLoader );
-
-
-    public OntoModel buildModel( String name,
-                                 Resource[] res,
-                                 OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens );
-
-    public OntoModel buildModel( String name,
-                                 Resource[] res,
-                                 OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
-                                 ClassLoader classLoader );
-
-
-    public OntoModel buildModel( String name,
-                                 Resource res,
-                                 OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
-                                 List<ModelInferenceStrategy.InferenceTask> tasks );
-
-    public OntoModel buildModel( String name,
-                                 Resource res,
-                                 OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
-                                 List<ModelInferenceStrategy.InferenceTask> tasks,
-                                 ClassLoader classLoader );
-
-
-    public OntoModel buildModel( String name,
-                                 Resource[] res,
-                                 OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
-                                 List<ModelInferenceStrategy.InferenceTask> tasks );
-
-    public OntoModel buildModel( String name,
-                                 Resource[] res,
-                                 OntoModel.Mode mode,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
-                                 List<ModelInferenceStrategy.InferenceTask> tasks,
-                                 ClassLoader loader );
 
 
 }

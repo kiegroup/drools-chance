@@ -21,6 +21,7 @@ import org.drools.io.ResourceFactory;
 import org.drools.planner.core.solver.DefaultSolver;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
 import org.junit.Test;
@@ -45,10 +46,10 @@ public class DL_5_ClassHierarchyTest {
     @Test
     public void testHierarchyFromClassesExternal() {
 
-        String source = "fuzzyDL/DLex7.manchester";
+        String source = "fuzzyDL/DLex7.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "ex7", res, OntoModel.Mode.FLAT );
+        OntoModel results = factory.buildModel( "ex7", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 
         System.out.println(results);
 
@@ -98,7 +99,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/bodyParts.ttl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "diamond", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
 
         for( Concept con : results.getConcepts() ) {
             if ( ! "Thing".equals( con.getName() ) ) {
@@ -125,7 +126,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/diamondProp.manchester.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.FLAT );
+        OntoModel results = factory.buildModel( "diamond", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 
         for( Concept con : results.getConcepts() ) {
             assertEquals( Thing.class.getName(), con.getChosenSuperConcept().getFullyQualifiedName() );
@@ -166,7 +167,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/diamondProp.manchester.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.VARIANT );
+        OntoModel results = factory.buildModel( "diamond", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.VARIANT ) );
 
         for( Concept con : results.getConcepts() ) {
             if ( ! ( "DiamondRoot".equals( con.getName() ) || "Thing".equals( con.getName() ) ) ) {
@@ -215,7 +216,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/diamondProp.manchester.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "diamond", res, OntoModel.Mode.OPTIMIZED );
+        OntoModel results = factory.buildModel( "diamond", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
         assertTrue( results.isHierarchyConsistent() );
 
@@ -228,7 +229,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/conyard.ttl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "conyard", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED, DLFactoryConfiguration.liteAxiomGenerators ) );
 
         assertTrue( results.isHierarchyConsistent() );
 
@@ -240,7 +241,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/rule_merged.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "conyard", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED, DLFactoryConfiguration.liteAxiomGenerators ) );
 
         assertTrue( results.isHierarchyConsistent() );
 
@@ -252,7 +253,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/sem_rules.owl";
         Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "conyard", res, OntoModel.Mode.OPTIMIZED, DLFactory.liteAxiomGenerators );
+        OntoModel results = factory.buildModel( "conyard", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED, DLFactoryConfiguration.liteAxiomGenerators ) );
 
         assertTrue( results.isHierarchyConsistent() );
 

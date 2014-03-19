@@ -19,6 +19,7 @@ package org.drools.semantics.lang.dl;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.JavaInterfaceModel;
 import org.drools.semantics.builder.model.JavaInterfaceModelImpl;
 import org.drools.semantics.builder.model.ModelFactory;
@@ -40,8 +41,8 @@ public class DL_3_PropertyTest {
     @Test
     public void testPropertyInheritance() {
         OntoModel results = factory.buildModel( "diamond",
-                ResourceFactory.newClassPathResource("ontologies/propInherit.manchester.owl"),
-                OntoModel.Mode.OPTIMIZED );
+                                                ResourceFactory.newClassPathResource( "ontologies/propInherit.manchester.owl" ),
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
         assertEquals( 3, results.getProperties().size() );
         assertEquals( 1, results.getConcept( "<http://jboss.org/drools/semantics/Diamond2#Top>" ).getProperties().size() );
@@ -49,14 +50,13 @@ public class DL_3_PropertyTest {
         assertEquals( 1, results.getConcept( "<http://jboss.org/drools/semantics/Diamond2#Bottom>" ).getProperties().size() );
 
         assertTrue( results.isHierarchyConsistent() );
-
     }
 
     @Test
     public void testPropertyLiteral() {
         OntoModel results = factory.buildModel( "subProps",
-                ResourceFactory.newClassPathResource("ontologies/subProps.owl"),
-                OntoModel.Mode.OPTIMIZED );
+                                                ResourceFactory.newClassPathResource("ontologies/subProps.owl"),
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
         System.out.println( results );
 
@@ -68,7 +68,6 @@ public class DL_3_PropertyTest {
         JavaInterfaceModelCompiler jimc = (JavaInterfaceModelCompiler) ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAVA );
         JavaInterfaceModel jim = (JavaInterfaceModel) jimc.compile( results );
 
-
-         System.out.println( (( JavaInterfaceModelImpl.InterfaceHolder) jim.getTrait( "org.jboss.drools.semantics.diamond2.X" ) ).getSource() );
+        System.out.println( (( JavaInterfaceModelImpl.InterfaceHolder) jim.getTrait( "org.jboss.drools.semantics.diamond2.X" ) ).getSource() );
     }
 }

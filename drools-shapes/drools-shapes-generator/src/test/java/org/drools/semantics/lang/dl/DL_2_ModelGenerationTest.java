@@ -19,6 +19,7 @@ package org.drools.semantics.lang.dl;
 import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.DRLModel;
 import org.drools.semantics.builder.model.ModelFactory;
@@ -63,7 +64,7 @@ public class DL_2_ModelGenerationTest {
 
         OntoModel results;
 
-        results = factory.buildModel( "diamond", res, OntoModel.Mode.FLAT );
+        results = factory.buildModel( "diamond", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 
         checkDiamond( results );
 
@@ -76,10 +77,10 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testPropertiesGenerationExternal() {
-        String source = "fuzzyDL/DLex6.manchester";
+        String source = "fuzzyDL/DLex6.owl";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "ex6", res, OntoModel.Mode.FLAT );
+        OntoModel results = factory.buildModel( "ex6", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.DRL);
@@ -201,10 +202,10 @@ public class DL_2_ModelGenerationTest {
 
     @Test
     public void testComplexAnonymous() {
-        String source = "fuzzyDL/DLex8.manchester";
+        String source = "fuzzyDL/DLex8.owl";
         org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "ex8", res, OntoModel.Mode.FLAT );
+        OntoModel results = factory.buildModel( "ex8", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 
 
         ModelCompiler compiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.DRL);

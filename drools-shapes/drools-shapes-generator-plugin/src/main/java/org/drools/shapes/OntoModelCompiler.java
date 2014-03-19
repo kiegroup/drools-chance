@@ -5,6 +5,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.drools.rule.builder.dialect.asm.ClassGenerator;
 import org.drools.semantics.builder.DLFactory;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.DRLModel;
 import org.drools.semantics.builder.model.JarModel;
@@ -144,7 +145,7 @@ public class OntoModelCompiler {
 
 
     public enum AXIOM_INFERENCE {
-        LITE( DLFactory.liteAxiomGenerators ), DEFAULT( DLFactory.defaultAxiomGenerators ), FULL( DLFactory.fullAxiomGenerators ), NONE( DLFactory.minimalAxiomGenerators );
+        LITE( DLFactoryConfiguration.liteAxiomGenerators ), DEFAULT( DLFactoryConfiguration.defaultAxiomGenerators ), FULL( DLFactoryConfiguration.fullAxiomGenerators ), NONE( DLFactoryConfiguration.minimalAxiomGenerators );
 
         private List<InferredAxiomGenerator<? extends OWLAxiom>> gens;
 

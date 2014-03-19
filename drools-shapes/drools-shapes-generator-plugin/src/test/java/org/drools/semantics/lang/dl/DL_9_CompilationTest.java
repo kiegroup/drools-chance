@@ -30,6 +30,7 @@ import org.drools.io.ResourceFactory;
 import org.drools.semantics.UIdAble;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.shapes.OntoModelCompiler;
 import org.junit.After;
@@ -112,8 +113,8 @@ public class DL_9_CompilationTest {
     public void testDiamondOptimizedHierarchyCompilation() {
 
         OntoModel results = factory.buildModel( "diamond",
-                ResourceFactory.newClassPathResource( "ontologies/diamondProp2.manchester.owl" ),
-                OntoModel.Mode.OPTIMIZED );
+                                                ResourceFactory.newClassPathResource( "ontologies/diamondProp2.manchester.owl" ),
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
         assertTrue( results.isHierarchyConsistent() );
 
@@ -230,8 +231,8 @@ public class DL_9_CompilationTest {
         try {
 
             OntoModel diamond = factory.buildModel( "diamondX",
-                    ResourceFactory.newClassPathResource( "ontologies/diamondProp.manchester.owl" ),
-                    OntoModel.Mode.OPTIMIZED );
+                                                    ResourceFactory.newClassPathResource( "ontologies/diamondProp.manchester.owl" ),
+                                                    DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
             compiler = new OntoModelCompiler( diamond, folder.getRoot() );
 
@@ -252,9 +253,9 @@ public class DL_9_CompilationTest {
 
 
             OntoModel results = factory.buildModel( "diamondInc",
-                    ResourceFactory.newClassPathResource( "ontologies/dependency.test.owl" ),
-                    OntoModel.Mode.OPTIMIZED,
-                    urlKL );
+                                                    ResourceFactory.newClassPathResource( "ontologies/dependency.test.owl" ),
+                                                    DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ),
+                                                    urlKL );
 
             System.out.println( results );
 

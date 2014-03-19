@@ -75,8 +75,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.semanticweb</groupId>
-      <artifactId>HermiT</artifactId>
+      <groupId>com.hermit-reasoner</groupId>
+      <artifactId>org.semanticweb.hermit</artifactId>
       <exclusions>
         <exclusion>
           <groupId>owlapi</groupId>

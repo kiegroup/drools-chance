@@ -27,6 +27,7 @@ import org.drools.builder.ResourceType;
 import org.drools.io.Resource;
 import org.drools.io.impl.ChangeSetImpl;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.utils.NameUtils;
@@ -45,14 +46,13 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
     public OntoModel buildModel( String name,
                                  OWLOntology ontoDescr,
-                                 OntoModel.Mode mode,
+                                 DLFactoryConfiguration conf,
                                  Map<InferenceTask, Resource> theory,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
                                  ClassLoader classLoader ) {
 
         StatefulKnowledgeSession kSession = buildKnowledgeSession( theory );
 
-        OntoModel baseModel = ModelFactory.newModel( name, mode );
+        OntoModel baseModel = ModelFactory.newModel( name, conf.getMode() );
         baseModel.setOntology( ontoDescr );
         baseModel.setClassLoader( classLoader );
 
@@ -64,15 +64,15 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
         kSession.insert( ontoDescr );
         kSession.fireAllRules();
 
-        OntoModel latticeModel = buildClassLattice( ontoDescr, kSession, theory, baseModel, axiomGens );
+        OntoModel latticeModel = buildClassLattice( ontoDescr, kSession, theory, baseModel, conf );
 
         latticeModel.sort();
 
-        OntoModel propertyModel = buildProperties( ontoDescr, kSession, theory, latticeModel );
+        OntoModel propertyModel = buildProperties( ontoDescr, kSession, theory, latticeModel, conf );
 
         propertyModel.sort();
 
-        OntoModel populatedModel = buildIndividuals( ontoDescr, kSession, theory, propertyModel );
+        OntoModel populatedModel = buildIndividuals( ontoDescr, kSession, theory, propertyModel, conf );
 
         populatedModel.reassignConceptCodes();
 
@@ -87,17 +87,16 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
 
 
-    protected abstract OntoModel buildProperties( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
+    protected abstract OntoModel buildProperties( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel, DLFactoryConfiguration conf );
 
-
-    protected abstract OntoModel buildIndividuals( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
+    protected abstract OntoModel buildIndividuals( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel, DLFactoryConfiguration conf );
 
 
     protected abstract OntoModel buildClassLattice( OWLOntology ontoDescr,
                                                     StatefulKnowledgeSession kSession,
                                                     Map<InferenceTask, Resource> theory,
                                                     OntoModel baseModel,
-                                                    List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators );
+                                                    DLFactoryConfiguration conf );
 
 
     protected abstract InferredOntologyGenerator initReasoner( StatefulKnowledgeSession kSession, OWLOntology ontoDescr, List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators );

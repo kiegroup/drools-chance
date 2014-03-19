@@ -33,6 +33,7 @@
 
  import org.drools.semantics.NamedIndividual;
  import org.drools.factmodel.traits.Traitable;
+ import org.w3._2002._07.owl.Thing;
 
  declare NamedIndividual @Traitable() end
 

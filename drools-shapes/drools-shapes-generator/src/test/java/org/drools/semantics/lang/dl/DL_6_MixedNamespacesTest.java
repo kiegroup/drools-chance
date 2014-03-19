@@ -30,6 +30,7 @@ import org.drools.reteoo.builder.DefaultNodeFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.*;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
@@ -61,7 +62,7 @@ public class DL_6_MixedNamespacesTest {
         Resource res = ResourceFactory.newClassPathResource(source1);
         Resource res2 = ResourceFactory.newClassPathResource(source2);
 
-        OntoModel results = factory.buildModel( "mixedModel", new Resource[] { res, res2 }, OntoModel.Mode.HIERARCHY );
+        OntoModel results = factory.buildModel( "mixedModel", new Resource[] { res, res2 }, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
 
         System.out.println( results );
 

@@ -18,6 +18,7 @@ package org.drools.semantics.lang.dl;
 
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.DLFactoryImpl;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
@@ -49,7 +50,7 @@ public class DL_4_AreaTest {
         try {
 
             Resource res = ResourceFactory.newClassPathResource( "ontologies/specimen.owl" );
-            OntoModel model = DLFactoryImpl.getInstance().buildModel( "partest", res, OntoModel.Mode.NONE );
+            OntoModel model = DLFactoryImpl.getInstance().buildModel( "partest", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE ) );
 
             PropertyRelation drug = model.getProperty( "<http://org.drools/test#drugRel>" );
             PropertyRelation fluid = model.getProperty( "<http://org.drools/test#fluidRel>" );
@@ -204,7 +205,7 @@ public class DL_4_AreaTest {
         try {
 
             Resource res = ResourceFactory.newClassPathResource( "ontologies/hardware.owl" );
-            OntoModel model = DLFactoryImpl.getInstance().buildModel( "hw", res, OntoModel.Mode.FLAT );
+            OntoModel model = DLFactoryImpl.getInstance().buildModel( "hw", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 
             AreaTxn<Concept,PropertyRelation> areaTxn = model.getAreaTaxonomy();
 
