@@ -182,6 +182,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         register( "http://www.w3.org/2001/XMLSchema#unsignedShort", "xsd:unsignedShort" );
 
         register( "http://www.w3.org/2001/XMLSchema#unsignedInt", "xsd:unsignedInt" );
+
+        register( "http://www.w3.org/2001/XMLSchema#anyURI", "xsd:anyURI" );
     }
 
 
