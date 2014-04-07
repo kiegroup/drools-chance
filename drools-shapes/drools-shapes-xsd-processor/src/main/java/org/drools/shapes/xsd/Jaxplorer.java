@@ -44,6 +44,9 @@ public class Jaxplorer {
             handles.add( kSession.insert( o ) );
             for ( String fname : getAllXmlFields(o) ) {
                 try {
+                    if ( fname.startsWith( "_" ) ) {
+                        fname = fname.substring( 1 );
+                    }
                     String getterName = "get" + fname.substring( 0, 1 ).toUpperCase() + fname.substring( 1 );
                     Method getter = o.getClass().getMethod( getterName );
                     Object fieldVal = getter.invoke( o );

@@ -535,9 +535,15 @@ public final class NameUtils {
         return cls;
     }
 
-
     public static String capitalize( String s ) {
-        return Character.toUpperCase(s.charAt(0)) + s.substring( 1 );
+        StringTokenizer tok = new StringTokenizer( s, "_" );
+        String upName = tok.nextToken();
+        upName = upName.substring( 0, 1 ).toUpperCase() + upName.substring( 1 );
+        while ( tok.hasMoreTokens() ) {
+            String word = tok.nextToken();
+            upName += "_" + word.substring( 0, 1 ).toUpperCase() + word.substring( 1 );
+        }
+        return s.startsWith( "_" ) ? "_" + upName : upName;
     }
 
     public static String reverse(String aPackage) {
@@ -615,6 +621,8 @@ public final class NameUtils {
 
         } else if ( "xsd:string".equals( dataType ) ) {
             return "java.lang.String";
+        } else if ( "xsd:anyURI".equals( dataType ) ) {
+            return "java.lang.String";
         } else if ( "xsd:dateTime".equals( dataType ) ) {
             return "java.util.Date";
         } else if ( "xsd:date".equals( dataType ) ) {
@@ -675,6 +683,8 @@ public final class NameUtils {
             return "null";
         } else if ( "xsd:string".equals( dataType ) ) {
             return "null";
+        } else if ( "xsd:anyURI".equals( dataType ) ) {
+            return "null";
         } else if ( "xsd:dateTime".equals( dataType ) ) {
             return "null";
         } else if ( "xsd:date".equals( dataType ) ) {
@@ -721,6 +731,8 @@ public final class NameUtils {
         } else if ( "xsd:string".equals( dataType ) ) {
             return "new String()";
         } else if ( "xsd:dateTime".equals( dataType ) ) {
+            return "null";
+        } else if ( "xsd:anyURI".equals( dataType ) ) {
             return "null";
         } else if ( "xsd:date".equals( dataType ) ) {
             return "null";
