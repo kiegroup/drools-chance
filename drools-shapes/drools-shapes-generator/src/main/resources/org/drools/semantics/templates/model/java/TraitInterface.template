@@ -97,16 +97,16 @@ public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface 
 
     @if{ ! prop.restricted && ! prop.target.primitive && ! prop.transient }
         @javax.persistence.Transient
-    public void add@{ compactUpperCase(prop.name) }( java.lang.Object x );
+    public void add@{ capitalize(prop.name) }( java.lang.Object x );
     @end{}
 
 
     @if{ prop.simple || ( ( prop.maxCard == null || prop.maxCard > 1 ) && ! prop.transient )  }
         @javax.persistence.Transient
-    public void add@{ compactUpperCase(prop.name) }( @{ map( prop.target.fullyQualifiedName, true ) } x );
+    public void add@{ capitalize(prop.name) }( @{ map( prop.target.fullyQualifiedName, true ) } x );
 
         @javax.persistence.Transient
-    public void remove@{ compactUpperCase(prop.name) }( java.lang.Object x );
+    public void remove@{ capitalize(prop.name) }( java.lang.Object x );
     @end{}
 
 

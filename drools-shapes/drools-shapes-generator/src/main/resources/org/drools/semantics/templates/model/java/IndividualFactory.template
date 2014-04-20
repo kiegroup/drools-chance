@@ -77,28 +77,39 @@ public class IndividualFactory {
 
 
         @foreach{ ind : individuals }
-            @foreach{ propName : ind.propertyVals.keySet() }
-                @foreach{ val : ind.propertyVals[ propName ] }
-                    @if{ val.type != "xsd:dateTime" }
-                        @{ind.name}.add@{ capitalize( propName ) }( @{ val.value } );
-                    @else{}
-                        @{ind.name}.add@{ capitalize( propName ) }( parse( @{ val.value } ) );
-                    @end{}
-
-                @end{}
-            @end{}
+            build_@{ind.name}( @{ind.name} );
         @end{}
 
     }
 
-
      public static Collection getTraitedIndividuals() {
         throw new UnsupportedOperationException( "TODO - Use TraitMantle!" );
      }
+
+    @foreach{ ind : individuals }
+    protected static void build_@{ind.name}( @{ind.type} @{ind.name} ) {
+        @foreach{ propName : ind.propertyVals.keySet() }
+                        @foreach{ val : ind.propertyVals[ propName ] }
+                            @if{ val.type.equals( "xsd:dateTime" ) }
+                                @{ind.name}.add@{ capitalize( propName ) }( parse( @{ val.value } ) );
+                            @else{}
+                                // @{val.type}
+                                @if{ val.type.startsWith( "xsd:" ) }
+                                    @{ind.name}.add@{ capitalize( propName ) }( @{ val.value } );
+                                @else{}
+                                    @{ind.name}.add@{ capitalize( propName ) }( individuals.get( "@{ val.value }" ) );
+                                @end{}
+                            @end{}
+                        @end{}
+                    @end{}
+    }
+    @end{}
+
 
 }
 @end{}
 
 
 @includeNamed{'individualFactory'}
+
 

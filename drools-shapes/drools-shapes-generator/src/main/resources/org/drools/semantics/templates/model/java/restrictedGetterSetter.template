@@ -22,7 +22,7 @@
 
 
     @@javax.persistence.Transient
-    public void set@{ compactUpperCase( name ) }(
+    public void @{ setter( name ) } (
         @if{ max == null || max > 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
         x
     ) {
@@ -38,14 +38,14 @@
         @if{ max == null || max > 1 }
             @if{ ! primitive }
                 for ( java.lang.Object y : x ) {
-                    add@{ compactUpperCase( base ) }( y );
+                    add@{ capitalize( base ) }( y );
                 }
             @else{}
                 @{ getter( base, type  ) }().addAll( x );
             @end{}
         @else{}
             @if{ ! primitive }
-                add@{ compactUpperCase( base ) }( (java.lang.Object) x );
+                add@{ capitalize( base ) }( (java.lang.Object) x );
             @else{}
                 @{ getter( base, type  ) }().add( x );
             @end{}
@@ -64,7 +64,7 @@
 
         java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList<@{ map( type, true ) }>();
 
-        for ( @{ map( baseType, true ) } x : get@{ compactUpperCase( base ) }() ) {
+        for ( @{ map( baseType, true ) } x : @{ getter( base, type ) }() ) {
             if ( x instanceof @{ map( type, true ) } ) {
                 ans.add( (@{ map( type, true ) }) x );
             }
@@ -74,7 +74,7 @@
             for ( int j = ans.size(); j < @{ min }; j++ ) {
                 @{ map( type, true ) } x = @{ skolem( type ) };
                 ans.add( x );
-                add@{ compactUpperCase( name ) }( x );
+                add@{ capitalize( name ) }( x );
             }
         }
 

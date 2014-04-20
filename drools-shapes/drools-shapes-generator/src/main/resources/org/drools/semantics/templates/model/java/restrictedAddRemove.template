@@ -22,12 +22,12 @@
 
 
     @@javax.persistence.Transient
-    public void add@{ compactUpperCase( name ) }( @{ map( type, true ) } x ) {
+    public void add@{ capitalize( name ) }( @{ map( type, true ) } x ) {
 
         @if{ simple }
-            @{ name } = ( @{ map( type, true ) } ) x;
+            @{ compactVariable( name ) } = ( @{ map( type, true ) } ) x;
         @elseif{ ! primitive }
-            add@{ compactUpperCase( base ) }( (java.lang.Object) x );
+            add@{ capitalize( base ) }( (java.lang.Object) x );
         @else{}
             @{ getter( base, type ) }().add( x );
         @end{}
@@ -35,9 +35,9 @@
     }
 
     @@javax.persistence.Transient
-    public void remove@{ compactUpperCase( name ) }( java.lang.Object x ) {
+    public void remove@{ capitalize( name ) }( java.lang.Object x ) {
         @if{ simple }
-            @{ name } = null;
+            @{ compactVariable( name ) } = null;
         @else{}
             @{ getter( base, type ) }().remove( x );
         @end{}

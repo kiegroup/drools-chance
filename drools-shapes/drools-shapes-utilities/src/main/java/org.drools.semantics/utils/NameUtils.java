@@ -570,6 +570,17 @@ public final class NameUtils {
         return upName;
     }
 
+    public static String compactVariable( String name ) {
+        String idName = nameToIdentifier( name, IdentifierType.VARIABLE );
+        StringTokenizer tok = new StringTokenizer( idName, "_" );
+        String upName = tok.nextToken();
+        while ( tok.hasMoreTokens() ) {
+            String word = tok.nextToken();
+            upName += word.substring( 0, 1 ).toUpperCase() + word.substring( 1 );
+        }
+        return upName;
+    }
+
     public static String getter( String name, String type ) {
         return getter( name, type, null );
     }
