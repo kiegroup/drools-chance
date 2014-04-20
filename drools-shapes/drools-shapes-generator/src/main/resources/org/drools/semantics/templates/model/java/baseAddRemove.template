@@ -21,21 +21,21 @@
 @declare{'baseAddRemove'}
 
     @@javax.persistence.Transient
-    public void add@{ compactUpperCase( name ) }( @{ map( type, true ) } x ) {
+    public void add@{ capitalize( name ) }( @{ map( type, true ) } x ) {
         @if{ simple }
-            @{ name } = x;
+            @{ compactVariable( name ) } = x;
         @elseif{ ! primitive }
-            add@{ compactUpperCase( name ) }( (java.lang.Object) x );
+            add@{ capitalize( name ) }( (java.lang.Object) x );
         @else{}
             @{ getter( name, type, max ) }().add( x );
         @end{}
     }
 
     @@javax.persistence.Transient
-    public void remove@{ compactUpperCase( name ) }( java.lang.Object x ) {
+    public void remove@{ capitalize( name ) }( java.lang.Object x ) {
         @if{ simple }
-            if ( @{ name }.equals( x ) ) {
-                @{ name } = null;
+            if ( @{ compactVariable( name ) }.equals( x ) ) {
+                @{ compactVariable( name ) } = null;
             }
         @else{}
             @{ getter( name, type, max ) }().remove( x );
