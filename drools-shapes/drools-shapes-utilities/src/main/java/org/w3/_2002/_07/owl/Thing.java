@@ -1,8 +1,8 @@
 package org.w3._2002._07.owl;
 
 import com.clarkparsia.empire.EmpireGenerated;
-import com.clarkparsia.empire.annotation.RdfsClass;
 import com.clarkparsia.empire.annotation.Namespaces;
+import com.clarkparsia.empire.annotation.RdfsClass;
 
 
 // <http://www.w3.org/2002/07/owl#Thing>

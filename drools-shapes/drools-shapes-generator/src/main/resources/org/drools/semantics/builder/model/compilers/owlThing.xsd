@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:owl="http://www.w3.org/2002/07/owl"
-            xmlns:xs="http://www.w3.org/2001/XMLSchema"
             xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-            xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
             jaxb:extensionBindingPrefixes="hj"
             elementFormDefault="qualified"
             targetNamespace="http://www.w3.org/2002/07/owl">

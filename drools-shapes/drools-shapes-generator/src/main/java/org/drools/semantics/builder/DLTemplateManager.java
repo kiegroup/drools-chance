@@ -22,7 +22,6 @@ import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 

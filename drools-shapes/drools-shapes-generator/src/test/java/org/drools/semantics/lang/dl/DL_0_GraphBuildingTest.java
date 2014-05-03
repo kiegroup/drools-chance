@@ -16,7 +16,6 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.common.DefaultFactHandle;
 import org.drools.core.common.EventFactHandle;
 import org.junit.Ignore;

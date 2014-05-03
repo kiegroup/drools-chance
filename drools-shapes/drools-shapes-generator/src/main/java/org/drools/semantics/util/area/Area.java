@@ -18,7 +18,6 @@ package org.drools.semantics.util.area;
 
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Set;
 
 public interface Area<C,P> {
 

@@ -16,9 +16,13 @@
 
 package org.drools.semantics.builder.model.compilers;
 
-import org.drools.core.util.StringUtils;
-import org.drools.semantics.utils.NameUtils;
-import org.drools.semantics.builder.model.*;
+import org.drools.semantics.builder.model.CompiledOntoModel;
+import org.drools.semantics.builder.model.Concept;
+import org.drools.semantics.builder.model.ModelFactory;
+import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.PropertyRelation;
+import org.drools.semantics.builder.model.XSDModel;
+import org.drools.semantics.builder.model.XSDModelImpl;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.jdom.Element;
 import org.jdom.Namespace;

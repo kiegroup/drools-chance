@@ -2,8 +2,6 @@ package org.drools.semantics.utils;
 
 import org.drools.semantics.Literal;
 
-import javax.xml.bind.DatatypeConverter;
-
 public class LiteralDatatypeConverter {
 
     public static Literal parseLiteral( String lit ) {

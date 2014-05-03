@@ -16,11 +16,17 @@
 
 package org.drools.semantics.builder.model;
 
-import org.drools.definition.type.Position;
 import org.drools.semantics.utils.NameUtils;
+import org.kie.api.definition.type.Position;
 import org.semanticweb.owlapi.model.IRI;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class Concept implements Cloneable {

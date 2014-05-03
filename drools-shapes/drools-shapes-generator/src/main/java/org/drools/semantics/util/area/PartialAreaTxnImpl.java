@@ -1,14 +1,10 @@
 package org.drools.semantics.util.area;
 
+import org.drools.core.util.HierarchyEncoder;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.PropertyRelation;
-import org.drools.core.util.HierarchyEncoder;
 
-import java.util.BitSet;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 
 public class PartialAreaTxnImpl {

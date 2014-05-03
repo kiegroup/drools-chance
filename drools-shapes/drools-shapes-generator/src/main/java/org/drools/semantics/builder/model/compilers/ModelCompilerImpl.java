@@ -16,13 +16,13 @@
 
 package org.drools.semantics.builder.model.compilers;
 
-import org.drools.semantics.utils.NameUtils;
-import org.drools.semantics.builder.model.CompiledOntoModel;
-import org.drools.semantics.builder.model.Concept;
-import org.drools.semantics.builder.model.OntoModel;
+ import org.drools.semantics.builder.model.CompiledOntoModel;
+ import org.drools.semantics.builder.model.Concept;
+ import org.drools.semantics.builder.model.OntoModel;
+ import org.drools.semantics.utils.NameUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+ import java.util.HashMap;
+ import java.util.Map;
 
 public abstract class ModelCompilerImpl implements ModelCompiler {
 

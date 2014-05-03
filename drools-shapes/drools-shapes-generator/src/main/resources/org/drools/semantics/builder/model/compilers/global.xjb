@@ -15,15 +15,7 @@
   ~ limitations under the License.
   -->
 <bindings xmlns="http://java.sun.com/xml/ns/jaxb"
-          xmlns:annox="http://annox.dev.java.net"
-          xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector"
-          xmlns:con="http://jboss.org/drools/drools-chance/drools-shapes/plugins/constructor"
-          xmlns:dsk="http://jboss.org/drools/drools-chance/drools-shapes/plugins/key"
-          xmlns:dsp="http://jboss.org/drools/drools-chance/drools-shapes/plugins/accessor"
-          xmlns:hj="http://hyperjaxb3.jvnet.org/ejb/schemas/customizations"
-          xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
           xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-          xmlns:meta="http://jboss.org/drools/drools-chance/drools-shapes/plugins/metadata"
           xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
           xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"

@@ -37,7 +37,6 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
-import org.kie.internal.KnowledgeBaseFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.FileOutputStream;

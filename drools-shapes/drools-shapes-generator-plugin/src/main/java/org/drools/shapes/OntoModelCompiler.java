@@ -2,7 +2,6 @@ package org.drools.shapes;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.DRLModel;

@@ -17,8 +17,11 @@
 package org.drools.semantics.builder.model.compilers;
 
 import org.drools.semantics.builder.DLTemplateManager;
-import org.drools.semantics.builder.model.*;
-import org.drools.semantics.utils.NameUtils;
+import org.drools.semantics.builder.model.CompiledOntoModel;
+import org.drools.semantics.builder.model.Concept;
+import org.drools.semantics.builder.model.JavaInterfaceModelImpl;
+import org.drools.semantics.builder.model.ModelFactory;
+import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRegistry;

@@ -1,8 +1,8 @@
 package org.drools.semantics.builder.model.hierarchy.opt;
 
 
-import org.drools.semantics.builder.model.ConceptImplProxy;
 import org.drools.semantics.builder.model.Concept;
+import org.drools.semantics.builder.model.ConceptImplProxy;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.PropertyRelation;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;

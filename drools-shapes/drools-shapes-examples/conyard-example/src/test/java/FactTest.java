@@ -25,7 +25,6 @@ import org.drools.owl.conyard.Smith;
 import org.drools.owl.conyard.SmithImpl;
 import org.drools.owl.conyard.Stair;
 import org.drools.owl.conyard.StairImpl;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.XMLSerializationHelper;
 import org.junit.Before;
 import org.junit.BeforeClass;

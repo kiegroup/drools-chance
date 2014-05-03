@@ -16,7 +16,7 @@
 
 package org.drools.semantics.builder.model;
 
-import org.drools.definition.type.Position;
+import org.kie.api.definition.type.Position;
 
 public class Relation {
 

@@ -17,7 +17,6 @@
 package org.drools.semantics.builder.model;
 
 
-import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.jdom.Document;
 import org.jdom.Namespace;
 

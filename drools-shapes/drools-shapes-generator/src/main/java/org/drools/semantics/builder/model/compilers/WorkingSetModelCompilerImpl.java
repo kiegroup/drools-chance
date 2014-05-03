@@ -16,7 +16,11 @@
 
 package org.drools.semantics.builder.model.compilers;
 
-import org.drools.semantics.builder.model.*;
+import org.drools.semantics.builder.model.CompiledOntoModel;
+import org.drools.semantics.builder.model.Concept;
+import org.drools.semantics.builder.model.ModelFactory;
+import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.WorkingSetModel;
 import org.drools.semantics.util.SemanticWorkingSetConfigData;
 
 import java.util.HashMap;

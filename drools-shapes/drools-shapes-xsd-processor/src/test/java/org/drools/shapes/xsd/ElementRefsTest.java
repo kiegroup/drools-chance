@@ -32,7 +32,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
 
 import java.net.URL;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 

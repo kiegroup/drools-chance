@@ -3,7 +3,6 @@ package org.drools.semantics.builder.model;
 
 import org.drools.core.util.StringUtils;
 import org.drools.io.ResourceFactory;
-import org.drools.semantics.builder.model.compilers.XSDModelCompiler;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.jdom.Document;
@@ -14,9 +13,18 @@ import org.jdom.output.XMLOutputter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class XSDModelImpl extends ModelImpl implements XSDModel {
 

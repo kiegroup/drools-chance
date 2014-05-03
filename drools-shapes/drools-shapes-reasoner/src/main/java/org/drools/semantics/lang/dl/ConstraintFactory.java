@@ -27,7 +27,13 @@ import choco.kernel.model.variables.real.RealVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static choco.Choco.*;
+import static choco.Choco.eq;
+import static choco.Choco.geq;
+import static choco.Choco.leq;
+import static choco.Choco.makeBooleanVar;
+import static choco.Choco.makeRealVar;
+import static choco.Choco.minus;
+import static choco.Choco.plus;
 
 
 public class ConstraintFactory {

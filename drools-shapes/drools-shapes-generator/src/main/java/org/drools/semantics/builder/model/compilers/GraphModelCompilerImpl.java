@@ -16,7 +16,12 @@
 
 package org.drools.semantics.builder.model.compilers;
 
-import org.drools.semantics.builder.model.*;
+import org.drools.semantics.builder.model.CompiledOntoModel;
+import org.drools.semantics.builder.model.Concept;
+import org.drools.semantics.builder.model.GraphModel;
+import org.drools.semantics.builder.model.ModelFactory;
+import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.SubConceptOf;
 
 import java.util.Map;
 

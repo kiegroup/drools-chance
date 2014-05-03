@@ -16,9 +16,8 @@
 
 package org.drools.semantics.builder.model;
 
-import com.hp.hpl.jena.sparql.function.library.min;
-import org.drools.definition.type.Position;
 import org.drools.semantics.utils.NameUtils;
+import org.kie.api.definition.type.Position;
 
 import java.util.ArrayList;
 import java.util.HashSet;

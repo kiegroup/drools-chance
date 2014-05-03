@@ -1,9 +1,9 @@
 package org.drools.semantics.util.area;
 
-import org.drools.semantics.builder.model.Concept;
 import org.drools.core.util.HierarchyEncoder;
 import org.drools.core.util.HierarchyEncoderImpl;
 import org.drools.core.util.HierarchySorter;
+import org.drools.semantics.builder.model.Concept;
 
 import java.util.ArrayList;
 import java.util.Arrays;

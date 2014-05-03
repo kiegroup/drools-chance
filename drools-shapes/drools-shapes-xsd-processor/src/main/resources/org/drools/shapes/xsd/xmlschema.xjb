@@ -21,7 +21,7 @@
           xmlns:annox="http://annox.dev.java.net"
           xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
           version="2.1"
-          node="/xs:schema" schemaLocation="./xmlschema.xsd" >
+          node="/xs:schema" schemaLocation="./xmlschema.xsd">
 
   <globalBindings choiceContentProperty="false" enableJavaNamingConventions="true" fixedAttributeAsConstantProperty="true">
     <serializable uid="1" />

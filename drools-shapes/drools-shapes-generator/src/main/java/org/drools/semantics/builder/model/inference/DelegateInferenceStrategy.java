@@ -20,6 +20,7 @@ package org.drools.semantics.builder.model.inference;
 
 import org.apache.commons.collections15.map.MultiKeyMap;
 import org.apache.log4j.Logger;
+import org.drools.core.util.HierarchySorter;
 import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.Individual;
@@ -28,7 +29,6 @@ import org.drools.semantics.builder.model.PropertyRelation;
 import org.drools.semantics.builder.model.SubConceptOf;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.utils.NamespaceUtils;
-import org.drools.core.util.HierarchySorter;
 import org.kie.api.io.Resource;
 import org.kie.api.runtime.KieSession;
 import org.semanticweb.HermiT.Reasoner;

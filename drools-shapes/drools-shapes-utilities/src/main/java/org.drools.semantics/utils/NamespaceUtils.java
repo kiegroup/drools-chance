@@ -4,9 +4,7 @@ package org.drools.semantics.utils;
 import org.jdom.Namespace;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class NamespaceUtils {
 

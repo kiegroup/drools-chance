@@ -16,7 +16,6 @@
 
 package org.drools.shapes.xsd;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
