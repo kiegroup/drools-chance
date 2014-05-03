@@ -23,17 +23,17 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-shapes-examples</artifactId>
-    <version>0.6.x</version>
+    <version>6.1.0-SNAPSHOT</version>
   </parent>
 
   <name>Drools :: Shapes Construction Yard Example</name>
 
   <groupId>org.drools</groupId>
   <artifactId>conyard-example</artifactId>
-  <version>0.6.x</version>
+  <version>6.1.0-SNAPSHOT</version>
   <properties>
     <drools.version>6.1.0-SNAPSHOT</drools.version>
-    <chance.version>0.6.x</chance.version>
+    <chance.version>6.1.0-SNAPSHOT</chance.version>
     <jpa.provider>hibernate</jpa.provider>
     <!--jpa.provider>datanucleus</jpa.provider-->
   </properties>
@@ -99,7 +99,6 @@
     <dependency>
       <groupId>com.clarkparsia</groupId>
       <artifactId>Empire-sesame2</artifactId>
-      <version>0.7.3</version>
     </dependency>
     <dependency>
       <groupId>org.openrdf.sesame</groupId>
@@ -118,7 +117,6 @@
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <version>2.2.9</version>
       <scope>test</scope>
     </dependency>
 
@@ -139,22 +137,10 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>3.5.6-Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-      <version>3.5.6-Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-      <version>3.2.0.Final</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
-      <version>3.5.6-Final</version>
     </dependency>
 
 

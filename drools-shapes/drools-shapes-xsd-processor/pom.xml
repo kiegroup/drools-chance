@@ -23,12 +23,12 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-shapes</artifactId>
-    <version>0.6.x</version>
+    <version>6.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.drools</groupId>
   <artifactId>drools-shapes-xsd-processor</artifactId>
-  <version>0.6.x</version>
+  <version>6.1.0-SNAPSHOT</version>
 
   <name>Drools :: XSD -> OWL2 converter</name>
   <description>Processes XSD schemas and infers an OWL2 conceptual model based on the original schema</description>

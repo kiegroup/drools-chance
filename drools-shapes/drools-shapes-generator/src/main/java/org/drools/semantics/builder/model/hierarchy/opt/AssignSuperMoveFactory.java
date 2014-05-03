@@ -3,8 +3,8 @@ package org.drools.semantics.builder.model.hierarchy.opt;
 
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.ConceptImplProxy;
+import org.optaplanner.core.impl.heuristic.move.Move;
 import org.optaplanner.core.impl.heuristic.selector.move.factory.MoveListFactory;
-import org.optaplanner.core.impl.move.Move;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
 import org.optaplanner.core.impl.solution.Solution;
 

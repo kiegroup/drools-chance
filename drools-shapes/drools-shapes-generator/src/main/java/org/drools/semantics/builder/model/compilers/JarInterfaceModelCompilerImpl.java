@@ -72,7 +72,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
     private JarModelImpl.Holder compileInterface( String trait, Map<String, Object> params ) {
 
-        ClassWriter cw = new ClassWriter( ClassWriter.COMPUTE_MAXS );
+        ClassWriter cw = new ClassWriter( ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_FRAMES );
         FieldVisitor fv;
         MethodVisitor mv;
         AnnotationVisitor av0;

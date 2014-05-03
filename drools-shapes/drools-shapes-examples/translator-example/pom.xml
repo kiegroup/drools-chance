@@ -30,10 +30,10 @@
 
   <groupId>org.drools</groupId>
   <artifactId>translator-example</artifactId>
-  <version>0.6.x</version>
+  <version>6.1.0-SNAPSHOT</version>
   <properties>
     <drools.version>6.1.0-SNAPSHOT</drools.version>
-    <chance.version>0.6.x</chance.version>
+    <chance.version>6.1.0-SNAPSHOT</chance.version>
     <jpa.provider>hibernate</jpa.provider>
     <!--jpa.provider>datanucleus</jpa.provider-->
   </properties>
@@ -65,27 +65,23 @@
     <dependency>
       <groupId>org.jvnet.hyperjaxb3</groupId>
       <artifactId>hyperjaxb3</artifactId>
-      <version>0.5.6</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.jvnet.hyperjaxb3</groupId>
       <artifactId>maven-hyperjaxb3-plugin</artifactId>
-      <version>0.5.6</version>
     </dependency>
 
     <!-- Empire can be found here: https://github.com/mhgrove/Empire -->
     <dependency>
       <groupId>com.clarkparsia</groupId>
       <artifactId>Empire-core</artifactId>
-      <version>0.7.3</version>
     </dependency>
 
 
     <dependency>
       <groupId>com.clarkparsia</groupId>
       <artifactId>Empire-sesame2</artifactId>
-      <version>0.7.3</version>
       <scope>test</scope>
     </dependency>
 
