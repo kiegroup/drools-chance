@@ -16,6 +16,7 @@
 
 package org.drools.semantics.builder.model.inference;
 
+import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.utils.NameUtils;
@@ -42,6 +43,7 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
                                  OWLOntology ontoDescr,
                                  DLFactoryConfiguration conf,
                                  Map<InferenceTask, Resource> theory,
+                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
                                  ClassLoader classLoader ) {
 
         KieSession kSession = buildKnowledgeSession( theory );
@@ -80,10 +82,10 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
     }
 
 
-    protected abstract OntoModel buildProperties( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
+    protected abstract OntoModel buildProperties( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel, DLFactoryConfiguration conf );
 
 
-    protected abstract OntoModel buildIndividuals( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel );
+    protected abstract OntoModel buildIndividuals( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel, DLFactoryConfiguration conf );
 
 
     protected abstract OntoModel buildClassLattice( OWLOntology ontoDescr,

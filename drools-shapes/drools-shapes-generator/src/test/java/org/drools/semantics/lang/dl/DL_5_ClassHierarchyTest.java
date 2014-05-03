@@ -44,11 +44,7 @@ public class DL_5_ClassHierarchyTest {
     public void testHierarchyFromClassesExternal() {
 
         String source = "fuzzyDL/DLex7.owl";
-<<<<<<< HEAD
         Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
-=======
-        Resource res = ResourceFactory.newClassPathResource( source );
->>>>>>> 9afdb49... [Shapes] Improve configurability
 
         OntoModel results = factory.buildModel( "ex7", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 

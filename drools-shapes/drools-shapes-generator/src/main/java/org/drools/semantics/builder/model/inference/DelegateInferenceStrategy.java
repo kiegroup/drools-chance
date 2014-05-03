@@ -20,13 +20,7 @@ package org.drools.semantics.builder.model.inference;
 
 import org.apache.commons.collections15.map.MultiKeyMap;
 import org.apache.log4j.Logger;
-<<<<<<< HEAD
-=======
-import org.drools.io.Resource;
-import org.drools.runtime.ClassObjectFilter;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.semantics.builder.DLFactoryConfiguration;
->>>>>>> 9afdb49... [Shapes] Improve configurability
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.Individual;
 import org.drools.semantics.builder.model.OntoModel;
@@ -190,11 +184,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
     @Override
-<<<<<<< HEAD
-    protected OntoModel buildProperties( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierarchicalModel ) {
-=======
-    protected OntoModel buildProperties( OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierarchicalModel, DLFactoryConfiguration conf ) {
->>>>>>> 9afdb49... [Shapes] Improve configurability
+    protected OntoModel buildProperties( OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierarchicalModel, DLFactoryConfiguration conf ) {
 
         OWLDataFactory factory = ontoDescr.getOWLOntologyManager().getOWLDataFactory();
 
@@ -223,12 +213,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
     @Override
-<<<<<<< HEAD
-    protected OntoModel buildIndividuals(OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel) {
-=======
-    protected OntoModel buildIndividuals(OWLOntology ontoDescr, StatefulKnowledgeSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel, DLFactoryConfiguration conf ) {
->>>>>>> 9afdb49... [Shapes] Improve configurability
-
+    protected OntoModel buildIndividuals(OWLOntology ontoDescr, KieSession kSession, Map<InferenceTask, Resource> theory, OntoModel hierachicalModel, DLFactoryConfiguration conf ) {
 
         for ( OWLNamedIndividual individual : ontoDescr.getIndividualsInSignature( true ) ) {
             if ( logger.isInfoEnabled() ) { logger.info( "Found Individual " + individual.getIRI() ); };
