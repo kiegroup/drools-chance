@@ -23,14 +23,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.drools</groupId>
-    <artifactId>droolsjbpm-parent</artifactId>
+    <groupId>org.kie</groupId>
+    <artifactId>kie-parent-with-dependencies</artifactId>
     <version>6.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.drools</groupId>
   <artifactId>drools-chance</artifactId>
-  <version>0.6.x</version>
+  <version>6.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Drools Chance</name>
@@ -40,7 +40,7 @@
 
 
   <properties>
-    <chance.version>0.6.x</chance.version>
+    <chance.version>6.1.0-SNAPSHOT</chance.version>
     <drools.version>6.1.0-SNAPSHOT</drools.version>
     <planner.version>6.1.0-SNAPSHOT</planner.version>
   </properties>
@@ -51,23 +51,9 @@
   </modules>
 
 
-  <scm>
-    <connection>scm:git:git@github.com:droolsjbpm/drools-chance.git</connection>
-    <developerConnection>scm:git:git@github.com:droolsjbpm/drools-chance.git</developerConnection>
-    <url>https://github.com/droolsjbpm/drools-chance</url>
-  </scm>
-
-
   <dependencyManagement>
 
     <dependencies>
-
-      <dependency>
-        <groupId>com.google.protobuf</groupId>
-        <artifactId>protobuf-java</artifactId>
-        <version>2.5.0</version>
-      </dependency>
-
 
       <dependency>
         <groupId>org.drools</groupId>
@@ -78,31 +64,6 @@
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-core</artifactId>
         <version>${planner.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>de.lab4inf</groupId>
-        <artifactId>Lab4Jefis</artifactId>
-        <version>0.1.0</version>
-      </dependency>
-
-      <!-- TODO for informer-loader only, so eventually remove... -->
-      <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi</artifactId>
-        <version>3.5-FINAL</version>
-      </dependency>
-
-
-      <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
-        <version>3.2.1</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-beanutils</groupId>
-        <artifactId>commons-beanutils</artifactId>
-        <version>1.8.3</version>
       </dependency>
 
     </dependencies>
