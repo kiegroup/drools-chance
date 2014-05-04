@@ -99,6 +99,7 @@ import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -977,13 +978,21 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     }
 
 
-    private boolean processComplexSuperclasses(OWLOntology ontoDescr, OWLDataFactory factory ) {
+    private boolean processComplexSuperclasses( final OWLOntology ontoDescr, final OWLDataFactory factory ) {
         boolean dirty = false;
         for ( OWLSubClassOfAxiom sub : ontoDescr.getAxioms(AxiomType.SUBCLASS_OF, true) ) {
 
             if ( sub.getSuperClass().isAnonymous() ) {
                 if ( sub.getSuperClass() instanceof OWLObjectUnionOf ) {
-                    Iterator<OWLClassExpression> disjuncts = sub.getSuperClass().asDisjunctSet().iterator();
+                    Set<OWLClassExpression> dis = sub.getSuperClass().asDisjunctSet();
+                    List<OWLClassExpression> disjunctList = new ArrayList<OWLClassExpression>( dis );
+                    Collections.sort( disjunctList, new Comparator<OWLClassExpression>() {
+                        @Override
+                        public int compare( OWLClassExpression o1, OWLClassExpression o2 ) {
+                            return asNamedClass( o1, factory, ontoDescr ).compareTo( asNamedClass( o2, factory, ontoDescr ) );
+                        }
+                    } );
+                    Iterator<OWLClassExpression> disjuncts = disjunctList.iterator();
 
                     String orNames = asNamedClass( disjuncts.next(), factory, ontoDescr ).getIRI().getFragment();
                     while ( disjuncts.hasNext() ) {

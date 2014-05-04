@@ -43,7 +43,6 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
                                  OWLOntology ontoDescr,
                                  DLFactoryConfiguration conf,
                                  Map<InferenceTask, Resource> theory,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
                                  ClassLoader classLoader ) {
 
         KieSession kSession = buildKnowledgeSession( theory );

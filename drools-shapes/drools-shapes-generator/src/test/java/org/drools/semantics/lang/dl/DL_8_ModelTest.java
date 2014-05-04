@@ -624,7 +624,7 @@ public class DL_8_ModelTest {
         Concept yetKlass = results.getConcept( "<http://test#YetAnotherKlass>" );
         Concept againKlass = results.getConcept( "<http://test#AgainKlass>" );
 
-        Concept disj = results.getConcept( "<http://test#YorXorZ>" );
+        Concept disj = results.getConcept( "<http://test#XorYorZ>" );
         Concept xoz = results.getConcept( "<http://test#XorZ>" );
 
         assertTrue( master.getSuperConcepts().contains( disj ) );

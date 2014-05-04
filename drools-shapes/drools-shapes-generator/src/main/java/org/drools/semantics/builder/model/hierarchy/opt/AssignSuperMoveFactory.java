@@ -45,7 +45,6 @@ public class AssignSuperMoveFactory implements MoveListFactory {
 //            }
         }
 
-        System.out.println( "Creating move List " + moveSet.size() );
         return new ArrayList( moveSet );
     }
 

@@ -37,7 +37,6 @@ public interface ModelInferenceStrategy {
                                  DLFactoryConfiguration conf,
                                  Map<InferenceTask, Resource> theory,
 //                                 KieSession kSession,
-                                 List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGens,
                                  ClassLoader classLoader );
 
 

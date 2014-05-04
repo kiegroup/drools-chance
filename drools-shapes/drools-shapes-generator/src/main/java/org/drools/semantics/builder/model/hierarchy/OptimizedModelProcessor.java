@@ -5,21 +5,20 @@ import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.hierarchy.opt.OptimalHierarchy;
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
-import org.optaplanner.core.config.solver.XmlSolverFactory;
+import org.optaplanner.core.impl.solver.XStreamXmlSolverFactory;
 
 public class OptimizedModelProcessor implements ModelHierarchyProcessor {
 
     public void process( OntoModel model ) {
 
-        SolverFactory solverFactory = new XmlSolverFactory( "/org/drools/semantics/builder/model/hierarchy/hier_joined_config.xml" );
+        SolverFactory solverFactory = new XStreamXmlSolverFactory();
+        ((XStreamXmlSolverFactory) solverFactory).configure( "org/drools/semantics/builder/model/hierarchy/hier_joined_config.xml" );
 
         Solver solver = solverFactory.buildSolver();
 
         OptimalHierarchy problem = new OptimalHierarchy( model );
 
-        solver.setPlanningProblem( problem );
-
-        solver.solve();
+        solver.solve( problem );
 
         OptimalHierarchy solvedHierarchy = (OptimalHierarchy) solver.getBestSolution();
 
