@@ -1,7 +1,6 @@
 package org.drools.shapes.xsd;
 
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
-import org.drools.core.RuntimeDroolsException;
 import org.drools.core.io.impl.ClassPathResource;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -137,7 +136,7 @@ public class Xsd2OwlImpl implements Xsd2Owl {
         kieBuilder.buildAll();
 
         if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
-            throw new RuntimeDroolsException( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
+            throw new RuntimeException( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
         }
 
         KieBaseConfiguration rbC = kieServices.newKieBaseConfiguration();
