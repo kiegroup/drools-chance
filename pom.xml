@@ -162,13 +162,6 @@
       <url>http://giv-uw.uni-muenster.de/m2/repo</url>
     </repository>
 
-    <repository>
-      <id>aduna-maven-repository</id>
-      <name>Aduna Soft Maven Repository</name>
-      <url>http://repo.aduna-software.org/maven2/releases</url>
-    </repository>
-
-
   </repositories>
 
 
