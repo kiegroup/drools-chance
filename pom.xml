@@ -105,17 +105,6 @@
       <url>http://www.lab4inf.fh-muenster.de/lab4inf/maven-repository</url>
     </repository>
 
-    <repository>
-      <id>uncertWeb-maven-repository</id>
-      <name>UncertWeb Maven Repository</name>
-      <url>http://giv-uw.uni-muenster.de/m2/repo</url>
-    </repository>
-
-    <repository>
-      <id>aduna-maven-repository</id>
-      <name>Aduna Soft Maven Repository</name>
-      <url>http://repo.aduna-software.org/maven2/releases</url>
-    </repository>
 
     <!--repository>
       <id>choco-repository</id>

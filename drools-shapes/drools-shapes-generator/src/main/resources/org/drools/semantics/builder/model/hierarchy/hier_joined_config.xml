@@ -14,9 +14,9 @@
   </termination>
 
 
-  <customSolverPhase>
-    <customSolverPhaseCommandClass>org.drools.semantics.builder.model.hierarchy.opt.SolutionInitializer</customSolverPhaseCommandClass>
-  </customSolverPhase>
+  <customPhase>
+    <customPhaseCommandClass>org.drools.semantics.builder.model.hierarchy.opt.SolutionInitializer</customPhaseCommandClass>
+  </customPhase>
 
   <localSearch>
     <moveListFactory>

@@ -4,14 +4,13 @@ package org.drools.semantics.builder.model.hierarchy.opt;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.ConceptImplProxy;
 import org.drools.semantics.builder.model.PropertyRelation;
-import org.optaplanner.core.impl.phase.custom.CustomSolverPhaseCommand;
+import org.optaplanner.core.impl.phase.custom.CustomPhaseCommand;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-public class SolutionInitializer implements CustomSolverPhaseCommand {
-
+public class SolutionInitializer implements CustomPhaseCommand {
     public void changeWorkingSolution( ScoreDirector scoreDirector ) {
 
         OptimalHierarchy hier = (OptimalHierarchy) scoreDirector.getWorkingSolution();
