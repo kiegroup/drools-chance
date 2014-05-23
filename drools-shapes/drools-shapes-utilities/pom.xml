@@ -25,7 +25,6 @@
     <dependency>
       <groupId>com.clarkparsia</groupId>
       <artifactId>Empire-core</artifactId>
-      <!--version>0.7.3</version-->
     </dependency>
 
     <dependency>

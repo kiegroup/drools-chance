@@ -120,7 +120,7 @@
       <dependency>
         <groupId>com.clarkparsia</groupId>
         <artifactId>Empire-core</artifactId>
-        <version>0.7.3</version>
+        <version>0.7.4</version>
       </dependency>
 
       <dependency>
@@ -220,7 +220,7 @@
       <dependency>
         <groupId>com.clarkparsia</groupId>
         <artifactId>Empire-sesame2</artifactId>
-        <version>0.7.3</version>
+        <version>0.7.4</version>
         <scope>test</scope>
       </dependency>
       <dependency>
