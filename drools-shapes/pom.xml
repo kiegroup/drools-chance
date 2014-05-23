@@ -22,8 +22,8 @@
 
   <parent>
     <groupId>org.drools</groupId>
-    <artifactId>drools-chance</artifactId>
-    <version>0.5.6.Final</version>
+    <artifactId>droolsjbpm-parent</artifactId>
+    <version>5.6.0.Final</version>
   </parent>
 
   <artifactId>drools-shapes</artifactId>
