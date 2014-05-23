@@ -60,12 +60,12 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-generator</artifactId>
-      <version>${chance.version}</version>
+      <version>${shapes.version}</version>
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-utilities</artifactId>
-      <version>${chance.version}</version>
+      <version>${shapes.version}</version>
     </dependency>
 
     <dependency>

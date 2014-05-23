@@ -27,8 +27,14 @@
   </parent>
 
   <artifactId>drools-shapes</artifactId>
+	<version>0.5.6.Final</version>
   <packaging>pom</packaging>
 
+	<properties>
+		<drools.version>5.6.0.Final</drools.version>
+		<shapes.version>0.5.6.Final</shapes.version>
+		<planner.version>5.5.0.Final</planner.version>
+	</properties>
 
   <name>Drools :: Shapes</name>
   <description> OO Semantic Rule-based Reasoner </description>

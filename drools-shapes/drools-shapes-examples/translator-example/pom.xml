@@ -33,7 +33,7 @@
   <version>0.5.6.Final</version>
   <properties>
     <drools.version>5.6.0.Final</drools.version>
-    <chance.version>0.5.6.Final</chance.version>
+    <shapes.version>0.5.6.Final</shapes.version>
     <jpa.provider>hibernate</jpa.provider>
     <!--jpa.provider>datanucleus</jpa.provider-->
   </properties>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-generator</artifactId>
-      <version>${chance.version}</version>
+      <version>${shapes.version}</version>
     </dependency>
 
     <dependency>
@@ -213,7 +213,7 @@
       <plugin>
         <groupId>org.drools</groupId>
         <artifactId>drools-shapes-generator-plugin</artifactId>
-        <version>${chance.version}</version>
+        <version>${shapes.version}</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>
