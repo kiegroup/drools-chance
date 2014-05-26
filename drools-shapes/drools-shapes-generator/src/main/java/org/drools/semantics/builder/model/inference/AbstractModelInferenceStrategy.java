@@ -29,6 +29,7 @@ import org.kie.api.io.Resource;
 import org.kie.api.runtime.KieSession;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 
@@ -94,7 +95,7 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
                                                     DLFactoryConfiguration conf );
 
 
-    protected abstract InferredOntologyGenerator initReasoner( KieSession kSession, OWLOntology ontoDescr, List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators );
+    protected abstract OWLReasoner initReasoner( KieSession kSession, OWLOntology ontoDescr );
 
 
     private KieSession buildKnowledgeSession( Map<InferenceTask, Resource> theory ) {

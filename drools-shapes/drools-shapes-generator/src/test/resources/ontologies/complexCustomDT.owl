@@ -1,0 +1,26 @@
+Prefix(:=<urn:hl7-org:vmr:r2#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<urn:hl7-org:vmr:r2>
+<urn:hl7-org:vmr:r2/1.0>
+
+Declaration(Class(<urn:hl7-org:cdsdt:r2#ADXP>))
+SubClassOf(<urn:hl7-org:cdsdt:r2#ADXP> <urn:hl7-org:cdsdt:r2#XP>)
+SubClassOf(<urn:hl7-org:cdsdt:r2#ADXP> ObjectIntersectionOf(DataAllValuesFrom(<urn:hl7-org:cdsdt:r2#type> <urn:hl7-org:cdsdt:r2#AddressPartType>) DataMinCardinality(1 <urn:hl7-org:cdsdt:r2#type> <urn:hl7-org:cdsdt:r2#AddressPartType>) DataMaxCardinality(1 <urn:hl7-org:cdsdt:r2#type> <urn:hl7-org:cdsdt:r2#AddressPartType>)))
+Declaration(Class(<urn:hl7-org:cdsdt:r2#ENXP>))
+SubClassOf(<urn:hl7-org:cdsdt:r2#ENXP> <urn:hl7-org:cdsdt:r2#XP>)
+SubClassOf(<urn:hl7-org:cdsdt:r2#ENXP> ObjectIntersectionOf(DataAllValuesFrom(<urn:hl7-org:cdsdt:r2#type> <urn:hl7-org:cdsdt:r2#EntityNamePartType>) DataMinCardinality(1 <urn:hl7-org:cdsdt:r2#type> <urn:hl7-org:cdsdt:r2#EntityNamePartType>) DataMaxCardinality(1 <urn:hl7-org:cdsdt:r2#type> <urn:hl7-org:cdsdt:r2#EntityNamePartType>)))
+Declaration(Class(<urn:hl7-org:cdsdt:r2#XP>))
+Declaration(DataProperty(<urn:hl7-org:cdsdt:r2#type>))
+DataPropertyDomain(<urn:hl7-org:cdsdt:r2#type> ObjectUnionOf(<urn:hl7-org:cdsdt:r2#ENXP> <urn:hl7-org:cdsdt:r2#ADXP>))
+DataPropertyRange(<urn:hl7-org:cdsdt:r2#type> DataUnionOf(<urn:hl7-org:cdsdt:r2#EntityNamePartType> <urn:hl7-org:cdsdt:r2#AddressPartType>))
+Declaration(Datatype(<urn:hl7-org:cdsdt:r2#AddressPartType>))
+DatatypeDefinition(<urn:hl7-org:cdsdt:r2#AddressPartType> DataOneOf("ADL"^^xsd:string "AL"^^xsd:string "BNN"^^xsd:string "BNR"^^xsd:string "BNS"^^xsd:string "CAR"^^xsd:string "CEN"^^xsd:string "CNT"^^xsd:string "CPA"^^xsd:string "CTY"^^xsd:string "DAL"^^xsd:string "DEL"^^xsd:string "DINST"^^xsd:string "DINSTA"^^xsd:string "DINSTQ"^^xsd:string "DIR"^^xsd:string "DMOD"^^xsd:string "DMODID"^^xsd:string "DPID"^^xsd:string "INT"^^xsd:string "POB"^^xsd:string "PRE"^^xsd:string "SAL"^^xsd:string "STA"^^xsd:string "STB"^^xsd:string "STR"^^xsd:string "STTYP"^^xsd:string "UNID"^^xsd:string "UNIT"^^xsd:string "ZIP"^^xsd:string))
+Declaration(Datatype(<urn:hl7-org:cdsdt:r2#EntityNamePartType>))
+DatatypeDefinition(<urn:hl7-org:cdsdt:r2#EntityNamePartType> DataOneOf("DEL"^^xsd:string "FAM"^^xsd:string "GIV"^^xsd:string "TITLE"^^xsd:string))
+)

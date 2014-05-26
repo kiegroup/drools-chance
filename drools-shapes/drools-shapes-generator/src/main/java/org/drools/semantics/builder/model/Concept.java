@@ -62,14 +62,14 @@ public class Concept implements Cloneable {
     public Concept( IRI iri, String name, boolean primitive ) {
         this.iri = iri;
         this.name = primitive ? name : NameUtils.compactUpperCase( name );
-        this.pack = NameUtils.namespaceURIToPackage( iri.getStart() );
+        this.pack = NameUtils.namespaceURIToPackage( iri.getNamespace() );
         this.superConcepts = new HashSet();
         this.subConcepts = new HashSet();
         this.properties = new HashMap();
         this.equivalentConcepts = new HashSet();
         this.keys = new ArrayList<PropertyRelation>();
         this.primitive = primitive;
-        this.namespace = iri.getStart();
+        this.namespace = iri.getNamespace();
         this.implementingCon = new ConceptImplProxy( this );
     }
 

@@ -16,6 +16,7 @@ public class NamespaceUtils {
         knownNamespaces.put( Namespace.NO_NAMESPACE.getURI(), Namespace.NO_NAMESPACE );
         knownNamespaces.put( "http://www.w3.org/2002/07/owl", Namespace.getNamespace( "owl", "http://www.w3.org/2002/07/owl" ) );
         knownNamespaces.put( "http://www.w3.org/2001/XMLSchema", Namespace.getNamespace( "xsd", "http://www.w3.org/2001/XMLSchema" ) );
+        knownNamespaces.put( "http://www.w3.org/1999/02/22-rdf-syntax-ns", Namespace.getNamespace( "rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns" ) );
     }
 
     public static boolean isKnownSchema( String namespace ) {

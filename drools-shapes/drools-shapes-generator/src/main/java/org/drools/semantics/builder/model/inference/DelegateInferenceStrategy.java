@@ -29,9 +29,11 @@ import org.drools.semantics.builder.model.PropertyRelation;
 import org.drools.semantics.builder.model.SubConceptOf;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.utils.NamespaceUtils;
+import org.jdom.Namespace;
 import org.kie.api.io.Resource;
 import org.kie.api.runtime.KieSession;
 import org.semanticweb.HermiT.Reasoner;
+import org.semanticweb.HermiT.datatypes.DatatypeRegistry;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
@@ -46,6 +48,7 @@ import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLDataExactCardinality;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
 import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
 import org.semanticweb.owlapi.model.OWLDataMinCardinality;
 import org.semanticweb.owlapi.model.OWLDataOneOf;
@@ -55,6 +58,7 @@ import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataUnionOf;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
@@ -95,8 +99,10 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
+import org.w3._2002._07.owl.Thing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -138,8 +144,18 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         primitives.put( i1.toQuotedString(), con );
     }
 
+    private static void registerComplexConcept( String conIri, String mappedKlassName ) {
+        IRI i1 = IRI.create( conIri );
+        Concept con = new Concept( i1, mappedKlassName, false );
+        complexes.put( i1.toQuotedString(), con );
+    }
 
 
+    public DelegateInferenceStrategy() {
+        this.conceptCache.putAll( complexes );
+    }
+
+    private static Map<String, Concept> complexes = new HashMap<String, Concept>();
     private static Map<String, Concept> primitives = new HashMap<String, Concept>();
 
     {
@@ -183,6 +199,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         register( "http://www.w3.org/2001/XMLSchema#unsignedInt", "xsd:unsignedInt" );
 
         register( "http://www.w3.org/2001/XMLSchema#anyURI", "xsd:anyURI" );
+
+        registerComplexConcept( "http://www.w3.org/2001/XMLSchema#List", "List" );
+
     }
 
 
@@ -375,11 +394,13 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
             LinkedList<OWLClassExpression> orderedSupers = new LinkedList<OWLClassExpression>();
             // cardinalities should be fixed last
-            for ( OWLClassExpression sup : supers.get( con.getIri() ) ) {
-                if ( sup instanceof OWLCardinalityRestriction ) {
-                    orderedSupers.addLast( sup );
-                } else {
-                    orderedSupers.addFirst( sup );
+            if ( supers.containsKey( con.getIri() ) ) {
+                for ( OWLClassExpression sup : supers.get( con.getIri() ) ) {
+                    if ( sup instanceof OWLCardinalityRestriction ) {
+                        orderedSupers.addLast( sup );
+                    } else {
+                        orderedSupers.addFirst( sup );
+                    }
                 }
             }
 
@@ -412,7 +433,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case DATA_ALL_VALUES_FROM:
                 OWLDataAllValuesFrom forall = (OWLDataAllValuesFrom) sup;
                 propIri = forall.getProperty().asOWLDataProperty().getIRI().toQuotedString();
-                tgt = primitives.get( dataRangeToDataType( forall.getFiller(), factory ).getIRI().toQuotedString()  );
+                tgt = getDataRangeConcept( forall.getProperty(), forall.getFiller(), factory );
                 if ( tgt.equals( "xsd:anySimpleType" ) ) {
                     break;
                 }
@@ -426,7 +447,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case DATA_MIN_CARDINALITY:
                 OWLDataMinCardinality min = (OWLDataMinCardinality) sup;
                 propIri = min.getProperty().asOWLDataProperty().getIRI().toQuotedString();
-                tgt = primitives.get( dataRangeToDataType( min.getFiller(), factory ).getIRI().toQuotedString()  );
+                tgt = getDataRangeConcept( min.getProperty(), min.getFiller(), factory );
                 rel = extractProperty( con, propIri, tgt, min.getCardinality(), null, false );
                 if ( rel != null ) {
                     hierarchicalModel.addProperty( rel );
@@ -437,7 +458,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case DATA_MAX_CARDINALITY:
                 OWLDataMaxCardinality max = (OWLDataMaxCardinality) sup;
                 propIri = max.getProperty().asOWLDataProperty().getIRI().toQuotedString();
-                tgt = primitives.get( dataRangeToDataType( max.getFiller(), factory ).getIRI().toQuotedString()  );
+                tgt = getDataRangeConcept( max.getProperty(), max.getFiller(), factory );
                 rel = extractProperty( con, propIri, tgt, null, max.getCardinality(), false );
                 if ( rel != null ) {
                     hierarchicalModel.addProperty( rel );
@@ -448,7 +469,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             case DATA_EXACT_CARDINALITY:
                 OWLDataExactCardinality ex = (OWLDataExactCardinality) sup;
                 propIri = ex.getProperty().asOWLDataProperty().getIRI().toQuotedString();
-                tgt = primitives.get( dataRangeToDataType( ex.getFiller(), factory ).getIRI().toQuotedString()  );
+                tgt = getDataRangeConcept( ex.getProperty(), ex.getFiller(), factory );
                 rel = extractProperty( con, propIri, tgt, ex.getCardinality(), ex.getCardinality(), false );
                 if ( rel != null ) {
                     hierarchicalModel.addProperty( rel );
@@ -479,7 +500,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     break;
                 }
                 tgt = conceptCache.get( filterAliases( forallO.getFiller() ).asOWLClass().getIRI().toQuotedString() );
-                if ( tgt.equals( "<http://www.w3.org/2002/07/owl#Thing>" ) ) {
+                if ( tgt.equals( Thing.IRI ) ) {
                     break;
                 }
                 rel = extractProperty( con, propIri, tgt, null, null, true );
@@ -533,6 +554,18 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 logger.warn( " Cannot handle " + sup );
         }
 
+    }
+
+    private Concept getDataRangeConcept( OWLDataPropertyExpression property, OWLDataRange range, OWLDataFactory factory ) {
+        OWLDatatype datatype = dataRangeToDataType( range, factory );
+        if ( datatype != null && primitives.containsKey( datatype.getIRI().toQuotedString() ) ) {
+            return primitives.get( datatype.getIRI().toQuotedString() );
+        } else if ( conceptCache.containsKey( datatype.getIRI().toQuotedString() ) ) {
+            return conceptCache.get( datatype.getIRI().toQuotedString() );
+        } else {
+            return conceptCache.get( IRI.create( property.asOWLDataProperty().getIRI().getNamespace(),
+                                                 NameUtils.capitalize( property.asOWLDataProperty().getIRI().getFragment() ) + "DataRange" ).toQuotedString() );
+        }
     }
 
 
@@ -589,7 +622,23 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     rel = cloneRel( originalProperty );
                 } else {
                     originalProperty = inheritPropertyCopy( con, con, propIri );
-                    rel = cloneRel( originalProperty );
+                    if ( originalProperty != null ) {
+                        rel = cloneRel( originalProperty );
+                    } else {
+                        IRI propIRI = propIri.startsWith( "<" )
+                                      ? IRI.create( propIri.substring( 1, propIri.indexOf( "#" ) ), propIri.substring( propIri.indexOf( "#" ) + 1, propIri.length() - 1 ) )
+                                      : IRI.create( propIri );
+                        originalProperty = new PropertyRelation(
+                                con.getIri(),
+                                propIri,
+                                target.getIri(),
+                                propIRI.getFragment()
+                        );
+                        originalProperty.setDomain( conceptCache.get( originalProperty.getSubject() ) );
+                        originalProperty.setTarget( conceptCache.get( originalProperty.getObject() ) );
+                        con.addProperty( propIri, propIRI.getFragment(), originalProperty );
+                        rel = cloneRel( originalProperty );
+                    }
                 }
             }
         }
@@ -606,9 +655,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             }
 
             boolean dirty = false;
-            if ( target.getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" )
+            if ( target.getIri().equals( Thing.IRI )
                     || target.getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>" )
-                    || target.getEquivalentConcepts().contains( conceptCache.get( "<http://www.w3.org/2002/07/owl#Thing>" ) )
+                    || target.getEquivalentConcepts().contains( conceptCache.get( Thing.IRI ) )
                     ) {
                 target = rel.getTarget();
                 restrictedSuffix = createSuffix( con.getName(), target.getName(), true );
@@ -617,7 +666,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             }
             if ( ! rel.getTarget().equals( target ) && ! restrictTarget ) {
                 //TODO FIXME : check that target is really restrictive!
-                if ( ! target.getIri().equals( "<http://www.w3.org/2002/07/owl#Thing>" )
+                if ( ! target.getIri().equals( Thing.IRI )
                         && ! target.getIri().equals("<http://www.w3.org/2000/01/rdf-schema#Literal>")
                         ) {
                     rel.setTarget( target );
@@ -751,17 +800,30 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                     for ( OWLDataRange range : ranges ) {
                         OWLClassExpression realDom = filterAliases( domain );
                         OWLDatatype dataRange = dataRangeToDataType( range, factory );
-                        PropertyRelation rel = new PropertyRelation( realDom.asOWLClass().getIRI().toQuotedString(),
-                                dp.getIRI().toQuotedString(),
-                                dataRange.getIRI().toQuotedString(),
-                                props.get( dp.getIRI().toQuotedString() ) );
 
+                        Concept con;
+                        PropertyRelation rel;
 
+                        if ( dataRange != null && primitives.containsKey( dataRange.getIRI().toQuotedString() ) ) {
+                            rel = new PropertyRelation( realDom.asOWLClass().getIRI().toQuotedString(),
+                                                        dp.getIRI().toQuotedString(),
+                                                        dataRange.getIRI().toQuotedString(),
+                                                        props.get( dp.getIRI().toQuotedString() ) );
+                            con = conceptCache.get( rel.getSubject() );
+                            rel.setTarget( primitives.get( rel.getObject() ) );
+                        } else {
+                            Concept dRangeCon = createConceptForComplexDatatype( range, dp, hierarchicalModel );
 
-                        Concept con = conceptCache.get( rel.getSubject() );
-                        rel.setTarget( primitives.get( rel.getObject() ) );
+                            // no datarange -> complex data type, let's try to rebuild as object property
+                            rel = new PropertyRelation( realDom.asOWLClass().getIRI().toQuotedString(),
+                                                        dp.getIRI().toQuotedString(),
+                                                        dRangeCon.getIri(),
+                                                        props.get( dp.getIRI().toQuotedString() ) );
+                            con = conceptCache.get( rel.getSubject() );
+                            rel.setTarget( conceptCache.get( rel.getObject() ) );
+                        }
+
                         rel.setDomain( con );
-
                         con.addProperty( rel.getProperty(), rel.getName(), rel );
                         hierarchicalModel.addProperty( rel );
                     }
@@ -817,6 +879,43 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         }
     }
 
+    private Concept createConceptForComplexDatatype( OWLDataRange dataRange, OWLDataProperty prop, OntoModel model ) {
+        // processing a complex data range
+        // it is not possible to do this earlier, since datatypes do not have inheritance.
+        // so, we create a Concept late in the generation process, which will be mapped to an intf/class
+        IRI iri = IRI.create( prop.getIRI().getNamespace(), NameUtils.capitalize( prop.getIRI().getFragment() ) + "DataRange" );
+        Concept rangeCon = new Concept(
+                iri,
+                NameUtils.capitalize( iri.getFragment() ),
+                false );
+        if ( dataRange instanceof OWLDataUnionOf ) {
+            rangeCon.addSuperConcept( conceptCache.get( Thing.IRI ) );
+            for ( OWLDataRange member : ( (OWLDataUnionOf) dataRange ).getOperands() ) {
+                OWLDatatype datatype = member.asOWLDatatype();
+                if ( ! primitives.containsKey( datatype.getIRI().toQuotedString() ) ) {
+                    Concept complexDT = new Concept( datatype.getIRI(), datatype.getIRI().getFragment(), false );
+                    complexDT.addSuperConcept( rangeCon );
+                    conceptCache.put( datatype.getIRI().toQuotedString(), complexDT );
+                    model.addConcept( complexDT );
+                }
+            }
+        } else if ( dataRange instanceof OWLDataIntersectionOf ) {
+            for ( OWLDataRange member : ( (OWLDataIntersectionOf) dataRange ).getOperands() ) {
+                OWLDatatype datatype = member.asOWLDatatype();
+                if ( ! primitives.containsKey( datatype.getIRI().toQuotedString() ) ) {
+                    Concept complexDT = new Concept( datatype.getIRI(), datatype.getIRI().getFragment(), false );
+                    rangeCon.addSuperConcept( complexDT );
+                    complexDT.addSuperConcept( conceptCache.get( Thing.IRI ) );
+                    conceptCache.put( datatype.getIRI().toQuotedString(), complexDT );
+                    model.addConcept( complexDT );
+                }
+            }
+        }
+        this.conceptCache.put( iri.toQuotedString(), rangeCon );
+        model.addConcept( rangeCon );
+        return rangeCon;
+    }
+
     private OWLDatatype dataRangeToDataType( OWLDataRange range, OWLDataFactory factory ) {
         if ( range.isDatatype() ) {
             return range.asOWLDatatype();
@@ -833,7 +932,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             }
             return type;
         }
-        return range.asOWLDatatype();
+        return null;
     }
 
 
@@ -1784,7 +1883,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
     private void fixRootHierarchy(OntoModel model) {
-        Concept thing = model.getConcept( IRI.create( NamespaceUtils.getNamespaceByPrefix( "owl" ).getURI() + "#Thing"  ).toQuotedString() );
+        Concept thing = model.getConcept( Thing.IRI );
         if ( thing.getProperties().size() > 0 ) {
             Concept localRoot = new Concept(
                     IRI.create( NameUtils.separatingName( model.getDefaultNamespace() ) + "RootThing" ),
@@ -1894,12 +1993,26 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         }
 
         HierarchySorter<String> sorter = new HierarchySorter<String>();
-        List<String> sortedCons = sorter.sort( supers );
+        List<String> sortedTemp = sorter.sort( supers );
+        List<String> sortedCons = new ArrayList( sortedTemp.size() + complexes.size() + 3 );
+        for ( Concept complex : complexes.values() ) {
+            // we need to fix both the proper concept and the metadata.
+            // "Complex" datatype concepts
+            addSuper( complex.getIri(), thing, supers );
+            complex.addSuperConcept( conceptCache.get( Thing.IRI ) );
+            sortedCons.add( complex.getIri() );
+        }
+        sortedCons.addAll( sortedTemp );
 
-        ArrayList missing = new ArrayList( conceptCache.keySet() );
+        ArrayList<String> missing = new ArrayList<String>( conceptCache.keySet() );
         missing.removeAll( supers.keySet() );
 
         LinkedHashMap<String,Concept> sortedCache = new LinkedHashMap<String, Concept>();
+        for ( String miss : missing ) {
+            sortedCache.put( miss, conceptCache.get( miss ) );
+            supers.put( miss, Arrays.asList( thing ) );
+        }
+
         for ( String con : sortedCons ) {
             sortedCache.put( con, conceptCache.get( con ) );
         }
@@ -2134,9 +2247,15 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 logger.info( " START REASONER " );
             }
 
-            InferredOntologyGenerator reasoner = initReasoner( kSession, ontoDescr, axiomGenerators );
+            OWLReasoner owler = initReasoner( kSession, ontoDescr );
+
+            InferredOntologyGenerator reasoner = new InferredOntologyGenerator( owler, axiomGenerators );
 
             reasoner.fillOntology( ontoDescr.getOWLOntologyManager(), ontoDescr );
+
+            if ( ! owler.isConsistent() ) {
+                throw new RuntimeException( "Inconsistent ontology" );
+            }
 
             if ( logger.isInfoEnabled() ) {
                 logger.info( " STOP REASONER : time elapsed >> " + ( new Date().getTime() - now ) );
@@ -2154,13 +2273,29 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
 
 
-    protected InferredOntologyGenerator initReasoner( KieSession kSession,
-                                                      OWLOntology ontoDescr,
-                                                      List<InferredAxiomGenerator<? extends OWLAxiom>> axiomGenerators ) {
+    private static Set<IRI> registeredDTHandlers = new HashSet<IRI>();
+
+    protected OWLReasoner initReasoner( KieSession kSession,
+                                        OWLOntology ontoDescr ) {
 
         ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
         OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
 
+
+        for ( OWLDatatype datatype : ontoDescr.getDatatypesInSignature( true ) ) {
+            IRI dtIRI = datatype.getIRI();
+
+            if ( ! "xsd".equals( dtIRI.getNamespace() )
+                 && ! dtIRI.getNamespace().equals( NamespaceUtils.getNamespaceByPrefix( "xsd" ).getURI() + "#" )
+                 && ! dtIRI.getNamespace().equals( NamespaceUtils.getNamespaceByPrefix( "rdf" ).getURI() + "#"  )
+                 && ! dtIRI.getNamespace().equals( NamespaceUtils.getNamespaceByPrefix( "owl" ).getURI() + "#"  )
+                 && ! registeredDTHandlers.contains( dtIRI ) ) {
+                DatatypeRegistry.registerDatatypeHandler( new ComplexDatatypeHandler( datatype, ontoDescr ) );
+                // is there a way to get the set of registered handlers from the registry?
+                // a duplicate registration throws an error, so we need to prevent it manually
+                registeredDTHandlers.add( dtIRI );
+            }
+        }
 
         OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 //                if ( owler == null ) {
@@ -2186,8 +2321,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             throw new RuntimeException( "Inconsistent ontology " );
         }
 
-        return new InferredOntologyGenerator( owler, axiomGenerators );
-
+        return owler;
     }
 
 

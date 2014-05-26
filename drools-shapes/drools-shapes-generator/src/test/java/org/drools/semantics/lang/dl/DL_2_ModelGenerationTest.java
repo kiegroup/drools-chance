@@ -16,6 +16,7 @@
 
 package org.drools.semantics.lang.dl;
 
+import org.junit.Ignore;
 import org.kie.api.io.Resource;
 import org.kie.internal.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
@@ -218,6 +219,20 @@ public class DL_2_ModelGenerationTest {
     }
 
 
+
+    @Test
+    @Ignore
+    public void testComplexDatatype() {
+
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/complexCustomDT.owl" );
+        OWLOntology onto = factory.parseOntology( res );
+        OntoModel ontoModel = factory.buildModel( "test",
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED,
+                                                                                           DLFactoryConfiguration.defaultAxiomGenerators ) );
+        assertTrue( ontoModel.isHierarchyConsistent() );
+
+    }
 
 
 }
