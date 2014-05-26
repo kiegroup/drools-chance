@@ -90,9 +90,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>cp-common-openrdf</artifactId>
-      <version>0.8.1</version>
+      <groupId>com.complexible.common</groupId>
+      <artifactId>openrdf</artifactId>
+      <version>2.0.2</version>
     </dependency>
 
 

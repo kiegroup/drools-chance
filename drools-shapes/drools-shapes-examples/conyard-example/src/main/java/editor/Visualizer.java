@@ -2,8 +2,8 @@ package editor;
 
 import com.clarkparsia.empire.annotation.InvalidRdfException;
 import com.clarkparsia.empire.annotation.RdfGenerator;
-import com.clarkparsia.openrdf.ExtGraph;
-import com.clarkparsia.openrdf.Graphs;
+import com.complexible.common.openrdf.model.ExtGraph;
+import com.complexible.common.openrdf.model.Graphs;
 import org.drools.owl.conyard.ConstructionYardImpl;
 import org.drools.owl.conyard.Painting;
 import org.drools.owl.conyard.PaintingImpl;
