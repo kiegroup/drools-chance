@@ -80,8 +80,8 @@
 
     <!-- Empire can be found here: https://github.com/mhgrove/Empire -->
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>Empire-core</artifactId>
+      <groupId>com.clarkparsia.empire</groupId>
+      <artifactId>empire</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.hibernate</groupId>
@@ -97,9 +97,9 @@
 
 
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>Empire-sesame2</artifactId>
-      <version>0.7.3</version>
+      <groupId>com.clarkparsia.empire</groupId>
+      <artifactId>sesame</artifactId>
+      <version>0.8.4</version>
     </dependency>
     <dependency>
       <groupId>org.openrdf.sesame</groupId>

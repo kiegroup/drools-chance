@@ -113,13 +113,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>Empire-sesame2</artifactId>
+      <groupId>com.clarkparsia.empire</groupId>
+      <artifactId>sesame</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>Empire-core</artifactId>
+      <groupId>com.clarkparsia.empire</groupId>
+      <artifactId>empire</artifactId>
       <scope>test</scope>
     </dependency>
 

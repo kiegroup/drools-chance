@@ -94,8 +94,8 @@
 
 
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>Empire-core</artifactId>
+      <groupId>com.clarkparsia.empire</groupId>
+      <artifactId>empire</artifactId>
     </dependency>
 
 
