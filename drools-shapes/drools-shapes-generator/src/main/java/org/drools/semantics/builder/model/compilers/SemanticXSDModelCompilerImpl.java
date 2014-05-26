@@ -16,7 +16,6 @@
 
 package org.drools.semantics.builder.model.compilers;
 
-import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.DLTemplateManager;
 import org.drools.semantics.builder.model.CompiledOntoModel;
 import org.drools.semantics.builder.model.Concept;
@@ -28,6 +27,7 @@ import org.drools.semantics.builder.model.XSDModel;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.jdom.Namespace;
+import org.kie.internal.io.ResourceFactory;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;

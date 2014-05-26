@@ -36,15 +36,7 @@
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>knowledge-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
       <artifactId>drools-compiler</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.optaplanner</groupId>
@@ -55,12 +47,12 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-utilities</artifactId>
-      <version>${chance.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-reasoner</artifactId>
-      <version>${chance.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
 
@@ -94,8 +86,8 @@
 
 
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>Empire-core</artifactId>
+      <groupId>com.clarkparsia.empire</groupId>
+      <artifactId>empire</artifactId>
     </dependency>
 
 

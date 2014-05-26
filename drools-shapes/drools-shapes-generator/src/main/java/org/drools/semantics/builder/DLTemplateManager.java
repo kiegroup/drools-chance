@@ -16,8 +16,8 @@
 
 package org.drools.semantics.builder;
 
-import org.drools.io.ResourceFactory;
 import org.drools.semantics.builder.model.ModelFactory;
+import org.kie.internal.io.ResourceFactory;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
@@ -112,7 +112,7 @@ public class DLTemplateManager {
         for (String ntempl : traits) {
             try {
                 String path = TEMPLATE_PATH + ntempl.replace( "/", SEP );
-                InputStream stream = ResourceFactory.newClassPathResource(path, DLTemplateManager.class).getInputStream();
+                InputStream stream = ResourceFactory.newClassPathResource( path, DLTemplateManager.class ).getInputStream();
 
                 registry.addNamedTemplate( path.substring( path.lastIndexOf( SEP ) + 1 ),
                         TemplateCompiler.compileTemplate(stream));

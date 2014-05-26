@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-xsd-processor</artifactId>
-      <version>${chance.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>

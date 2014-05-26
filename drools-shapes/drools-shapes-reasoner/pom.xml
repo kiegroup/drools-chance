@@ -47,7 +47,7 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-utilities</artifactId>
-      <version>${chance.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
 

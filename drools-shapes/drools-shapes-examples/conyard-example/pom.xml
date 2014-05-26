@@ -64,7 +64,7 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-shapes-generator</artifactId>
-      <version>${chance.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
 
@@ -80,8 +80,8 @@
 
     <!-- Empire can be found here: https://github.com/mhgrove/Empire -->
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>Empire-core</artifactId>
+      <groupId>com.clarkparsia.empire</groupId>
+      <artifactId>empire</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.hibernate</groupId>
@@ -89,16 +89,16 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>cp-common-openrdf</artifactId>
-      <version>0.8.1</version>
-    </dependency>
+	  <dependency>
+		  <groupId>com.complexible.common</groupId>
+		  <artifactId>openrdf</artifactId>
+		  <version>2.0.2</version>
+	  </dependency>
 
 
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>Empire-sesame2</artifactId>
+      <groupId>com.clarkparsia.empire</groupId>
+      <artifactId>sesame</artifactId>
     </dependency>
     <dependency>
       <groupId>org.openrdf.sesame</groupId>
@@ -121,10 +121,11 @@
     </dependency>
 
 
-    <dependency>
-      <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.0-api</artifactId>
-    </dependency>
+	  <dependency>
+		  <groupId>org.hibernate.javax.persistence</groupId>
+		  <artifactId>hibernate-jpa-2.0-api</artifactId>
+		  <version>1.0.1.Final</version>
+	  </dependency>
 
     <dependency>
       <groupId>com.google.inject</groupId>
@@ -135,8 +136,8 @@
 
 
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
+	    <groupId>org.hibernate</groupId>
+	    <artifactId>hibernate-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -255,7 +256,7 @@
       <plugin>
         <groupId>org.drools</groupId>
         <artifactId>drools-shapes-generator-plugin</artifactId>
-        <version>${chance.version}</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>

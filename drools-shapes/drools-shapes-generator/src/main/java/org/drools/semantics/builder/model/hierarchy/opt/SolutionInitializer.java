@@ -48,10 +48,8 @@ public class SolutionInitializer implements CustomPhaseCommand {
                     }
                 }
 
-                scoreDirector.beforeEntityAdded( con );
                 scoreDirector.beforeVariableChanged( con, "chosenSuper" );
                 con.setChosenSuper( inheritances.get( next.getIri() ) );
-                scoreDirector.afterEntityAdded( con );
 
                 if ( inheritances.containsKey( next.getIri() ) ) {
                     ConceptImplProxy supCon = inheritances.get( next.getIri() );

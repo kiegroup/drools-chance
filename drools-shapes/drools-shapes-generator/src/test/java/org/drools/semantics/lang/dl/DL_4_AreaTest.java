@@ -17,8 +17,8 @@
 package org.drools.semantics.lang.dl;
 
 import org.drools.core.util.HierarchyEncoderImpl;
-import org.drools.io.Resource;
-import org.drools.io.ResourceFactory;
+import org.kie.api.io.Resource;
+import org.kie.internal.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.DLFactoryImpl;
 import org.drools.semantics.builder.model.Concept;

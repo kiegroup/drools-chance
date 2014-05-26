@@ -2,7 +2,6 @@
 package org.drools.semantics.builder.model;
 
 import org.drools.core.util.StringUtils;
-import org.drools.io.ResourceFactory;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.utils.NamespaceUtils;
 import org.jdom.Document;
@@ -10,6 +9,7 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.kie.internal.io.ResourceFactory;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -388,7 +388,7 @@ public class XSDModelImpl extends ModelImpl implements XSDModel {
     public String getOWLSchema() {
         InputStream schemaIS = null;
         try {
-            schemaIS = ResourceFactory.newClassPathResource("org/drools/semantics/builder/model/compilers/owlThing.xsd").getInputStream();
+            schemaIS = ResourceFactory.newClassPathResource( "org/drools/semantics/builder/model/compilers/owlThing.xsd" ).getInputStream();
             byte[] data = new byte[ schemaIS.available() ];
             schemaIS.read( data );
             return new String( data );

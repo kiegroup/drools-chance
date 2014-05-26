@@ -4,12 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.drools</groupId>
-    <artifactId>drools-shapes</artifactId>
-    <version>6.1.0-SNAPSHOT</version>
-  </parent>
-
   <groupId>org.drools</groupId>
   <artifactId>drools-shapes-utilities</artifactId>
   <version>6.1.0-SNAPSHOT</version>
@@ -20,39 +14,60 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-compiler</artifactId>
+	    <version>6.1.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
-      <groupId>com.clarkparsia</groupId>
-      <artifactId>Empire-core</artifactId>
+      <groupId>com.clarkparsia.empire</groupId>
+      <artifactId>empire</artifactId>
+	    <version>0.8.4</version>
     </dependency>
 
     <dependency>
       <groupId>org.jvnet.hyperjaxb3</groupId>
       <artifactId>hyperjaxb3</artifactId>
       <type>pom</type>
+	    <version>0.5.6</version>
     </dependency>
 
     <dependency>
       <groupId>org.jvnet.hyperjaxb3</groupId>
       <artifactId>maven-hyperjaxb3-plugin</artifactId>
+	    <version>0.5.6</version>
     </dependency>
 
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
+	    <version>2.2.4</version>
     </dependency>
 
     <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
+	    <version>1.1</version>
     </dependency>
 
     <dependency>
       <groupId>thewebsemantic</groupId>
       <artifactId>jenabean</artifactId>
+			<version>1.0.6</version>
     </dependency>
 
   </dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

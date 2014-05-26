@@ -16,7 +16,7 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.io.ResourceFactory;
+import org.kie.internal.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.DLFactoryConfiguration;

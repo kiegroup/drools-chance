@@ -366,6 +366,11 @@ public class ThingImpl
         this.instanceTriples = instanceTriples;
     }
 
+    @javax.persistence.Transient
+    public Class getInterfaceClass() {
+        return Thing.class;
+    }
+
 
     // In compliance with the Traiting Thing interface,
     @Transient

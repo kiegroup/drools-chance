@@ -16,7 +16,8 @@
 
 package org.drools.semantics.lang.dl;
 
-import org.drools.io.ResourceFactory;
+import org.kie.api.io.Resource;
+import org.kie.internal.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.DLFactoryConfiguration;
@@ -49,7 +50,7 @@ public class DL_2_ModelGenerationTest {
     public void testLoad() {
         String source = "ontologies/kmr2/kmr2_mini.owl";
 
-        org.drools.io.Resource res = ResourceFactory.newClassPathResource(source);
+        Resource res = ResourceFactory.newClassPathResource(source);
 
         OWLOntology ontoDescr = factory.parseOntology( res );
 
@@ -62,7 +63,7 @@ public class DL_2_ModelGenerationTest {
     @Test
     public void testDiamondModelGenerationExternal() {
         String source = "ontologies/diamond.manchester.owl";
-        org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results;
 
@@ -80,7 +81,7 @@ public class DL_2_ModelGenerationTest {
     @Test
     public void testPropertiesGenerationExternal() {
         String source = "fuzzyDL/DLex6.owl";
-        org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "ex6", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 
@@ -205,7 +206,7 @@ public class DL_2_ModelGenerationTest {
     @Test
     public void testComplexAnonymous() {
         String source = "fuzzyDL/DLex8.owl";
-        org.drools.io.Resource res = ResourceFactory.newClassPathResource( source );
+        Resource res = ResourceFactory.newClassPathResource( source );
 
         OntoModel results = factory.buildModel( "ex8", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT ) );
 

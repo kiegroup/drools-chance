@@ -20,12 +20,11 @@ import com.clarkparsia.empire.Empire;
 import com.clarkparsia.empire.EmpireOptions;
 import com.clarkparsia.empire.config.ConfigKeys;
 import com.clarkparsia.empire.config.EmpireConfiguration;
-import com.clarkparsia.empire.sesametwo.OpenRdfEmpireModule;
-import com.clarkparsia.empire.sesametwo.RepositoryDataSourceFactory;
+import com.clarkparsia.empire.sesame.OpenRdfEmpireModule;
+import com.clarkparsia.empire.sesame.RepositoryDataSourceFactory;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.apache.commons.lang.StringUtils;
-import org.drools.io.ResourceFactory;
 import org.drools.semantics.UIdAble;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
@@ -36,6 +35,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.kie.internal.io.ResourceFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -551,7 +551,7 @@ public class DL_9_CompilationTest {
         Map<String, String> aMap = new HashMap<String, String>();
 
         aMap.put(ConfigKeys.FACTORY, RepositoryDataSourceFactory.class.getName());
-        aMap.put(RepositoryDataSourceFactory.REPO, "test-repo");
+        aMap.put( RepositoryDataSourceFactory.REPO, "test-repo");
         aMap.put(RepositoryDataSourceFactory.FILES, "");
         aMap.put(RepositoryDataSourceFactory.QUERY_LANG, RepositoryDataSourceFactory.LANG_SERQL);
 

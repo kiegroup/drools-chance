@@ -18,8 +18,8 @@ package org.drools.shapes;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.drools.io.Resource;
-import org.drools.io.ResourceFactory;
+import org.kie.api.io.Resource;
+import org.kie.internal.io.ResourceFactory;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.DLFactoryConfiguration;
