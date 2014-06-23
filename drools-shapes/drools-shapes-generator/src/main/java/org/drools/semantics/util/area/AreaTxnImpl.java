@@ -1,15 +1,11 @@
 package org.drools.semantics.util.area;
 
 import org.drools.semantics.builder.model.Concept;
-import org.drools.semantics.builder.model.OntoModel;
-import org.drools.semantics.builder.model.PropertyRelation;
 import org.drools.util.HierarchyEncoder;
 import org.drools.util.HierarchyEncoderImpl;
 import org.drools.util.HierarchySorter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,28 +19,21 @@ public abstract class AreaTxnImpl<C,P> implements AreaTxn<C,P> {
 
     public static boolean showDebugInfo = false;
 
-    private HierarchyEncoder<AreaNode<C,P>> encoderArea = new HierarchyEncoderImpl<AreaNode<C,P>>();
+    private HierarchyEncoder<Area<C,P>> encoderArea = new HierarchyEncoderImpl<Area<C,P>>();
 
-    private Map<Set<P>, AreaNode<C,P>> areas;
+    private Map<Set<P>, Area<C,P>> areas;
 
     public abstract List<C> getInElements();
 
     public abstract Set<P> getInKeys();
 
-
-
-    public Map<Set<P>, AreaNode<C,P>> getAreas() {
-        return areas;
-    }
-
     public Collection<Set<P>> getAreaKeys() {
         return areas.keySet();
     }
 
-    public HierarchyEncoder<AreaNode<C,P>> getEncoderArea() {
+    public HierarchyEncoder<Area<C,P>> getEncoderArea() {
         return encoderArea;
     }
-
 
     //not used
     public Collection<C> getElements( Set<P> keys ) {
@@ -55,49 +44,9 @@ public abstract class AreaTxnImpl<C,P> implements AreaTxn<C,P> {
         return areas.containsKey( keys );
     }
 
-
     public Area<C,P> getArea( Set<P> keys ) {
         return areas.get( keys );
     }
-
-
-//    //not used
-//    public Set<Concept> getArea( Set<P> relations ) {
-//
-//        Set<Concept> area = new HashSet<Concept>();
-//        int eNum = relations.size();
-//
-//        for( Concept cct : getInElements ) {
-//            Set<PropertyRelation> pRel = new HashSet<PropertyRelation>( cct.getProperties().values() );
-//            //System.out.println("pRel: "+pRel);
-//            if( pRel.size() != eNum )
-//                continue;
-//            int mNum = 0;
-//
-//            for( PropertyRelation prRel : relations )
-//            {
-//                boolean included = false;
-//                for( PropertyRelation pr : pRel )
-//                {
-//                    if( prRel.equals( pr ) ) {
-//                        mNum++;
-//                        pRel.remove(pr);
-//                        included = true;
-//                        break;
-//                    }
-//                }
-//                if( ! included )
-//                    break;
-//            }
-//            if( mNum == eNum )
-//                area.add(cct);
-//        }
-//
-//        return area;
-//    }
-
-
-
 
     public Map<Integer,HierarchyEncoder<Concept>> getPartialArea(Map<Integer, Set<Concept>> areas, Map<Integer, Set<Concept>> roots) {
         HierarchyEncoder<Concept> encoder = null;
@@ -119,29 +68,20 @@ public abstract class AreaTxnImpl<C,P> implements AreaTxn<C,P> {
         return partialArea;
     }
 
-    public void getOverlappedConcepts() {
-
-    }
-
-    public void getBaseOverlappingRoots() {
-
-    }
-
-    protected abstract Map<Set<P>, AreaNode<C,P>> initNodes();
+    protected abstract Map<Set<P>, Area<C,P>> initNodes();
 
     public void makeAreaNodes() {
         areas = initNodes();
     }
 
-
-    public Map<AreaNode<C,P>, Set<C>> makeAreaRoots() {
+    public Map<Area<C,P>, Set<C>> makeAreaRoots() {
         if ( areas==null || areas.isEmpty() ) {
             return null;
         }
-        Map<AreaNode<C,P>,Set<C>> roots = new HashMap<AreaNode<C,P>, Set<C>>( areas.size() );
+        Map<Area<C,P>,Set<C>> roots = new HashMap<Area<C,P>, Set<C>>( areas.size() );
 
-        Iterator<AreaNode<C,P>> it = areas.values().iterator();
-        AreaNode node = null;
+        Iterator<Area<C,P>> it = areas.values().iterator();
+        Area node = null;
         while( it.hasNext() ) {
             node = it.next();
             Set<C> rb = new HashSet<C>(
@@ -155,14 +95,13 @@ public abstract class AreaTxnImpl<C,P> implements AreaTxn<C,P> {
         return roots;
     }
 
+    public HierarchyEncoder<Area<C,P>> makeAreaNodeHierarchy() {
+        Map<Area<C,P>,Collection<Area<C,P>>> hir = new HashMap<Area<C,P>, Collection<Area<C,P>>>( areas.size() );
 
-    public HierarchyEncoder<AreaNode<C,P>> makeAreaNodeHierarchy() {
-        Map<AreaNode<C,P>,Collection<AreaNode<C,P>>> hir = new HashMap<AreaNode<C,P>, Collection<AreaNode<C,P>>>( areas.size() );
 
-
-        for( AreaNode<C,P> child : areas.values() ) {
-            Collection<AreaNode<C,P>> parents = new ArrayList<AreaNode<C,P>>();
-            for( AreaNode<C,P> node : areas.values() )  {
+        for( Area<C,P> child : areas.values() ) {
+            Collection<Area<C,P>> parents = new ArrayList<Area<C,P>>();
+            for( Area<C,P> node : areas.values() )  {
                 if ( child != node && child.getKeys().containsAll( node.getKeys() ) ) {
                     parents.add( node );
                 }
@@ -171,16 +110,16 @@ public abstract class AreaTxnImpl<C,P> implements AreaTxn<C,P> {
         }
         //Map<AreaNode,Collection<AreaNode>> hir//
         //hir.key is an area node and hir.value is a collection of its parents//
-        
-        HierarchySorter<AreaNode<C,P>> hSorter = new HierarchySorter<AreaNode<C,P>>();
-        List<AreaNode<C,P>> sorted = hSorter.sort( hir );
+
+        HierarchySorter<Area<C,P>> hSorter = new HierarchySorter<Area<C,P>>();
+        List<Area<C,P>> sorted = hSorter.sort( hir );
         
         if( showDebugInfo ) {
             System.out.println("\nChild-of relations:");
         }
         
         //note: assumed that the root has an empty set as its parents: Collections.EMPTY_LIST
-        for( AreaNode<C,P> node : sorted ) {
+        for( Area<C,P> node : sorted ) {
             node.setAreaCode( encoderArea.encode( node, hir.get( node ) ) );
             if( showDebugInfo ) {
                 System.out.println( node + "\n-->\n" + node.getImmediateParents() + "\n%%---%%" );
@@ -193,5 +132,62 @@ public abstract class AreaTxnImpl<C,P> implements AreaTxn<C,P> {
         makeAreaNodes();
         makeAreaRoots();
         makeAreaNodeHierarchy();
+    }
+
+//    public abstract BitSet getBitSet(C c);
+//    public abstract int getNumberOfSupperElm(C c);
+
+//    public Map<Area<C,P>, Set<C>> getOverlappingElements() {
+//
+//        Collection<Area<C,P>> areas;
+//        areas = this.areas.values();
+//
+//        Map<Area<C,P>, Set<C>> overlapping = new HashMap<Area<C, P>, Set<C>>(areas.size());
+//        Iterator<Area<C,P>> it = areas.iterator();
+//        Area<C,P> area;
+//
+//        while (it.hasNext()){
+//            area = it.next();
+//            Set<C> oConcepts = new HashSet<C>();
+////            if(showDebugInfo)
+//                System.out.println( "Overlapping in " + area.getNodeName() + ":" );
+//
+//            for( C cct : area.getElements() ) {
+//
+//                if(getNumberOfSupperElm(cct)>1)
+//                {
+//                    int numParents = 0;
+//
+//                    for( C root : area.getRoots() ) {
+//                        BitSet bs = new BitSet();
+//                        bs = (BitSet)getBitSet(root).clone();
+//                        bs.and( getBitSet(cct) );
+//
+//                        if( getBitSet(root).equals( bs ) ) {
+//                            numParents++;
+//                        }
+//
+//                        if( numParents > 1 ) {
+//                            oConcepts.add(cct);
+////                            if(showDebugInfo)
+//                            if(numParents==2)
+//                                System.out.println(cct);
+////                            break;
+//                        }
+//                    }
+//                    if(numParents>1)
+//                        overlapping.put(area, oConcepts );
+//                }
+//
+//            }
+//            if(showDebugInfo)
+//                System.out.println("------------");
+//        }
+//        return overlapping;
+//    }
+
+    //added by mh
+    public Collection<Area<C,P>> getAreas(){
+        return areas.values();
     }
 }

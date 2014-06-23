@@ -3,29 +3,21 @@ package org.drools.semantics.util.area;
 import org.drools.util.CodedHierarchy;
 import org.drools.util.CodedHierarchyImpl;
 
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-public class AreaNode<C,P> implements Area<C,P> {
+public abstract class AreaNode<C,P> implements Area<C,P> {
 
-    private static Boolean debugMode = true;
+    private static Boolean showDebugInfo = true;
 
     private BitSet rootBitSet = null;
     private CodedHierarchy<C> conHir = null;
     private Set<P> pRelations = Collections.EMPTY_SET;
-
     private String nodeName = "NotAssigned";
     private boolean hasName = false;
-
     private Set<C> roots = Collections.EMPTY_SET;
     private Set<AreaNode<C,P>> immediateChilds = new HashSet<AreaNode<C,P>>();
     private Set<AreaNode<C,P>> immediateParents = new HashSet<AreaNode<C,P>>();
-
     private BitSet areaCode;
-
     private static int counter = 0;
 
     public String getNodeName() {
@@ -61,7 +53,6 @@ public class AreaNode<C,P> implements Area<C,P> {
     public int hashCode() {
         return pRelations.hashCode();
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -109,8 +100,9 @@ public class AreaNode<C,P> implements Area<C,P> {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        AreaNode<C,P> ca = new AreaNode<C,P>( this.pRelations );
+    protected abstract Object clone();
+
+    protected void fillClone( AreaNode<C,P> ca ) {
         ca.rootBitSet = this.rootBitSet;
         ca.nodeName = this.nodeName;
         ca.conHir = this.conHir;
@@ -119,13 +111,12 @@ public class AreaNode<C,P> implements Area<C,P> {
         ca.roots = new HashSet<C>( this.roots );
         ca.immediateChilds = new HashSet<AreaNode<C,P>>( this.immediateChilds );
         ca.immediateParents= new HashSet<AreaNode<C,P>>( this.immediateParents );
-        return ca;
     }
 
     public AreaNode( Set<P> pRelations ) {
         this.pRelations = new HashSet<P>( pRelations );
         conHir = new CodedHierarchyImpl<C>();
-        if( debugMode ) {
+        if(showDebugInfo) {
             setNodeName( Integer.toString( ++counter ) );
         }
     }
@@ -182,5 +173,46 @@ public class AreaNode<C,P> implements Area<C,P> {
 
     public Set<P> getKeys() {
         return pRelations;
+    }
+
+    public abstract BitSet getBitSet(C c);
+
+    public abstract int getNumberOfSupperElm(C c);
+
+    public Set<C> getOverlappingElements(){
+
+        Area<C,P> area = this;
+        Set<C> oElements = new HashSet<C>();
+        if(showDebugInfo)
+        System.out.println( "Overlapping in " + area.getNodeName() + ":" );
+
+        for( C cct : area.getElements() ) {
+
+            if(getNumberOfSupperElm(cct)>1)
+            {
+                int numParents = 0;
+
+                for( C root : area.getRoots() ) {
+                    BitSet bs = new BitSet();
+                    bs = (BitSet)getBitSet(root).clone();
+                    bs.and( getBitSet(cct) );
+
+                    if( getBitSet(root).equals( bs ) ) {
+                        numParents++;
+                        if( numParents > 1 ) {
+                            oElements.add(cct);
+                            if(showDebugInfo)
+                            if(numParents==2)
+                                System.out.println(cct);
+                        }
+                    }
+                }
+            }
+
+        }
+        if(showDebugInfo)
+        System.out.println("------------");
+
+        return oElements;
     }
 }
