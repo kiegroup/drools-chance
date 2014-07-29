@@ -165,8 +165,8 @@ rule "Alerts"
 no-loop
 salience 1000
 when
-    $al     : Alert( $ticketId, $dest, $formId ; )
-              not TicketActor( $convoId, $ticketId, $dest ; )
+    $al     : Alert( $ticketId: ticketId, $dest: destination, $formId: formId )
+              not TicketActor( $convoId: interactionId, ticketId == $ticketId, actorId == $dest  )
 then
     String convoId = java.util.UUID.randomUUID().toString();
     System.out.println( " ******************************* " + $al );
@@ -209,6 +209,7 @@ when
     $alert  : Alert( $id, $dest, $formId, $templ, $channel, $timeout ; destination memberOf $receivers )
     not       TaskStateTransition( $tid ; )
 then
+    System.out.println( " Retracting Alert " + $alert );
     retract( $alert );
     System.out.println( " Interaction is NOW " + $inter );
     modify( $inter ) {

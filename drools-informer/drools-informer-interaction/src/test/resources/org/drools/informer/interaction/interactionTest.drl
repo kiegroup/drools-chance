@@ -82,8 +82,41 @@ then
     insert( ticket );
 end
 
+rule "Test 0s interaction"
+when
+    $s : String( this str[startsWith] "interaction test 0s" );
+then
+    retract( $s );
+    System.out.println( "INTERACTION 0s SET UP" );
 
+    InteractionTicket ticket = new InteractionTicket( java.util.UUID.randomUUID().toString(),
+                                                      new java.util.ArrayList(),
+                                                      $s );
 
+    Interaction ti1 = new Interaction();
+        ti1.setType( InteractionTypes.NOTIFICATION );
+        ti1.setBodyTemplateIds( new java.util.LinkedList( java.util.Arrays.asList( "empty.template") ) );
+        ti1.setReceivers( new java.util.LinkedList( java.util.Arrays.asList( "actor1") ) );
+        ti1.setChannels( new java.util.LinkedList( java.util.Arrays.asList( "ALERT") ) );
+        ti1.setTimeouts( new java.util.LinkedList( java.util.Arrays.asList( "0s") ) );
+        System.err.println( ti1 );
+        
+    ticket.getInteractions().add( ti1 );    
+    insert( ticket );
+end
+
+rule "Do Something"
+salience -200
+when
+    $ticket : InteractionTicket( $ticketId : id,
+                                 $inters : interactions,
+                                 $source : source, source#String.startsWith("interaction test 0s"))
+    $convo  : TicketActor( $convoId, $ticketId, $actorId ; )
+then
+    System.out.println("Doing something...");
+    Thread.sleep(2000);
+    System.out.println("Done!");
+end
 
 
 declare SurveyBean extends Surveyable
