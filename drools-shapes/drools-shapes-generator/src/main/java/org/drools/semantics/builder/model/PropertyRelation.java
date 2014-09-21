@@ -46,6 +46,7 @@ public class PropertyRelation extends Relation implements Cloneable {
     private Set<List<PropertyRelation>> chains = new HashSet<List<PropertyRelation>>();
 
     private boolean inverse = false;
+    private boolean functional;
 
 
     public PropertyRelation( String subject, String property, String object, String name ) {
@@ -84,6 +85,9 @@ public class PropertyRelation extends Relation implements Cloneable {
     }
 
     public Integer getMaxCard() {
+        if ( isFunctional() ) {
+            return 1;
+        }
         Integer x = maxCard;
         
             for ( List<PropertyRelation> chain : chains ) {
@@ -152,6 +156,7 @@ public class PropertyRelation extends Relation implements Cloneable {
         rel.inherited = this.inherited;
         rel.simple = this.simple;
         rel.inverse = this.inverse;
+        rel.functional = this.functional;
 
         rel.baseProperty = this.baseProperty;
         rel.restrictedProperties = new ArrayList<PropertyRelation>( this.restrictedProperties );
@@ -331,6 +336,17 @@ public class PropertyRelation extends Relation implements Cloneable {
 
     public void setSimple(boolean simple) {
         this.simple = simple;
+    }
+
+    public boolean isFunctional() {
+        return functional;
+    }
+
+    public void setFunctional( boolean functional ) {
+        this.functional = functional;
+        if ( functional ) {
+            setSimple( true );
+        }
     }
 }
 

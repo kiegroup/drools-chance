@@ -811,6 +811,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                                                         props.get( dp.getIRI().toQuotedString() ) );
                             con = conceptCache.get( rel.getSubject() );
                             rel.setTarget( primitives.get( rel.getObject() ) );
+                            rel.setFunctional( ! ontoDescr.getFunctionalDataPropertyAxioms( dp ).isEmpty() );
                         } else {
                             Concept dRangeCon = createConceptForComplexDatatype( range, dp, hierarchicalModel );
 
@@ -821,6 +822,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                                                         props.get( dp.getIRI().toQuotedString() ) );
                             con = conceptCache.get( rel.getSubject() );
                             rel.setTarget( conceptCache.get( rel.getObject() ) );
+                            rel.setFunctional( ! ontoDescr.getFunctionalDataPropertyAxioms( dp ).isEmpty() );
                         }
 
                         rel.setDomain( con );

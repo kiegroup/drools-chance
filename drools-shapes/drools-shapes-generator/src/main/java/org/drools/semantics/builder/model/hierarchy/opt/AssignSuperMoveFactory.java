@@ -3,10 +3,10 @@ package org.drools.semantics.builder.model.hierarchy.opt;
 
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.ConceptImplProxy;
+import org.optaplanner.core.api.domain.solution.Solution;
 import org.optaplanner.core.impl.heuristic.move.Move;
 import org.optaplanner.core.impl.heuristic.selector.move.factory.MoveListFactory;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
-import org.optaplanner.core.impl.solution.Solution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,6 +139,11 @@ public class AssignSuperMoveFactory implements MoveListFactory {
             }
 
             scoreDirector.afterVariableChanged( con, "chosenSuper" );
+        }
+
+        @Override
+        public String getSimpleMoveTypeDescription() {
+            return "TODO";
         }
 
         public Collection<? extends Object> getPlanningEntities() {

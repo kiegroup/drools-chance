@@ -223,6 +223,72 @@ public class DL_9_CompilationTest {
 
 
     @Test
+    public void testFunctionalDataPropertyGeneration() {
+
+        OntoModel results = factory.buildModel( "simple",
+                                                ResourceFactory.newClassPathResource( "ontologies/simpleFunctionalDataP.owl" ),
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT     ) );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+        compiler = new OntoModelCompiler( results, folder.getRoot() );
+
+        // ****** Stream the java interfaces
+        boolean javaOut = compiler.streamJavaInterfaces( true );
+
+        assertTrue( javaOut );
+
+        // ****** Stream the XSDs, the JaxB customizations abd the persistence configuration
+        boolean xsdOut = compiler.streamXSDsWithBindings( true );
+
+        assertTrue( xsdOut );
+
+        showDirContent( folder );
+
+        // ****** Generate sources
+        boolean mojo = compiler.mojo(  Arrays.asList(
+                "-extension",
+                "-Xjaxbindex",
+                "-Xannotate",
+                "-Xinheritance",
+                "-XtoString",
+                "-Xcopyable",
+                "-Xmergeable",
+                "-Xvalue-constructor",
+                "-Xfluent-api",
+                "-Xkey-equality",
+                "-Xsem-accessors",
+                "-Xdefault-constructor",
+                "-Xmetadata",
+                "-Xinject-code"),
+                OntoModelCompiler.MOJO_VARIANTS.JPA2 );
+
+        assertTrue( mojo );
+
+        File klass = new File( compiler.getXjcDir().getPath()
+                + File.separator
+                + results.getDefaultPackage().replace(".", File.separator)
+                + File.separator
+                + "KlassImpl.java" );
+        printSourceFile( klass, System.out );
+
+        showDirContent( folder );
+
+        List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler.doCompile();
+
+        boolean success = true;
+        for ( Diagnostic diag : diagnostics ) {
+            System.out.println( "ERROR : " + diag );
+            if ( diag.getKind() == Diagnostic.Kind.ERROR ) {
+                success = false;
+            }
+        }
+        assertTrue( success );
+
+    }
+
+
+    @Test
     public void testIncrementalCompilation() {
         try {
 

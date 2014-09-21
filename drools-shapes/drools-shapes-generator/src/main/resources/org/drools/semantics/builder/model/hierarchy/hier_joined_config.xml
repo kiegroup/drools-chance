@@ -2,7 +2,7 @@
 <solver>
 
   <solutionClass>org.drools.semantics.builder.model.hierarchy.opt.OptimalHierarchy</solutionClass>
-  <planningEntityClass>org.drools.semantics.builder.model.ConceptImplProxy</planningEntityClass>
+  <entityClass>org.drools.semantics.builder.model.ConceptImplProxy</entityClass>
 
   <scoreDirectorFactory>
     <scoreDefinitionType>HARD_SOFT</scoreDefinitionType>
