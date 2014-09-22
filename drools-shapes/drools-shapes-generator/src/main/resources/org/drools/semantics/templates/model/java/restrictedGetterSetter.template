@@ -23,34 +23,38 @@
 
     @@javax.persistence.Transient
     public void @{ setter( name ) } (
-        @if{ max == null || max > 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
+        @if{ max != 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
         x
     ) {
-        java.util.List<@{map( type, true )}> removals = new java.util.ArrayList<@{map( type, true )}>();
-        for ( java.lang.Object o : @{ getter( base, type ) }() ) {
-            if ( o instanceof @{map( type, true )} ) {
-                removals.add( (@{map( type, true )}) o );
-            }
-        }
-
-        @{ getter( base, type ) }().removeAll( removals );
-
-        @if{ max == null || max > 1 }
-            @if{ ! primitive }
-                for ( java.lang.Object y : x ) {
-                    add@{ capitalize( base ) }( y );
-                }
-            @else{}
-                @{ getter( base, type  ) }().addAll( x );
-            @end{}
+        @if{ max == 0 }
+            throw new IllegalStateException( "The property @{ name } is restricted for this class " );
         @else{}
-            @if{ ! primitive }
-                add@{ capitalize( base ) }( (java.lang.Object) x );
+
+            java.util.List<@{map( type, true )}> removals = new java.util.ArrayList<@{map( type, true )}>();
+            for ( java.lang.Object o : @{ getter( base, type ) }() ) {
+                if ( o instanceof @{map( type, true )} ) {
+                    removals.add( (@{map( type, true )}) o );
+                }
+            }
+
+            @{ getter( base, type ) }().removeAll( removals );
+
+            @if{ max == null || max > 1 }
+                @if{ ! primitive }
+                    for ( java.lang.Object y : x ) {
+                        add@{ capitalize( base ) }( y );
+                    }
+                @else{}
+                    @{ getter( base, type  ) }().addAll( x );
+                @end{}
             @else{}
-                @{ getter( base, type  ) }().add( x );
+                @if{ ! primitive }
+                    add@{ capitalize( base ) }( (java.lang.Object) x );
+                @else{}
+                    @{ getter( base, type  ) }().add( x );
+                @end{}
             @end{}
         @end{}
-
     }
 
 
@@ -58,32 +62,36 @@
 
      @@javax.persistence.Transient
      public
-        @if{ max > 1 || max == null } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
+        @if{ max != 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
 
         @{ getter( name, type, max ) }()  {
 
-        java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList<@{ map( type, true ) }>();
-
-        for ( @{ map( baseType, true ) } x : @{ getter( base, type ) }() ) {
-            if ( x instanceof @{ map( type, true ) } ) {
-                ans.add( (@{ map( type, true ) }) x );
-            }
-        }
-
-        if ( ans.size() < @{ min } ) {
-            for ( int j = ans.size(); j < @{ min }; j++ ) {
-                @{ map( type, true ) } x = @{ skolem( type ) };
-                ans.add( x );
-                add@{ capitalize( name ) }( x );
-            }
-        }
-
-        // TODO : max?
-
-        @if{ max == null || max > 1 }
-            return ans;
+        @if{ max == 0 }
+            return java.util.Collections.emptyList();
         @else{}
-            return ans.size() > 0 ? ans.get(0) : null;
+            java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList<@{ map( type, true ) }>();
+
+            for ( @{ map( baseType, true ) } x : @{ getter( base, type ) }() ) {
+                if ( x instanceof @{ map( type, true ) } ) {
+                    ans.add( (@{ map( type, true ) }) x );
+                }
+            }
+
+            if ( ans.size() < @{ min } ) {
+                for ( int j = ans.size(); j < @{ min }; j++ ) {
+                    @{ map( type, true ) } x = @{ skolem( type ) };
+                    ans.add( x );
+                    add@{ capitalize( name ) }( x );
+                }
+            }
+
+            // TODO : max?
+
+            @if{ max == null || max > 1 }
+                return ans;
+            @else{}
+                return ans.size() > 0 ? ans.get(0) : null;
+            @end{}
         @end{}
      }
 
