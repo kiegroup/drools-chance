@@ -112,7 +112,7 @@ public class AssignSuperMoveFactory implements MoveListFactory {
             ConceptImplProxy prev = hier.getCon( con.getChosenSuper().getIri() );
 
             if ( verbose ) {
-                System.out.println( "Setting " + next.getIri() + " as super of " + con.getIri() + ( con.getChosenSuper() != null ? " in place of " + con.getChosenSuper().getIri() : " " ) );
+                System.out.println( "Setting " + next.getIri() + " as super of " + con.getIri() + ( con.getChosenSuper() != null ? " in place of " + prev.getIri() : " " ) );
             }
             if ( prev != null ) {
                 for ( String key : prev.getAvailablePropertiesVirtual().keySet() ) {
@@ -136,6 +136,10 @@ public class AssignSuperMoveFactory implements MoveListFactory {
             if ( verbose ) {
                 System.out.println( "Done Setting " + next.getIri() + " as super of " + con.getIri() + ( prev != null ? " in place of " + prev.getIri() : " " ) );
                 System.out.println( con );
+            }
+
+            if ( ! con.validate() ) {
+                throw new IllegalStateException( "The concept " + con.getIri() + " is in an illegal state " );
             }
 
             scoreDirector.afterVariableChanged( con, "chosenSuper" );

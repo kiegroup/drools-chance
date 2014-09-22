@@ -26,10 +26,10 @@
       <simulatedAnnealingStartingTemperature>10hard/100soft</simulatedAnnealingStartingTemperature>
     </acceptor>
     <forager>
-      <acceptedCountLimit>50</acceptedCountLimit>
+      <acceptedCountLimit>250</acceptedCountLimit>
     </forager>
     <termination>
-      <unimprovedStepCountLimit>2</unimprovedStepCountLimit>
+      <unimprovedStepCountLimit>5</unimprovedStepCountLimit>
     </termination>
   </localSearch>
 

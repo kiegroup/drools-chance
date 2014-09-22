@@ -3,6 +3,7 @@ package org.drools.semantics.builder.model;
 
 import org.drools.semantics.builder.model.hierarchy.opt.ConceptStrengthEvaluator;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
+import org.optaplanner.core.api.domain.solution.cloner.DeepPlanningClone;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 @PlanningEntity
+@DeepPlanningClone
 public class ConceptImplProxy implements Cloneable {
 
     private Concept concept;
@@ -63,6 +65,7 @@ public class ConceptImplProxy implements Cloneable {
 //    }
 
     @PlanningVariable( strengthComparatorClass = ConceptStrengthEvaluator.class, valueRangeProviderRefs = {"cons"})
+    @DeepPlanningClone
     public ConceptImplProxy getChosenSuper() {
         return chosenSuper;
     }
@@ -97,6 +100,7 @@ public class ConceptImplProxy implements Cloneable {
         this.concept = concept;
     }
 
+    @DeepPlanningClone
     public Map<String, PropertyRelation> getChosenProperties() {
         return chosenProperties;
     }
@@ -123,7 +127,7 @@ public class ConceptImplProxy implements Cloneable {
 
     @Override
     public String toString() {
-        String s = "ConProxy{ iri='" + getIri() + "\' child of " + chosenSuper.getIri() + "\n";
+        String s = "ConProxy{ iri='" + getIri() + "\' child of " + ( chosenSuper != null ? chosenSuper.getIri() : "N/A" ) + "\n";
         s += "\t\t chosen " + chosenProperties.size() + "\t" + chosenProperties.keySet() + "\n";
         s += "\t\t  avail " + getAvailablePropertiesVirtual().size() + "\t" + getAvailablePropertiesVirtual().keySet() + "\n";
         s += "\t\t needed " + neededProperties.size() + "\t" + neededProperties;
@@ -143,5 +147,8 @@ public class ConceptImplProxy implements Cloneable {
     }
 
 
+    public boolean validate() {
+        return getAvailablePropertiesVirtual().keySet().equals( neededProperties );
+    }
 
 }

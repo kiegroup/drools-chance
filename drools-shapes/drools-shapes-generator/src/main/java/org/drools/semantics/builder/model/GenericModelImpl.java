@@ -292,6 +292,9 @@ public class GenericModelImpl implements OntoModel, Cloneable {
                     return false;
                 }
             }
+            if ( ! con.getImplementingCon().validate() ) {
+                return false;
+            }
         }
         return true;
     }

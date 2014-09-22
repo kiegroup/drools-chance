@@ -39,6 +39,13 @@ public class VariantModelProcessor implements ModelHierarchyProcessor {
             }
         }
 
+        for ( Concept con : model.getConcepts() ) {
+            if ( ! Thing.IRI.equals( con.getIri() ) ) {
+                con.getImplementingCon().getNeededProperties().addAll( localRoot.getImplementingCon().getChosenProperties().keySet() );
+            }
+        }
+        localRoot.getImplementingCon().getNeededProperties().addAll( localRoot.getImplementingCon().getChosenProperties().keySet() );
+
         model.addConcept( localRoot );
     }
 

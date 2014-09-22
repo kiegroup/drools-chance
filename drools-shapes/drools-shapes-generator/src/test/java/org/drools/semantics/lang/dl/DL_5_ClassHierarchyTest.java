@@ -238,7 +238,7 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/rule_merged.owl";
         Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "conyard", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED, DLFactoryConfiguration.liteAxiomGenerators ) );
+        OntoModel results = factory.buildModel( "merry_rules", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED, DLFactoryConfiguration.liteAxiomGenerators ) );
 
         assertTrue( results.isHierarchyConsistent() );
 
@@ -250,7 +250,21 @@ public class DL_5_ClassHierarchyTest {
         String source = "ontologies/sem_rules.owl";
         Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
 
-        OntoModel results = factory.buildModel( "conyard", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED, DLFactoryConfiguration.liteAxiomGenerators ) );
+        OntoModel results = factory.buildModel( "semrules", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED, DLFactoryConfiguration.liteAxiomGenerators ) );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+    }
+
+    @Test
+    public void testProvo() {
+        String source = "ontologies/prov-o.owl";
+        Resource res = KieServices.Factory.get().getResources().newClassPathResource( source );
+
+        OntoModel results = factory.buildModel( "provo",
+                                                res,
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED,
+                                                                                         DLFactoryConfiguration.liteAxiomGenerators ) );
 
         assertTrue( results.isHierarchyConsistent() );
 

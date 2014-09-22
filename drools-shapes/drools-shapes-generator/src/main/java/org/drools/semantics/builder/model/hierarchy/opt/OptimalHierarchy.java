@@ -14,7 +14,9 @@ import org.w3._2002._07.owl.Thing;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 @PlanningSolution
 public class OptimalHierarchy implements Solution<HardSoftScore> {
@@ -140,7 +142,23 @@ public class OptimalHierarchy implements Solution<HardSoftScore> {
 //            x.setChosenSuper( sup.getIri() );
             sup.getChosenSubConcepts().add( x );
             x.setChosenProperties( con.getChosenProperties() );
+
+            x.setImplementingCon( con );
         }
 
+    }
+
+    public Set<String> getInvalidConcepts() {
+        Set<String> invalidConcepts = new HashSet<String>();
+        for ( ConceptImplProxy con : getCons() ) {
+            if ( ! con.validate() ) {
+                invalidConcepts.add( con.getIri() );
+            }
+        }
+        return invalidConcepts;
+    }
+
+    public boolean validate() {
+        return getInvalidConcepts().isEmpty();
     }
 }

@@ -362,7 +362,7 @@ end
 rule "Anon Simple Types in Element"
 salience 10
 when
-    $ele : Element( $name : name != null, $s : simpleType, type == null )
+    $ele : org.w3._2001.xmlschema.Element( $name : name != null, $s : simpleType, type == null )
     $sim : SimpleType( this == $s, name == null, list == null )
 then
     modify ( $s ) { setName( $name + "Type" ); }
@@ -655,7 +655,7 @@ end
 
 rule "Element of Simple Type"
 when
-    $e : Element( $name : name, $type : type != null )
+    $e : org.w3._2001.xmlschema.Element( $name : name, $type : type != null )
     Anon( $e, $par ; )
     unravel( $par, $comp ; )
     ( DataName( $type ; ) or eval( ( $type.getNamespaceURI() + "#" ).equals( Namespaces.XSD.toString() ) ) )
@@ -677,7 +677,7 @@ end
 
 rule "Element of Object Type"
 when
-    $e : Element( $name : name, $type : type != null )
+    $e : org.w3._2001.xmlschema.Element( $name : name, $type : type != null )
     Anon( $e, $par ; )
     unravel( $par, $comp ; )
     ObjectName( $type ; )
@@ -703,7 +703,7 @@ end
 rule "Anonymous Complex Types"
 salience 100
 when
-    $el : Element( $loc : complexType, $name : name, type == null )
+    $el : org.w3._2001.xmlschema.Element( $loc : complexType, $name : name, type == null )
     $ct : LocalComplexType( this == $loc, name == null )
 then
     String typeName = $name.substring( 0, 1 ).toUpperCase() + $name.substring( 1 ); /* + "_Range" */
@@ -718,7 +718,7 @@ end
 
 rule "Build Data Element"
 when
-    $e : Element( $name : name, $type : type != null, $min : minOccurs, $max : maxOccurs )
+    $e : org.w3._2001.xmlschema.Element( $name : name, $type : type != null, $min : minOccurs, $max : maxOccurs )
     $a : Anon( $e ; kls == null, $gmin : min, $gmax : max )
     ( DataName( $type ; ) or eval( ( $type.getNamespaceURI() + "#" ).equals( Namespaces.XSD.toString() ) ) )
 then
@@ -754,7 +754,7 @@ end
 
 rule "Build Object Element"
 when
-    $e : Element( $name : name, $type : type != null, $min : minOccurs, $max : maxOccurs )
+    $e : org.w3._2001.xmlschema.Element( $name : name, $type : type != null, $min : minOccurs, $max : maxOccurs )
     $a : Anon( $e ; kls == null, $gmin : min, $gmax : max )
     ObjectName( $type ; )
 then
@@ -854,8 +854,8 @@ end
 rule "Link Element Refs"
 salience 100000
 when
-    $src : Element( $ref : ref != null, name == null )
-    $tgt : Element( $x : name == $ref.localPart, $type : type != null )
+    $src : org.w3._2001.xmlschema.Element( $ref : ref != null, name == null )
+    $tgt : org.w3._2001.xmlschema.Element( $x : name == $ref.localPart, $type : type != null )
 then
     // I can't replace $src with $tgt, since it contains local info such as min/maxOccurs
     modify ( $src ) {

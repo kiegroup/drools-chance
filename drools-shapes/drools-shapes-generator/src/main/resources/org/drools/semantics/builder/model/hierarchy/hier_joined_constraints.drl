@@ -38,7 +38,7 @@ end
 rule "ConProxy"
 salience 10
 when
-    ConceptImplProxy( $child : iri, $super : chosenSuper != null )
+    ConceptImplProxy( $child : iri, $super : chosenSuper!.iri )
     ConceptImplProxy( $i : iri != $child && == $super )
 then
     insertLogical( new ChildOf( $child, $i ) );
@@ -48,7 +48,7 @@ end
 rule "Pro"
 salience 10
 when
-    ConceptImplProxy( $dom : iri, chosenSuper != null, $propKeys : availablePropertiesVirtual.keySet() )
+    ConceptImplProxy( $dom : iri, chosenSuper != null, $propKeys : chosenProperties.keySet() )
     $prop : String() from $propKeys
 then
     insertLogical( new Has( $dom, $prop ) );
@@ -56,21 +56,21 @@ end
 
 
 //
-//rule "Inherit"
-//salience 5
-//when
-//    Has( $dom, $prop ; )
-//    ChildOf( $child, $dom ; )
-//then
-//    insertLogical( new Inherits( $child, $prop ) );
-//end
-//
-//rule "Inherits so it has"
-//when
-//    Inherits( $dom, $prop ; )
-//then
-//    insertLogical( new Has( $dom, $prop ) );
-//end
+rule "Inherit"
+salience 5
+when
+    Has( $dom, $prop ; )
+    ChildOf( $child, $dom ; )
+then
+    insertLogical( new Inherits( $child, $prop ) );
+end
+
+rule "Inherits so it has"
+when
+    Inherits( $dom, $prop ; )
+then
+    insertLogical( new Has( $dom, $prop ) );
+end
 
 
 rule "Redefines"
@@ -84,7 +84,7 @@ end
 
 rule "Needs"
 when
-    ConceptImplProxy( $con : iri, chosenSuper != null, $propKeys : neededProperties )
+            ConceptImplProxy( $con : iri, chosenSuper != null, $propKeys : neededProperties )
     $prop : String() from $propKeys
 then
     insertLogical( new Needs( $con, $prop ) );
@@ -100,7 +100,7 @@ end
 
 
 
-rule "Self"
+rule "Child of Self"
 salience 10
 when
     ConceptImplProxy( $child : iri != "<http://www.w3.org/2002/07/owl#Thing>", chosenSuper!.iri == $child )
@@ -122,9 +122,19 @@ rule "Too little"
 salience -1
 when
     $n : Needs( $con, $prop ; )
-    not Has( $con, $prop ; )
+    not  Has( $con, $prop ; )
 then
     scoreHolder.addHardConstraintMatch(kcontext, -1);
+end
+
+
+rule "Hierarchy"
+salience 5
+when
+    ChildOf( $child, $p1 ; )
+    ChildOf( $child, $p2 ; $p1 != $p2 )
+then
+    scoreHolder.addHardConstraintMatch(kcontext, -100);
 end
 
 
@@ -151,51 +161,52 @@ end
 // Debug Log
 // ############################################################################
 
-//rule "Log 001"
-//salience -10
-//when
-//    $h : ConProxy( $iri : iri )
-//then
-//    System.out.println( "ConProxy is in " + $h );
-//end
-//
-//rule "Log 001_2"
-//salience -10
-//when
-//    $h : Concept( $iri : iri )
-//then
-//    System.out.println( "Concept is in " + $iri );
-//end
-//
-//
-//rule "Log 1"
-//salience -11
-//when
-//    $h : Has()
-//then
-//    System.out.println( "HAS " + $h );
-//end
-//rule "Log 0"
-//salience -12
-//when
-//    $h : ChildOf()
-//then
-//    System.out.println( "CHILDOF " + $h );
-//end
-//rule "Log2"
-//salience -13
-//when
-//    $h : Needs()
-//then
-//    System.out.println( "NEEDS " + $h );
-//end
-//rule "Log3"
-//salience -14
-//when
-//    $h : Inherits()
-//then
-//    System.out.println( "INHERITS " + $h );
-//end
+
+/*
+rule "Log 1"
+salience -11
+when
+    $h : Has()
+then
+    System.out.println( "HAS " + $h );
+end
+*/
+
+/*
+rule "Log 001"
+salience -10
+when
+    $h : ConceptImplProxy( $iri : iri )
+then
+    System.out.println( "ConProxy is in " + $h );
+end
+
+
+rule "Log 0"
+salience -12
+when
+    $h : ChildOf()
+then
+    System.out.println( "CHILDOF " + $h );
+end
+
+rule "Log2"
+salience -13
+when
+    $h : Needs()
+then
+    System.out.println( "NEEDS " + $h );
+end
+
+rule "Log3"
+salience -14
+when
+    $h : Inherits()
+then
+    System.out.println( "INHERITS " + $h );
+end
+*/
+
 //rule "Log4"
 //when
 //    $h : IntConstraintOccurrence()

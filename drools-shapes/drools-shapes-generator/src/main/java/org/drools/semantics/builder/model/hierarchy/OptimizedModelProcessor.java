@@ -27,8 +27,11 @@ public class OptimizedModelProcessor implements ModelHierarchyProcessor {
         System.out.println( solvedHierarchy );
         System.out.println( "\n\n\n\n ********************************************** \n\n\n" );
 
-        solvedHierarchy.updateModel( model );
+        if ( ! solvedHierarchy.validate() ) {
+            throw new IllegalStateException( "The final Solution is invalid and can't be used to generate the code" + problem.getInvalidConcepts() );
+        }
 
+        solvedHierarchy.updateModel( model );
 
     }
 

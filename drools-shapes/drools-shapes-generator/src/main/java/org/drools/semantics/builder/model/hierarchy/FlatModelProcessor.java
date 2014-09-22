@@ -32,6 +32,8 @@ public class FlatModelProcessor implements ModelHierarchyProcessor {
 //            con.setChosenSuper( Thing.class.getName() );
             con.setChosenSuperConcept( thing );
             thing.getChosenSubConcepts().add( con );
+
+            con.getImplementingCon().getNeededProperties().addAll( con.getImplementingCon().getAvailablePropertiesVirtual().keySet() );
         }
     }
 
