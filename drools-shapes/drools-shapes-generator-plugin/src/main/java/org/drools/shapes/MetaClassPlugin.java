@@ -2,11 +2,10 @@ package org.drools.shapes;
 
 
 import com.sun.tools.xjc.Options;
-import com.sun.tools.xjc.Plugin;
 import com.sun.tools.xjc.model.CPluginCustomization;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
-import org.drools.core.beliefsystem.MetadataHolder;
+import org.drools.core.metadata.MetadataHolder;
 import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompilerImpl;
 import org.drools.semantics.utils.NameUtils;
 import org.w3c.dom.Element;
@@ -19,7 +18,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 

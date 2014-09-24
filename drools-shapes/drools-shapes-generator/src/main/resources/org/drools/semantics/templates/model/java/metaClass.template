@@ -1,29 +1,24 @@
 
 @declare{'metaClassTemplate'}
 
-    package @{ package };
+package @{ package };
 
-    public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.beliefsystem.MetadataContainer<T> @else{} @{ supertypePackage }.@{ supertypeName }_<T> @end{} {
+public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer<T> @else{} @{ supertypePackage }.@{ supertypeName }_<T> @end{} {
 
-        public @{ typeName }_( T x ) { super( x ); }
-
-        {
-            properties = new org.drools.core.beliefsystem.PropertyLiteral[] { @foreach{ prop : propertyNames } @{ prop } @end{","} };
+        public @{ typeName }_( T x ) {
+            super( x );
+            metaClassInfo = @{ typeName }_Meta.getInstance();
         }
 
-        @code{ int k = 0; }
+        @code{ int q = 0; }
         @foreach{ prop : propertyNames }
-            @if{ ! inheritedFlags[k] }
-            public static final org.drools.core.beliefsystem.PropertyLiteral<@{package}.@{typeName},@{javaTypeNames[k]}> @{prop} =
-                    new org.drools.core.beliefsystem.PropertyLiteral<@{package}.@{typeName},@{javaTypeNames[k]}>( 0, "@{prop}", "@{ propertyIris[k] }" ) {
-                public @{javaTypeNames[k]} get( @{package}.@{typeName} o ) { return o.@{ getter( prop, typeNames[k] ) }(); }
-                public void set( @{package}.@{typeName} o, @{javaTypeNames[k]} value ) { o.@{ setter( prop ) }( value ); }
-            };
+            @if{ ! inheritedFlags[ q ] }
+            public static final org.drools.core.metadata.MetaProperty<@{package}.@{typeName},@{javaTypeNames[ q ]}> @{ prop } = @{ typeName }_Meta.@{ prop };
             @end{}
-            @code{ k++; }
+            @code{ q++; }
         @end{ '\n' }
 
-        public static class @{typeName}_Modify<T extends @{typeName}> extends @if{ "Thing".equals( supertypeName ) } Modify<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} {
+        public static class @{typeName}_Modify<T extends @{typeName}> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer.ModifyLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} {
             public @{typeName}_Modify( T x ) {
                 super( x );
             }
@@ -44,8 +39,39 @@
         public @{typeName}_Modify modify() {
             return new @{typeName}_Modify( getTarget() );
         }
+
+
+    protected static class @{ typeName }_Meta<T extends @{ package }.@{ typeName }> extends org.drools.core.metadata.MetadataContainer.ClassLiteral<T> {
+
+        private static @{ typeName }_Meta instance;
+
+        public static @{ typeName }_Meta getInstance() {
+            if ( instance == null ) {
+                instance = new @{ typeName }_Meta( new org.drools.core.metadata.MetaProperty[] {
+                        @code{ int t = 0; } @foreach{ prop : propertyNames } @if{ ! inheritedFlags[t] } @{ prop }, @end{} @code{ t++; } @end{}
+                } );
+            }
+            return instance;
+        }
+
+        @code{ int k = 0; }
+        @foreach{ prop : propertyNames }
+            @if{ ! inheritedFlags[k] }
+            public static final org.drools.core.metadata.MetaProperty<@{package}.@{typeName},@{javaTypeNames[k]}> @{prop} =
+                    new org.drools.core.metadata.PropertyLiteral<@{package}.@{typeName},@{javaTypeNames[k]}>( 0, "@{prop}", "@{ propertyIris[k] }" ) {
+                public @{javaTypeNames[k]} get( @{package}.@{typeName} o ) { return o.@{ getter( prop, typeNames[k] ) }(); }
+                public void set( @{package}.@{typeName} o, @{javaTypeNames[k]} value ) { o.@{ setter( prop ) }( value ); }
+            };
+            @end{}
+            @code{ k++; }
+        @end{ '\n' }
+
+        protected @{ typeName }_Meta( org.drools.core.metadata.MetaProperty<T, ?>[] propertyLiterals ) {
+            super( propertyLiterals );
+        }
     }
 
+}
 @end{}
 
 @includeNamed{'metaClassTemplate'}

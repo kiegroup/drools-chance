@@ -37,6 +37,7 @@
   <modules>
     <module>conyard-example</module>
     <module>translator-example</module>
+	  <module>tiny-example</module>
   </modules>
 
 
