@@ -2,4 +2,5 @@ org.drools.shapes.KeyPlugin
 org.drools.shapes.AccessorPlugin
 org.drools.shapes.DefaultConstructorPlugin
 org.drools.shapes.MetadataPlugin
+org.drools.shapes.MetaClassPlugin
 org.drools.shapes.ExclusionPlugin

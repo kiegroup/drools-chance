@@ -36,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.kie.internal.io.ResourceFactory;
+import org.mvel2.MVEL;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -67,8 +68,11 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -88,6 +92,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 
 /**
@@ -285,6 +290,199 @@ public class DL_9_CompilationTest {
         }
         assertTrue( success );
 
+        try {
+            ClassLoader urlKL = new URLClassLoader(
+                    new URL[] { compiler.getBinDir().toURI().toURL() },
+                    Thread.currentThread().getContextClassLoader()
+            );
+
+            Class i = urlKL.loadClass( "org.test.Klass" );
+            assertNotNull( i );
+            assertEquals( String.class, i.getMethod( "getProp" ).getReturnType() );
+
+            Class k = urlKL.loadClass( "org.test.KlassImpl" );
+            assertNotNull( k );
+            assertEquals( String.class, k.getMethod( "getProp" ).getReturnType() );
+        } catch ( Exception e ) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
+    public void testMetadataMetaclassGeneration() {
+
+        OntoModel results = factory.buildModel( "simple",
+                                                ResourceFactory.newClassPathResource( "ontologies/testMetadata.owl" ),
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT     ) );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+        compiler = new OntoModelCompiler( results, folder.getRoot() );
+
+        // ****** Stream the java interfaces
+        boolean javaOut = compiler.streamJavaInterfaces( true );
+
+        assertTrue( javaOut );
+
+        // ****** Stream the XSDs, the JaxB customizations abd the persistence configuration
+        boolean xsdOut = compiler.streamXSDsWithBindings( true );
+
+        assertTrue( xsdOut );
+
+        showDirContent( folder );
+
+        // ****** Generate sources
+        boolean mojo = compiler.mojo(  Arrays.asList(
+                "-extension",
+                "-Xjaxbindex",
+                "-Xannotate",
+                "-Xinheritance",
+                "-XtoString",
+                "-Xcopyable",
+                "-Xmergeable",
+                "-Xvalue-constructor",
+                "-Xfluent-api",
+                "-Xkey-equality",
+                "-Xsem-accessors",
+                "-Xdefault-constructor",
+                "-Xmetadata",
+                "-Xmetaclass",
+                "-Xinject-code"),
+                OntoModelCompiler.MOJO_VARIANTS.JPA2 );
+
+        assertTrue( mojo );
+
+        File klass = new File( compiler.getXjcDir().getPath()
+                + File.separator
+                + results.getDefaultPackage().replace(".", File.separator)
+                + File.separator
+                + "KlassImpl.java" );
+        printSourceFile( klass, System.out );
+
+        showDirContent( folder );
+
+        List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler.doCompile();
+
+        boolean success = true;
+        for ( Diagnostic diag : diagnostics ) {
+            System.out.println( "ERROR : " + diag );
+            if ( diag.getKind() == Diagnostic.Kind.ERROR ) {
+                success = false;
+            }
+        }
+        assertTrue( success );
+
+        try {
+            ClassLoader urlKL = new URLClassLoader(
+                    new URL[] { compiler.getBinDir().toURI().toURL() },
+                    Thread.currentThread().getContextClassLoader()
+            );
+
+            Class k = urlKL.loadClass( "org.test.KlassImpl" );
+            Object i = k.newInstance();
+            MVEL.eval( "_.modify().prop( 'itsme' ).call()", i );
+
+            assertEquals( "itsme", k.getMethod( "getProp" ).invoke( i ) );
+
+        } catch ( Exception e ) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            fail( e.getMessage() );
+        }
+
+    }
+
+    @Test
+    public void testMetadataMetaclassGenerationWithHierarchy() {
+
+        OntoModel results = factory.buildModel( "simpleHier",
+                                                ResourceFactory.newClassPathResource( "ontologies/testMetadataSimpleHierarchy.owl" ),
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+        compiler = new OntoModelCompiler( results, folder.getRoot() );
+
+        // ****** Stream the java interfaces
+        boolean javaOut = compiler.streamJavaInterfaces( true );
+
+        assertTrue( javaOut );
+
+        // ****** Stream the XSDs, the JaxB customizations abd the persistence configuration
+        boolean xsdOut = compiler.streamXSDsWithBindings( true );
+
+        assertTrue( xsdOut );
+
+        showDirContent( folder );
+
+        // ****** Generate sources
+        boolean mojo = compiler.mojo(  Arrays.asList(
+                "-extension",
+                "-Xjaxbindex",
+                "-Xannotate",
+                "-Xinheritance",
+                "-XtoString",
+                "-Xcopyable",
+                "-Xmergeable",
+                "-Xvalue-constructor",
+                "-Xfluent-api",
+                "-Xkey-equality",
+                "-Xsem-accessors",
+                "-Xdefault-constructor",
+                "-Xmetadata",
+                "-Xmetaclass",
+                "-Xinject-code"),
+                OntoModelCompiler.MOJO_VARIANTS.JPA2 );
+
+        assertTrue( mojo );
+
+        showDirContent( folder );
+
+        List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler.doCompile();
+
+        boolean success = true;
+        for ( Diagnostic diag : diagnostics ) {
+            System.out.println( "ERROR : " + diag );
+            if ( diag.getKind() == Diagnostic.Kind.ERROR ) {
+                success = false;
+            }
+        }
+        assertTrue( success );
+
+        try {
+            ClassLoader urlKL = new URLClassLoader(
+                    new URL[] { compiler.getBinDir().toURI().toURL() },
+                    Thread.currentThread().getContextClassLoader()
+            );
+
+            Class k = urlKL.loadClass( "org.test.KlassImpl" );
+            Object i = k.newInstance();
+            MVEL.eval( "_.modify().prop( 'itsme' ).call()", i );
+
+            assertEquals( "itsme", k.getMethod( "getProp" ).invoke( i ) );
+
+        } catch ( Exception e ) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            fail( e.getMessage() );
+        }
+
+    }
+
+    private void copy( String file, String pack, String targetFolder, boolean java ) {
+        File klass = new File( ( java ? compiler.getJavaDir().getPath() : compiler.getXjcDir().getPath() )
+                               + File.separator
+                               + pack.replace( ".", File.separator )
+                               + File.separator
+                               + file + ".java" );
+        File f = new File( targetFolder + File.separator + file + ".java" );
+        if ( ! f.getParentFile().exists() ) {
+            f.getParentFile().mkdirs();
+        }
+        try {
+            printSourceFile( klass, new PrintStream( f ) );
+        } catch ( FileNotFoundException fnfe ) {
+            fail( fnfe.getMessage() );
+        }
     }
 
 
@@ -704,7 +902,7 @@ public class DL_9_CompilationTest {
             FileInputStream fis = new FileInputStream( f );
             byte[] buf = new byte[ fis.available() ];
             fis.read( buf );
-            out.println(new String(buf));
+            out.println( new String( buf ) );
         } catch ( IOException ioe ) {
             ioe.printStackTrace();
             fail( ioe.getMessage() );

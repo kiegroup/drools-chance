@@ -76,9 +76,9 @@
         ]]></ci:code>
 
 
-        <meta:type name="@{concept.name}" package="@{concept.package}" parent="@{concept.chosenSuperConcept.name}">
+        <meta:type name="@{concept.name}" package="@{concept.package}" parent="@{concept.chosenSuperConcept.name}" parentPackage="@{concept.chosenSuperConcept.package}">
         @foreach{ prop : concept.effectiveBaseProperties }
-            <meta:property name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }">
+            <meta:property name="@{prop.name}" iri="@{prop.iri}" inherited="@{prop.inherited}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }">
                 @foreach{ subProp : concept.properties.values }
                 @if{ subProp.restricted && subProp.baseProperty == prop }
                     <meta:restriction name="@{subProp.name}" type="@{subProp.target.fullyQualifiedName}" single="@{subProp.maxCard == 1}"/>

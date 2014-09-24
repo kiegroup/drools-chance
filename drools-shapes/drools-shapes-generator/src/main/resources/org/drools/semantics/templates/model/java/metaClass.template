@@ -1,0 +1,51 @@
+
+@declare{'metaClassTemplate'}
+
+    package @{ package };
+
+    public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.beliefsystem.MetadataContainer<T> @else{} @{ supertypePackage }.@{ supertypeName }_<T> @end{} {
+
+        public @{ typeName }_( T x ) { super( x ); }
+
+        {
+            properties = new org.drools.core.beliefsystem.PropertyLiteral[] { @foreach{ prop : propertyNames } @{ prop } @end{","} };
+        }
+
+        @code{ int k = 0; }
+        @foreach{ prop : propertyNames }
+            @if{ ! inheritedFlags[k] }
+            public static final org.drools.core.beliefsystem.PropertyLiteral<@{package}.@{typeName},@{javaTypeNames[k]}> @{prop} =
+                    new org.drools.core.beliefsystem.PropertyLiteral<@{package}.@{typeName},@{javaTypeNames[k]}>( 0, "@{prop}", "@{ propertyIris[k] }" ) {
+                public @{javaTypeNames[k]} get( @{package}.@{typeName} o ) { return o.@{ getter( prop, typeNames[k] ) }(); }
+                public void set( @{package}.@{typeName} o, @{javaTypeNames[k]} value ) { o.@{ setter( prop ) }( value ); }
+            };
+            @end{}
+            @code{ k++; }
+        @end{ '\n' }
+
+        public static class @{typeName}_Modify<T extends @{typeName}> extends @if{ "Thing".equals( supertypeName ) } Modify<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} {
+            public @{typeName}_Modify( T x ) {
+                super( x );
+            }
+            @code{ int z = 0; }
+            @foreach{ prop : propertyNames }
+                public @{typeName}_Modify @{prop}(  @{javaTypeNames[z]} newVal ) {
+                    @if{ ! inheritedFlags[z] }
+                        addTask( @{prop}, newVal );
+                    @else{}
+                        super.@{prop}( newVal );
+                    @end{}
+                    return this;
+                }
+                @code{ z++; }
+            @end{ '\n' }
+        }
+
+        public @{typeName}_Modify modify() {
+            return new @{typeName}_Modify( getTarget() );
+        }
+    }
+
+@end{}
+
+@includeNamed{'metaClassTemplate'}

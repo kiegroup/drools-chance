@@ -62,6 +62,8 @@ public class DLTemplateManager {
             "model/java/hashKy.template",
             "model/java/defaultConstructor.template",
             "model/java/metaDescr.template",
+            "model/java/metaClass.template",
+            "model/java/metaAttrib.template",
             "model/java/inferredGetter.template"
     };
     protected static final String[] FALC_TABLEAU_TEMPLATES = new String[] {

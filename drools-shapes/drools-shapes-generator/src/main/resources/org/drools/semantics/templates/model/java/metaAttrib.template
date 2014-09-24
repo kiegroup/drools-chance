@@ -1,0 +1,13 @@
+
+@declare{'metaAttributeTemplate'}
+
+    private @{package}.@{typeName}_ _ = new @{package}.@{typeName}_( this );
+
+    @javax.persistence.Transient
+    public @{package}.@{typeName}_ get_() {
+        return _;
+    }
+
+@end{}
+
+@includeNamed{'metaAttributeTemplate'}

@@ -38,7 +38,7 @@ import javax.persistence.Basic;
 @thewebsemantic.RdfType( "@{namespace}@{name}" )
 @org.drools.core.factmodel.traits.Trait
 @org.kie.api.definition.type.PropertyReactive
-public interface @{name} extends org.drools.semantics.Thing  @if{ implInterface != null} , @{ implInterface } @end{}
+public interface @{name} extends org.drools.semantics.Thing, org.drools.core.beliefsystem.Metadatable  @if{ implInterface != null} , @{ implInterface } @end{}
                                  @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{sup.package}.@{compactUpperCase( sup.name ) } @end{','} @end{}
 {
 

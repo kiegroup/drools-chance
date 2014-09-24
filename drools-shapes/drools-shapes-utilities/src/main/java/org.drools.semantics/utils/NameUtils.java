@@ -85,7 +85,7 @@ public final class NameUtils {
         BUILTIN_DATATYPES_MAP.put( "boolean", "boolean" );
         BUILTIN_DATATYPES_MAP.put( "byte", "byte" );
         BUILTIN_DATATYPES_MAP.put( "QName", "javax.xml.namespace.QName" );
-        BUILTIN_DATATYPES_MAP.put( "dateTime", "javax.xml.datatype.XMLGregorianCalendar" );
+        BUILTIN_DATATYPES_MAP.put( "dateTime", "java.util.Date" );
         BUILTIN_DATATYPES_MAP.put( "base64Binary", "byte[]" );
         BUILTIN_DATATYPES_MAP.put( "hexBinary", "byte[]" );
         BUILTIN_DATATYPES_MAP.put( "unsignedInt", "long" );
