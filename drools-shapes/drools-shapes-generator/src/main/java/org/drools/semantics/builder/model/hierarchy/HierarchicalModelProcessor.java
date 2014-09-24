@@ -26,6 +26,7 @@ public class HierarchicalModelProcessor implements ModelHierarchyProcessor {
                     throw new UnsupportedOperationException( "FATAL : Trying to create a hierarchy, but concept " + con.getIri() + " has more than one parent " + con.getSuperConcepts() );
             }
             con.setChosenProperties( con.getProperties() );
+            con.getImplementingCon().getNeededProperties().addAll( con.getImplementingCon().getAvailablePropertiesVirtual().keySet() );
         }
     }
 
