@@ -6,6 +6,7 @@ import org.test.Klass;
 import org.w3._2002._07.owl.ThingImpl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -94,6 +95,26 @@ public class MetadataTest {
 
         @Override
         public void removeProp( Object x ) {
+
+        }
+
+        @Override
+        public Boolean isFlag() {
+            return (Boolean) map.get( "flag" );
+        }
+
+        @Override
+        public void setFlag( Boolean value ) {
+            map.put( "flag", value );
+        }
+
+        @Override
+        public void addFlag( Boolean x ) {
+
+        }
+
+        @Override
+        public void removeFlag( Object x ) {
 
         }
 

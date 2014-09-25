@@ -74,7 +74,7 @@ public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals
             @if{ ! inheritedFlags[k] }
             public static final org.drools.core.metadata.MetaProperty<@{package}.@{typeName},@{javaTypeNames[k]}> @{prop} =
                     new org.drools.core.metadata.PropertyLiteral<@{package}.@{typeName},@{javaTypeNames[k]}>( @{k}, "@{prop}", "@{ propertyIris[k] }" ) {
-                public @{javaTypeNames[k]} get( @{package}.@{typeName} o ) { return o.@{ getter( prop, typeNames[k] ) }(); }
+                public @{javaTypeNames[k]} get( @{package}.@{typeName} o ) { return o.@{ getter( prop, typeNames[k], simpleFlags[k] ? 1 : null ) }(); }
                 public void set( @{package}.@{typeName} o, @{javaTypeNames[k]} value ) { o.@{ setter( prop ) }( value ); }
             };
             @end{}
