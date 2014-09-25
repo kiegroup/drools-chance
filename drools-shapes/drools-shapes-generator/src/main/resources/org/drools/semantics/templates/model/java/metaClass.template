@@ -19,9 +19,19 @@ public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals
         @end{ '\n' }
 
         public static class @{typeName}_Modify<T extends @{typeName}> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer.ModifyLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} {
-            public @{typeName}_Modify( T x ) {
+            public @{ typeName }_Modify( T x ) {
                 super( x );
             }
+
+            @Override
+            protected org.drools.core.metadata.MetaClass<T> getMetaClassInfo() {
+                return @{ typeName }_Meta.getInstance();
+            }
+
+            public Class getModificationClass() {
+                return @{ package }.@{ typeName }.class;
+            }
+
             @code{ int z = 0; }
             @foreach{ prop : propertyNames }
                 public @{typeName}_Modify @{prop}(  @{javaTypeNames[z]} newVal ) {
@@ -36,8 +46,13 @@ public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals
             @end{ '\n' }
         }
 
-        public @{typeName}_Modify modify() {
-            return new @{typeName}_Modify( getTarget() );
+        public static @{typeName}_Modify<? extends @{ typeName }> modify( @{ typeName } x ) {
+            return new @{ typeName }_Modify<@{ typeName }>( x );
+        }
+
+
+        public @{typeName}_Modify<T> modify() {
+            return new @{typeName}_Modify<T>( getTarget() );
         }
 
 
@@ -58,7 +73,7 @@ public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals
         @foreach{ prop : propertyNames }
             @if{ ! inheritedFlags[k] }
             public static final org.drools.core.metadata.MetaProperty<@{package}.@{typeName},@{javaTypeNames[k]}> @{prop} =
-                    new org.drools.core.metadata.PropertyLiteral<@{package}.@{typeName},@{javaTypeNames[k]}>( 0, "@{prop}", "@{ propertyIris[k] }" ) {
+                    new org.drools.core.metadata.PropertyLiteral<@{package}.@{typeName},@{javaTypeNames[k]}>( @{k}, "@{prop}", "@{ propertyIris[k] }" ) {
                 public @{javaTypeNames[k]} get( @{package}.@{typeName} o ) { return o.@{ getter( prop, typeNames[k] ) }(); }
                 public void set( @{package}.@{typeName} o, @{javaTypeNames[k]} value ) { o.@{ setter( prop ) }( value ); }
             };
@@ -69,6 +84,12 @@ public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals
         protected @{ typeName }_Meta( org.drools.core.metadata.MetaProperty<T, ?>[] propertyLiterals ) {
             super( propertyLiterals );
         }
+
+        @Override
+        protected void cachePropertyNames() {
+            propertyNames = org.drools.core.util.ClassUtils.getSettableProperties( @{ package }.@{ typeName }.class );
+        }
+
     }
 
 }

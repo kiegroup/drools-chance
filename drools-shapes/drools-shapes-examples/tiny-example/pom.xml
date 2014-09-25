@@ -87,6 +87,12 @@
         </includes>
       </resource>
       <resource>
+        <directory>${pom.basedir}/target/generated-sources/DRL</directory>
+        <includes>
+          <include>**/*.*</include>
+        </includes>
+      </resource>
+      <resource>
         <directory>${pom.basedir}/target/generated-sources/xjc</directory>
         <includes>
           <include>**/*.*</include>
