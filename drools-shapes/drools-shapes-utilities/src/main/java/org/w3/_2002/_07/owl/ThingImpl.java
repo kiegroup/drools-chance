@@ -51,6 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -515,5 +516,11 @@ public class ThingImpl
     @Transient
     public String getTraitName() {
         return getFullName();
+    }
+
+    @Override
+    @Transient
+    public URI getUri() {
+        return URI.create( getDyEntryId() );
     }
 }

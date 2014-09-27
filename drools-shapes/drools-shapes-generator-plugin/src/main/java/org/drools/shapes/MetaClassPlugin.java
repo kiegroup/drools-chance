@@ -73,6 +73,7 @@ public class MetaClassPlugin extends MetadataPlugin {
             map.put( "package", keyed.getAttribute( "package" ) );
             map.put( "supertypeName", keyed.getAttribute( "parent" ) );
             map.put( "supertypePackage", keyed.getAttribute( "parentPackage" ) );
+            map.put( "typeIri", keyed.getAttribute( "iri" ) );
             map.put( "propertyIris", propIris );
             map.put( "propertyNames", propNames );
             map.put( "typeNames", typeNames );

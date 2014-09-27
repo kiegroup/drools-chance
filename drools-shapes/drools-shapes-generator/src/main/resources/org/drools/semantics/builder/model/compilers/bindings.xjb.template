@@ -76,7 +76,7 @@
         ]]></ci:code>
 
 
-        <meta:type name="@{concept.name}" package="@{concept.package}" parent="@{concept.chosenSuperConcept.name}" parentPackage="@{concept.chosenSuperConcept.package}">
+        <meta:type name="@{concept.name}" iri="@{concept.namespace}@{concept.name}" package="@{concept.package}" parent="@{concept.chosenSuperConcept.name}" parentPackage="@{concept.chosenSuperConcept.package}">
         @foreach{ prop : concept.effectiveBaseProperties }
             <meta:property name="@{prop.name}" iri="@{prop.iri}" inherited="@{prop.inherited}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }">
                 @foreach{ subProp : concept.properties.values }
