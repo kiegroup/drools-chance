@@ -99,7 +99,7 @@ public class MetadataTest {
         }
 
         @Override
-        public Boolean isFlag() {
+        public Boolean getFlag() {
             return (Boolean) map.get( "flag" );
         }
 

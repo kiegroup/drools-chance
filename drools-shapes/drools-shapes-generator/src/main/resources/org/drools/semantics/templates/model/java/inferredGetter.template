@@ -22,22 +22,22 @@
 
 
         @javax.persistence.Transient
-        public java.util.List<@{ map( type, true ) }> @{ getter( name, type ) }Inferred()  {
+        public java.util.List<@{ map( type, true ) }> @{ getter( name, map( type, true ) ) }Inferred()  {
 
             @if{ ! simple }
-                java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( @{ getter( name, type ) }() );
+                java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( @{ getter( name, map( type, true ) ) }() );
             @else{}
                 //@{name}, @{type}
                 java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( );
-                    ans.add( @{ getter( name, type, 1 ) }() );
+                    ans.add( @{ getter( name, map( type, true ), 1 ) }() );
             @end{}
 
             // @{subs}
             @foreach{ sub : subs }
                 @if{ sub.single }
-                    ans.add( @{ getter( sub.name, sub.type, 1 ) }() );
+                    ans.add( @{ getter( sub.name, map( sub.type, true ), 1 ) }() );
                 @else{}
-                    ans.addAll( @{ getter( sub.name, sub.type ) }() );
+                    ans.addAll( @{ getter( sub.name, map( sub.type, true ) ) }() );
                 @end{}
             @end{}
 

@@ -39,7 +39,7 @@
 
             @foreach{ link : chain }
                 for ( java.lang.Object o : temp ) {
-                    temp2.addAll( ((@{ map( link.type, true ) }) o).@{ getter( link.name, link.type ) }() );
+                    temp2.addAll( ((@{ map( link.type, true ) }) o).@{ getter( link.name, map( link.type, true ) ) }() );
                 }
                 temp.clear();
                 temp.addAll( temp2 );

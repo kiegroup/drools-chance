@@ -31,13 +31,13 @@
         @else{}
 
             java.util.List<@{map( type, true )}> removals = new java.util.ArrayList<@{map( type, true )}>();
-            for ( java.lang.Object o : @{ getter( base, type ) }() ) {
+            for ( java.lang.Object o : @{ getter( base, map( type, true ) ) }() ) {
                 if ( o instanceof @{map( type, true )} ) {
                     removals.add( (@{map( type, true )}) o );
                 }
             }
 
-            @{ getter( base, type ) }().removeAll( removals );
+            @{ getter( base, map( type, true ) ) }().removeAll( removals );
 
             @if{ max == null || max > 1 }
                 @if{ ! primitive }
@@ -45,13 +45,13 @@
                         add@{ capitalize( base ) }( y );
                     }
                 @else{}
-                    @{ getter( base, type  ) }().addAll( x );
+                    @{ getter( base, map( type, true )  ) }().addAll( x );
                 @end{}
             @else{}
                 @if{ ! primitive }
                     add@{ capitalize( base ) }( (java.lang.Object) x );
                 @else{}
-                    @{ getter( base, type  ) }().add( x );
+                    @{ getter( base, map( type, true )  ) }().add( x );
                 @end{}
             @end{}
         @end{}
@@ -64,14 +64,14 @@
      public
         @if{ max != 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
 
-        @{ getter( name, type, max ) }()  {
+        @{ getter( name, map( type, true ), max ) }()  {
 
         @if{ max == 0 }
             return java.util.Collections.emptyList();
         @else{}
             java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList<@{ map( type, true ) }>();
 
-            for ( @{ map( baseType, true ) } x : @{ getter( base, type ) }() ) {
+            for ( @{ map( baseType, true ) } x : @{ getter( base, map( type, true ) ) }() ) {
                 if ( x instanceof @{ map( type, true ) } ) {
                     ans.add( (@{ map( type, true ) }) x );
                 }

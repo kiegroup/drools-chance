@@ -170,7 +170,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
             {
                 mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                        NameUtils.getter( rel.getName(), rel.getTarget().getName(), rel.getMaxCard() ),
+                        NameUtils.getter( rel.getName(), NameUtils.map( rel.getTarget().getName(), true ), rel.getMaxCard() ),
                         "()" + propType,
                         genericGetType,
                         null);

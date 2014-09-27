@@ -598,10 +598,7 @@ public final class NameUtils {
     }
 
     public static String getter( String name, String type, Integer max ) {
-        String prefix = ( ( max != null && max == 1 )
-                &&
-                ( type.equals("xsd:boolean") || type.equals( boolean.class.getName() ) || type.equals( Boolean.class.getName() ) )
-        ) ? "is" : "get";
+        String prefix = ( ( max != null && max == 1 ) && "boolean".equals( type ) ) ? "is" : "get";
         return prefix + capitalize( name );
     }
 

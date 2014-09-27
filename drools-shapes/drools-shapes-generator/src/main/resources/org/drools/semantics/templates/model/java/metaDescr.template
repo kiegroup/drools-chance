@@ -40,10 +40,10 @@
                 else {
                     // @{simpleFlags.get(j)}
                     @if{ ! simpleFlags.get(j) }
-                        return @{ getter( prop, typeNames.get(j) ) }();
+                        return @{ getter( prop, map( typeNames.get(j), true ) ) }();
                     @else{}
                         java.util.List list = new java.util.ArrayList();
-                            list.add( @{ getter( prop, typeNames.get(j), 1 ) }() );
+                            list.add( @{ getter( prop, map( typeNames.get(j), true ), 1 ) }() );
                         return list;
                     @end{}
                 }

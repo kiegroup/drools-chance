@@ -76,7 +76,7 @@ public interface @{name} extends org.drools.semantics.Thing, org.drools.core.met
             java.util.List<@{ map( prop.target.fullyQualifiedName, true ) }@if{ !prop.target.primitive }@end{}>
         @end{}
 
-        @{ getter( prop.name, prop.target.fullyQualifiedName, prop.maxCard ) }();
+        @{ getter( prop.name, map( prop.target.fullyQualifiedName, true ), prop.maxCard ) }();
 
 
 

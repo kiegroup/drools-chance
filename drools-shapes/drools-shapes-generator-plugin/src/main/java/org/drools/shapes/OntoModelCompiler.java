@@ -66,7 +66,8 @@ public class OntoModelCompiler {
             "-Xdefault-constructor",
             "-Xmetadata",
             "-XxcludeResolved",
-            "-Xinject-code"
+            "-Xinject-code",
+            "-enableIntrospection"
     );
 
     public static final List<String> fullOptions = Arrays.asList(
@@ -84,7 +85,8 @@ public class OntoModelCompiler {
             "-Xdefault-constructor",
             "-Xmetadata",
             "-XxcludeResolved",
-            "-Xinject-code"
+            "-Xinject-code",
+            "-enableIntrospection"
     );
 
     public static final List<String> minimalOptions = Arrays.asList(
@@ -102,7 +104,8 @@ public class OntoModelCompiler {
             "-Xdefault-constructor",
             "-Xmetadata",
             "-XxcludeResolved",
-            "-Xinject-code"
+            "-Xinject-code",
+            "-enableIntrospection"
     );
 
 
