@@ -276,8 +276,8 @@
 
   </dependencies>
 
-
-  <!--repositories>
+<!--
+  <repositories>
     <repository>
       <id>choco-repository</id>
       <name>Choco Repository</name>
@@ -292,8 +292,8 @@
         <updatePolicy>never</updatePolicy>
       </snapshots>
     </repository>
-  </repositories-->
-
+  </repositories>
+-->
 
 
 
