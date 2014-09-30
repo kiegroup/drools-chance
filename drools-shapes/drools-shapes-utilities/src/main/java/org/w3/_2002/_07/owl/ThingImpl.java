@@ -523,4 +523,10 @@ public class ThingImpl
     public URI getUri() {
         return URI.create( getDyEntryId() );
     }
+
+    @Override
+    @Transient
+    public Object getId() {
+        return getUri();
+    }
 }

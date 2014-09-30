@@ -3,7 +3,7 @@
 
 package @{ package };
 
-public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer<T> @else{} @{ supertypePackage }.@{ supertypeName }_<T> @end{} {
+public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer<T> @else{} @{ supertypePackage }.@{ supertypeName }_<T> @end{} {
 
         public @{ typeName }_( T x ) {
             super( x );
@@ -17,6 +17,45 @@ public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals
             @end{}
             @code{ q++; }
         @end{ '\n' }
+
+        public static <X extends @{package}.@{ typeName }> @{ typeName }_NewInstance<X> new@{ typeName }( Object id ) {
+            return @{ typeName }_Meta.getInstance().newInstance( id );
+        }
+
+        public static class @{ typeName }_NewInstance<T extends @{package}.@{ typeName } > extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer.NewInstanceLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_NewInstance<T> @end{} {
+
+            public @{ typeName }_NewInstance( Object id ) {
+                super( java.net.URI.create( id.toString() ) );
+            }
+
+            protected T construct() {
+                if ( getInstantiatorFactory() != null ) {
+                    return (T) getInstantiatorFactory().instantiate( @{ typeName }.class, getId() );
+                }
+                @{package}.@{ typeName }Impl x = new @{package}.@{ typeName }Impl();
+                x.setDyEntryId( getId().toString() );
+                return (T) x;
+            }
+
+            @code{ int s = 0; }
+            @foreach{ prop : propertyNames }
+                @if{ ! inheritedFlags[ s ] }
+                public @{ typeName }_NewInstance<T> @{ prop }( @{javaTypeNames[ s ]} value ) {
+                    getSetter().@{ prop }( value );
+                        return this;
+                }
+                @end{}
+                @code{ s++; }
+            @end{ '\n' }
+
+            protected @{ typeName }_Modify<T> getSetter() {
+                if ( setter == null ) {
+                    setter = new @{ typeName }_Modify( null );
+                }
+                return ( @{ typeName }_Modify<T>) setter;
+            }
+
+    }
 
         public static class @{typeName}_Modify<T extends @{typeName}> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer.ModifyLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} {
             public @{ typeName }_Modify( T x ) {
@@ -92,8 +131,16 @@ public class @{ typeName }_<T extends @{ typeName }> extends @if{ "Thing".equals
 
         @Override
         public java.net.URI getUri() {
-            return java.net.URI.create( "@{ typeIri }" );
+            if ( key == null ) {
+                key = java.net.URI.create( "@{ typeIri }" );
+            }
+            return key;
         }
+
+        public @{ typeName }_NewInstance<T> newInstance( Object id ) {
+            return new @{ typeName }_NewInstance<T>( id );
+        }
+
 
     }
 

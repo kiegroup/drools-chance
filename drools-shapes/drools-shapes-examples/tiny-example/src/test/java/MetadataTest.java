@@ -1,15 +1,21 @@
 
 import com.foo.SubKlass;
+import com.foo.SubKlassImpl;
 import com.foo.SubKlass_;
+import org.drools.core.factmodel.traits.InstantiatorFactory;
+import org.drools.core.factmodel.traits.Thing;
+import org.drools.core.factmodel.traits.TraitableBean;
 import org.junit.Test;
 import org.test.Klass;
 import org.w3._2002._07.owl.ThingImpl;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MetadataTest {
 
@@ -70,6 +76,33 @@ public class MetadataTest {
         tgt.put( "prop", "bye" );
         tgt.put( "subProp", -99 );
         assertEquals( tgt, ((Foo) ski).map );
+    }
+
+    @Test
+    public void testDelayedInstantiation() {
+        SubKlass sk = SubKlass_.newSubKlass( "123" ).prop( "hello" ).call();
+
+        assertEquals( "hello", sk.getProp() );
+        assertEquals( URI.create( "123" ), sk.getId() );
+        assertTrue( sk instanceof SubKlassImpl );
+    }
+
+    @Test
+    public void testDelayedInstantiationWithFactory() {
+        SubKlass sk = SubKlass_.newSubKlass( "123" ).prop( "hello" ).setInstantiatorFactory(
+                new InstantiatorFactory() {
+                    @Override
+                    public TraitableBean instantiate( Class<? extends Thing> trait, Object id ) {
+                        Foo foo = new Foo();
+                        foo.setDyEntryId( id.toString() );
+                        return foo;
+                    }
+                }
+        ).call();
+
+        assertEquals( "hello", sk.getProp() );
+        assertEquals( URI.create( "123" ), sk.getId() );
+        assertTrue( sk instanceof Foo );
     }
 
 
