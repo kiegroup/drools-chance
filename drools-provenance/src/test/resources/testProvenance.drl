@@ -1,0 +1,54 @@
+package org.drools.beliefs.provenance;
+
+import org.drools.core.factmodel.traits.Entity
+import com.foo.SubKlass;
+import org.test.KlassImpl;
+import org.test.Klass;
+import org.test.Klass_;
+import com.foo.SubKlass_;
+import org.drools.core.metadata.Modify;
+
+rule Init
+when
+then
+    insertLogical( Klass_.newKlass( "123" ).prop( "hello" ) );
+end
+
+rule Don
+no-loop
+when
+    $e : Klass(  )
+then
+    don( $e, SubKlass.class , true );
+end
+
+
+rule SetAttribute
+when
+    $k : SubKlass()
+then
+    insertLogical( SubKlass_.modify( $k ).subProp( 12 ) );
+end
+
+rule AnotherSetAttribute
+when
+    $k : SubKlass()
+then
+    insertLogical( SubKlass_.modify( $k ).subProp( 42 ) );
+end
+
+
+rule React
+when
+    $k : SubKlass( subProp == 42 )
+then
+    System.out.println( "VICTORY" );
+end
+
+
+rule NeverEver
+when
+    Modify()
+then
+    throw new IllegalStateException( "This rule should have never fired! : reified 'modifies' should never propagate directly" );
+end

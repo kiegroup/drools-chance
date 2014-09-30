@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.drools</groupId>
+	<artifactId>drools-provenance</artifactId>
+	<version>6.2.0-SNAPSHOT</version>
+
+	<properties>
+		<drools.version>6.2.0-SNAPSHOT</drools.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-shapes-utilities</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>tiny-example</artifactId>
+			<version>${drools.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.11</version>
+			</dependency>
+			<dependency>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-shapes-utilities</artifactId>
+				<version>${drools.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-shapes-generator-plugin</artifactId>
+				<version>6.2.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>cast</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<outputDirectory>${pom.basedir}</outputDirectory>
+					<ontology>${pom.basedir}/src/main/resources/org/w3/provo/drools-prov.owl</ontology>
+					<ontologyImports>
+						<ontologyImport>${pom.basedir}/src/main/resources/org/w3/provo/foaf.owl</ontologyImport>
+						<ontologyImport>${pom.basedir}/src/main/resources/org/w3/provo/prov-o.owl</ontologyImport>
+					</ontologyImports>
+					<axiomInference>lite</axiomInference>
+					<modelName>provo</modelName>
+					<generateInterfaces>true</generateInterfaces>
+					<generateInterfaceJar>false</generateInterfaceJar>
+					<generateIndividuals>false</generateIndividuals>
+					<generateTraitDRL>false</generateTraitDRL>
+					<generateDefaultImplClasses>true</generateDefaultImplClasses>
+					<inheritanceMode>OPTIMIZED</inheritanceMode>
+					<generateSpecXSDs>false</generateSpecXSDs>
+					<compilationOptionsPackage>default</compilationOptionsPackage>
+					<compilationOptions>
+						<compilationOption>-XtoString</compilationOption>
+					</compilationOptions>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${pom.basedir}/target/generated-sources/xjc</source>
+								<source>${pom.basedir}/target/generated-sources/java</source>
+								<source>${pom.basedir}/target/generated-sources/META-INF</source>
+								<source>${pom.basedir}/target/generated-sources/DRL</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>
