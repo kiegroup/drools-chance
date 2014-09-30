@@ -116,7 +116,7 @@
     </repository>
 
 
-    <!--repository>
+    <repository>
       <id>choco-repository</id>
       <name>Choco Repository</name>
       <url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
@@ -129,13 +129,9 @@
         <enabled>true</enabled>
         <updatePolicy>never</updatePolicy>
       </snapshots>
-    </repository-->
-
+    </repository>
 
   </repositories>
-
-
-
 
 </project>
 

@@ -458,7 +458,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
     }
 
     public static String getTemplatedCode( String template, Map<String, Object> vars, ModelFactory.CompileTarget target ) {
-        return TemplateRuntime.execute (
+        return (
                 DLTemplateManager.getDataModelRegistry( target  ).getNamedTemplate( template + ".template" ),
                 NameUtils.getInstance(),
                 vars ).toString();

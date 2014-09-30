@@ -15,19 +15,21 @@ then
 end
 
 rule Don
+@Display( "example" )
 no-loop
 when
-    $e : Klass(  )
+    $e : Klass(  ) @Display( more )
 then
     don( $e, SubKlass.class , true );
 end
 
 
 rule SetAttribute
+@Display( "example" )
 when
-    $k : SubKlass()
+    $e : SubKlass() @Display( "more" )
 then
-    insertLogical( SubKlass_.modify( $k ).subProp( 12 ) );
+    insertLogical( SubKlass_.modify( $e ).subProp( 12 ) );
 end
 
 rule AnotherSetAttribute
