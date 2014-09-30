@@ -84,6 +84,12 @@
 			<id>Ontocat-snapshot</id>
 			<url>http://ontocat.sourceforge.net/maven/repo/</url>
 		</repository>
+
+  <repository> 
+    <id>Jenabean</id> 
+    <url>http://jenabean.googlecode.com/svn/repo</url> 
+  </repository>
+ 
 	</repositories>
 
 	<build>
