@@ -429,6 +429,9 @@ public class ThingImpl
 
     @Transient
     public Map<String, org.drools.core.factmodel.traits.Thing<ThingImpl>> _getTraitMap() {
+        if ( __$$dynamic_traits_map$$ == null ) {
+            _setTraitMap( new TraitTypeMap() );
+        }
         return __$$dynamic_traits_map$$;
     }
 

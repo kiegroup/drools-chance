@@ -28,13 +28,17 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
                 super( java.net.URI.create( id.toString() ) );
             }
 
-            protected T construct() {
+            public boolean isInterface() {
+                return true;
+            }
+
+            protected Object construct() {
                 if ( getInstantiatorFactory() != null ) {
-                    return (T) getInstantiatorFactory().instantiate( @{ typeName }.class, getId() );
+                    return getInstantiatorFactory().instantiate( @{ typeName }.class, getId() );
                 }
                 @{package}.@{ typeName }Impl x = new @{package}.@{ typeName }Impl();
                 x.setDyEntryId( getId().toString() );
-                return (T) x;
+                return x;
             }
 
             @code{ int s = 0; }
@@ -54,6 +58,11 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
                 }
                 return ( @{ typeName }_Modify<T>) setter;
             }
+
+        @Override
+        public Class<T> getInstanceClass() {
+            return @{ typeName }_Meta.getInstance().getTargetClass();
+        }
 
     }
 
@@ -141,7 +150,10 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             return new @{ typeName }_NewInstance<T>( id );
         }
 
-
+        @Override
+        public Class<T> getTargetClass() {
+            return (Class<T>) @{ package }.@{ typeName }.class;
+        }
     }
 
 }
