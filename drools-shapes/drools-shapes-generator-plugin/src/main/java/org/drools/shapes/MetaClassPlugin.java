@@ -5,6 +5,7 @@ import com.sun.tools.xjc.Options;
 import com.sun.tools.xjc.model.CPluginCustomization;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
+import org.apache.commons.lang.StringUtils;
 import org.drools.core.metadata.MetadataHolder;
 import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompilerImpl;
 import org.drools.semantics.utils.NameUtils;
@@ -92,7 +93,7 @@ public class MetaClassPlugin extends MetadataPlugin {
             try {
                 File metaFile = new File( opt.targetDir.getPath().replace( "xjc", "java" ) +
                                           File.separator +
-                                          keyed.getAttribute( "package" ).replaceAll( "\\.", File.separator ) +
+                                          StringUtils.replace(keyed.getAttribute( "package" ), "\\.", File.separator ) +
                                           File.separator +
                                           keyed.getAttribute( "name" ) +
                                           "_.java" );
