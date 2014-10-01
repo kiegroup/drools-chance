@@ -43,7 +43,7 @@
     </dependency>
 
     <dependency>
-      <groupId>jdom</groupId>
+      <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
 	    <version>1.1</version>
     </dependency>
@@ -77,6 +77,11 @@
 		<repository>
 			<id>EmpireRDF-snapshot</id>
 			<url>https://github.com/EmpireRDF/mavenRepo/raw/master/snapshots</url>
+		</repository>
+
+		<repository>
+			<id>Jenabean</id>
+			<url>http://jenabean.googlecode.com/svn/repo</url>
 		</repository>
 
 		<repository>

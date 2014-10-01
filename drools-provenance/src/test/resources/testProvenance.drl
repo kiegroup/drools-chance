@@ -20,7 +20,7 @@ no-loop
 when
     $e : Klass(  ) @Display( more )
 then
-    don( $e, SubKlass.class , true );
+    insertLogical( SubKlass_.donSubKlass( $e ) );
 end
 
 

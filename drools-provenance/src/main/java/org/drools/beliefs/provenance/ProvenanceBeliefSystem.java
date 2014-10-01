@@ -15,6 +15,7 @@ import org.drools.core.common.NamedEntryPoint;
 import org.drools.core.common.TruthMaintenanceSystem;
 import org.drools.core.factmodel.traits.Thing;
 import org.drools.core.factmodel.traits.TraitFactory;
+import org.drools.core.metadata.Don;
 import org.drools.core.metadata.MetaCallableTask;
 import org.drools.core.metadata.MetadataContainer;
 import org.drools.core.metadata.Modify;
@@ -51,39 +52,59 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
 
         if ( node.getObject() instanceof MetaCallableTask ) {
 
-            Activation match = node.getJustifier();
             defEP.getEntryPointNode().retractObject( beliefSet.getFactHandle(),
                                                      context,
                                                      typeConf,
                                                      defEP.getInternalWorkingMemory() );
-
-            if ( ( (MetaCallableTask) node.getObject() ).isConstructor() ) {
-                NewInstance newInstance = (NewInstance) node.getObject();
-                if ( newInstance.isInterface() ) {
-                    newInstance.setInstantiatorFactory( TraitFactory.getTraitBuilderForKnowledgeBase( defEP.getKnowledgeBase() ).getInstantiatorFactory() );
-                    Object target = newInstance.callUntyped();
-
-                    defEP.getTraitHelper().don( node.getJustifier(),
-                                                target,
-                                                newInstance.getInstanceClass(),
-                                                newInstance.getInitArgs(),
-                                                true );
-                } else {
-                    Object target = newInstance.call();
-                    defEP.insert( target, JTMSBeliefSetImpl.MODE.POSITIVE, false, true, node.getJustifier().getRule(), node.getJustifier() );
-                }
-            } else {
-                Modify modify = (Modify) node.getObject();
-                Object target = modify.getTarget();
-                modify.call();
-
-                defEP.update( (InternalFactHandle) defEP.getFactHandle( target ),
-                              true,
-                              target,
-                              modify.getModificationMask(),
-                              modify.getModificationClass(),
-                              match );
+            MetaCallableTask task = (MetaCallableTask) node.getObject();
+            switch ( task.kind() ) {
+                case ASSERT : executeNew( (NewInstance) task, node );
+                    break;
+                case MODIFY : executeModify( (Modify) task, node );
+                    break;
+                case DON    : executeDon( (Don) task, node );
+                    break;
+                default:
+                    throw new UnsupportedOperationException( "Unrecognized Meta TASK type" );
             }
+
+            } else {
+            }
+        }
+
+    private void executeDon( Don don, LogicalDependency<M> node ) {
+        defEP.getTraitHelper().don( node.getJustifier(),
+                                    don.getCore(),
+                                    don.getTrait(),
+                                    null,
+                                    false );
+    }
+
+    private void executeModify( Modify modify, LogicalDependency<M> node ) {
+        Object target = modify.getTarget();
+        modify.call();
+
+        defEP.update( (InternalFactHandle) defEP.getFactHandle( target ),
+                      true,
+                      target,
+                      modify.getModificationMask(),
+                      modify.getModificationClass(),
+                      node.getJustifier() );
+    }
+
+    private void executeNew( NewInstance newInstance, LogicalDependency<M> node ) {
+        if ( newInstance.isInterface() ) {
+            newInstance.setInstantiatorFactory( TraitFactory.getTraitBuilderForKnowledgeBase( defEP.getKnowledgeBase() ).getInstantiatorFactory() );
+            Object target = newInstance.callUntyped();
+
+            defEP.getTraitHelper().don( node.getJustifier(),
+                                        target,
+                                        newInstance.getInstanceClass(),
+                                        newInstance.getInitArgs(),
+                                        false );
+        } else {
+            Object target = newInstance.call();
+            defEP.insert( target, JTMSBeliefSetImpl.MODE.POSITIVE, false, false, node.getJustifier().getRule(), node.getJustifier() );
         }
     }
 
