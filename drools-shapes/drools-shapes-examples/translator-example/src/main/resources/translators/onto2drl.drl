@@ -31,7 +31,7 @@ end
 
 rule "Process Rule"
 when
-    $r : Rule( $uid : this.dyEntryId )
+    $r : org.semanticweb.ontologies._2012._1.rules.Rule( $uid : this.dyEntryId )
 then
     RuleDescr rd = new RuleDescr();
         rd.setName( (String) $uid );
@@ -44,7 +44,7 @@ rule "Process Simple Premise"
 no-loop
 dialect "mvel"
 when
-    $r : Rule( $uid : this.dyEntryId, $lhs : hasPremiseFormula )
+    $r : org.semanticweb.ontologies._2012._1.rules.Rule( $uid : this.dyEntryId, $lhs : hasPremiseFormula )
     not  MetaRule ( this == $r )  //MVEL bug with instanceof... TODO
     $f : Pattern( $pid : this.dyEntryId, this == $lhs, $fct : get( "hasFunctorType" ), $fct != null && $fct.size() > 0 )
     $t : Thing( $type : this.semanticTypeName ) from $fct.get(0)
@@ -156,7 +156,7 @@ end
 rule "Add rule attributes"
 no-loop
 when
-    $r : Rule( $uid : this.dyEntryId, $att : hasRuleAttribute )
+    $r : org.semanticweb.ontologies._2012._1.rules.Rule( $uid : this.dyEntryId, $att : hasRuleAttribute )
     $o : Thing( $aid : this.dyEntryId, $t : this.actualType, $keys : this.properties, $values : this.propertyValues ) from $att
     $x : RuleDescr( name == $uid )
 then
@@ -172,7 +172,7 @@ end
 rule "Preconditions"
 no-loop
 when
-    $r   : Rule( $uid : this.dyEntryId, $prex : hasPrecondition )
+    $r   : org.semanticweb.ontologies._2012._1.rules.Rule( $uid : this.dyEntryId, $prex : hasPrecondition )
     $pre : UIdAble( $x : this.dyEntryId ) from $prex
 then
      RuleDescr rd = new RuleDescr();
@@ -184,7 +184,7 @@ end
 rule "Goals"
 no-loop
 when
-    $r   : Rule( $uid : this.dyEntryId, $exx : hasExpectation, $t : this.semanticTypeName )
+    $r   : org.semanticweb.ontologies._2012._1.rules.Rule( $uid : this.dyEntryId, $exx : hasExpectation, $t : this.semanticTypeName )
     $exp : UIdAble( $x : this.dyEntryId ) from $exx
 then
     RuleDescr rd = new RuleDescr();

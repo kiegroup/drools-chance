@@ -16,7 +16,10 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.utils.KieHelper;
 import org.w3.ns.prov.Activity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,7 +36,9 @@ public class ProvenanceTest {
         Resource ruleDRL = kieServices.getResources().newClassPathResource( "testProvenance.drl" );
 
         KieHelper kieHelper = validateKieBuilder( traitDRL, ruleDRL );
+        List list = new ArrayList();
         KieSession kieSession = kieHelper.build( ProvenanceHelper.getProvenanceEnabledKieBaseConfiguration() ).newKieSession();
+        kieSession.setGlobal( "list", list );
         kieSession.fireAllRules();
 
         Provenance provenance = ProvenanceHelper.getProvenance( kieSession );
@@ -49,6 +54,7 @@ public class ProvenanceTest {
             }
         }
 
+        assertEquals( Arrays.asList( "RESULT" ), list );
     }
 
     private KieHelper validateKieBuilder( Resource... resources ) {

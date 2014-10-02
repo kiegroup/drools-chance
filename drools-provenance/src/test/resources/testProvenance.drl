@@ -8,6 +8,8 @@ import org.test.Klass_;
 import com.foo.SubKlass_;
 import org.drools.core.metadata.Modify;
 
+global java.util.List list;
+
 rule Init
 when
 then
@@ -44,7 +46,7 @@ rule React
 when
     $k : SubKlass( subProp == 42 )
 then
-    System.out.println( "VICTORY" );
+    list.add( "RESULT" );
 end
 
 

@@ -66,6 +66,7 @@ public class ProvenanceBeliefSetImpl<M extends ProvenanceBelief<M>>
     }
 
     private void generateText(M node) {
+        /*
 		Activation<M> act = node.getLogicalDependency().getJustifier();
 		if ( act.getRule().getMetaData().containsKey("Display") ) {
 		CompiledTemplate template = TemplateManager.getRegistry().getNamedTemplate( (String) act.getRule().getMetaData().get("Display")); 		
@@ -79,6 +80,7 @@ public class ProvenanceBeliefSetImpl<M extends ProvenanceBelief<M>>
 		}
 		System.out.println( TemplateRuntime.execute( template, map ) );
 		}
+		*/
 	}
 
 	public List<Activity> getProvenance() {

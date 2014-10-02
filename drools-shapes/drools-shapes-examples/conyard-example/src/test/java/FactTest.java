@@ -28,8 +28,10 @@ import org.drools.owl.conyard.StairImpl;
 import org.drools.semantics.XMLSerializationHelper;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -79,6 +81,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+@FixMethodOrder( MethodSorters.NAME_ASCENDING )
 public class FactTest {
 
 
