@@ -93,7 +93,7 @@ public class MetaClassPlugin extends MetadataPlugin {
             try {
                 File metaFile = new File( opt.targetDir.getPath().replace( "xjc", "java" ) +
                                           File.separator +
-                                          StringUtils.replace(keyed.getAttribute( "package" ), "\\.", File.separator ) +
+                                          StringUtils.replace(keyed.getAttribute( "package" ), ".", File.separator ) +
                                           File.separator +
                                           keyed.getAttribute( "name" ) +
                                           "_.java" );
