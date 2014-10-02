@@ -1,27 +1,22 @@
 package org.drools.beliefs.provenance;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import org.drools.core.beliefsystem.BeliefSystem;
 import org.drools.core.beliefsystem.jtms.JTMSBeliefSetImpl;
 import org.drools.core.common.InternalFactHandle;
-import org.drools.core.rule.Pattern;
-import org.drools.core.spi.Activation;
 import org.drools.semantics.Literal;
 import org.jboss.drools.provenance.RuleActivationImpl;
-import org.mvel2.templates.CompiledTemplate;
-import org.mvel2.templates.TemplateRuntime;
+import org.kie.api.definition.rule.Rule;
 import org.w3.ns.prov.Activity;
 import org.w3.ns.prov.ActivityImpl;
 import org.w3.ns.prov.Agent;
 import org.w3.ns.prov.Entity;
 import org.w3.ns.prov.EntityImpl;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class ProvenanceBeliefSetImpl<M extends ProvenanceBelief<M>>
         extends JTMSBeliefSetImpl<M>
@@ -44,25 +39,43 @@ public class ProvenanceBeliefSetImpl<M extends ProvenanceBelief<M>>
         super.remove( node );
         recordActivity( node, false );
     }
-
+    
     private void recordActivity( M node, boolean positiveAssertion ) {
+    	Activity activity = this.createActivity( node, positiveAssertion );
+    	
+        this.provenance.add( activity );         
+    }
+
+    protected Activity createActivity( M node, boolean positiveAssertion ) {
+    	// TODO: Just placeholder transforms
+    	Rule droolsRule = node.getLogicalDependency().getJustifier().getRule();
+    	
     	Object tgt = node.getLogicalDependency().getObject();
 
-        ActivityImpl activity = new ActivityImpl();
-        activity.withEndedAtTime( new Date() );
-        activity.withName( new Literal( UUID.randomUUID().toString() ) );
+    	Activity activity = this.toActivity( null );
 
+        Entity entity = new EntityImpl(); 
+    	
+    	for( Object justifier : node.getLogicalDependency().getJustifier().getObjects()) {
+    		entity.addWasInvalidatedBy( this.toActivity( justifier ) );
+    	}
 
-        Entity entity = new EntityImpl();
         activity.addGenerated( entity );
 
         Agent rule = new RuleActivationImpl();
-
-
-        this.provenance.add( activity );
-        
-        
+        rule.addName( new Literal( droolsRule.getPackageName() + "." + droolsRule.getName() ) );
+           
         generateText( node );
+        
+        return activity;
+    }
+    
+    protected Activity toActivity( Object object ) {
+    	ActivityImpl activity = new ActivityImpl();
+        activity.withEndedAtTime( new Date() );
+        activity.withName( new Literal( UUID.randomUUID().toString() ) );
+        
+        return activity;
     }
 
     private void generateText(M node) {
