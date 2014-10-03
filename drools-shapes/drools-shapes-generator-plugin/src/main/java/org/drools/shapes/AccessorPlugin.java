@@ -102,7 +102,7 @@ public class AccessorPlugin extends Plugin {
                 String type = el.getAttribute( "type" );
                 String simp = el.getAttribute( "simple" );
                 PropEssentials prop = new PropEssentials( name, type, Boolean.valueOf( simp ) );
-                
+
                 for ( int k = 0; k < el.getChildNodes().getLength(); k++ ) {
                     Node m = el.getChildNodes().item( k );
                     if ( m instanceof Element ) {
@@ -134,8 +134,11 @@ public class AccessorPlugin extends Plugin {
 
     }
 
-    
-    
+    private boolean isPrimitive( String type ) {
+        return type.startsWith( "xsd:" );
+    }
+
+
     private void processBaseAccessors( ClassOutline co ) {
 
         CPluginCustomization c = co.target.getCustomizations().find( uri, "accessors" );
@@ -193,15 +196,16 @@ public class AccessorPlugin extends Plugin {
 
     private void compileAccessor( JDefinedClass implClass, Element item ) {
         Map<String,Object> vars = new HashMap<String, Object>();
-        vars.put( "name", item.getAttribute( "name" ) );
+        boolean simple = Boolean.valueOf( item.getAttribute( "simple" ) );
+        boolean primitive = Boolean.valueOf( item.getAttribute( "primitive" ) );         vars.put( "name", item.getAttribute( "name" ) );
         vars.put( "type", item.getAttribute( "type" ) );
-        vars.put( "primitive", Boolean.valueOf( item.getAttribute( "primitive" ) ) );
+        vars.put( "primitive", primitive );
         vars.put( "min", Integer.valueOf( item.getAttribute( "min" ) ) );
         vars.put( "max", item.getAttribute( "max" ).equals( "null") ? null : Integer.valueOf( item.getAttribute( "max" ) ) );
         vars.put( "inherited", Boolean.valueOf( item.getAttribute( "inherited" ) ) );
         vars.put( "base", item.getAttribute( "base" ) );
         vars.put( "baseType", item.getAttribute( "baseType" ) );
-        vars.put( "simple", Boolean.valueOf(item.getAttribute("simple")) );
+        vars.put( "simple", simple );
 
         Set<List<Link>> chains = new HashSet<List<Link>>();
         NodeList chainsList = item.getElementsByTagNameNS( uri, "chain");
@@ -221,19 +225,20 @@ public class AccessorPlugin extends Plugin {
 
         String code;
 
-        if ( chainsList.getLength() == 0 ) {
-            code = SemanticXSDModelCompilerImpl.getTemplatedCode("restrictedGetterSetter", vars);
-            implClass.direct( code );
-        } else {
-            code = SemanticXSDModelCompilerImpl.getTemplatedCode("chainGetter", vars);
-            implClass.direct( code );
-        }
+        if ( ! ( simple && primitive ) ) {
+            if ( chainsList.getLength() == 0 ) {
+                code = SemanticXSDModelCompilerImpl.getTemplatedCode("restrictedGetterSetter", vars);
+                implClass.direct( code );
+            } else {
+                code = SemanticXSDModelCompilerImpl.getTemplatedCode("chainGetter", vars);
+                implClass.direct( code );
+            }
 
-        if ( chainsList.getLength() == 0 ) {
-            code = SemanticXSDModelCompilerImpl.getTemplatedCode("restrictedAddRemove", vars);
-            implClass.direct( code );
+            if ( chainsList.getLength() == 0 ) {
+                code = SemanticXSDModelCompilerImpl.getTemplatedCode("restrictedAddRemove", vars);
+                implClass.direct( code );
+            }
         }
-
 
     }
 

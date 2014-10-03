@@ -34,11 +34,13 @@
 
             // @{subs}
             @foreach{ sub : subs }
+            @if{ ! sub.type.startsWith( "xsd:" ) }
                 @if{ sub.single }
                     ans.add( @{ getter( sub.name, map( sub.type, true ), 1 ) }() );
                 @else{}
                     ans.addAll( @{ getter( sub.name, map( sub.type, true ) ) }() );
                 @end{}
+            @end{}
             @end{}
 
             return ans;

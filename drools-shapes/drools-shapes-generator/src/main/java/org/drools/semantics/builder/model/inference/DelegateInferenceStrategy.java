@@ -771,6 +771,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         clonedRel.setTarget( rel.getTarget() );
         clonedRel.setDomain( rel.getDomain() );
         clonedRel.setRestricted( rel.isRestricted() );
+        clonedRel.setFunctional( rel.isFunctional() );
+        clonedRel.setSimple( rel.isSimple() );
         return clonedRel;
 
     }

@@ -8,6 +8,7 @@ Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
 Ontology(<http://www.test.org>
 
 Declaration(Class(<http://www.test.org#Klass>))
+SubClassOf(<http://www.test.org#Klass> DataExactCardinality(1 <http://www.test.org#prop> xsd:string))
 Declaration(DataProperty(<http://www.test.org#prop>))
 FunctionalDataProperty(<http://www.test.org#prop>)
 DataPropertyDomain(<http://www.test.org#prop> <http://www.test.org#Klass>)
