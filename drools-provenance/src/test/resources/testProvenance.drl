@@ -7,6 +7,7 @@ import org.test.Klass;
 import org.test.Klass_;
 import com.foo.SubKlass_;
 import org.drools.core.metadata.Modify;
+import org.drools.beliefs.provenance.annotations.*;
 
 global java.util.List list;
 
@@ -14,29 +15,31 @@ rule Init
 when
 then
     insertLogical( Klass_.newKlass( "123" ).prop( "hello" ) );
+    insert( "fooo" );
 end
 
 rule Don
-@Display( "example" )
+@Display( "Pretty print @{$e_1}" )
 no-loop
 when
-    $e : Klass(  ) @Display( more )
+    $e : Klass( $p : prop ) @Evidence( @Display( type="1", value="@{$p} world from @{$e.getClass().getSimpleName()}" ) )
+    $s : String()
 then
     insertLogical( SubKlass_.donSubKlass( $e ) );
 end
 
 
 rule SetAttribute
-@Display( "example" )
+@Display( template = "anotherExample" )
 when
-    $e : SubKlass() @Display( "more" )
+    $e : SubKlass() @Evidence( value = { @Display( type="1", value = "hello" ), @Display( type="2", template = "example" ) } )
 then
     insertLogical( SubKlass_.modify( $e ).subProp( 12 ) );
 end
 
 rule AnotherSetAttribute
 when
-    $k : SubKlass()
+    $k : SubKlass() @Evidence
 then
     insertLogical( SubKlass_.modify( $k ).subProp( 42 ) );
 end

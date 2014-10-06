@@ -1,0 +1,3 @@
+@declare{'example'}Another pretty printing of the whole @{ $e_1 }@end{}
+
+@includeNamed{'example'}

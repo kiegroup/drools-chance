@@ -52,10 +52,10 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
 
         if ( node.getObject() instanceof MetaCallableTask ) {
 
-            defEP.getEntryPointNode().retractObject( beliefSet.getFactHandle(),
+            ep.getEntryPointNode().retractObject( beliefSet.getFactHandle(),
                                                      context,
                                                      typeConf,
-                                                     defEP.getInternalWorkingMemory() );
+                                                     ep.getInternalWorkingMemory() );
             MetaCallableTask task = (MetaCallableTask) node.getObject();
             switch ( task.kind() ) {
                 case ASSERT : executeNew( (NewInstance) task, node );
@@ -73,7 +73,7 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
         }
 
     private void executeDon( Don don, LogicalDependency<M> node ) {
-        defEP.getTraitHelper().don( node.getJustifier(),
+        ep.getTraitHelper().don( node.getJustifier(),
                                     don.getCore(),
                                     don.getTrait(),
                                     null,
@@ -84,7 +84,7 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
         Object target = modify.getTarget();
         modify.call();
 
-        defEP.update( (InternalFactHandle) defEP.getFactHandle( target ),
+        ep.update( (InternalFactHandle) ep.getFactHandle( target ),
                       true,
                       target,
                       modify.getModificationMask(),
@@ -94,17 +94,17 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
 
     private void executeNew( NewInstance newInstance, LogicalDependency<M> node ) {
         if ( newInstance.isInterface() ) {
-            newInstance.setInstantiatorFactory( TraitFactory.getTraitBuilderForKnowledgeBase( defEP.getKnowledgeBase() ).getInstantiatorFactory() );
+            newInstance.setInstantiatorFactory( TraitFactory.getTraitBuilderForKnowledgeBase( ep.getKnowledgeBase() ).getInstantiatorFactory() );
             Object target = newInstance.callUntyped();
 
-            defEP.getTraitHelper().don( node.getJustifier(),
+            ep.getTraitHelper().don( node.getJustifier(),
                                         target,
                                         newInstance.getInstanceClass(),
                                         newInstance.getInitArgs(),
                                         false );
         } else {
             Object target = newInstance.call();
-            defEP.insert( target, JTMSBeliefSetImpl.MODE.POSITIVE, false, false, node.getJustifier().getRule(), node.getJustifier() );
+            ep.insert( target, JTMSBeliefSetImpl.MODE.POSITIVE, false, false, node.getJustifier().getRule(), node.getJustifier() );
         }
     }
 

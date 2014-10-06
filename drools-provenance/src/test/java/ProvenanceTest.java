@@ -4,6 +4,8 @@ import org.drools.beliefs.provenance.ProvenanceHelper;
 import org.drools.core.common.NamedEntryPoint;
 import org.drools.core.metadata.Modify;
 import org.drools.core.rule.EntryPointId;
+import org.jboss.drools.provenance.Assertion;
+import org.jboss.drools.provenance.Recognition;
 import org.junit.Test;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
@@ -15,6 +17,7 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.utils.KieHelper;
 import org.w3.ns.prov.Activity;
+import org.w3.ns.prov.Entity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,11 +49,25 @@ public class ProvenanceTest {
         for ( Object o : kieSession.getObjects() ) {
             if ( provenance.hasProvenanceFor( o ) ) {
                 Collection<? extends Activity> activity = provenance.describeProvenance( o );
+                Collection<? extends Activity> acts = provenance.describeProvenance( o );
+
                 if ( o instanceof Modify ) {
-                    assertEquals( 2, provenance.describeProvenance( o ).size() );
+                    assertEquals( 2, acts.size() );
                 } else {
-                    assertEquals( 1, provenance.describeProvenance( o ).size() );
+                    Activity act = acts.iterator().next();
+                    assertEquals( 1, acts.size() );
+
+                    if ( act instanceof Recognition ) {
+                        assertEquals( 1, act.getGenerated().size() );
+                        Entity rec = act.getGenerated().get( 0 );
+                        Entity tgt = rec.getHadPrimarySource().get( 0 );
+
+                        assertEquals( 1, tgt.getDisplaysAs().size() );
+                        assertEquals( "Pretty print hello world from IdentifiableEntity_Proxy",
+                                      tgt.getDisplaysAs().get( 0 ).getNarrativeText().get( 0 ) );
+                    }
                 }
+
             }
         }
 

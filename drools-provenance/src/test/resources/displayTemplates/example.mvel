@@ -1,0 +1,3 @@
+@declare{'example'}Hello world from @{ $e.prop }@end{}
+
+@includeNamed{'example'}

@@ -63,7 +63,7 @@
 					<outputDirectory>${pom.basedir}</outputDirectory>
 					<ontology>${pom.basedir}/src/main/resources/org/w3/provo/drools-prov.owl</ontology>
 					<ontologyImports>
-						<ontologyImport>${pom.basedir}/src/main/resources/org/w3/provo/foaf.owl</ontologyImport>
+						<ontologyImport>${pom.basedir}/src/main/resources/org/w3/provo/dc_owl2dl.owl</ontologyImport>
 						<ontologyImport>${pom.basedir}/src/main/resources/org/w3/provo/prov-o.owl</ontologyImport>
 					</ontologyImports>
 					<axiomInference>lite</axiomInference>

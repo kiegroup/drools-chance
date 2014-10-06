@@ -19,10 +19,6 @@ If you wish to make comments regarding this document, please send them to public
                              rdfs:seeAlso <http://www.w3.org/TR/prov-o/> ,
                                           <http://www.w3.org/ns/prov> ;
                              
-                             :specializationOf <http://www.w3.org/ns/prov-o> ;
-                             
-                             :wasRevisionOf <http://www.w3.org/ns/prov-o-20130312> ;
-                             
                              owl:versionIRI <http://www.w3.org/ns/prov-o-20130430> .
 
 
@@ -582,8 +578,8 @@ Note how the value of the unqualified influence (prov:wasGeneratedBy :activity1)
            
            rdfs:isDefinedBy <http://www.w3.org/ns/prov-o#> .
 [ rdf:type owl:Axiom ;
-  :dm "http://www.w3.org/TR/2013/REC-prov-dm-20130430/#term-collection" ;
   rdfs:comment "A collection is an entity that provides a structure to some constituents, which are themselves entities. These constituents are said to be member of the collections."@en ;
+  :dm "http://www.w3.org/TR/2013/REC-prov-dm-20130430/#term-collection" ;
   owl:annotatedProperty rdfs:range ;
   owl:annotatedTarget :Entity ;
   owl:annotatedSource :hadMember
@@ -1303,8 +1299,8 @@ Note how the value of the unqualified influence (prov:wasGeneratedBy :activity1)
                                           :agent
                                         ) .
 [ rdf:type owl:Axiom ;
-  rdfs:comment "Attribution is a particular case of trace (see http://www.w3.org/TR/prov-dm/#concept-trace), in the sense that it links an entity to the agent that ascribed it." ;
   :definition "IF wasAttributedTo(e2,ag1,aAttr) holds, THEN wasInfluencedBy(e2,ag1) also holds. " ;
+  rdfs:comment "Attribution is a particular case of trace (see http://www.w3.org/TR/prov-dm/#concept-trace), in the sense that it links an entity to the agent that ascribed it." ;
   owl:annotatedProperty rdfs:subPropertyOf ;
   owl:annotatedSource :wasAttributedTo ;
   owl:annotatedTarget :wasInfluencedBy
@@ -1458,9 +1454,9 @@ prov:wasInfluencedBy should not be used without also using one of its subpropert
                                            )
                              ] .
 [ rdf:type owl:Axiom ;
+  :definition "influencer: an identifier (o1) for an ancestor entity, activity, or agent that the former depends on;" ;
   :dm "http://www.w3.org/TR/2013/REC-prov-dm-20130430/#term-influence" ;
-  :definition "influencee: an identifier (o2) for an entity, activity, or agent; " ;
-  owl:annotatedProperty rdfs:domain ;
+  owl:annotatedProperty rdfs:range ;
   owl:annotatedSource :wasInfluencedBy ;
   owl:annotatedTarget [ rdf:type owl:Class ;
                         owl:unionOf ( :Activity
@@ -1470,9 +1466,9 @@ prov:wasInfluencedBy should not be used without also using one of its subpropert
                       ]
 ] .
 [ rdf:type owl:Axiom ;
-  :definition "influencer: an identifier (o1) for an ancestor entity, activity, or agent that the former depends on;" ;
   :dm "http://www.w3.org/TR/2013/REC-prov-dm-20130430/#term-influence" ;
-  owl:annotatedProperty rdfs:range ;
+  :definition "influencee: an identifier (o2) for an entity, activity, or agent; " ;
+  owl:annotatedProperty rdfs:domain ;
   owl:annotatedSource :wasInfluencedBy ;
   owl:annotatedTarget [ rdf:type owl:Class ;
                         owl:unionOf ( :Activity
