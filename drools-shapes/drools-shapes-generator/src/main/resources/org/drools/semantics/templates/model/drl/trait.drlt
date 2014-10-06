@@ -31,9 +31,9 @@ declare trait @{fullyQualifiedName} @if{ superConcepts.size > 0 } extends @forea
   @end{}
 
   @if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }
-    @code{ prop = properties[ propKey ] }
+    @code{ prop = properties[ propKey ] } @if{ ! ( prop.simple && prop.restricted && prop.target.primitive ) }
     @{ prop.name } : @if{ prop.maxCard == null || prop.maxCard > 1 } java.util.List @else{} @{ map( prop.target.fullyQualifiedName, true ) } @end{}
-  @end{}                        @end{}
+  @end{} @end{} @end{}
 end
 
 @end{}

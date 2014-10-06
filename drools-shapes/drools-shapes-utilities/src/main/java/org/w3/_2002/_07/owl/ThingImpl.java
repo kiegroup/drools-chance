@@ -521,13 +521,11 @@ public class ThingImpl
         return getFullName();
     }
 
-    @Override
     @Transient
     public URI getUri() {
         return URI.create( getDyEntryId() );
     }
 
-    @Override
     @Transient
     public Object getId() {
         return getUri();
