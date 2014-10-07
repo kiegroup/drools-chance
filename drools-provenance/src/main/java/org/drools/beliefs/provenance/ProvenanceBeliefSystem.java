@@ -48,14 +48,14 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
 
     @Override
     public void insert( LogicalDependency<M> node, BeliefSet<M> beliefSet, PropagationContext context, ObjectTypeConf typeConf ) {
-        super.insert( node, beliefSet, context, typeConf );
 
         if ( node.getObject() instanceof MetaCallableTask ) {
 
+            ep.getObjectStore().removeHandle( beliefSet.getFactHandle() );
             ep.getEntryPointNode().retractObject( beliefSet.getFactHandle(),
-                                                     context,
-                                                     typeConf,
-                                                     ep.getInternalWorkingMemory() );
+                                                  context,
+                                                  typeConf,
+                                                  ep.getInternalWorkingMemory() );
             MetaCallableTask task = (MetaCallableTask) node.getObject();
             switch ( task.kind() ) {
                 case ASSERT : executeNew( (NewInstance) task, node );
@@ -68,9 +68,14 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
                     throw new UnsupportedOperationException( "Unrecognized Meta TASK type" );
             }
 
-            } else {
-            }
+            beliefSet.add( node.getMode() );
+
+        } else {
+            super.insert( node, beliefSet, context, typeConf );
         }
+
+
+    }
 
     private void executeDon( Don don, LogicalDependency<M> node ) {
         ep.getTraitHelper().don( node.getJustifier(),

@@ -12,6 +12,7 @@ import org.drools.core.factmodel.traits.TraitableBean;
 import org.drools.core.reteoo.KieComponentFactory;
 import org.drools.core.rule.EntryPointId;
 import org.kie.api.KieBaseConfiguration;
+import org.kie.api.conf.EqualityBehaviorOption;
 import org.kie.api.runtime.KieSession;
 
 import java.net.URI;
@@ -45,6 +46,7 @@ public class ProvenanceHelper {
                 return new IdentifiableEntity( id.toString() );
             }
         } );
+        kieBaseConfiguration.setOption( EqualityBehaviorOption.EQUALITY );
         return kieBaseConfiguration;
     }
 

@@ -48,15 +48,11 @@ public class ProvenanceTest {
 
         for ( Object o : kieSession.getObjects() ) {
             if ( provenance.hasProvenanceFor( o ) ) {
-                Collection<? extends Activity> activity = provenance.describeProvenance( o );
                 Collection<? extends Activity> acts = provenance.describeProvenance( o );
 
-                if ( o instanceof Modify ) {
-                    assertEquals( 2, acts.size() );
-                } else {
-                    Activity act = acts.iterator().next();
-                    assertEquals( 1, acts.size() );
+                assertEquals( 4, acts.size() );
 
+                for ( Activity act : acts ) {
                     if ( act instanceof Recognition ) {
                         assertEquals( 1, act.getGenerated().size() );
                         Entity rec = act.getGenerated().get( 0 );
@@ -67,7 +63,6 @@ public class ProvenanceTest {
                                       tgt.getDisplaysAs().get( 0 ).getNarrativeText().get( 0 ) );
                     }
                 }
-
             }
         }
 
