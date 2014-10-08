@@ -2,9 +2,13 @@
 import com.foo.SubKlass;
 import com.foo.SubKlassImpl;
 import com.foo.SubKlass_;
+import org.drools.core.common.ProjectClassLoader;
+import org.drools.core.factmodel.traits.Entity;
 import org.drools.core.factmodel.traits.InstantiatorFactory;
 import org.drools.core.factmodel.traits.Thing;
+import org.drools.core.factmodel.traits.Traitable;
 import org.drools.core.factmodel.traits.TraitableBean;
+import org.drools.core.util.StandaloneTraitFactory;
 import org.junit.Test;
 import org.test.Klass;
 import org.w3._2002._07.owl.ThingImpl;
@@ -105,8 +109,24 @@ public class MetadataTest {
         assertTrue( sk instanceof Foo );
     }
 
+    @Test
+    public void testDonWithArgs() {
+        Foo foo = new Foo();
+        foo.setDyEntryId( "123" );
+        foo._setDynamicProperties( new HashMap(  ) );
+
+        SubKlass sk = SubKlass_.donSubKlass( foo )
+                .prop( "hello" )
+                .subProp( 32 )
+                .setTraitFactory( new StandaloneTraitFactory( ProjectClassLoader.createProjectClassLoader() ) )
+                .call();
+
+        assertEquals( "hello", sk.getProp() );
+        assertEquals( URI.create( "123" ), sk.getId() );
+    }
 
 
+    @Traitable
     public static class Foo extends ThingImpl implements SubKlass {
 
         public Map<String,Object> map = new HashMap<String,Object>();

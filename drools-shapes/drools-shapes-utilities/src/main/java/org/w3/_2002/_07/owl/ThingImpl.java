@@ -55,6 +55,7 @@ import java.net.URI;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -430,7 +431,7 @@ public class ThingImpl
     @Transient
     public Map<String, org.drools.core.factmodel.traits.Thing<ThingImpl>> _getTraitMap() {
         if ( __$$dynamic_traits_map$$ == null ) {
-            _setTraitMap( new TraitTypeMap() );
+            _setTraitMap( new TraitTypeMap( new HashMap() ) );
         }
         return __$$dynamic_traits_map$$;
     }

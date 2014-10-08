@@ -55,12 +55,14 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
             @code{ int s = 0; }
             @foreach{ prop : propertyNames }
-                @if{ ! inheritedFlags[ s ] }
                 public @{ typeName }_NewInstance<T> @{ prop }( @{javaTypeNames[ s ]} value ) {
-                    getSetter().@{ prop }( value );
+                    @if{ ! inheritedFlags[ s ] }
+                        getSetter().@{ prop }( value );
+                    @else{}
+                        super().@{ prop }( value );
+                    @end{}
                         return this;
                 }
-                @end{}
                 @code{ s++; }
             @end{ '\n' }
 
@@ -179,6 +181,26 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             super.setTraitFactory( factory );
             return this;
         }
+
+            @code{ int w = 0; }
+            @foreach{ prop : propertyNames }
+                public @{ typeName }_Don<K,T> @{ prop }( @{javaTypeNames[ w ]} value ) {
+                    @if{ ! inheritedFlags[ w ] }
+                        getSetter().@{ prop }( value );
+                    @else{}
+                        super().@{ prop }( value );
+                    @end{}
+                        return this;
+                }
+                @code{ w++; }
+            @end{ '\n' }
+
+            protected @{ typeName }_Modify<T> getSetter() {
+                if ( setter == null ) {
+                    setter = new @{ typeName }_Modify( null );
+                }
+                return ( @{ typeName }_Modify<T>) setter;
+            }
     }
 
 

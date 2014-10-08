@@ -222,6 +222,7 @@ public class ProvenanceBeliefSetImpl<M extends ProvenanceBelief<M>>
 
     private Rule newRule( RuleImpl rule ) {
         Rule match = new org.jboss.drools.provenance.RuleImpl();
+        match.addIdentifier( new Literal( rule.getPackageName() ) );
         match.addIdentifier( new Literal( rule.getName() ) );
         return match;
     }
@@ -280,6 +281,7 @@ public class ProvenanceBeliefSetImpl<M extends ProvenanceBelief<M>>
                                         .withGenerated( subject );
         if ( newInstance.getInitArgs() != null ) {
             Activity setters = newModify( newInstance.getInitArgs(), subject );
+            setters.addEndedAtTime( new Date() );
             activity.addRelated( setters );
         }
         return activity;
