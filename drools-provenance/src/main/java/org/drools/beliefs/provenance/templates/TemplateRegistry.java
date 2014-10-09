@@ -38,7 +38,7 @@ public class TemplateRegistry {
                 for ( File child : folder.listFiles() ) {
                     InputStream stream = new FileInputStream( child );
                     if ( stream != null ) {
-                        String name = child.getPath().substring( child.getPath().lastIndexOf( '/' ) + 1 );
+                        String name = child.getPath().substring( child.getPath().lastIndexOf( File.separator ) + 1 );
                         name = name.substring( 0, name.lastIndexOf( '.' ) );
                         registry.addNamedTemplate( name,
                                                    TemplateCompiler.compileTemplate( read( stream ) ) );
