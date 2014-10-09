@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
@@ -33,7 +34,12 @@ public class TemplateRegistry {
         try {
             String path = TEMPLATE_PATH;
             URL res = TemplateRegistry.class.getResource( path );
-            File folder = new File( res.getPath() );
+            File folder = null;
+            try {
+                folder = new File( res.toURI() );
+            } catch (URISyntaxException e) {
+                throw new IllegalStateException("File path is not a valid URI", e);
+            }
             if ( folder != null && folder.isDirectory() ) {
                 for ( File child : folder.listFiles() ) {
                     InputStream stream = new FileInputStream( child );
