@@ -41,11 +41,11 @@ public class PropertyRelation extends Relation implements Cloneable {
     private boolean inherited = false;
     private boolean simple = false;
     private PropertyRelation baseProperty;
+    private PropertyRelation inverse;
     private List<PropertyRelation> restrictedProperties = new ArrayList<PropertyRelation>();
 
     private Set<List<PropertyRelation>> chains = new HashSet<List<PropertyRelation>>();
 
-    private boolean inverse = false;
     private boolean functional;
 
 
@@ -315,10 +315,14 @@ public class PropertyRelation extends Relation implements Cloneable {
 
 
     public boolean isInverse() {
+        return inverse != null;
+    }
+
+    public PropertyRelation getInverse() {
         return inverse;
     }
 
-    public void setInverse(boolean inverse) {
+    public void setInverse(PropertyRelation inverse) {
         this.inverse = inverse;
     }
 

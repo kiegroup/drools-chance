@@ -6,7 +6,13 @@ import com.sun.tools.xjc.model.CPluginCustomization;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import org.apache.commons.lang.StringUtils;
+import org.drools.core.metadata.ManyToManyPropertyLiteral;
+import org.drools.core.metadata.ManyToOnePropertyLiteral;
 import org.drools.core.metadata.MetadataHolder;
+import org.drools.core.metadata.OneToManyPropertyLiteral;
+import org.drools.core.metadata.OneToOnePropertyLiteral;
+import org.drools.core.metadata.ToManyPropertyLiteral;
+import org.drools.core.metadata.ToOnePropertyLiteral;
 import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompilerImpl;
 import org.drools.semantics.utils.NameUtils;
 import org.w3c.dom.Element;
@@ -21,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MetaClassPlugin extends MetadataPlugin {
 
@@ -36,6 +43,8 @@ public class MetaClassPlugin extends MetadataPlugin {
         return "  -Xmetaclass";
     }
 
+
+
     @Override
     public boolean run(Outline outline, Options opt, ErrorHandler errorHandler) throws SAXException {
         for (ClassOutline co : outline.getClasses() ) {
@@ -46,24 +55,46 @@ public class MetaClassPlugin extends MetadataPlugin {
             }
 
 
+            Map<String,PropInfo> properties = new HashMap<String, PropInfo>();
+
             Element keyed = c.element;
             NodeList propList = keyed.getChildNodes();
-            List<String> propNames = new ArrayList<String>();
-            List<String> typeNames = new ArrayList<String>();
-            List<String> javaTypeNames = new ArrayList<String>();
-            List<String> propIris = new ArrayList<String>();
-            List<Boolean> simpleFlags = new ArrayList<Boolean>();
-            List<Boolean> inheritFlags = new ArrayList<Boolean>();
             for ( int j = 0; j < propList.getLength(); j++ ) {
                 Node n = propList.item( j );
                 if ( n instanceof Element ) {
-                    propNames.add( ((Element) n).getAttribute( "name" ) );
-                    typeNames.add( ((Element) n).getAttribute( "type" ) );
-                    propIris.add( ((Element) n).getAttribute( "iri" ) );
-                    simpleFlags.add( Boolean.valueOf( ( (Element) n ).getAttribute( "simple" ) ) );
-                    inheritFlags.add( Boolean.valueOf( ((Element) n).getAttribute( "inherited" ) ) );
-                    String javaType = getJavaType( typeNames.get( j ) );
-                    javaTypeNames.add( simpleFlags.get( j ) ? javaType : ( List.class.getName() + "<" + javaType + ">" ) );
+                    Element el = (Element) n;
+
+                    PropInfo p = new PropInfo();
+                    p.propName = el.getAttribute( "name" );
+                    p.typeName = el.getAttribute( "type" );
+                    p.propIri = el.getAttribute( "iri" );
+                    p.simple = Boolean.valueOf( ( (Element) n ).getAttribute( "simple" ) );
+                    p.inherited = Boolean.valueOf( el.getAttribute( "inherited" ) );
+
+                    String javaType = getJavaType( p.typeName );
+                    p.range = javaType;
+                    p.javaTypeName = p.simple ? javaType : ( List.class.getName() + "<" + javaType + ">" );
+
+                    String inverseName = el.getAttribute( "inverse" ).length() > 0 ? el.getAttribute( "inverse" ) : null;
+                    properties.put( p.propName, p );
+                    if ( properties.containsKey( inverseName ) ) {
+                        PropInfo inv = properties.get( inverseName );
+                        p.inverse = inv;
+                        inv.inverse = p;
+                    }
+
+                }
+            }
+
+            for ( PropInfo p : properties.values() ) {
+                if ( p.inverse == null ) {
+                    p.concreteType = p.simple ? ToOnePropertyLiteral.class.getName() : ToManyPropertyLiteral.class.getName();
+                } else {
+                    if ( p.simple ) {
+                        p.concreteType = p.inverse.simple ? OneToOnePropertyLiteral.class.getName() : OneToManyPropertyLiteral.class.getName();
+                    } else {
+                        p.concreteType = p.inverse.simple ? ManyToOnePropertyLiteral.class.getName() : ManyToManyPropertyLiteral.class.getName();
+                    }
                 }
             }
 
@@ -75,13 +106,8 @@ public class MetaClassPlugin extends MetadataPlugin {
             map.put( "supertypeName", keyed.getAttribute( "parent" ) );
             map.put( "supertypePackage", keyed.getAttribute( "parentPackage" ) );
             map.put( "typeIri", keyed.getAttribute( "iri" ) );
-            map.put( "propertyIris", propIris );
-            map.put( "propertyNames", propNames );
-            map.put( "typeNames", typeNames );
-            map.put( "javaTypeNames", javaTypeNames );
-            map.put( "simpleFlags", simpleFlags );
-            map.put( "inheritedFlags", inheritFlags );
 
+            map.put( "properties", properties.values() );
 
             String metaClass = SemanticXSDModelCompilerImpl.getTemplatedCode( metaClassTempl, map );
             String metaAttrib = SemanticXSDModelCompilerImpl.getTemplatedCode( metaAttribTempl, map);
@@ -131,4 +157,19 @@ public class MetaClassPlugin extends MetadataPlugin {
         }
     }
 
+
+    public class PropInfo {
+
+        public String propName;
+        public String typeName;
+        public String javaTypeName;
+        public String propIri;
+        public boolean simple;
+        public String range;
+        public boolean inherited;
+        public PropInfo inverse;
+        public String concreteType;
+        public int position;
+
+    }
 }

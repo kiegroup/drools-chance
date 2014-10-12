@@ -312,7 +312,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
                 if ( first != null && second != null ) {
                     if ( logger.isInfoEnabled() ) { logger.info(  "Marking " + first + " as Inverse" ); };
-                    first.setInverse( true );
+                    first.setInverse( second );
+                    second.setInverse( first );
                 }
             }
         }

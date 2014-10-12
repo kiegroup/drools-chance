@@ -1,11 +1,11 @@
 package org.drools.beliefs.provenance;
 
 import org.drools.core.factmodel.traits.Entity
-import com.foo.SubKlass;
-import org.test.KlassImpl;
-import org.test.Klass;
-import org.test.Klass_;
-import com.foo.SubKlass_;
+import com.foo.MySubKlass;
+import org.test.MyKlassImpl;
+import org.test.MyKlass;
+import org.test.MyKlass_;
+import com.foo.MySubKlass_;
 import org.drools.core.metadata.Modify;
 import org.drools.beliefs.provenance.annotations.*;
 
@@ -14,7 +14,7 @@ global java.util.List list;
 rule Init
 when
 then
-    insertLogical( Klass_.newKlass( "123" ).prop( "hello" ) );
+    insertLogical( MyKlass_.newMyKlass( "123" ).prop( "hello" ) );
     insert( "fooo" );
 end
 
@@ -22,32 +22,32 @@ rule Don
 @Display( "Pretty print @{$e_1}" )
 no-loop
 when
-    $e : Klass( $p : prop ) @Evidence( @Display( type="1", value="@{$p} world from @{$e.getClass().getSimpleName()}" ) )
+    $e : MyKlass( $p : prop ) @Evidence( @Display( type="1", value="@{$p} world from @{$e.getClass().getSimpleName()}" ) )
     $s : String()
 then
-    insertLogical( SubKlass_.donSubKlass( $e ) );
+    insertLogical( MySubKlass_.donMySubKlass( $e ) );
 end
 
 
 rule SetAttribute
 @Display( template = "anotherExample" )
 when
-    $e : SubKlass() @Evidence( value = { @Display( type="1", value = "hello" ), @Display( type="2", template = "example" ) } )
+    $e : MySubKlass() @Evidence( value = { @Display( type="1", value = "hello" ), @Display( type="2", template = "example" ) } )
 then
-    insertLogical( SubKlass_.modify( $e ).subProp( 12 ) );
+    insertLogical( MySubKlass_.modify( $e ).subProp( 12 ) );
 end
 
 rule AnotherSetAttribute
 when
-    $k : SubKlass() @Evidence
+    $k : MySubKlass() @Evidence
 then
-    insertLogical( SubKlass_.modify( $k ).subProp( 42 ) );
+    insertLogical( MySubKlass_.modify( $k ).subProp( 42 ) );
 end
 
 
 rule React
 when
-    $k : SubKlass( subProp == 42 )
+    $k : MySubKlass( subProp == 42 )
 then
     list.add( "RESULT" );
 end

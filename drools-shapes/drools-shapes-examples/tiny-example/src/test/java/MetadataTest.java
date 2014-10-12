@@ -1,7 +1,7 @@
 
-import com.foo.SubKlass;
-import com.foo.SubKlassImpl;
-import com.foo.SubKlass_;
+import com.foo.MySubKlass;
+import com.foo.MySubKlassImpl;
+import com.foo.MySubKlass_;
 import org.drools.core.common.ProjectClassLoader;
 import org.drools.core.factmodel.traits.Entity;
 import org.drools.core.factmodel.traits.InstantiatorFactory;
@@ -10,7 +10,8 @@ import org.drools.core.factmodel.traits.Traitable;
 import org.drools.core.factmodel.traits.TraitableBean;
 import org.drools.core.util.StandaloneTraitFactory;
 import org.junit.Test;
-import org.test.Klass;
+import org.test.MyKlass;
+import org.test.MyTargetKlass;
 import org.w3._2002._07.owl.ThingImpl;
 
 import java.net.URI;
@@ -25,12 +26,12 @@ public class MetadataTest {
 
 
     @Test
-    public void testKlassAndSubKlassWithImpl() {
-        SubKlass ski = new com.foo.SubKlassImpl();
+    public void testKlassAndMySubKlassWithImpl() {
+        MySubKlass ski = new com.foo.MySubKlassImpl();
         ski.setSubProp( 42 );
         ski.setProp( "hello" );
 
-        SubKlass_ sk = new SubKlass_( ski );
+        MySubKlass_ sk = new MySubKlass_( ski );
 
         assertEquals( 42, (int) sk.subProp.get( ski ) );
         assertEquals( "hello", sk.prop.get( ski ) );
@@ -42,12 +43,12 @@ public class MetadataTest {
     }
 
     @Test
-    public void testKlassAndSubKlassWithHolderImpl() {
-        com.foo.SubKlassImpl ski = new com.foo.SubKlassImpl();
+    public void testKlassAndMySubKlassWithHolderImpl() {
+        com.foo.MySubKlassImpl ski = new com.foo.MySubKlassImpl();
         ski.setSubProp( 42 );
         ski.setProp( "hello" );
 
-        SubKlass_ sk = ski.get_();
+        MySubKlass_ sk = ski.get_();
 
         assertEquals( 42, (int) sk.subProp.get( ski ) );
         assertEquals( "hello", sk.prop.get( ski ) );
@@ -60,12 +61,12 @@ public class MetadataTest {
 
 
     @Test
-    public void testKlassAndSubKlassWithInterfaces() {
-        SubKlass ski = new Foo();
+    public void testKlassAndMySubKlassWithInterfaces() {
+        MySubKlass ski = new Foo();
         ski.setSubProp( 42 );
         ski.setProp( "hello" );
 
-        SubKlass_ sk = new SubKlass_( ski );
+        MySubKlass_ sk = new MySubKlass_( ski );
 
         assertEquals( 42, (int) sk.subProp.get( ski ) );
         assertEquals( "hello", sk.prop.get( ski ) );
@@ -84,16 +85,16 @@ public class MetadataTest {
 
     @Test
     public void testDelayedInstantiation() {
-        SubKlass sk = SubKlass_.newSubKlass( "123" ).prop( "hello" ).call();
+        MySubKlass sk = MySubKlass_.newMySubKlass( "123" ).prop( "hello" ).call();
 
         assertEquals( "hello", sk.getProp() );
         assertEquals( URI.create( "123" ), sk.getId() );
-        assertTrue( sk instanceof SubKlassImpl );
+        assertTrue( sk instanceof MySubKlassImpl );
     }
 
     @Test
     public void testDelayedInstantiationWithFactory() {
-        SubKlass sk = SubKlass_.newSubKlass( "123" ).prop( "hello" ).setInstantiatorFactory(
+        MySubKlass sk = MySubKlass_.newMySubKlass( "123" ).prop( "hello" ).setInstantiatorFactory(
                 new InstantiatorFactory() {
                     @Override
                     public TraitableBean instantiate( Class<? extends Thing> trait, Object id ) {
@@ -115,7 +116,7 @@ public class MetadataTest {
         foo.setDyEntryId( "123" );
         foo._setDynamicProperties( new HashMap(  ) );
 
-        SubKlass sk = SubKlass_.donSubKlass( foo )
+        MySubKlass sk = MySubKlass_.donMySubKlass( foo )
                 .prop( "hello" )
                 .subProp( 32 )
                 .setTraitFactory( new StandaloneTraitFactory( ProjectClassLoader.createProjectClassLoader() ) )
@@ -127,9 +128,34 @@ public class MetadataTest {
 
 
     @Traitable
-    public static class Foo extends ThingImpl implements SubKlass {
+    public static class Foo extends ThingImpl implements MySubKlass {
 
         public Map<String,Object> map = new HashMap<String,Object>();
+
+        @Override
+        public List<MyTargetKlass> getLinks() {
+            return null;
+        }
+
+        @Override
+        public void setLinks( List<MyTargetKlass> value ) {
+
+        }
+
+        @Override
+        public void addLinks( Object x ) {
+
+        }
+
+        @Override
+        public void addLinks( MyTargetKlass x ) {
+
+        }
+
+        @Override
+        public void removeLinks( Object x ) {
+
+        }
 
         @Override
         public String getProp() {

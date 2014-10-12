@@ -32,6 +32,25 @@ public class ProvenanceTest {
 
 
     @Test
+    public void testMetaCallableWMTasks() {
+
+        KieServices kieServices = KieServices.Factory.get();
+        Resource traitDRL = kieServices.getResources().newClassPathResource( "tiny_declare.drl" );
+        Resource ruleDRL = kieServices.getResources().newClassPathResource( "testTasks.drl" );
+
+        KieHelper kieHelper = validateKieBuilder( traitDRL, ruleDRL );
+        List list = new ArrayList();
+        KieSession kieSession = kieHelper.build( ProvenanceHelper.getProvenanceEnabledKieBaseConfiguration() ).newKieSession();
+        kieSession.setGlobal( "list", list );
+        kieSession.fireAllRules();
+
+        for ( Object o : kieSession.getObjects() ) {
+            System.out.println( o );
+        }
+    }
+
+
+    @Test
     public void testConceptualModelBindingWithTraitDRL() {
 
         KieServices kieServices = KieServices.Factory.get();
@@ -81,6 +100,10 @@ public class ProvenanceTest {
 
         return helper;
     }
+
+
+
+
 
     @Test
     public void testAssertions() {

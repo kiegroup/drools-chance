@@ -90,11 +90,21 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
         modify.call();
 
         ep.update( (InternalFactHandle) ep.getFactHandle( target ),
-                      true,
-                      target,
-                      modify.getModificationMask(),
-                      modify.getModificationClass(),
-                      node.getJustifier() );
+                   target,
+                   modify.getModificationMask(),
+                   modify.getModificationClass(),
+                   node.getJustifier() );
+
+        Object[] updates = modify.getAdditionalUpdates();
+        if ( updates != null ) {
+            for ( int j = 0; j < updates.length; j++ ) {
+                ep.update( (InternalFactHandle) ep.getFactHandle( updates[ j ] ),
+                           updates[ j ],
+                           0,
+                           updates[ j ].getClass(),
+                           node.getJustifier() );
+            }
+        }
     }
 
     private void executeNew( NewInstance newInstance, LogicalDependency<M> node ) {
@@ -109,7 +119,10 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
                                         false );
         } else {
             Object target = newInstance.call();
-            ep.insert( target, JTMSBeliefSetImpl.MODE.POSITIVE, false, false, node.getJustifier().getRule(), node.getJustifier() );
+            ep.insert( target,
+                      false,
+                       node.getJustifier().getRule(),
+                       node.getJustifier() );
         }
     }
 

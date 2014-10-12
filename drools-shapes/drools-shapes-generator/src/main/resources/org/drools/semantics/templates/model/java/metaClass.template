@@ -1,112 +1,36 @@
-
 @declare{'metaClassTemplate'}
 
 package @{ package };
 
 public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer<T> @else{} @{ supertypePackage }.@{ supertypeName }_<T> @end{} {
 
-        public @{ typeName }_( T x ) {
-            super( x );
-            metaClassInfo = @{ typeName }_Meta.getInstance();
-        }
-
-        @code{ int q = 0; }
-        @foreach{ prop : propertyNames }
-            @if{ ! inheritedFlags[ q ] }
-            public static final org.drools.core.metadata.MetaProperty<@{package}.@{typeName},@{javaTypeNames[ q ]}> @{ prop } = @{ typeName }_Meta.@{ prop };
-            @end{}
-            @code{ q++; }
-        @end{ '\n' }
-
-        public static <X extends @{package}.@{ typeName }> @{ typeName }_NewInstance<X> new@{ typeName }( Object id ) {
-            return @{ typeName }_Meta.getInstance().newInstance( id );
-        }
-
-        public static <X, K extends @{package}.@{ typeName }> @{ typeName }_Don<X,K> don@{ typeName }( X core ) {
-            return new @{ typeName }_Don<X,K>( core );
-        }
-
-        public static @{typeName}_Modify<? extends @{ typeName }> modify( @{ typeName } x ) {
-            return new @{ typeName }_Modify<@{ typeName }>( x );
-        }
-
-        public @{typeName}_Modify<T> modify() {
-            return new @{typeName}_Modify<T>( getTarget() );
-        }
-
-        public static class @{ typeName }_NewInstance<T extends @{package}.@{ typeName } > extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.NewInstanceLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_NewInstance<T> @end{} {
-
-            public @{ typeName }_NewInstance( Object id ) {
-                super( java.net.URI.create( id.toString() ) );
-            }
-
-            public boolean isInterface() {
-                return true;
-            }
-
-            protected Object construct() {
-                if ( getInstantiatorFactory() != null ) {
-                    return getInstantiatorFactory().instantiate( @{ typeName }.class, getId() );
-                }
-                @{package}.@{ typeName }Impl x = new @{package}.@{ typeName }Impl();
-                x.setDyEntryId( getId().toString() );
-                return x;
-            }
-
-            @code{ int s = 0; }
-            @foreach{ prop : propertyNames }
-                public @{ typeName }_NewInstance<T> @{ prop }( @{javaTypeNames[ s ]} value ) {
-                    @if{ ! inheritedFlags[ s ] }
-                        getSetter().@{ prop }( value );
-                    @else{}
-                        super().@{ prop }( value );
-                    @end{}
-                        return this;
-                }
-                @code{ s++; }
-            @end{ '\n' }
-
-            protected @{ typeName }_Modify<T> getSetter() {
-                if ( setter == null ) {
-                    setter = new @{ typeName }_Modify( null );
-                }
-                return ( @{ typeName }_Modify<T>) setter;
-            }
-
-        @Override
-        public Class<T> getInstanceClass() {
-            return @{ typeName }_Meta.getInstance().getTargetClass();
-        }
-
+    public @{ typeName }_( T x ) {
+        super( x );
+        metaClassInfo = @{ typeName }_Meta.getInstance();
     }
 
-        public static class @{typeName}_Modify<T extends @{typeName}> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.ModifyLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} {
-            public @{ typeName }_Modify( T x ) {
-                super( x );
-            }
+    @foreach{ prop : properties } @if{ ! prop.inherited }
+        public static final org.drools.core.metadata.MetaProperty<@{package}.@{typeName},@{ prop.range },@{ prop.javaTypeName }> @{ prop.propName } = @{ typeName }_Meta.@{ prop.propName };
+    @end{}@end{ '\n' }
 
-            @Override
-            protected org.drools.core.metadata.MetaClass<T> getMetaClassInfo() {
-                return @{ typeName }_Meta.getInstance();
-            }
 
-            public Class getModificationClass() {
-                return @{ package }.@{ typeName }.class;
-            }
+    public static <X extends @{package}.@{ typeName }> @{ typeName }_NewInstance<X> new@{ typeName }( Object id, org.drools.core.metadata.With... args ) {
+        return @{ typeName }_Meta.getInstance().newInstance( id, args );
+    }
 
-            @code{ int z = 0; }
-            @foreach{ prop : propertyNames }
-                public @{typeName}_Modify @{prop}(  @{javaTypeNames[z]} newVal ) {
-                    @if{ ! inheritedFlags[z] }
-                        addTask( @{prop}, newVal );
-                    @else{}
-                        super.@{prop}( newVal );
-                    @end{}
-                    return this;
-                }
-                @code{ z++; }
-            @end{ '\n' }
-        }
+    public static <X, K extends @{ package }.@{ typeName }> @{ typeName }_Don<X,K> don@{ typeName }( X core, org.drools.core.metadata.With... args ) {
+        return new @{ typeName }_Don<X,K>( core, args );
+    }
+
+    public static @{ typeName }_Modify<? extends @{ typeName }> modify( @{ typeName } x, org.drools.core.metadata.With... args ) {
+        return new @{ typeName }_Modify<@{ typeName }>( x, args );
+    }
+
+    public @{typeName}_Modify<T> modify( org.drools.core.metadata.With... args ) {
+        return new @{typeName}_Modify<T>( getTarget(), args );
+    }
+
+
 
 
     protected static class @{ typeName }_Meta<T extends @{ package }.@{ typeName }> extends org.drools.core.metadata.ClassLiteral<T> {
@@ -116,25 +40,28 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         public static @{ typeName }_Meta getInstance() {
             if ( instance == null ) {
                 instance = new @{ typeName }_Meta( new org.drools.core.metadata.MetaProperty[] {
-                        @code{ int t = 0; } @foreach{ prop : propertyNames } @if{ ! inheritedFlags[t] } @{ prop }, @end{} @code{ t++; } @end{}
+                        @foreach{ prop : properties } @if{ ! prop.inherited } @{ prop.propName }, @end{} @end{}
                 } );
             }
             return instance;
         }
 
-        @code{ int k = 0; }
-        @foreach{ prop : propertyNames }
-            @if{ ! inheritedFlags[k] }
-            public static final org.drools.core.metadata.MetaProperty<@{package}.@{typeName},@{javaTypeNames[k]}> @{prop} =
-                    new org.drools.core.metadata.PropertyLiteral<@{package}.@{typeName},@{javaTypeNames[k]}>( @{k}, "@{prop}", java.net.URI.create( "@{ propertyIris[k] }" ) ) {
-                public @{javaTypeNames[k]} get( @{package}.@{typeName} o ) { return o.@{ getter( prop, map( typeNames[k], true ), simpleFlags[k] ? 1 : null ) }(); }
-                public void set( @{package}.@{typeName} o, @{javaTypeNames[k]} value ) { o.@{ setter( prop ) }( value ); }
+
+        @foreach{ prop : properties }
+            @if{ ! prop.inherited }
+            public static final org.drools.core.metadata.@if{ prop.simple }One@else{}Many@end{}ValuedMetaProperty
+                                        <@{package}.@{typeName}, @{ prop.range }@if{ !prop.simple }, @{ prop.javaTypeName }@end{}> @{ prop.propName } =
+                    new @{ prop.concreteType }<@{package}.@{typeName},@{ prop.range }>
+                                        ( @{ prop.position }, "@{ prop.propName }", java.net.URI.create( "@{ prop.propIri }" ) ) {
+
+                public @{ prop.javaTypeName } get( @{package}.@{typeName} o ) { return o.@{ getter( prop.propName, map( prop.typeName, true ), prop.simple ? 1 : null ) }(); }
+                public void set( @{package}.@{typeName} o, @{ prop.javaTypeName } value ) { o.@{ setter( prop.propName ) }( value ); }
             };
             @end{}
-            @code{ k++; }
         @end{ '\n' }
 
-        protected @{ typeName }_Meta( org.drools.core.metadata.MetaProperty<T, ?>[] propertyLiterals ) {
+
+        protected @{ typeName }_Meta( org.drools.core.metadata.MetaProperty<T,?,?>[] propertyLiterals ) {
             super( propertyLiterals );
         }
 
@@ -151,8 +78,8 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             return key;
         }
 
-        public @{ typeName }_NewInstance<T> newInstance( Object id ) {
-            return new @{ typeName }_NewInstance<T>( id );
+        public @{ typeName }_NewInstance<T> newInstance( Object id, org.drools.core.metadata.With... args ) {
+            return new @{ typeName }_NewInstance<T>( id, args );
         }
 
         @Override
@@ -161,9 +88,90 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         }
     }
 
-    public static class @{typeName}_Don<K, T extends @{typeName}> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.DonLiteral<K,T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Don<K,T> @end{} {
-        public @{ typeName }_Don( K target ) {
-            super( target );
+
+    public static class @{ typeName }_NewInstance<T extends @{package}.@{ typeName } >
+            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.NewInstanceLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_NewInstance<T> @end{} {
+
+        public @{ typeName }_NewInstance( Object id, org.drools.core.metadata.With... args ) {
+            super( java.net.URI.create( id.toString() ), args );
+        }
+
+        public boolean isInterface() {
+            return true;
+        }
+
+        protected Object construct() {
+            if ( getInstantiatorFactory() != null ) {
+                return getInstantiatorFactory().instantiate( @{ typeName }.class, getId() );
+            }
+            @{package}.@{ typeName }Impl x = new @{package}.@{ typeName }Impl();
+            x.setDyEntryId( getId().toString() );
+            return x;
+        }
+
+        @foreach{ prop : properties }
+        public @{ typeName }_NewInstance<T> @{ prop.propName }( @{ prop.javaTypeName } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
+            @if{ ! prop.inherited }
+                getSetter().@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
+                @else{}
+                super.@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
+            @end{}
+            return this;
+        }
+        @end{ '\n' }
+
+        protected @{ typeName }_Modify<T> getSetter() {
+            if ( setter == null ) {
+                setter = new @{ typeName }_Modify( null, this.with );
+            }
+            return ( @{ typeName }_Modify<T>) setter;
+        }
+
+        @Override
+        public Class<T> getInstanceClass() {
+            return @{ typeName }_Meta.getInstance().getTargetClass();
+        }
+
+    }
+
+
+
+
+    public static class @{typeName}_Modify<T extends @{typeName}>
+            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.ModifyLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} {
+
+        public @{ typeName }_Modify( T x, org.drools.core.metadata.With... args ) {
+            super( x, args );
+        }
+
+        @Override
+        protected org.drools.core.metadata.MetaClass<T> getMetaClassInfo() {
+            return @{ typeName }_Meta.getInstance();
+        }
+
+        public Class getModificationClass() {
+            return @{ package }.@{ typeName }.class;
+        }
+
+        @foreach{ prop : properties }
+        public @{typeName}_Modify @{ prop.propName }( @{ prop.javaTypeName } newVal @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
+            @if{ ! prop.inherited }
+            addTask( @{ prop.propName }, newVal, @if{ ! prop.simple } mode @else{} newVal != null ? org.drools.core.metadata.Lit.SET : org.drools.core.metadata.Lit.REMOVE @end{} );
+            @else{}
+            super.@{ prop.propName }( newVal @if{ ! prop.simple }, mode @end{} );
+            @end{}
+            return this;
+        }
+        @end{ '\n' }
+
+    }
+
+
+    public static class @{typeName}_Don<K, T extends @{typeName}>
+            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.DonLiteral<K,T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Don<K,T> @end{} {
+
+        public @{ typeName }_Don( K target, org.drools.core.metadata.With... args ) {
+            super( target, args );
         }
 
         @Override
@@ -182,26 +190,25 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             return this;
         }
 
-            @code{ int w = 0; }
-            @foreach{ prop : propertyNames }
-                public @{ typeName }_Don<K,T> @{ prop }( @{javaTypeNames[ w ]} value ) {
-                    @if{ ! inheritedFlags[ w ] }
-                        getSetter().@{ prop }( value );
-                    @else{}
-                        super().@{ prop }( value );
-                    @end{}
-                        return this;
-                }
-                @code{ w++; }
-            @end{ '\n' }
+        @foreach{ prop : properties }
+        public @{ typeName }_Don<K,T> @{ prop.propName }( @{ prop.javaTypeName } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
+            @if{ ! prop.inherited }
+            getSetter().@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
+            @else{}
+            super.@{ prop.propName }( value @if{ ! prop.simple }, mode @end{} );
+            @end{}
+            return this;
+        }
+        @end{ '\n' }
 
-            protected @{ typeName }_Modify<T> getSetter() {
-                if ( setter == null ) {
-                    setter = new @{ typeName }_Modify( null );
-                }
-                return ( @{ typeName }_Modify<T>) setter;
+        protected @{ typeName }_Modify<T> getSetter() {
+            if ( setter == null ) {
+                setter = new @{ typeName }_Modify( null, this.with );
             }
+            return ( @{ typeName }_Modify<T>) setter;
+        }
     }
+
 
 
 }

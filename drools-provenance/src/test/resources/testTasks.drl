@@ -1,0 +1,43 @@
+package org.drools.beliefs.provenance;
+
+import org.test.*;
+import com.foo.*;
+import org.drools.core.metadata.*;
+import org.drools.beliefs.provenance.annotations.*;
+import java.util.*;
+
+global List list;
+
+rule Init
+when
+then
+    insertLogical( MyKlass_.newMyKlass( "123" ).prop( "hello" ) );
+    insertLogical( MyTargetKlass_.newMyTargetKlass( "000" ) );
+end
+
+
+rule Log_1
+when
+    $t : MyTargetKlass( )
+    $k : MyKlass( links contains $t )
+then
+    System.out.println( "Link 1 Success!" );
+end
+
+rule Log_2
+when
+    $k : MyKlass( )
+    $t : MyTargetKlass( this memberOf $k.links )
+then
+    System.out.println( "Link 2 Success!" );
+end
+
+rule Linkage
+when
+    $k : MyKlass()
+    $t : MyTargetKlass()
+then
+    insertLogical( MyKlass_
+                    .modify( $k, With.updates( $t ) )
+                    .links( Arrays.asList( $t ), Lit.SET ) );
+end
