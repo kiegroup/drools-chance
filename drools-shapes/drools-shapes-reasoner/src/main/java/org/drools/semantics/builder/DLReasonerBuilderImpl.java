@@ -83,6 +83,8 @@ public class DLReasonerBuilderImpl implements DLReasonerBuilder {
 
             String tableauRules = out.toString();
 
+            System.out.println( tableauRules );
+
             ksession.dispose();
 
             return tableauRules;
