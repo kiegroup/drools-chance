@@ -22,7 +22,7 @@
 
   <artifactId>drools-shapes</artifactId>
 	<groupId>org.drools</groupId>
-	<version>6.2.0-SNAPSHOT</version>
+	<version>6.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
 

@@ -6,12 +6,12 @@
 
 	<groupId>org.drools</groupId>
 	<artifactId>drools-provenance</artifactId>
-	<version>6.2.0-SNAPSHOT</version>
+	<version>6.3.0-SNAPSHOT</version>
 
 	<name>Drools :: Shapes Provenance</name>
 
 	<properties>
-		<drools.version>6.2.0-SNAPSHOT</drools.version>
+		<drools.version>6.3.0-SNAPSHOT</drools.version>
 	</properties>
 
 	<dependencies>
@@ -52,7 +52,7 @@
 			<plugin>
 				<groupId>org.drools</groupId>
 				<artifactId>drools-shapes-generator-plugin</artifactId>
-				<version>6.2.0-SNAPSHOT</version>
+				<version>6.3.0-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
