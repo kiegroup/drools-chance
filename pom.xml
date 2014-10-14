@@ -42,7 +42,7 @@
   <properties>
     <chance.version>6.3.0-SNAPSHOT</chance.version>
     <drools.version>6.3.0-SNAPSHOT</drools.version>
-    <planner.version>6.3.0-SNAPSHOT</planner.version>
+    <planner.version>6.2.0-SNAPSHOT</planner.version>
   </properties>
 
 

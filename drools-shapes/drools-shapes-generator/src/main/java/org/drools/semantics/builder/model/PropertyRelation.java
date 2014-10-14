@@ -279,6 +279,10 @@ public class PropertyRelation extends Relation implements Cloneable {
     }
     
 
+    public boolean isLocalImplementationFor( Concept con ) {
+        return con != null && con.getImplementingCon() != null && con.getImplementingCon().getChosenProperties().containsKey( this.property );
+    }
+
     public boolean isInheritedFor( Concept con ) {
         return con != null && ! con.getIri().equals( domain.getIri() );
     }
@@ -311,11 +315,6 @@ public class PropertyRelation extends Relation implements Cloneable {
 
     public void setAddableTarget(Concept addableTarget) {
         this.addableTarget = addableTarget;
-    }
-
-
-    public boolean isInverse() {
-        return inverse != null;
     }
 
     public PropertyRelation getInverse() {

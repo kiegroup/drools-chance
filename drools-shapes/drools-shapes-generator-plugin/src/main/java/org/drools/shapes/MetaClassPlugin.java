@@ -66,7 +66,11 @@ public class MetaClassPlugin extends MetadataPlugin {
 
                     PropInfo p = new PropInfo();
                     p.propName = el.getAttribute( "name" );
-                    p.typeName = el.getAttribute( "type" );
+
+                    String fqn =  el.getAttribute( "type" );
+                    p.typeName = fqn;
+                    p.simpleTypeName = fqn.substring( fqn.lastIndexOf( '.' ) + 1 );
+
                     p.propIri = el.getAttribute( "iri" );
                     p.simple = Boolean.valueOf( ( (Element) n ).getAttribute( "simple" ) );
                     p.inherited = Boolean.valueOf( el.getAttribute( "inherited" ) );
@@ -170,6 +174,6 @@ public class MetaClassPlugin extends MetadataPlugin {
         public PropInfo inverse;
         public String concreteType;
         public int position;
-
+        public String simpleTypeName;
     }
 }

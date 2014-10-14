@@ -56,6 +56,15 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
                 public @{ prop.javaTypeName } get( @{package}.@{typeName} o ) { return o.@{ getter( prop.propName, map( prop.typeName, true ), prop.simple ? 1 : null ) }(); }
                 public void set( @{package}.@{typeName} o, @{ prop.javaTypeName } value ) { o.@{ setter( prop.propName ) }( value ); }
+
+                @if{ prop.inverse != null }
+                @Override
+                public org.drools.core.metadata.@if{ prop.inverse.simple }One@else{}Many@end{}ValuedMetaProperty
+                                        <@{ prop.range }, @{ typeName }@if{ !prop.simple }, @{ prop.inverse.javaTypeName }@end{}>
+                                        getInverse() {
+                    return @{ prop.range }_.@{ prop.simpleTypeName }_Meta.@{ prop.inverse.propName };
+                }
+                @end{}
             };
             @end{}
         @end{ '\n' }
