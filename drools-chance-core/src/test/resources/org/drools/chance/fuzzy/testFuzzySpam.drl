@@ -1,0 +1,112 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Copyright 2011 JBoss Inc
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.drools.chance.test;
+
+import org.drools.chance.kbase.fuzzy.SpamResponse;
+
+import org.drools.factmodel.traits.Traitable;
+
+import org.drools.chance.factmodel.Imperfect;
+import org.drools.chance.factmodel.LinguisticPartition;
+
+import de.lab4inf.fuzzy.FuzzySet;
+import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
+
+import org.drools.chance.degree.Degree;
+import org.drools.chance.reteoo.ChanceActivation;
+import org.drools.chance.ChanceHelper
+import org.drools.chance.degree.simple.SimpleDegree;
+
+global java.util.Map map;
+
+declare enum Sentiment
+@LinguisticPartition
+
+	SUSPICIOUS( "suspicious", new de.lab4inf.fuzzy.polygons.FuzzyTrapez( -0.01, 0.0, .3, .4 ) ),
+
+	UNKNOWN( "unknown", new de.lab4inf.fuzzy.polygons.FuzzyTriangle( .3, .5, .7 ) ),
+
+	CONFIDENT( "confident", new de.lab4inf.fuzzy.polygons.FuzzyTrapez( .6, .7, 1.0, 1.1 ) );
+
+    label : String
+
+    set   : FuzzySet
+
+end
+
+// declare something here or can it be added to working memory (already have a thing that wants Confidence)
+
+declare Context
+    sentiment    : Sentiment    = "UNKNOWN/0.1"
+        @Imperfect( kind=ImpKind.FUZZINESS, type=ImpType.LINGUISTIC, degree=DegreeType.SIMPLE, support="confidence" )
+
+    confidence  : Double
+
+end
+
+rule "Init"
+when
+then
+   // insert or its already here something that has a confidence
+   System.out.println("Init");
+   Context c = new Context();
+
+   c.setSentimentDistr( Sentiment.UNKNOWN, new SimpleDegree( 0.1 ) );
+   System.out.println( "*****" + c.getSentimentDistr());
+   insert( c );
+end
+
+rule "Fuzzy Spam Heavy"
+dialect "mvel"
+when
+    $spam : SpamResponse( hasSpamElement("email") || hasSpamElement( "ip" ) )
+    $context : Context()
+then
+    // push confidence down a lot
+    Degree x = chance.degree;
+    Degree y = x.fromConst(1.0);
+    System.out.println("Heavy Push (" + y + "): " + $spam);
+    Sentiment s = $context.getSentiment();
+    System.out.println(s);
+    $context.updateSentimentValue( Sentiment.SUSPICIOUS, y);
+
+    System.out.println($context.getSentimentDistr());
+end
+
+rule "Fuzzy Spam Light"
+dialect "mvel"
+when
+    $spam : SpamResponse( hasSpamElement( "username" ) )
+    $context : Context()
+then
+    // push confidence down a little
+    Degree x = chance.degree;
+    Degree y = x.fromConst(.5);
+    System.out.println("Light Push (" + y + "): " + $spam);
+    $context.updateSentimentValue( Sentiment.SUSPICIOUS, y);
+
+    System.out.println($context.getSentimentDistr());
+end
+
+rule "End Rule"
+salience 100
+dialect "mvel"
+when
+     $context : Context()
+then
+     System.out.println("End Rule : " + $context );
+     System.out.println($context.getSentiment().getCrisp());
+end

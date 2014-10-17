@@ -49,6 +49,7 @@
   <modules>
     <module>drools-shapes</module>
 	  <module>drools-provenance</module>
+	  <!--module>drools-chance-core</module-->
   </modules>
 
 
