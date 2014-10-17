@@ -174,12 +174,14 @@ public class ProvenanceBeliefSetImpl
             templateRef = (String) map.get( "template" );
         }
 
-        CompiledTemplate compiled = TemplateRegistry.getInstance().compileAndCache( inlineTemplate != null ? justifier.getRule().getName() : templateRef,
-                                                                                    inlineTemplate );
+        if ( templateRef != null || inlineTemplate != null ) {
+            CompiledTemplate compiled = TemplateRegistry.getInstance().compileAndCache( inlineTemplate != null ? justifier.getRule().getName() : templateRef,
+                                                                                        inlineTemplate );
 
-        String mainText = (String) TemplateRuntime.execute( compiled, context );
-        Narrative narrative = new NarrativeImpl().withNarrativeText( mainText );
-        subject.addDisplaysAs( narrative );
+            String mainText = (String) TemplateRuntime.execute( compiled, context );
+            Narrative narrative = new NarrativeImpl().withNarrativeText( mainText );
+            subject.addDisplaysAs( narrative );
+        }
     }
 
     private boolean isEvidence( RuleConditionElement ruleConditionElement ) {
