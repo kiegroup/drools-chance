@@ -1,11 +1,14 @@
+import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
 import org.drools.beliefs.provenance.Provenance;
 import org.drools.beliefs.provenance.ProvenanceBeliefSystem;
 import org.drools.beliefs.provenance.ProvenanceHelper;
 import org.drools.core.common.NamedEntryPoint;
+import org.drools.core.marshalling.impl.ProtobufMarshaller;
 import org.drools.core.metadata.Modify;
 import org.drools.core.rule.EntryPointId;
 import org.jboss.drools.provenance.Assertion;
 import org.jboss.drools.provenance.Recognition;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
@@ -13,12 +16,18 @@ import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
+import org.kie.api.marshalling.ObjectMarshallingStrategy;
+import org.kie.api.runtime.EnvironmentName;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.api.time.SessionClock;
+import org.kie.internal.marshalling.MarshallerFactory;
 import org.kie.internal.utils.KieHelper;
 import org.w3.ns.prov.Activity;
 import org.w3.ns.prov.Entity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,41 +36,120 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class ProvenanceTest {
 
 
     @Test
-    public void testMetaCallableWMTasks() {
-
-        KieServices kieServices = KieServices.Factory.get();
-        Resource traitDRL = kieServices.getResources().newClassPathResource( "tiny_declare.drl" );
-        Resource ruleDRL = kieServices.getResources().newClassPathResource( "testTasks.drl" );
-
-        KieHelper kieHelper = validateKieBuilder( traitDRL, ruleDRL );
+    @Ignore
+    public void testMetaCallableWMTasksSetSimpleAttribute() {
+        // set a simple attribute
         List list = new ArrayList();
-        KieSession kieSession = kieHelper.build( ProvenanceHelper.getProvenanceEnabledKieBaseConfiguration() ).newKieSession();
-        kieSession.setGlobal( "list", list );
-        kieSession.fireAllRules();
+        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
+        fail( "TODO" );
+    }
 
-        for ( Object o : kieSession.getObjects() ) {
-            System.out.println( o );
-        }
+    @Test
+    @Ignore
+    public void testMetaCallableWMTasksSetSimpleAttributeMultipleVersionedTimes() {
+        // set a simple attribute multiple times, keep history
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
+        fail( "TODO" );
+    }
+
+    @Test
+    @Ignore
+    public void testMetaCallableWMTasksSetCollectionAsAWhole() {
+        // set a list attribute
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
+        fail( "TODO" );
+    }
+
+    @Test
+    @Ignore
+    public void testMetaCallableWMTasksAddItemToCollection() {
+        // add an item to a list, versioning it
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
+        fail( "TODO" );
+    }
+
+    @Test
+    @Ignore
+    public void testMetaCallableWMTasksAddItemsToCollection() {
+        // add a collection to a list, versioning it
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
+        fail( "TODO" );
+    }
+
+    @Test
+    @Ignore
+    public void testMetaCallableWMTasksRemoveItemFromCollection() {
+        // remove an item from a list, versioning it
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
+        fail( "TODO" );
+    }
+
+    @Test
+    @Ignore
+    public void testMetaCallableWMTasksRemoveItemsFromCollection() {
+        // remove a collection from a list, versioning it
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
+        fail( "TODO" );
     }
 
 
     @Test
+    public void testPersistence() throws IOException {
+        List list = new ArrayList();
+        KieSession ksession = loadProvenanceSession( "testTasks.drl", list );
+        ksession.fireAllRules();
+
+        ProtobufMarshaller marshaller = (ProtobufMarshaller) MarshallerFactory.newMarshaller( ksession.getKieBase(),
+                                                                                              (ObjectMarshallingStrategy[]) ksession.getEnvironment().get( EnvironmentName.OBJECT_MARSHALLING_STRATEGIES ) );
+        long time = ksession.<SessionClock>getSessionClock().getCurrentTime();
+
+        // Serialize object
+        final byte [] b1;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        marshaller.marshall( bos,
+                             ksession,
+                             time );
+
+        b1 = bos.toByteArray();
+        bos.close();
+    }
+
+
+
+
+
+
+
+    @Test
+    public void testMetaCallableWMTasks() {
+
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
+
+        for ( Object o : kieSession.getObjects() ) {
+            System.out.println( o );
+        }
+        System.out.println( list );
+        assertEquals( Arrays.asList( "123", "000" ), list );
+    }
+
+    @Test
     public void testConceptualModelBindingWithTraitDRL() {
 
-        KieServices kieServices = KieServices.Factory.get();
-        Resource traitDRL = kieServices.getResources().newClassPathResource( "tiny_declare.drl" );
-        Resource ruleDRL = kieServices.getResources().newClassPathResource( "testProvenance.drl" );
-
-        KieHelper kieHelper = validateKieBuilder( traitDRL, ruleDRL );
-        List list = new ArrayList();
-        KieSession kieSession = kieHelper.build( ProvenanceHelper.getProvenanceEnabledKieBaseConfiguration() ).newKieSession();
-        kieSession.setGlobal( "list", list );
-        kieSession.fireAllRules();
+        ArrayList list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession( "testProvenance.drl", list );
 
         Provenance provenance = ProvenanceHelper.getProvenance( kieSession );
 
@@ -88,6 +176,21 @@ public class ProvenanceTest {
         assertEquals( Arrays.asList( "RESULT" ), list );
     }
 
+
+    private KieSession loadProvenanceSession( String sourceDrl, List list) {
+        KieServices kieServices = KieServices.Factory.get();
+        Resource traitDRL = kieServices.getResources().newClassPathResource( "tiny_declare.drl" );
+        Resource ruleDRL = kieServices.getResources().newClassPathResource( sourceDrl );
+
+        KieHelper kieHelper = validateKieBuilder( traitDRL, ruleDRL );
+        KieSession kieSession = kieHelper.build( ProvenanceHelper.getProvenanceEnabledKieBaseConfiguration() ).newKieSession();
+        kieSession.setGlobal( "list", list );
+        kieSession.fireAllRules();
+
+        return kieSession;
+    }
+
+
     private KieHelper validateKieBuilder( Resource... resources ) {
         KieHelper helper = new KieHelper();
         for ( Resource resource : resources ) {
@@ -102,85 +205,4 @@ public class ProvenanceTest {
     }
 
 
-
-
-
-    @Test
-    public void testAssertions() {
-        String drl = "package org.drools.provenance; " +
-                     "global " + ProvenanceBeliefSystem.class.getName() + " pbs; " +
-
-                     "declare Foo " +
-                     "@propertyReactive " +
-                     "@Traitable " +
-                     "  id : int @key " +
-                     "  link : Foo " +
-                     "end " +
-
-                     "declare trait Bar " +
-                     "@propertyReactive " +
-                     "  id : int " +
-                     "  val : String " +
-                     "end " +
-
-                     "rule Create " +
-                     "when " +
-                     "  $s : String( this == 'go' ) " +
-                     "then " +
-                     "  System.out.println( 'Create the foos' ); " +
-                     "  insertLogical( new Foo( 1 ), pbs.PROV ); " +
-                     "  insertLogical( new Foo( 99 ), pbs.PROV ); " +
-                     "end " +
-
-                     "rule Don " +
-                     "when " +
-                     "  $f : Foo( 1; ) " +
-                     "then " +
-                     "  System.out.println( 'Don foo 1' ); " +
-                     "  don( $f, Bar.class, pbs.PROV ); " +
-                     "end " +
-
-                     "rule Set " +
-                     "when " +
-                     "  $b : Bar() " +
-                     "then " +
-                     "  System.out.println( 'Set value on Bar' ); " +
-                     "  $b.setVal( 'hello' ); " +
-                     "end " +
-
-                     "rule Link " +
-                     "when " +
-                     "  $f : Foo( 1; ) " +
-                     "  $g : Foo( 99; ) " +
-                     "then " +
-                     "  System.out.println( 'Link two foos' ); " +
-                     "  $f.setLink( $g ); " +
-                     "end " +
-
-                     "";
-
-        KieHelper helper = new KieHelper();
-        helper.addContent( drl, ResourceType.DRL );
-
-        KieBase kBase = helper.build();
-        KieSession kSession = kBase.newKieSession();
-
-        NamedEntryPoint ep = (NamedEntryPoint) kSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId());
-        ProvenanceBeliefSystem pbs = ProvenanceHelper.install( ep );
-        kSession.setGlobal( "pbs", pbs );
-
-        FactHandle handle = kSession.insert( "go" );
-        kSession.fireAllRules();
-
-        kSession.delete( handle );
-        kSession.fireAllRules();
-
-        assertEquals( 0, kSession.getObjects().size() );
-
-        Foo f;
-
-
-    }
-
-    public enum Foo { A,B }
 }

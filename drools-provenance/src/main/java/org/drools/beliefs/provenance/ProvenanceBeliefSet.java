@@ -6,7 +6,7 @@ import org.w3.ns.prov.Activity;
 
 import java.util.Collection;
 
-public interface ProvenanceBeliefSet<M extends ModedAssertion<M>> extends BeliefSet<M> {
+public interface ProvenanceBeliefSet {
 
     Collection<? extends Activity> getGeneratingActivities();
 

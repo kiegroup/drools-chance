@@ -13,10 +13,14 @@ import org.drools.beliefs.provenance.annotations.Evidence;
 import org.drools.beliefs.provenance.templates.TemplateRegistry;
 import org.drools.core.InitialFact;
 import org.drools.core.beliefsystem.BeliefSystem;
-import org.drools.core.beliefsystem.jtms.JTMSBeliefSetImpl;
+import org.drools.core.beliefsystem.ModedAssertion;
+import org.drools.core.beliefsystem.simple.SimpleBeliefSet;
+import org.drools.core.beliefsystem.simple.SimpleMode;
 import org.drools.core.common.InternalFactHandle;
+import org.drools.core.common.LogicalDependency;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.factmodel.AnnotationDefinition;
+import org.drools.core.marshalling.impl.ProtobufMessages;
 import org.drools.core.metadata.Don;
 import org.drools.core.metadata.MetadataContainer;
 import org.drools.core.metadata.Modify;
@@ -49,49 +53,47 @@ import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRuntime;
 import org.w3.ns.prov.Activity;
 import org.w3.ns.prov.ActivityImpl;
-import org.w3.ns.prov.Agent;
 
-public class ProvenanceBeliefSetImpl<M extends ProvenanceBelief<M>>
-        extends JTMSBeliefSetImpl<M>
-        implements ProvenanceBeliefSet<M> {
+public class ProvenanceBeliefSetImpl
+        extends SimpleBeliefSet
+        implements ProvenanceBeliefSet {
 
     private List<Activity> provenance = new ArrayList<Activity>();
 
     private static RuleEngine DROOLS_ENGINE = new org.jboss.drools.provenance.RuleEngineImpl()
                                                 .withIdentifier( new Literal( "JBoss Drools " + Drools.getFullVersion() ) );
 
-    public ProvenanceBeliefSetImpl( BeliefSystem<M> beliefSystem, InternalFactHandle rootHandle ) {
+    public ProvenanceBeliefSetImpl( BeliefSystem beliefSystem, InternalFactHandle rootHandle ) {
         super( beliefSystem, rootHandle );
     }
 
-    @Override
-    public void add( M node ) {
+    public void add( SimpleMode node ) {
         super.add( node );
         recordActivity( node, true );
     }
 
-    @Override
-    public void remove( M node ) {
+    public void remove( SimpleMode node ) {
         super.remove( node );
         recordActivity( node, false );
     }
     
-    private void recordActivity( M node, boolean positiveAssertion ) {
+    private void recordActivity( SimpleMode node, boolean positiveAssertion ) {
     	Activity activity = this.createActivity( node, positiveAssertion );
-    	
+
         this.provenance.add( activity );         
     }
 
-    protected Activity createActivity( M node, boolean positiveAssertion ) {
-        if ( node.getLogicalDependency().getObject() instanceof WorkingMemoryTask ) {
-            return toActivity( (WorkingMemoryTask) node.getLogicalDependency().getObject(),
-                               node.getLogicalDependency().getJustifier(),
+    protected Activity createActivity( SimpleMode node, boolean positiveAssertion ) {
+        LogicalDependency dep = node.getObject();
+        if ( dep.getObject() instanceof WorkingMemoryTask ) {
+            return toActivity( (WorkingMemoryTask) dep.getObject(),
+                               dep.getJustifier(),
                                positiveAssertion );
         }
         return null;
     }
     
-    protected Activity toActivity( WorkingMemoryTask task, Activation<M> justifier, boolean positiveAssertion ) {
+    protected Activity toActivity( WorkingMemoryTask task, Activation justifier, boolean positiveAssertion ) {
     	Activity activity = null;
 
         Instance subject = getTarget( task );
@@ -130,7 +132,7 @@ public class ProvenanceBeliefSetImpl<M extends ProvenanceBelief<M>>
         return activity;
     }
 
-    private Map<String, Object> buildContext( Activation<M> justifier ) {
+    private Map<String, Object> buildContext( Activation justifier ) {
         Map map = new HashMap();
         for ( String declaration : ( ( RuleTerminalNodeLeftTuple ) justifier).getSubRule().getOuterDeclarations().keySet() ) {
             map.put( declaration, justifier.getDeclarationValue( declaration ) );

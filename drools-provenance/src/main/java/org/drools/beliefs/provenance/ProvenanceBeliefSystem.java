@@ -1,61 +1,51 @@
 package org.drools.beliefs.provenance;
 
-import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.beliefsystem.BeliefSet;
-import org.drools.core.beliefsystem.jtms.JTMSBeliefSet;
-import org.drools.core.beliefsystem.jtms.JTMSBeliefSetImpl;
-import org.drools.core.beliefsystem.jtms.JTMSBeliefSystem;
-import org.drools.core.beliefsystem.jtms.JTMSMode;
+import org.drools.core.beliefsystem.simple.SimpleBeliefSystem;
 import org.drools.core.beliefsystem.simple.SimpleLogicalDependency;
-import org.drools.core.common.BeliefSystemFactory;
 import org.drools.core.common.EqualityKey;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.LogicalDependency;
 import org.drools.core.common.NamedEntryPoint;
 import org.drools.core.common.TruthMaintenanceSystem;
-import org.drools.core.factmodel.traits.Thing;
+import org.drools.core.factmodel.traits.BitMaskKey;
 import org.drools.core.factmodel.traits.TraitFactory;
 import org.drools.core.metadata.Don;
 import org.drools.core.metadata.MetaCallableTask;
-import org.drools.core.metadata.MetadataContainer;
 import org.drools.core.metadata.Modify;
 import org.drools.core.metadata.NewInstance;
-import org.drools.core.reteoo.KieComponentFactory;
 import org.drools.core.reteoo.ObjectTypeConf;
+import org.drools.core.reteoo.PropertySpecificUtil;
 import org.drools.core.spi.Activation;
 import org.drools.core.spi.PropagationContext;
-import org.kie.api.KieBaseConfiguration;
-import org.kie.api.runtime.rule.Match;
-import org.kie.internal.runtime.beliefs.Mode;
+import org.drools.core.util.BitMaskUtil;
 import org.w3.ns.prov.Activity;
 
 import java.util.Collection;
 
-public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
-        extends JTMSBeliefSystem<M>
+public class ProvenanceBeliefSystem
+        extends SimpleBeliefSystem
         implements Provenance {
-
-    public final ProvenanceBelief<M> PROV = new ProvenanceBelief( this );
-
+    
     protected ProvenanceBeliefSystem( NamedEntryPoint ep, TruthMaintenanceSystem tms ) {
         super( ep, tms );
     }
 
     @Override
-    public void delete( LogicalDependency<M> node, BeliefSet<M> beliefSet, PropagationContext context ) {
+    public void delete( LogicalDependency node, BeliefSet beliefSet, PropagationContext context ) {
         super.delete( node, beliefSet, context );
     }
 
     @Override
-    public void insert( LogicalDependency<M> node, BeliefSet<M> beliefSet, PropagationContext context, ObjectTypeConf typeConf ) {
+    public void insert( LogicalDependency node, BeliefSet beliefSet, PropagationContext context, ObjectTypeConf typeConf ) {
 
         if ( node.getObject() instanceof MetaCallableTask ) {
 
-            ep.getObjectStore().removeHandle( beliefSet.getFactHandle() );
-            ep.getEntryPointNode().retractObject( beliefSet.getFactHandle(),
+            getEp().getObjectStore().removeHandle( beliefSet.getFactHandle() );
+            getEp().getEntryPointNode().retractObject( beliefSet.getFactHandle(),
                                                   context,
                                                   typeConf,
-                                                  ep.getInternalWorkingMemory() );
+                                                  getEp().getInternalWorkingMemory() );
             MetaCallableTask task = (MetaCallableTask) node.getObject();
             switch ( task.kind() ) {
                 case ASSERT : executeNew( (NewInstance) task, node );
@@ -77,19 +67,19 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
 
     }
 
-    private void executeDon( Don don, LogicalDependency<M> node ) {
-        ep.getTraitHelper().don( node.getJustifier(),
+    private void executeDon( Don don, LogicalDependency node ) {
+        getEp().getTraitHelper().don( node.getJustifier(),
                                     don.getCore(),
                                     don.getTrait(),
                                     null,
                                     false );
     }
 
-    private void executeModify( Modify modify, LogicalDependency<M> node ) {
+    private void executeModify( Modify modify, LogicalDependency node ) {
         Object target = modify.getTarget();
-        modify.call();
+        modify.call( getEp().getKnowledgeBase() );
 
-        ep.update( (InternalFactHandle) ep.getFactHandle( target ),
+        getEp().update( (InternalFactHandle) getEp().getFactHandle( target ),
                    target,
                    modify.getModificationMask(),
                    modify.getModificationClass(),
@@ -98,54 +88,44 @@ public class ProvenanceBeliefSystem<M extends ProvenanceBelief<M>>
         Object[] updates = modify.getAdditionalUpdates();
         if ( updates != null ) {
             for ( int j = 0; j < updates.length; j++ ) {
-                ep.update( (InternalFactHandle) ep.getFactHandle( updates[ j ] ),
+                getEp().update( (InternalFactHandle) getEp().getFactHandle( updates[ j ] ),
                            updates[ j ],
-                           0,
+                           modify.getAdditionalUpdatesModificationMask( j ),
                            updates[ j ].getClass(),
                            node.getJustifier() );
             }
         }
     }
 
-    private void executeNew( NewInstance newInstance, LogicalDependency<M> node ) {
+    private void executeNew( NewInstance newInstance, LogicalDependency node ) {
         if ( newInstance.isInterface() ) {
-            newInstance.setInstantiatorFactory( TraitFactory.getTraitBuilderForKnowledgeBase( ep.getKnowledgeBase() ).getInstantiatorFactory() );
+            newInstance.setInstantiatorFactory( TraitFactory.getTraitBuilderForKnowledgeBase( getEp().getKnowledgeBase() ).getInstantiatorFactory() );
             Object target = newInstance.callUntyped();
 
-            ep.getTraitHelper().don( node.getJustifier(),
+            getEp().getTraitHelper().don( node.getJustifier(),
                                         target,
                                         newInstance.getInstanceClass(),
                                         newInstance.getInitArgs(),
                                         false );
         } else {
             Object target = newInstance.call();
-            ep.insert( target,
+            getEp().insert( target,
                       false,
                        node.getJustifier().getRule(),
                        node.getJustifier() );
         }
     }
 
-    public LogicalDependency<M> newLogicalDependency( Activation<M> activation,
-                                                      BeliefSet<M> beliefSet,
-                                                      Object object,
-                                                      Object value ) {
-        ProvenanceBelief<M> mode = new ProvenanceBelief<M>( this );
-        SimpleLogicalDependency dep =  new SimpleLogicalDependency(activation, beliefSet, object, mode );
-        mode.setLogicalDependency( dep );
-        return dep;
-    }
-
-    public BeliefSet<M> newBeliefSet( InternalFactHandle fh ) {
+    public BeliefSet newBeliefSet( InternalFactHandle fh ) {
         return new ProvenanceBeliefSetImpl( this, fh );
     }
 
-    protected ProvenanceBeliefSet<M> getProvenanceBS( Object o ) {
+    protected ProvenanceBeliefSet getProvenanceBS( Object o ) {
         EqualityKey key = getTruthMaintenanceSystem().get( o );
         if ( key == null || key.getStatus() == EqualityKey.STATED || ! ( key.getBeliefSet() instanceof ProvenanceBeliefSetImpl ) ) {
             return null;
         }
-        return (ProvenanceBeliefSet<M>) key.getBeliefSet();
+        return (ProvenanceBeliefSet) key.getBeliefSet();
     }
 
     @Override

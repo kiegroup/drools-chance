@@ -40,4 +40,6 @@ then
     insertLogical( MyKlass_
                     .modify( $k, With.updates( $t ) )
                     .links( Arrays.asList( $t ), Lit.SET ) );
+    list.add( $k.getId() );
+    list.add( $k.getLinks().get( 0 ).getId() );
 end

@@ -2,7 +2,8 @@
 
 package @{ package };
 
-public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer<T> @else{} @{ supertypePackage }.@{ supertypeName }_<T> @end{} {
+public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer<T> @else{} @{ supertypePackage }.@{ supertypeName }_<T>
+    @end{} implements java.io.Serializable {
 
     public @{ typeName }_( T x ) {
         super( x );
@@ -33,7 +34,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
 
 
-    protected static class @{ typeName }_Meta<T extends @{ package }.@{ typeName }> extends org.drools.core.metadata.ClassLiteral<T> {
+    protected static class @{ typeName }_Meta<T extends @{ package }.@{ typeName }> extends org.drools.core.metadata.ClassLiteral<T> implements java.io.Serializable {
 
         private static @{ typeName }_Meta instance;
 
@@ -99,7 +100,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
 
     public static class @{ typeName }_NewInstance<T extends @{package}.@{ typeName } >
-            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.NewInstanceLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_NewInstance<T> @end{} {
+            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.NewInstanceLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_NewInstance<T> @end{} implements java.io.Serializable {
 
         public @{ typeName }_NewInstance( Object id, org.drools.core.metadata.With... args ) {
             super( java.net.URI.create( id.toString() ), args );
@@ -147,7 +148,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
 
     public static class @{typeName}_Modify<T extends @{typeName}>
-            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.ModifyLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} {
+            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.ModifyLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} implements java.io.Serializable {
 
         public @{ typeName }_Modify( T x, org.drools.core.metadata.With... args ) {
             super( x, args );
@@ -177,7 +178,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
 
     public static class @{typeName}_Don<K, T extends @{typeName}>
-            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.DonLiteral<K,T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Don<K,T> @end{} {
+            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.DonLiteral<K,T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Don<K,T> @end{} implements java.io.Serializable {
 
         public @{ typeName }_Don( K target, org.drools.core.metadata.With... args ) {
             super( target, args );
