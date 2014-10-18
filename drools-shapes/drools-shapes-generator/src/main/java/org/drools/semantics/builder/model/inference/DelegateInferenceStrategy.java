@@ -364,13 +364,22 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         for ( OWLClass klass : ontoDescr.getClassesInSignature( true ) ) {
             supers.put( klass.getIRI().toQuotedString(), new HashSet<OWLClassExpression>() );
         }
+
+        Set<OWLSubClassOfAxiom> subConceptOfSet = ontoDescr.getAxioms( AxiomType.SUBCLASS_OF, true );
         for ( OWLClass klass : ontoDescr.getClassesInSignature( true ) ) {
             if ( isDelegating( klass ) ) {
                 OWLClassExpression delegate = aliases.get( klass );
                 supers.get( delegate.asOWLClass().getIRI().toQuotedString() ).addAll( klass.getSuperClasses( ontoDescr ) );
             } else {
                 Set<OWLClassExpression> sup = supers.get( klass.asOWLClass().getIRI().toQuotedString() );
-                Set<OWLClassExpression> ancestors = klass.getSuperClasses( ontoDescr );
+
+                Set<OWLClassExpression> ancestors = new HashSet<OWLClassExpression>();
+                for ( OWLSubClassOfAxiom subx : subConceptOfSet ) {
+                    if ( subx.getSubClass().equals( klass ) ) {
+                        ancestors.add( subx.getSuperClass() );
+                    }
+                }
+
                 sup.addAll(ancestors);
                 for ( OWLClassExpression anc : ancestors ) {
                     if ( reverseAliases.containsKey( anc ) ) {

@@ -11,7 +11,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
     }
 
     @foreach{ prop : properties } @if{ ! prop.inherited }
-        public static final org.drools.core.metadata.MetaProperty<@{package}.@{typeName},@{ prop.range },@{ prop.javaTypeName }> @{ prop.propName } = @{ typeName }_Meta.@{ prop.propName };
+        public static final org.drools.core.metadata.MetaProperty<@{ prop.domain },@{ prop.range },@{ prop.javaRangeType }> @{ prop.propName } = @{ typeName }_Meta.@{ prop.propName };
     @end{}@end{ '\n' }
 
 
@@ -34,7 +34,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
 
 
-    protected static class @{ typeName }_Meta<T extends @{ package }.@{ typeName }> extends org.drools.core.metadata.ClassLiteral<T> implements java.io.Serializable {
+    public static class @{ typeName }_Meta<T extends @{ package }.@{ typeName }> extends org.drools.core.metadata.ClassLiteral<T> implements java.io.Serializable {
 
         private static @{ typeName }_Meta instance;
 
@@ -51,17 +51,17 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         @foreach{ prop : properties }
             @if{ ! prop.inherited }
             public static final org.drools.core.metadata.@if{ prop.simple }One@else{}Many@end{}ValuedMetaProperty
-                                        <@{package}.@{typeName}, @{ prop.range }@if{ !prop.simple }, @{ prop.javaTypeName }@end{}> @{ prop.propName } =
-                    new @{ prop.concreteType }<@{package}.@{typeName},@{ prop.range }>
+                                        <@{ prop.domain }, @{ prop.range }@if{ !prop.simple }, @{ prop.javaRangeType }@end{}> @{ prop.propName } =
+                    new @{ prop.concreteType }<@{prop.domain},@{ prop.range }>
                                         ( @{ prop.position }, "@{ prop.propName }", java.net.URI.create( "@{ prop.propIri }" ) ) {
 
-                public @{ prop.javaTypeName } get( @{package}.@{typeName} o ) { return o.@{ getter( prop.propName, map( prop.typeName, true ), prop.simple ? 1 : null ) }(); }
-                public void set( @{package}.@{typeName} o, @{ prop.javaTypeName } value ) { o.@{ setter( prop.propName ) }( value ); }
+                public @{ prop.javaRangeType } get( @{ prop.domain } o ) { return o.@{ getter( prop.propName, map( prop.typeName, true ), prop.simple ? 1 : null ) }(); }
+                public void set( @{ prop.domain } o, @{ prop.javaRangeType } value ) { o.@{ setter( prop.propName ) }( value ); }
 
                 @if{ prop.inverse != null }
                 @Override
                 public org.drools.core.metadata.@if{ prop.inverse.simple }One@else{}Many@end{}ValuedMetaProperty
-                                        <@{ prop.range }, @{ typeName }@if{ !prop.simple }, @{ prop.inverse.javaTypeName }@end{}>
+                                        <@{ prop.range }, @{ prop.domain }@if{ !prop.inverse.simple }, @{ prop.inverse.javaRangeType }@end{}>
                                         getInverse() {
                     return @{ prop.range }_.@{ prop.simpleTypeName }_Meta.@{ prop.inverse.propName };
                 }
@@ -120,7 +120,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         }
 
         @foreach{ prop : properties }
-        public @{ typeName }_NewInstance<T> @{ prop.propName }( @{ prop.javaTypeName } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
+        public @{ typeName }_NewInstance<T> @{ prop.propName }( @{ prop.javaRangeType } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
             @if{ ! prop.inherited }
                 getSetter().@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
                 @else{}
@@ -164,7 +164,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         }
 
         @foreach{ prop : properties }
-        public @{typeName}_Modify @{ prop.propName }( @{ prop.javaTypeName } newVal @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
+        public @{typeName}_Modify @{ prop.propName }( @{ prop.javaRangeType } newVal @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
             @if{ ! prop.inherited }
             addTask( @{ prop.propName }, newVal, @if{ ! prop.simple } mode @else{} newVal != null ? org.drools.core.metadata.Lit.SET : org.drools.core.metadata.Lit.REMOVE @end{} );
             @else{}
@@ -201,7 +201,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         }
 
         @foreach{ prop : properties }
-        public @{ typeName }_Don<K,T> @{ prop.propName }( @{ prop.javaTypeName } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
+        public @{ typeName }_Don<K,T> @{ prop.propName }( @{ prop.javaRangeType } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
             @if{ ! prop.inherited }
             getSetter().@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
             @else{}

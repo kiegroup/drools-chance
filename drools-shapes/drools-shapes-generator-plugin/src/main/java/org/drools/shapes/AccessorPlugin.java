@@ -176,10 +176,12 @@ public class AccessorPlugin extends Plugin {
 
     private void compileProperty( JDefinedClass implClass, Element item ) {
         Map<String,Object> vars = new HashMap<String, Object>();
+        boolean simple = Boolean.valueOf( item.getAttribute( "simple" ) );
+
         vars.put( "name", item.getAttribute( "name" ) );
         vars.put( "type", item.getAttribute( "type" ) );
         vars.put( "max", null );
-        vars.put( "simple", Boolean.valueOf(item.getAttribute("simple")) );
+        vars.put( "simple", simple );
         vars.put( "primitive", Boolean.valueOf( item.getAttribute( "primitive" ) ) );
 
         String code;
@@ -198,13 +200,17 @@ public class AccessorPlugin extends Plugin {
         Map<String,Object> vars = new HashMap<String, Object>();
         boolean simple = Boolean.valueOf( item.getAttribute( "simple" ) );
         boolean primitive = Boolean.valueOf( item.getAttribute( "primitive" ) );         vars.put( "name", item.getAttribute( "name" ) );
-        vars.put( "type", item.getAttribute( "type" ) );
+        String type = item.getAttribute( "type" );
+        String baseType = item.getAttribute( "baseType" );
+        boolean restricted = ! baseType.equals( type );
+
+        vars.put( "type", type );
         vars.put( "primitive", primitive );
         vars.put( "min", Integer.valueOf( item.getAttribute( "min" ) ) );
         vars.put( "max", item.getAttribute( "max" ).equals( "null") ? null : Integer.valueOf( item.getAttribute( "max" ) ) );
         vars.put( "inherited", Boolean.valueOf( item.getAttribute( "inherited" ) ) );
         vars.put( "base", item.getAttribute( "base" ) );
-        vars.put( "baseType", item.getAttribute( "baseType" ) );
+        vars.put( "baseType", baseType );
         vars.put( "simple", simple );
 
         Set<List<Link>> chains = new HashSet<List<Link>>();

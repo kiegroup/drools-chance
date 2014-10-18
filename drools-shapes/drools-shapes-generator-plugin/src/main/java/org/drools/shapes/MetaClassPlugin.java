@@ -24,12 +24,12 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MetaClassPlugin extends MetadataPlugin {
+public class
+        MetaClassPlugin extends MetadataPlugin {
 
     private static String metaClassTempl = "metaClass";
     private static String metaAttribTempl = "metaAttrib";
@@ -77,7 +77,9 @@ public class MetaClassPlugin extends MetadataPlugin {
 
                     String javaType = getJavaType( p.typeName );
                     p.range = javaType;
-                    p.javaTypeName = p.simple ? javaType : ( List.class.getName() + "<" + javaType + ">" );
+                    p.javaRangeType = p.simple ? javaType : ( List.class.getName() + "<" + javaType + ">" );
+
+                    p.domain = getJavaType( el.getAttribute( "domain" ) );
 
                     String inverseName = el.getAttribute( "inverse" ).length() > 0 ? el.getAttribute( "inverse" ) : null;
                     properties.put( p.propName, p );
@@ -95,9 +97,9 @@ public class MetaClassPlugin extends MetadataPlugin {
                     p.concreteType = p.simple ? ToOnePropertyLiteral.class.getName() : ToManyPropertyLiteral.class.getName();
                 } else {
                     if ( p.simple ) {
-                        p.concreteType = p.inverse.simple ? OneToOnePropertyLiteral.class.getName() : OneToManyPropertyLiteral.class.getName();
+                        p.concreteType = p.inverse.simple ? OneToOnePropertyLiteral.class.getName() : ManyToOnePropertyLiteral.class.getName();
                     } else {
-                        p.concreteType = p.inverse.simple ? ManyToOnePropertyLiteral.class.getName() : ManyToManyPropertyLiteral.class.getName();
+                        p.concreteType = p.inverse.simple ? OneToManyPropertyLiteral.class.getName() : ManyToManyPropertyLiteral.class.getName();
                     }
                 }
             }
@@ -166,10 +168,11 @@ public class MetaClassPlugin extends MetadataPlugin {
 
         public String propName;
         public String typeName;
-        public String javaTypeName;
+        public String javaRangeType;
         public String propIri;
         public boolean simple;
         public String range;
+        public String domain;
         public boolean inherited;
         public PropInfo inverse;
         public String concreteType;

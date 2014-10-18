@@ -25,6 +25,7 @@ import org.w3._2002._07.owl.Thing;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,9 +34,60 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
 
     public void process( OntoModel model ) {
         Concept thing = model.getConcept( Thing.IRI );
+
+
+        for ( Concept con : model.getConcepts() ) {
+            for ( PropertyRelation prop : con.getAvailableProperties() ) {
+                if ( prop.getTarget().isAbstrakt() || prop.getTarget().isAnonymous() ) {
+                    con.removeProperty( prop.getProperty() );
+
+                    Concept tgt = prop.getTarget();
+                        for ( Concept sub : flatten( tgt.getSubConcepts() ) ) {
+                            String subName = prop.getBaseProperty().getName() + sub.getName();
+                            String subPropKey = prop.getProperty().replace( prop.getName(), subName );
+                            PropertyRelation copy = prop.clone();
+
+                            copy.setTarget( sub );
+                            copy.setDomain( con );
+                            copy.setSubject( con.getIri() );
+                            copy.setObject( sub.getIri() );
+                            copy.setName( subName );
+                            copy.setProperty( subPropKey );
+                            copy.setBaseProperty( copy );
+                            copy.setRestricted( false );
+
+                            con.addProperty( copy.getProperty(), copy.getName(), copy );
+                            model.addProperty( copy );
+                    }
+                }
+            }
+
+            for ( Concept sup : new ArrayList<Concept>( con.getSuperConcepts() ) ) {
+                if ( sup.isAnonymous() ) {
+                    con.getSuperConcepts().remove( sup );
+                }
+            }
+        }
+
+
+        for ( Concept con : model.getConcepts() ) {
+            for ( PropertyRelation prop : con.getAvailableProperties() ) {
+                if ( prop.getTarget().isAbstrakt() || prop.getTarget().isAnonymous() ) {
+                    throw new IllegalStateException( "Con " + con.getName() + " property " + prop.getName() + " anonymous range could not be normalized " + prop.getTarget() );
+                }
+            }
+            for ( PropertyRelation prop : con.getChosenProperties().values() ) {
+                if ( prop.getTarget().isAbstrakt() || prop.getTarget().isAnonymous() ) {
+                    throw new IllegalStateException( "Con " + con.getName() + " property " + prop.getName() + " anonymous range could not be normalized " + prop.getTarget() );
+                }
+            }
+        }
+
+
+
         for ( Concept con : model.getConcepts() ) {
 
-            con.setChosenProperties(new HashMap(con.getProperties()));
+            con.setChosenProperties( new HashMap( con.getProperties() ) );
 
             Map<String, PropertyRelation> baseProps = con.getChosenProperties();
             Set<Concept> superConcepts = con.getSuperConcepts();
@@ -46,19 +98,15 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
                         PropertyRelation rel = inheritedProperties.get( propKey ).clone();
 
                         List<PropertyRelation> localRestrictions = new ArrayList<PropertyRelation>( rel.getRestrictedProperties() );
-                        for ( PropertyRelation pr : rel.getRestrictedProperties() ) {
-                            if ( ! baseProps.containsValue( pr ) ) {
-                                localRestrictions.remove( pr );
-                            }
-                        }
 
                         Integer min = 0;
-                        Integer max = 0;
+                        Integer max = localRestrictions.isEmpty() ? null : 0;
                         for ( PropertyRelation pr : localRestrictions ) {
                             min = min + pr.getMinCard();
                             max = ( max == null || pr.getMaxCard() == null ) ?
                                   null : max + pr.getMaxCard();
                         }
+
                         rel.setMinCard( min );
                         rel.setMaxCard( max );
 
@@ -95,7 +143,7 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
                         i = Math.max( i, restr.getMaxCard() );
                     }
                     prop.setMaxCard( i );
-                    if ( i <= 1 ) {
+                    if ( i != null && i <= 1 ) {
                         prop.setSimple( true );
                     }
                 }
@@ -122,5 +170,18 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
             }
         }
 
+    }
+
+
+    private Set<Concept> flatten( Set<Concept> subConcepts ) {
+        Set<Concept> subs = new HashSet<Concept>();
+        for ( Concept sub : subConcepts ) {
+            if ( sub.isAnonymous() || sub.isAbstrakt() ) {
+                subs.addAll( flatten( sub.getSubConcepts() ) );
+            } else {
+                subs.add( sub );
+            }
+        }
+        return subs;
     }
 }
