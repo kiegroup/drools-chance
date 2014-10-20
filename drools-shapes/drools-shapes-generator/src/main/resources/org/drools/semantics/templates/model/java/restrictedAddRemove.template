@@ -27,7 +27,7 @@
         @if{ simple }
             @{ compactVariable( name ) } = ( @{ map( type, true ) } ) x;
         @elseif{ ! primitive }
-            add@{ capitalize( base ) }( (java.lang.Object) x );
+            add@{ capitalize( base ) }( x );
         @else{}
             @{ getter( base, type ) }().add( x );
         @end{}

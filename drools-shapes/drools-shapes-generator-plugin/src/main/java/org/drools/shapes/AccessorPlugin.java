@@ -233,14 +233,16 @@ public class AccessorPlugin extends Plugin {
 
         if ( ! ( simple && primitive ) ) {
             if ( chainsList.getLength() == 0 ) {
-                code = SemanticXSDModelCompilerImpl.getTemplatedCode("restrictedGetterSetter", vars);
-                implClass.direct( code );
+                if ( ! type.equals( baseType ) || (! simple) ) {
+                    code = SemanticXSDModelCompilerImpl.getTemplatedCode("restrictedGetterSetter", vars);
+                    implClass.direct( code );
+                }
             } else {
                 code = SemanticXSDModelCompilerImpl.getTemplatedCode("chainGetter", vars);
                 implClass.direct( code );
             }
 
-            if ( chainsList.getLength() == 0 ) {
+            if ( chainsList.getLength() == 0 && ! type.equals( baseType ) || (! simple) ) {
                 code = SemanticXSDModelCompilerImpl.getTemplatedCode("restrictedAddRemove", vars);
                 implClass.direct( code );
             }
