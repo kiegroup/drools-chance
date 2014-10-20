@@ -47,6 +47,9 @@ public class
 
     @Override
     public boolean run(Outline outline, Options opt, ErrorHandler errorHandler) throws SAXException {
+
+        Map<String, Map<String,PropInfo>> propertyCache = new HashMap<String, Map<String, PropInfo>>(  );
+
         for (ClassOutline co : outline.getClasses() ) {
 
             CPluginCustomization c = co.target.getCustomizations().find( uri.toString(), "type" );
@@ -54,8 +57,8 @@ public class
                 continue;
             }
 
-
             Map<String,PropInfo> properties = new HashMap<String, PropInfo>();
+            propertyCache.put( co.target.getName(), properties );
 
             Element keyed = c.element;
             NodeList propList = keyed.getChildNodes();
@@ -82,16 +85,44 @@ public class
                     p.domain = getJavaType( el.getAttribute( "domain" ) );
 
                     String inverseName = el.getAttribute( "inverse" ).length() > 0 ? el.getAttribute( "inverse" ) : null;
+
                     properties.put( p.propName, p );
-                    if ( properties.containsKey( inverseName ) ) {
-                        PropInfo inv = properties.get( inverseName );
-                        p.inverse = inv;
-                        inv.inverse = p;
+
+                    if ( inverseName != null ) {
+                        Map<String,PropInfo> foreignProperties = propertyCache.get( p.range );
+                        if ( foreignProperties == null ) {
+                            foreignProperties = propertyCache.get( p.range + "Impl" );
+                        }
+                        if ( foreignProperties != null ) {
+                            PropInfo inv = null;
+                            if ( foreignProperties.containsKey( inverseName ) ) {
+                                inv = foreignProperties.get( inverseName );
+                            } else {
+                                inverseName = inverseName + p.simpleTypeName;
+                                inv = foreignProperties.get( inverseName );
+                            }
+                            if ( inv != null ) {
+                                p.inverse = inv;
+                                inv.inverse = p;
+                            } else {
+                                // it may still be a property with same domain and range
+                            }
+                        }
                     }
 
                 }
             }
 
+        }
+
+        for (ClassOutline co : outline.getClasses() ) {
+            CPluginCustomization c = co.target.getCustomizations().find( uri.toString(), "type" );
+            if( c == null ) {
+                continue;
+            }
+            Element keyed = c.element;
+
+            Map<String,PropInfo> properties = propertyCache.get( co.target.getName() );
             for ( PropInfo p : properties.values() ) {
                 if ( p.inverse == null ) {
                     p.concreteType = p.simple ? ToOnePropertyLiteral.class.getName() : ToManyPropertyLiteral.class.getName();

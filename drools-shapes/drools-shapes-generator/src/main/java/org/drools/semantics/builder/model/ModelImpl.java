@@ -18,6 +18,7 @@ package org.drools.semantics.builder.model;
 
 
 import org.drools.core.util.CodedHierarchy;
+import org.drools.semantics.lang.dl.Property;
 import org.drools.semantics.util.area.AreaTxn;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -129,8 +130,8 @@ public abstract class ModelImpl implements OntoModel {
         return innerModel.getProperties();
     }
 
-    public void addProperty( PropertyRelation rel ) {
-        innerModel.addProperty( rel );
+    public PropertyRelation addProperty( PropertyRelation rel ) {
+        return innerModel.addProperty( rel );
     }
 
     public PropertyRelation removeProperty( PropertyRelation rel ) {

@@ -200,13 +200,24 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         return set;
     }
 
-    public void addProperty( PropertyRelation rel ) {
+    public PropertyRelation addProperty( PropertyRelation rel ) {
         Set<PropertyRelation> set = properties.get( rel.getProperty() );
         if ( set == null ) {
             set = new HashSet<PropertyRelation>();
             properties.put( rel.getProperty(), set );
         }
-        set.add( rel );
+
+        if ( set.contains( rel ) ) {
+            for ( PropertyRelation existing : set ) {
+                if ( existing.equals( rel ) ) {
+                    return existing;
+                }
+            }
+            throw new IllegalStateException( "Should not be here... Set.contains returned true, but the iteration could not find an equal object" );
+        } else {
+            set.add( rel );
+            return rel;
+        }
     }
 
     public PropertyRelation removeProperty( PropertyRelation rel ) {

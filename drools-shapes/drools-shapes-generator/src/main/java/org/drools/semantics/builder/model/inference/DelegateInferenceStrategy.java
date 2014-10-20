@@ -783,6 +783,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         clonedRel.setRestricted( rel.isRestricted() );
         clonedRel.setFunctional( rel.isFunctional() );
         clonedRel.setSimple( rel.isSimple() );
+        clonedRel.setInverse( rel.getInverse() );
         return clonedRel;
 
     }
@@ -878,8 +879,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         rel.setTarget( conceptCache.get( rel.getObject() ) );
                         rel.setDomain( con );
 
+                        rel = hierarchicalModel.addProperty( rel );
                         con.addProperty( rel.getProperty(), rel.getName(), rel );
-                        hierarchicalModel.addProperty( rel );
+
                     }
                 }
             }

@@ -101,7 +101,7 @@ public interface OntoModel extends Cloneable {
 
     public Set<PropertyRelation> getProperties();
 
-    public void addProperty( PropertyRelation rel );
+    public PropertyRelation addProperty( PropertyRelation rel );
 
     public PropertyRelation removeProperty( PropertyRelation rel );
 

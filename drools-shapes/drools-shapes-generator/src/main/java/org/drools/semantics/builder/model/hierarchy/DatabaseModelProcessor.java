@@ -56,6 +56,29 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
                             copy.setBaseProperty( copy );
                             copy.setRestricted( false );
 
+                            if ( prop.getInverse() != null ) {
+                                if ( ! ( prop.getInverse().getTarget().isAbstrakt() || prop.getInverse().getTarget().isAnonymous() ) ) {
+                                    PropertyRelation inverse = prop.getInverse();
+                                    PropertyRelation localInverse = inverse.clone();
+                                    for ( PropertyRelation restrictedRel : inverse.getRestrictedProperties() ) {
+                                        if ( restrictedRel.getTarget().equals( con ) && restrictedRel.getDomain().equals( sub ) ) {
+                                            localInverse.setMaxCard( restrictedRel.getMaxCard() );
+                                            localInverse.setMinCard( restrictedRel.getMinCard() );
+                                            localInverse.setSimple( localInverse.getMaxCard() != null && localInverse.getMaxCard() == 1 );
+                                            localInverse.setFunctional( restrictedRel.isFunctional() );
+                                            localInverse.getRestrictedProperties().clear();
+                                        }
+                                    }
+
+                                    localInverse.setBaseProperty( localInverse );
+                                    localInverse.setDomain( sub );
+                                    sub.addProperty( localInverse.getProperty(), localInverse.getName(), localInverse );
+
+                                    localInverse.setInverse( copy );
+                                    copy.setInverse( localInverse );
+                                }
+                            }
+
                             con.addProperty( copy.getProperty(), copy.getName(), copy );
                             model.addProperty( copy );
                     }
@@ -72,12 +95,12 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
 
         for ( Concept con : model.getConcepts() ) {
             for ( PropertyRelation prop : con.getAvailableProperties() ) {
-                if ( prop.getTarget().isAbstrakt() || prop.getTarget().isAnonymous() ) {
+                if ( ! ( con.isAbstrakt() || con.isAnonymous() ) && ( prop.getTarget().isAbstrakt() || prop.getTarget().isAnonymous() ) ) {
                     throw new IllegalStateException( "Con " + con.getName() + " property " + prop.getName() + " anonymous range could not be normalized " + prop.getTarget() );
                 }
             }
             for ( PropertyRelation prop : con.getChosenProperties().values() ) {
-                if ( prop.getTarget().isAbstrakt() || prop.getTarget().isAnonymous() ) {
+                if ( ! ( con.isAbstrakt() || con.isAnonymous() ) && prop.getTarget().isAbstrakt() || prop.getTarget().isAnonymous() ) {
                     throw new IllegalStateException( "Con " + con.getName() + " property " + prop.getName() + " anonymous range could not be normalized " + prop.getTarget() );
                 }
             }
@@ -99,8 +122,13 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
 
                         List<PropertyRelation> localRestrictions = new ArrayList<PropertyRelation>( rel.getRestrictedProperties() );
 
-                        Integer min = 0;
-                        Integer max = localRestrictions.isEmpty() ? null : 0;
+                        Integer min = localRestrictions.isEmpty() ? rel.getMinCard() : 0;
+                        Integer max;
+                        if ( localRestrictions.isEmpty() ) {
+                            max = rel.getMaxCard();
+                        } else {
+                            max = 0;
+                        }
                         for ( PropertyRelation pr : localRestrictions ) {
                             min = min + pr.getMinCard();
                             max = ( max == null || pr.getMaxCard() == null ) ?
@@ -165,7 +193,7 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
 
         List<Concept> cons = new ArrayList( model.getConcepts() );
         for ( Concept con : cons ) {
-            if ( con.isAbstrakt() ) {
+            if ( con.isAbstrakt() || con.isAnonymous() ) {
                 model.removeConcept( con );
             }
         }
