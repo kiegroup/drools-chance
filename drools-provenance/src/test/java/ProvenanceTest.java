@@ -2,11 +2,19 @@ import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
 import org.drools.beliefs.provenance.Provenance;
 import org.drools.beliefs.provenance.ProvenanceBeliefSystem;
 import org.drools.beliefs.provenance.ProvenanceHelper;
+import org.drools.core.common.EqualityKey;
+import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.NamedEntryPoint;
+import org.drools.core.common.TruthMaintenanceSystem;
 import org.drools.core.marshalling.impl.ProtobufMarshaller;
+import org.drools.core.metadata.Identifiable;
 import org.drools.core.metadata.Modify;
 import org.drools.core.rule.EntryPointId;
+import org.drools.core.util.Entry;
+import org.drools.core.util.ObjectHashMap;
 import org.jboss.drools.provenance.Assertion;
+import org.jboss.drools.provenance.Modification;
+import org.jboss.drools.provenance.Property;
 import org.jboss.drools.provenance.Recognition;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,6 +31,8 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.time.SessionClock;
 import org.kie.internal.marshalling.MarshallerFactory;
 import org.kie.internal.utils.KieHelper;
+import org.test.MyKlass;
+import org.test.MyKlassImpl;
 import org.w3.ns.prov.Activity;
 import org.w3.ns.prov.Entity;
 
@@ -36,27 +46,82 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ProvenanceTest {
 
-
     @Test
-    @Ignore
-    public void testMetaCallableWMTasksSetSimpleAttribute() {
-        // set a simple attribute
+    public void testProvenanceWithStatedObjects() {
         List list = new ArrayList();
-        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
-        fail( "TODO" );
+        KieSession kieSession = loadProvenanceSession( "testTasks_simpleSet.drl", list );
+
+        MyKlass mk = (MyKlass) new MyKlassImpl().withDyEntryId( "123-000" );
+        kieSession.insert( mk );
+        kieSession.fireAllRules();
+
+        TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
+        assertEquals( 1, tms.getEqualityKeyMap().size() );
+        EqualityKey ek = (EqualityKey) ((ObjectHashMap.ObjectEntry) tms.getEqualityKeyMap().iterator().next()).getValue();
+
+        Object core = ek.getFactHandle().getObject();
+        assertSame( mk, core );
     }
 
     @Test
-    @Ignore
+    public void testMetaCallableWMTasksSetSimpleAttribute() {
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession( "testTasks_simpleSet.drl", list );
+        InternalFactHandle handle = (InternalFactHandle) kieSession.insert( new MyKlassImpl().withDyEntryId( "123-000" ) );
+        kieSession.fireAllRules();
+
+        System.out.println( list );
+        assertEquals( Arrays.asList( "fooVal" ), list );
+
+        List<Activity> history = getProvenanceHistory( kieSession, handle.getObject() );
+        assertEquals( 1, history.size() );
+
+        Activity act = history.iterator().next();
+
+        assertTrue( act instanceof Modification );
+        assertEquals( 1, act.getGenerated().size() );
+        assertTrue( act.getGenerated().iterator().next() instanceof Property );
+
+        Property prop = (Property) act.getGenerated().iterator().next();
+        assertEquals( "fooVal", prop.getValue().iterator().next().getLit() );
+        assertEquals( ( (Identifiable) handle.getObject() ).getId().toString(),
+                      prop.getHadPrimarySource().iterator().next().getIdentifier().iterator().next().toString() );
+        assertEquals( "http://www.test.org#prop", prop.getIdentifier().iterator().next().toString() );
+
+    }
+
+    @Test
     public void testMetaCallableWMTasksSetSimpleAttributeMultipleVersionedTimes() {
         // set a simple attribute multiple times, keep history
         List list = new ArrayList();
-        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
-        fail( "TODO" );
+        KieSession kieSession = loadProvenanceSession( "testTasks_simpleHistory.drl", list );
+        InternalFactHandle handle = (InternalFactHandle) kieSession.insert( new MyKlassImpl().withDyEntryId( "123-000" ) );
+        kieSession.fireAllRules();
+
+        System.out.println( list );
+        // null is in the list since a high priority rule checks the fact even before the properties are set
+        assertEquals( Arrays.asList( null, "fooVal", "barVal" ), list );
+
+        List<Activity> history = getProvenanceHistory( kieSession, handle.getObject() );
+        assertEquals( 1, history.size() );
+
+        Activity act = history.get( 0 );
+        Property prop = (Property) act.getGenerated().iterator().next();
+        assertEquals( "barVal", prop.getValue().iterator().next().getLit() );
+        assertEquals( ( (Identifiable) handle.getObject() ).getId().toString(),
+                      prop.getHadPrimarySource().iterator().next().getIdentifier().iterator().next().toString() );
+        assertEquals( "http://www.test.org#prop", prop.getIdentifier().iterator().next().toString() );
+
+        assertEquals( 1, act.getWasInformedBy().size() );
+        Activity prev = act.getWasInformedBy().get( 0 );
+        Property prevProp = (Property) prev.getGenerated().iterator().next();
+        assertEquals( "fooVal", prevProp.getValue().iterator().next().getLit() );
     }
 
     @Test
@@ -105,6 +170,8 @@ public class ProvenanceTest {
     }
 
 
+
+
     @Test
     public void testPersistence() throws IOException {
         List list = new ArrayList();
@@ -127,11 +194,6 @@ public class ProvenanceTest {
     }
 
 
-
-
-
-
-
     @Test
     public void testMetaCallableWMTasks() {
 
@@ -143,15 +205,28 @@ public class ProvenanceTest {
         }
         System.out.println( list );
         assertEquals( Arrays.asList( "123", "000" ), list );
+
+        TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
+        assertEquals( 2, tms.getEqualityKeyMap().size() );
+
+        for ( Object o : kieSession.getObjects() ) {
+            if ( o instanceof Entity ) {
+                Collection<? extends Activity> acts = ProvenanceHelper.getProvenance( kieSession ).describeProvenance( o );
+                // creation, typing and setting of property "links"
+                assertEquals( 3, acts.size() );
+            }
+        }
     }
 
     @Test
+    @Ignore
     public void testConceptualModelBindingWithTraitDRL() {
 
         ArrayList list = new ArrayList();
         KieSession kieSession = loadProvenanceSession( "testProvenance.drl", list );
 
         Provenance provenance = ProvenanceHelper.getProvenance( kieSession );
+        assertEquals( Arrays.asList( "RESULT" ), list );
 
         for ( Object o : kieSession.getObjects() ) {
             if ( provenance.hasProvenanceFor( o ) ) {
@@ -173,7 +248,7 @@ public class ProvenanceTest {
             }
         }
 
-        assertEquals( Arrays.asList( "RESULT" ), list );
+
     }
 
 
@@ -205,4 +280,8 @@ public class ProvenanceTest {
     }
 
 
+    public List<Activity> getProvenanceHistory( KieSession kieSession, Object o ) {
+        Provenance provenance = ProvenanceHelper.getProvenance( kieSession );
+        return new ArrayList( provenance.describeProvenance( o ) );
+    }
 }

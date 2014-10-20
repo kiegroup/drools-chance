@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.factmodel.AnnotationDefinition;
 import org.drools.core.marshalling.impl.ProtobufMessages;
 import org.drools.core.metadata.Don;
+import org.drools.core.metadata.DonLiteral;
 import org.drools.core.metadata.MetadataContainer;
 import org.drools.core.metadata.Modify;
 import org.drools.core.metadata.ModifyTask;
@@ -35,6 +37,7 @@ import org.drools.core.rule.RuleConditionElement;
 import org.drools.core.spi.Activation;
 import org.drools.core.util.Drools;
 import org.drools.semantics.Literal;
+import org.jboss.drools.provenance.Assertion;
 import org.jboss.drools.provenance.AssertionImpl;
 import org.jboss.drools.provenance.DerogationImpl;
 import org.jboss.drools.provenance.Instance;
@@ -58,7 +61,7 @@ public class ProvenanceBeliefSetImpl
         extends SimpleBeliefSet
         implements ProvenanceBeliefSet {
 
-    private List<Activity> provenance = new ArrayList<Activity>();
+    private Map<String,Activity> provenance = new HashMap<String, Activity>();
 
     private static RuleEngine DROOLS_ENGINE = new org.jboss.drools.provenance.RuleEngineImpl()
                                                 .withIdentifier( new Literal( "JBoss Drools " + Drools.getFullVersion() ) );
@@ -76,11 +79,27 @@ public class ProvenanceBeliefSetImpl
         super.remove( node );
         recordActivity( node, false );
     }
-    
     private void recordActivity( SimpleMode node, boolean positiveAssertion ) {
     	Activity activity = this.createActivity( node, positiveAssertion );
+        Iterator relateds = activity.getRelated().iterator();
 
-        this.provenance.add( activity );         
+        addActivity( activity );
+        while ( relateds.hasNext() ) {
+            Object x = relateds.next();
+            if ( x instanceof Activity ) {
+                addActivity( (Activity) x );
+            }
+        }
+    }
+
+    private void addActivity( Activity activity ) {
+        String key = activity.getGenerated().get( 0 ).getIdentifier().get( 0 ).getLit().toString();
+
+        Activity previous = this.provenance.get( key );
+        if ( previous != null ) {
+            activity.addWasInformedBy( previous );
+        }
+        this.provenance.put( key, activity );
     }
 
     protected Activity createActivity( SimpleMode node, boolean positiveAssertion ) {
@@ -275,6 +294,7 @@ public class ProvenanceBeliefSetImpl
         Activity activity = new RecognitionImpl()
                                         .withGenerated( new TypificationImpl()
                                                                 .withHadPrimarySource( subject )
+                                                                .withIdentifier( new Literal( don.getUri().toString() ) )
                                                                 .withValue( new Literal( getClassIdentifier( don.getTrait() ) ) ) );
         return activity;
     }
@@ -283,21 +303,29 @@ public class ProvenanceBeliefSetImpl
         NewInstance newInstance = (NewInstance) task;
         Activity activity = new AssertionImpl()
                                         .withGenerated( subject );
+
         if ( newInstance.getInitArgs() != null ) {
             Activity setters = newModify( newInstance.getInitArgs(), subject );
             setters.addEndedAtTime( new Date() );
             activity.addRelated( setters );
         }
+        if ( newInstance.getInstanceClass().isInterface() ) {
+            Activity typing = new RecognitionImpl().withGenerated( new TypificationImpl()
+                                                                           .withHadPrimarySource( subject )
+                                                                           .withIdentifier( new Literal( DonLiteral.createURI( subject.getId().toString(), newInstance.getInstanceClass() ) ) )
+                                                                           .withValue( new Literal( getClassIdentifier( newInstance.getInstanceClass() ) ) ) );
+            activity.addRelated( typing );
+        }
         return activity;
     }
 
 
-	public List<Activity> getProvenance() {
+	public Map<String,Activity> getProvenance() {
         return provenance;
     }
 
     public Collection<? extends Activity> getGeneratingActivities() {
-        return provenance;
+        return provenance.values();
     }
 
     private Instance getTarget( WorkingMemoryTask task ) {

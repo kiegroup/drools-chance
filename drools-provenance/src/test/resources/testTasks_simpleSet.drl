@@ -1,0 +1,25 @@
+package org.drools.beliefs.provenance;
+
+import org.test.*;
+import com.foo.*;
+import org.drools.core.metadata.*;
+import org.drools.beliefs.provenance.annotations.*;
+import java.util.*;
+
+global List list;
+
+rule Setter
+when
+    $k : MyKlass()
+then
+    insertLogical( MyKlass_.modify( $k ).prop( "fooVal" ) );
+end
+
+rule PropCheck
+when
+    $k : MyKlass( $p : prop )
+then
+    list.add( $p );
+end
+
+

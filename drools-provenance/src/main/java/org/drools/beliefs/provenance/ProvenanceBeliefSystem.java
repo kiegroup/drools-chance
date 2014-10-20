@@ -10,6 +10,7 @@ import org.drools.core.common.NamedEntryPoint;
 import org.drools.core.common.TruthMaintenanceSystem;
 import org.drools.core.factmodel.traits.BitMaskKey;
 import org.drools.core.factmodel.traits.TraitFactory;
+import org.drools.core.factmodel.traits.TraitProxy;
 import org.drools.core.metadata.Don;
 import org.drools.core.metadata.MetaCallableTask;
 import org.drools.core.metadata.Modify;
@@ -33,7 +34,9 @@ public class ProvenanceBeliefSystem
 
     @Override
     public void delete( LogicalDependency node, BeliefSet beliefSet, PropagationContext context ) {
-        super.delete( node, beliefSet, context );
+        if ( ! ( node.getObject() instanceof MetaCallableTask ) ) {
+            super.delete( node, beliefSet, context );
+        }
     }
 
     @Override
@@ -41,18 +44,30 @@ public class ProvenanceBeliefSystem
 
         if ( node.getObject() instanceof MetaCallableTask ) {
 
-            getEp().getObjectStore().removeHandle( beliefSet.getFactHandle() );
-            getEp().getEntryPointNode().retractObject( beliefSet.getFactHandle(),
-                                                  context,
-                                                  typeConf,
-                                                  getEp().getInternalWorkingMemory() );
+            PropagationContext unravelContext = getEp().getInternalWorkingMemory().getKnowledgeBase().getConfiguration().getComponentFactory().getPropagationContextFactory().createPropagationContext(
+                    getEp().getInternalWorkingMemory().getNextPropagationIdCounter(),
+                    PropagationContext.DELETION,
+                    node.getJustifier().getRule(),
+                    node.getJustifier().getTuple(),
+                    beliefSet.getFactHandle()
+            );
             MetaCallableTask task = (MetaCallableTask) node.getObject();
+            InternalFactHandle taskHandle = beliefSet.getFactHandle();
+
+            getEp().getObjectStore().removeHandle( taskHandle );
+            getEp().delete( taskHandle, task, typeConf, node.getJustifier().getRule(), node.getJustifier() );
+            getEp().getTruthMaintenanceSystem().remove( getEp().getTruthMaintenanceSystem().get( task ) );
+
+
             switch ( task.kind() ) {
-                case ASSERT : executeNew( (NewInstance) task, node );
+                case ASSERT :
+                    beliefSet = ensureBeliefSetConsistency( beliefSet, executeNew( (NewInstance) task, node ) );
                     break;
                 case MODIFY : executeModify( (Modify) task, node );
+                    beliefSet = ensureBeliefSetConsistency( beliefSet, ( (Modify) task ).getTarget() );
                     break;
                 case DON    : executeDon( (Don) task, node );
+                    beliefSet = ensureBeliefSetConsistency( beliefSet, ( (Don) task ).getCore() );
                     break;
                 default:
                     throw new UnsupportedOperationException( "Unrecognized Meta TASK type" );
@@ -60,11 +75,45 @@ public class ProvenanceBeliefSystem
 
             beliefSet.add( node.getMode() );
 
+            if ( task.kind() == MetaCallableTask.KIND.MODIFY && ((Modify) task).getAdditionalUpdates() != null ) {
+                for ( Object extra : ( (Modify) task ).getAdditionalUpdates() ) {
+                    if ( extra instanceof TraitProxy ) {
+                        extra = ((TraitProxy) extra).getObject();
+                    }
+                    EqualityKey ek = getTms().get( extra );
+
+                    if ( ek != null ) {
+                        if ( ek.getBeliefSet() == null ) {
+                            ek.setBeliefSet( newBeliefSet( ek.getFactHandle() ) );
+                        }
+                        ek.getBeliefSet().add( node.getMode() );
+                    }
+                }
+            }
+
         } else {
             super.insert( node, beliefSet, context, typeConf );
         }
 
 
+    }
+
+    private BeliefSet ensureBeliefSetConsistency( BeliefSet beliefSet, Object core ) {
+        if ( beliefSet.getFactHandle().getObject() != core ) {
+            if ( core instanceof TraitProxy ) {
+                core = ((TraitProxy) core).getObject();
+            }
+            EqualityKey ek = getTms().get( core );
+            // update the belief set TODO even stated objects should be allowed to have a BS
+            if ( ek.getBeliefSet() == null ) {
+                BeliefSet bset = newBeliefSet( ek.getFactHandle() );
+                ek.setBeliefSet( bset );
+                return bset;
+            } else {
+                return ek.getBeliefSet();
+            }
+        }
+        return beliefSet;
     }
 
     private void executeDon( Don don, LogicalDependency node ) {
@@ -97,7 +146,7 @@ public class ProvenanceBeliefSystem
         }
     }
 
-    private void executeNew( NewInstance newInstance, LogicalDependency node ) {
+    private Object executeNew( NewInstance newInstance, LogicalDependency node ) {
         if ( newInstance.isInterface() ) {
             newInstance.setInstantiatorFactory( TraitFactory.getTraitBuilderForKnowledgeBase( getEp().getKnowledgeBase() ).getInstantiatorFactory() );
             Object target = newInstance.callUntyped();
@@ -107,12 +156,14 @@ public class ProvenanceBeliefSystem
                                         newInstance.getInstanceClass(),
                                         newInstance.getInitArgs(),
                                         false );
+            return target;
         } else {
             Object target = newInstance.call();
             getEp().insert( target,
                       false,
                        node.getJustifier().getRule(),
                        node.getJustifier() );
+            return target;
         }
     }
 
@@ -122,7 +173,7 @@ public class ProvenanceBeliefSystem
 
     protected ProvenanceBeliefSet getProvenanceBS( Object o ) {
         EqualityKey key = getTruthMaintenanceSystem().get( o );
-        if ( key == null || key.getStatus() == EqualityKey.STATED || ! ( key.getBeliefSet() instanceof ProvenanceBeliefSetImpl ) ) {
+        if ( key == null || ! ( key.getBeliefSet() instanceof ProvenanceBeliefSetImpl ) ) {
             return null;
         }
         return (ProvenanceBeliefSet) key.getBeliefSet();
