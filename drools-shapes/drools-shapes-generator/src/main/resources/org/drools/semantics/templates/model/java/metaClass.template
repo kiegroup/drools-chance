@@ -66,6 +66,9 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
                     return @{ prop.range }_.@{ prop.simpleTypeName }_Meta.@{ prop.inverse.propName };
                 }
                 @end{}
+
+                @Override
+                public boolean isDatatype() { return @{ prop.primitive }; }
             };
             @end{}
         @end{ '\n' }

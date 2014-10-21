@@ -76,6 +76,8 @@ public class
 
                     p.propIri = el.getAttribute( "iri" );
                     p.simple = Boolean.valueOf( ( (Element) n ).getAttribute( "simple" ) );
+                    p.primitive = Boolean.valueOf( ( (Element) n ).getAttribute( "primitive" ) );
+
                     p.inherited = Boolean.valueOf( el.getAttribute( "inherited" ) );
 
                     String javaType = getJavaType( p.typeName );
@@ -209,5 +211,6 @@ public class
         public String concreteType;
         public int position;
         public String simpleTypeName;
+        public boolean primitive;
     }
 }

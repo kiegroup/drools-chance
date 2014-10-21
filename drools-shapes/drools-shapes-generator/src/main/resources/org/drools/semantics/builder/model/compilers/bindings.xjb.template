@@ -78,7 +78,7 @@
 
         <meta:type name="@{concept.name}" iri="@{concept.namespace}@{concept.name}" package="@{concept.package}" parent="@{concept.chosenSuperConcept.name}" parentPackage="@{concept.chosenSuperConcept.package}">
         @foreach{ prop : concept.effectiveBaseProperties }
-            <meta:property name="@{prop.name}" iri="@{prop.iri}" inherited="@{! prop.isLocalImplementationFor( concept )}" domain="@{prop.domain.fullyQualifiedName}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }" @if{ prop.inverse != null }inverse="@{ prop.inverse.name }"@end{}>
+            <meta:property name="@{prop.name}" iri="@{prop.iri}" primitive="@{ prop.target.primitive }" inherited="@{! prop.isLocalImplementationFor( concept )}" domain="@{prop.domain.fullyQualifiedName}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }" @if{ prop.inverse != null }inverse="@{ prop.inverse.name }"@end{}>
                 @foreach{ subProp : concept.properties.values }
                 @if{ subProp.restricted && subProp.baseProperty == prop }
                     <meta:restriction name="@{subProp.name}" type="@{subProp.target.fullyQualifiedName}" single="@{subProp.maxCard == 1}"/>
