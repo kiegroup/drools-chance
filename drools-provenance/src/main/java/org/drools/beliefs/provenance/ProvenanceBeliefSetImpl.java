@@ -24,6 +24,7 @@ import org.drools.core.factmodel.AnnotationDefinition;
 import org.drools.core.marshalling.impl.ProtobufMessages;
 import org.drools.core.metadata.Don;
 import org.drools.core.metadata.DonLiteral;
+import org.drools.core.metadata.Identifiable;
 import org.drools.core.metadata.MetadataContainer;
 import org.drools.core.metadata.Modify;
 import org.drools.core.metadata.ModifyTask;
@@ -111,7 +112,7 @@ public class ProvenanceBeliefSetImpl
         }
         return null;
     }
-    
+
     protected Activity toActivity( WorkingMemoryTask task, Activation justifier, boolean positiveAssertion ) {
     	Activity activity = null;
 
@@ -276,7 +277,9 @@ public class ProvenanceBeliefSetImpl
                                         .withGenerated( new PropertyImpl()
                                                                 .withHadPrimarySource( subject )
                                                                 .withIdentifier( new Literal( setter.getProperty().getKey().toString() ) )
-                                                                .withValue( new Literal( setter.getValue().toString() ) ) );
+                                                                .withValue( setter.getProperty().isDatatype() ?
+                                                                            new Literal( setter.getValue().toString() ) : toRef( setter.getValue(), setter.getProperty().isManyValued() )
+                                                                ) );
             if ( activity == null ) {
                 activity = setting;
                 last = setting;
@@ -287,6 +290,28 @@ public class ProvenanceBeliefSetImpl
             setter = setter.getNext();
         }
         return activity;
+    }
+
+    private Literal toRef( Object value, boolean manyValued ) {
+        if ( manyValued ) {
+            Collection coll = (Collection) value;
+            List values = new ArrayList( coll.size() );
+            for ( Object o : coll ) {
+                values.add( toRef( o ) );
+            }
+            return new Literal( values.toString() );
+        } else {
+            return new Literal( toRef( value ) );
+        }
+    }
+
+    private String toRef( Object value ) {
+        if ( value instanceof Identifiable ) {
+            return  ( (Identifiable) value ).getId().toString();
+        } else {
+            return value.toString();
+        }
+
     }
 
     private Activity newDon( WorkingMemoryTask task, Instance subject ) {

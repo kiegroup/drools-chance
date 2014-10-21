@@ -13,9 +13,11 @@ import org.drools.core.rule.EntryPointId;
 import org.drools.core.util.Entry;
 import org.drools.core.util.ObjectHashMap;
 import org.jboss.drools.provenance.Assertion;
+import org.jboss.drools.provenance.Instance;
 import org.jboss.drools.provenance.Modification;
 import org.jboss.drools.provenance.Property;
 import org.jboss.drools.provenance.Recognition;
+import org.jboss.drools.provenance.Typification;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.kie.api.KieBase;
@@ -33,6 +35,9 @@ import org.kie.internal.marshalling.MarshallerFactory;
 import org.kie.internal.utils.KieHelper;
 import org.test.MyKlass;
 import org.test.MyKlassImpl;
+import org.test.MyKlass_;
+import org.test.MyTargetKlass;
+import org.test.MyTargetKlass_;
 import org.w3.ns.prov.Activity;
 import org.w3.ns.prov.Entity;
 
@@ -201,9 +206,17 @@ public class ProvenanceTest {
         KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
 
         for ( Object o : kieSession.getObjects() ) {
-            System.out.println( o );
+            if ( o instanceof MyKlass ) {
+                List<MyTargetKlass> links = MyKlass_.links.get( (MyKlass) o );
+                assertEquals( 1, links.size() );
+                assertTrue( kieSession.getObjects().contains( links.get( 0 ) ) );
+            }
+            if ( o instanceof MyTargetKlass ) {
+                List<MyKlass> linksInv = MyTargetKlass_.linkedBy.get( (MyTargetKlass) o );
+                assertEquals( 1, linksInv.size() );
+                assertTrue( kieSession.getObjects().contains( linksInv.get( 0 ) ) );
+            }
         }
-        System.out.println( list );
         assertEquals( Arrays.asList( "123", "000" ), list );
 
         TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
@@ -219,7 +232,6 @@ public class ProvenanceTest {
     }
 
     @Test
-    @Ignore
     public void testConceptualModelBindingWithTraitDRL() {
 
         ArrayList list = new ArrayList();
@@ -232,18 +244,48 @@ public class ProvenanceTest {
             if ( provenance.hasProvenanceFor( o ) ) {
                 Collection<? extends Activity> acts = provenance.describeProvenance( o );
 
-                assertEquals( 4, acts.size() );
+                assertEquals( 5, acts.size() );
 
                 for ( Activity act : acts ) {
+                    assertEquals( 1, act.getGenerated().size() );
+
                     if ( act instanceof Recognition ) {
-                        assertEquals( 1, act.getGenerated().size() );
-                        Entity rec = act.getGenerated().get( 0 );
+                        Typification rec = (Typification) act.getGenerated().get( 0 );
                         Entity tgt = rec.getHadPrimarySource().get( 0 );
 
-                        assertEquals( 1, tgt.getDisplaysAs().size() );
-                        assertEquals( "Pretty print hello world from IdentifiableEntity_Proxy",
-                                      tgt.getDisplaysAs().get( 0 ).getNarrativeText().get( 0 ) );
+                        if ( rec.getValue().get( 0 ).toString().contains( "MyKlass" ) ) {
+                            assertEquals( "123", rec.getHadPrimarySource().get( 0 ).getIdentifier().get( 0 ).toString() );
+                        } else if ( rec.getValue().get( 0 ).toString().contains( "MySubKlass" ) ) {
+                            assertEquals( 1, tgt.getDisplaysAs().size() );
+                            assertEquals( "Pretty print hello world from IdentifiableEntity_Proxy",
+                                          tgt.getDisplaysAs().get( 0 ).getNarrativeText().get( 0 ) );
+
+                        } else {
+                            fail( "Unexpected type " + rec.getValue().get( 0 ).toString() );
+                        }
+                    } else if ( act instanceof Modification ) {
+                        Property mod = (Property) act.getGenerated().get( 0 );
+                        if ( mod.getIdentifier().get( 0 ).getLit().toString().contains( "subProp" ) ) {
+                            assertEquals( "42", mod.getValue().get( 0 ).toString() );
+                            assertEquals( 1, act.getWasInformedBy().size() );
+
+                            Activity prev = act.getWasInformedBy().get( 0 );
+                            assertTrue( prev instanceof Modification );
+                            assertTrue( prev.getGenerated().get( 0 ) instanceof Property );
+
+                            Property p2 = (Property) prev.getGenerated().get( 0 );
+                            assertEquals( "12", p2.getValue().get( 0 ).toString() );
+                            assertTrue( p2.getIdentifier().get( 0 ).toString().contains( "subProp" ) );
+                        } else if ( mod.getIdentifier().get( 0 ).getLit().toString().contains( "prop" ) ) {
+                            assertEquals( "hello", mod.getValue().get( 0 ).toString() );
+                        } else {
+                            fail( "Unexpected property " + mod.getValue().get( 0 ).toString() );
+                        }
+                    } else if ( act instanceof Assertion ) {
+                        Instance nu = (Instance) act.getGenerated().get( 0 );
+                        assertEquals( "123", nu.getIdentifier().get( 0 ).toString() );
                     }
+
                 }
             }
         }
