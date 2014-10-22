@@ -14,31 +14,28 @@ import org.drools.beliefs.provenance.annotations.Evidence;
 import org.drools.beliefs.provenance.templates.TemplateRegistry;
 import org.drools.core.InitialFact;
 import org.drools.core.beliefsystem.BeliefSystem;
-import org.drools.core.beliefsystem.ModedAssertion;
 import org.drools.core.beliefsystem.simple.SimpleBeliefSet;
 import org.drools.core.beliefsystem.simple.SimpleMode;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.LogicalDependency;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.factmodel.AnnotationDefinition;
-import org.drools.core.marshalling.impl.ProtobufMessages;
 import org.drools.core.metadata.Don;
 import org.drools.core.metadata.DonLiteral;
 import org.drools.core.metadata.Identifiable;
 import org.drools.core.metadata.MetadataContainer;
 import org.drools.core.metadata.Modify;
+import org.drools.core.metadata.ModifyLiteral;
 import org.drools.core.metadata.ModifyTask;
 import org.drools.core.metadata.NewInstance;
 import org.drools.core.metadata.Shed;
 import org.drools.core.metadata.WorkingMemoryTask;
 import org.drools.core.reteoo.RuleTerminalNodeLeftTuple;
-import org.drools.core.rule.Declaration;
 import org.drools.core.rule.Pattern;
 import org.drools.core.rule.RuleConditionElement;
 import org.drools.core.spi.Activation;
 import org.drools.core.util.Drools;
 import org.drools.semantics.Literal;
-import org.jboss.drools.provenance.Assertion;
 import org.jboss.drools.provenance.AssertionImpl;
 import org.jboss.drools.provenance.DerogationImpl;
 import org.jboss.drools.provenance.Instance;
@@ -106,7 +103,11 @@ public class ProvenanceBeliefSetImpl
     protected Activity createActivity( SimpleMode node, boolean positiveAssertion ) {
         LogicalDependency dep = node.getObject();
         if ( dep.getObject() instanceof WorkingMemoryTask ) {
-            return toActivity( (WorkingMemoryTask) dep.getObject(),
+            WorkingMemoryTask task = (WorkingMemoryTask) dep.getObject();
+            if ( ! task.getTargetId().equals( MetadataContainer.getIdentifier( getFactHandle().getObject() ) ) ) {
+                task = ((ModifyLiteral) task.getSetters()).getInverse( fh.getObject() );
+            }
+            return toActivity( task,
                                dep.getJustifier(),
                                positiveAssertion );
         }
@@ -119,29 +120,25 @@ public class ProvenanceBeliefSetImpl
         Instance subject = getTarget( task );
         switch ( task.kind() ) {
             case ASSERT:
-                activity = newAssert( task, subject );
+                activity = newAssert( task, subject, justifier.getRule() );
                 break;
             case DON:
-                activity = newDon( task, subject );
+                activity = newDon( task, subject, justifier.getRule() );
                 break;
             case MODIFY:
-                activity = newModify( task, subject );
+                activity = newModify( task, subject, justifier.getRule() );
                 break;
             case DELETE:
-                activity = newRetraction( task, subject );
+                activity = newRetraction( task, subject, justifier.getRule() );
                 break;
             case SHED:
-                activity = newDerogation( task, subject );
+                activity = newDerogation( task, subject, justifier.getRule() );
                 break;
             default:
                 activity = new ActivityImpl();
         }
 
-        activity.addIdentifier( new Literal( task.getId() ) );
-        activity.addEndedAtTime( new Date() );
-
-        activity.addWasAssociatedWith( DROOLS_ENGINE );
-        activity.addAccrualMethod( newRule( justifier.getRule() ) );
+        addCommonInfo( activity, task, justifier.getRule() );
 
         if ( justifier.getRule().getMetaData().containsKey( Display.class.getName() ) ) {
             Map<String,Object> context = buildContext( justifier );
@@ -152,9 +149,17 @@ public class ProvenanceBeliefSetImpl
         return activity;
     }
 
+    private void addCommonInfo( Activity activity, WorkingMemoryTask task, RuleImpl rule ) {
+        activity.addIdentifier( new Literal( task.getId() ) );
+        activity.addEndedAtTime( new Date() );
+
+        activity.addWasAssociatedWith( DROOLS_ENGINE );
+        activity.addAccrualMethod( newRule( rule ) );
+    }
+
     private Map<String, Object> buildContext( Activation justifier ) {
         Map map = new HashMap();
-        for ( String declaration : ( ( RuleTerminalNodeLeftTuple ) justifier).getSubRule().getOuterDeclarations().keySet() ) {
+        for ( String declaration :justifier.getSubRule().getOuterDeclarations().keySet() ) {
             map.put( declaration, justifier.getDeclarationValue( declaration ) );
         }
         return TemplateRegistry.sanitize( map );
@@ -251,7 +256,7 @@ public class ProvenanceBeliefSetImpl
         return match;
     }
 
-    private Activity newDerogation( WorkingMemoryTask task, Instance subject ) {
+    private Activity newDerogation( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
         Shed shed = (Shed) task;
         Activity activity = new DerogationImpl()
                                         .withInvalidated( new TypificationImpl()
@@ -260,13 +265,13 @@ public class ProvenanceBeliefSetImpl
         return activity;
     }
 
-    private Activity newRetraction( WorkingMemoryTask task, Instance subject ) {
+    private Activity newRetraction( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
         Activity activity = new RetractionImpl()
                                         .withInvalidated( subject );
         return activity;
     }
 
-    private Activity newModify( WorkingMemoryTask task, Instance subject ) {
+    private Activity newModify( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
         Modify modify = (Modify) task;
         ModifyTask setter = modify.getSetterChain();
 
@@ -280,6 +285,7 @@ public class ProvenanceBeliefSetImpl
                                                                 .withValue( setter.getProperty().isDatatype() ?
                                                                             new Literal( setter.getValue().toString() ) : toRef( setter.getValue(), setter.getProperty().isManyValued() )
                                                                 ) );
+            addCommonInfo( setting, task, rule );
             if ( activity == null ) {
                 activity = setting;
                 last = setting;
@@ -314,7 +320,7 @@ public class ProvenanceBeliefSetImpl
 
     }
 
-    private Activity newDon( WorkingMemoryTask task, Instance subject ) {
+    private Activity newDon( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
         Don don = (Don) task;
         Activity activity = new RecognitionImpl()
                                         .withGenerated( new TypificationImpl()
@@ -324,13 +330,13 @@ public class ProvenanceBeliefSetImpl
         return activity;
     }
 
-    private Activity newAssert( WorkingMemoryTask task, Instance subject ) {
+    private Activity newAssert( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
         NewInstance newInstance = (NewInstance) task;
         Activity activity = new AssertionImpl()
                                         .withGenerated( subject );
 
         if ( newInstance.getInitArgs() != null ) {
-            Activity setters = newModify( newInstance.getInitArgs(), subject );
+            Activity setters = newModify( newInstance.getInitArgs(), subject, rule );
             setters.addEndedAtTime( new Date() );
             activity.addRelated( setters );
         }
@@ -339,6 +345,7 @@ public class ProvenanceBeliefSetImpl
                                                                            .withHadPrimarySource( subject )
                                                                            .withIdentifier( new Literal( DonLiteral.createURI( subject.getId().toString(), newInstance.getInstanceClass() ) ) )
                                                                            .withValue( new Literal( getClassIdentifier( newInstance.getInstanceClass() ) ) ) );
+            addCommonInfo( typing, task, rule );
             activity.addRelated( typing );
         }
         return activity;

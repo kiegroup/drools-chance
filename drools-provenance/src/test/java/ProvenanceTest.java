@@ -1,4 +1,5 @@
 import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
+import org.drools.beliefs.provenance.IdentifiableEntity;
 import org.drools.beliefs.provenance.Provenance;
 import org.drools.beliefs.provenance.ProvenanceBeliefSystem;
 import org.drools.beliefs.provenance.ProvenanceHelper;
@@ -46,12 +47,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -127,15 +131,57 @@ public class ProvenanceTest {
         Activity prev = act.getWasInformedBy().get( 0 );
         Property prevProp = (Property) prev.getGenerated().iterator().next();
         assertEquals( "fooVal", prevProp.getValue().iterator().next().getLit() );
+
+        assertTrue( act.getEndedAtTime().get( 0 ).after( prev.getEndedAtTime().get( 0 ) ) );
     }
 
+
+
     @Test
-    @Ignore
     public void testMetaCallableWMTasksSetCollectionAsAWhole() {
         // set a list attribute
         List list = new ArrayList();
-        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
-        fail( "TODO" );
+        KieSession kieSession = loadProvenanceSession( "testTasks_collSet.drl", list );
+        kieSession.fireAllRules();
+
+        assertEquals( Arrays.asList( "000", "001", "002" ), list );
+
+        for ( Object o : kieSession.getObjects() ) {
+            if ( o instanceof IdentifiableEntity ) {
+                List<Activity> history = getProvenanceHistory( kieSession, o );
+                assertEquals( 3, history.size() );
+                Collections.sort( history, new Comparator<Activity>() {
+                    @Override
+                    public int compare( Activity activity, Activity activity2 ) {
+                        if ( activity.getEndedAtTime().isEmpty() || activity2.getEndedAtTime().isEmpty() ) {
+                            fail( "No date set on activity!" );
+                        }
+                        return activity.getEndedAtTime().get( 0 ).compareTo( activity2.getEndedAtTime().get( 0 ) );
+                    }
+                } );
+                assertTrue( history.get( 2 ) instanceof Modification );
+                Modification mod = (Modification) history.get( 2 );
+
+                if ( ( (IdentifiableEntity) o ).getUri().toString().equals( "123" ) ) {
+                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertEquals( 1, mod.getGenerated().size() );
+                    Property prop = (Property) mod.getGenerated().get( 0 );
+
+                    assertEquals( "http://www.test.org#links", prop.getIdentifier().get( 0 ).toString() );
+                    for ( Object id : list ) {
+                        assertTrue( prop.getValue().get( 0 ).toString().contains( id.toString() ) );
+                    }
+                } else {
+                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "linkedBy" ) );
+                    assertEquals( 1, mod.getGenerated().size() );
+                    Property prop = (Property) mod.getGenerated().get( 0 );
+
+                    assertEquals( "http://www.test.org#linkedBy", prop.getIdentifier().get( 0 ).toString() );
+                    assertTrue( prop.getValue().get( 0 ).toString().equals( "[123]" ) );
+                }
+            }
+        }
+
     }
 
     @Test
@@ -143,8 +189,48 @@ public class ProvenanceTest {
     public void testMetaCallableWMTasksAddItemToCollection() {
         // add an item to a list, versioning it
         List list = new ArrayList();
-        KieSession kieSession = loadProvenanceSession( "testTasks.drl", list );
-        fail( "TODO" );
+        KieSession kieSession = loadProvenanceSession( "testTasks_collAdd.drl", list );
+        kieSession.fireAllRules();
+
+        /*
+        assertEquals( Arrays.asList( "000", "001", "002" ), list );
+
+        for ( Object o : kieSession.getObjects() ) {
+            if ( o instanceof IdentifiableEntity ) {
+                List<Activity> history = getProvenanceHistory( kieSession, o );
+                assertEquals( 3, history.size() );
+                Collections.sort( history, new Comparator<Activity>() {
+                    @Override
+                    public int compare( Activity activity, Activity activity2 ) {
+                        if ( activity.getEndedAtTime().isEmpty() || activity2.getEndedAtTime().isEmpty() ) {
+                            fail( "No date set on activity!" );
+                        }
+                        return activity.getEndedAtTime().get( 0 ).compareTo( activity2.getEndedAtTime().get( 0 ) );
+                    }
+                } );
+                assertTrue( history.get( 2 ) instanceof Modification );
+                Modification mod = (Modification) history.get( 2 );
+
+                if ( ( (IdentifiableEntity) o ).getUri().toString().equals( "123" ) ) {
+                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertEquals( 1, mod.getGenerated().size() );
+                    Property prop = (Property) mod.getGenerated().get( 0 );
+
+                    assertEquals( "http://www.test.org#links", prop.getIdentifier().get( 0 ).toString() );
+                    for ( Object id : list ) {
+                        assertTrue( prop.getValue().get( 0 ).toString().contains( id.toString() ) );
+                    }
+                } else {
+                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "linkedBy" ) );
+                    assertEquals( 1, mod.getGenerated().size() );
+                    Property prop = (Property) mod.getGenerated().get( 0 );
+
+                    assertEquals( "http://www.test.org#linkedBy", prop.getIdentifier().get( 0 ).toString() );
+                    assertTrue( prop.getValue().get( 0 ).toString().equals( "[123]" ) );
+                }
+            }
+        }
+        */
     }
 
     @Test

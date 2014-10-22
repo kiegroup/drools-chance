@@ -16,6 +16,7 @@ import org.kie.api.conf.EqualityBehaviorOption;
 import org.kie.api.runtime.KieSession;
 
 import java.net.URI;
+import java.util.UUID;
 
 public class ProvenanceHelper {
 
@@ -44,6 +45,11 @@ public class ProvenanceHelper {
             @Override
             public TraitableBean instantiate( Class<? extends Thing> trait, Object id ) {
                 return new IdentifiableEntity( id.toString() );
+            }
+
+            @Override
+            public Object createId( Class<?> klass ) {
+                return UUID.randomUUID().toString();
             }
         } );
         kieBaseConfiguration.setOption( EqualityBehaviorOption.EQUALITY );

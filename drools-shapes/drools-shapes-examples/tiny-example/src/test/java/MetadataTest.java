@@ -18,8 +18,10 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class MetadataTest {
@@ -102,6 +104,11 @@ public class MetadataTest {
                         foo.setDyEntryId( id.toString() );
                         return foo;
                     }
+
+                    @Override
+                    public Object createId( Class<?> klass ) {
+                        return UUID.randomUUID().toString();
+                    }
                 }
         ).call();
 
@@ -126,6 +133,12 @@ public class MetadataTest {
         assertEquals( URI.create( "123" ), sk.getId() );
     }
 
+
+    @Test
+    public void testImplicitID() {
+        MySubKlass msk = MySubKlass_.newMySubKlass().call();
+        assertNotNull( msk.getId() );
+    }
 
     @Traitable
     public static class Foo extends ThingImpl implements MySubKlass {

@@ -18,6 +18,9 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
     public static <X extends @{package}.@{ typeName }> @{ typeName }_NewInstance<X> new@{ typeName }( Object id, org.drools.core.metadata.With... args ) {
         return @{ typeName }_Meta.getInstance().newInstance( id, args );
     }
+    public static <X extends @{package}.@{ typeName }> @{ typeName }_NewInstance<X> new@{ typeName }( org.drools.core.metadata.With... args ) {
+        return @{ typeName }_Meta.getInstance().newInstance( args );
+    }
 
     public static <X, K extends @{ package }.@{ typeName }> @{ typeName }_Don<X,K> don@{ typeName }( X core, org.drools.core.metadata.With... args ) {
         return new @{ typeName }_Don<X,K>( core, args );
@@ -94,6 +97,9 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         public @{ typeName }_NewInstance<T> newInstance( Object id, org.drools.core.metadata.With... args ) {
             return new @{ typeName }_NewInstance<T>( id, args );
         }
+        public @{ typeName }_NewInstance<T> newInstance( org.drools.core.metadata.With... args ) {
+            return new @{ typeName }_NewInstance<T>( args );
+        }
 
         @Override
         public Class<T> getTargetClass() {
@@ -108,12 +114,16 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         public @{ typeName }_NewInstance( Object id, org.drools.core.metadata.With... args ) {
             super( java.net.URI.create( id.toString() ), args );
         }
+        public @{ typeName }_NewInstance( org.drools.core.metadata.With... args ) {
+            super( args );
+        }
 
         public boolean isInterface() {
             return true;
         }
 
         protected Object construct() {
+            super.constructId( @{ typeName }.class );
             if ( getInstantiatorFactory() != null ) {
                 return getInstantiatorFactory().instantiate( @{ typeName }.class, getId() );
             }
