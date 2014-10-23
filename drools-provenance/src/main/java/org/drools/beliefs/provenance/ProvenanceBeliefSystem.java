@@ -22,7 +22,11 @@ import org.drools.core.spi.PropagationContext;
 import org.drools.core.util.BitMaskUtil;
 import org.w3.ns.prov.Activity;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class ProvenanceBeliefSystem
         extends SimpleBeliefSystem
@@ -186,6 +190,13 @@ public class ProvenanceBeliefSystem
 
     @Override
     public Collection<? extends Activity> describeProvenance( Object o ) {
-        return getProvenanceBS( o ).getGeneratingActivities();
+        List<? extends Activity> history = new ArrayList<Activity>( getProvenanceBS( o ).getGeneratingActivities() );
+        Collections.sort( history, new Comparator<Activity>() {
+            @Override
+            public int compare( Activity activity, Activity activity2 ) {
+                return activity.getEndedAtTime().get( 0 ).compareTo( activity2.getEndedAtTime().get( 0 ) );
+            }
+        } );
+        return history;
     }
 }

@@ -23,6 +23,8 @@ import org.drools.core.factmodel.AnnotationDefinition;
 import org.drools.core.metadata.Don;
 import org.drools.core.metadata.DonLiteral;
 import org.drools.core.metadata.Identifiable;
+import org.drools.core.metadata.Lit;
+import org.drools.core.metadata.MetaCallableTask;
 import org.drools.core.metadata.MetadataContainer;
 import org.drools.core.metadata.Modify;
 import org.drools.core.metadata.ModifyLiteral;
@@ -36,6 +38,7 @@ import org.drools.core.rule.RuleConditionElement;
 import org.drools.core.spi.Activation;
 import org.drools.core.util.Drools;
 import org.drools.semantics.Literal;
+import org.jboss.drools.provenance.AdditionImpl;
 import org.jboss.drools.provenance.AssertionImpl;
 import org.jboss.drools.provenance.DerogationImpl;
 import org.jboss.drools.provenance.Instance;
@@ -44,11 +47,14 @@ import org.jboss.drools.provenance.Modification;
 import org.jboss.drools.provenance.ModificationImpl;
 import org.jboss.drools.provenance.Narrative;
 import org.jboss.drools.provenance.NarrativeImpl;
+import org.jboss.drools.provenance.Property;
 import org.jboss.drools.provenance.PropertyImpl;
 import org.jboss.drools.provenance.RecognitionImpl;
+import org.jboss.drools.provenance.RemovalImpl;
 import org.jboss.drools.provenance.RetractionImpl;
 import org.jboss.drools.provenance.Rule;
 import org.jboss.drools.provenance.RuleEngine;
+import org.jboss.drools.provenance.SettingImpl;
 import org.jboss.drools.provenance.TypificationImpl;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRuntime;
@@ -79,6 +85,10 @@ public class ProvenanceBeliefSetImpl
     }
     private void recordActivity( SimpleMode node, boolean positiveAssertion ) {
     	Activity activity = this.createActivity( node, positiveAssertion );
+        if ( activity == null ) {
+            // no activity was actually performed
+            return;
+        }
         Iterator relateds = activity.getRelated().iterator();
 
         addActivity( activity );
@@ -106,6 +116,10 @@ public class ProvenanceBeliefSetImpl
             WorkingMemoryTask task = (WorkingMemoryTask) dep.getObject();
             if ( ! task.getTargetId().equals( MetadataContainer.getIdentifier( getFactHandle().getObject() ) ) ) {
                 task = ((ModifyLiteral) task.getSetters()).getInverse( fh.getObject() );
+            }
+            if ( task.kind() == MetaCallableTask.KIND.MODIFY && task.getSetters().getSetterChain() == null ) {
+                // no activity was actually performed on this related object
+                return null;
             }
             return toActivity( task,
                                dep.getJustifier(),
@@ -278,13 +292,19 @@ public class ProvenanceBeliefSetImpl
         Activity activity = null;
         Activity last = null;
         while ( setter != null ) {
-            Modification setting = new ModificationImpl()
-                                        .withGenerated( new PropertyImpl()
-                                                                .withHadPrimarySource( subject )
-                                                                .withIdentifier( new Literal( setter.getProperty().getKey().toString() ) )
-                                                                .withValue( setter.getProperty().isDatatype() ?
-                                                                            new Literal( setter.getValue().toString() ) : toRef( setter.getValue(), setter.getProperty().isManyValued() )
-                                                                ) );
+            Property prop = new PropertyImpl().withHadPrimarySource( subject )
+                                              .withIdentifier( new Literal( setter.getProperty().getKey().toString() ) );
+
+            if ( setter.getProperty().isManyValued() ) {
+                for ( Object o : (Collection) setter.getValue() ) {
+                    prop.addValue( setter.getProperty().isDatatype() ? new Literal( o.toString() ) : new Literal( toRef( o ) ) );
+                }
+            } else {
+                prop.addValue( setter.getProperty().isDatatype() ? new Literal( setter.getValue().toString() ) : new Literal( toRef( setter.getValue() ) ) );
+            }
+
+            Modification setting = newModification( setter.getMode() );
+            setting.addGenerated( prop );
             addCommonInfo( setting, task, rule );
             if ( activity == null ) {
                 activity = setting;
@@ -298,18 +318,7 @@ public class ProvenanceBeliefSetImpl
         return activity;
     }
 
-    private Literal toRef( Object value, boolean manyValued ) {
-        if ( manyValued ) {
-            Collection coll = (Collection) value;
-            List values = new ArrayList( coll.size() );
-            for ( Object o : coll ) {
-                values.add( toRef( o ) );
-            }
-            return new Literal( values.toString() );
-        } else {
-            return new Literal( toRef( value ) );
-        }
-    }
+    
 
     private String toRef( Object value ) {
         if ( value instanceof Identifiable ) {
@@ -318,6 +327,15 @@ public class ProvenanceBeliefSetImpl
             return value.toString();
         }
 
+    }
+
+    private Modification newModification( Lit mode ) {
+        switch ( mode ) {
+            case SET: return new SettingImpl();
+            case REMOVE: return new RemovalImpl();
+            case ADD: return new AdditionImpl();
+        }
+        throw new IllegalStateException( "Unrecognized modification mode " + mode );
     }
 
     private Activity newDon( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {

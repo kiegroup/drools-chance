@@ -1,0 +1,44 @@
+package org.drools.beliefs.provenance;
+
+import org.test.*;
+import com.foo.*;
+import org.drools.core.metadata.*;
+import org.drools.beliefs.provenance.annotations.*;
+import java.util.*;
+
+global List list;
+
+dialect "mvel"
+
+rule Init
+when
+then
+    infer new MyKlass( "123" );
+    infer new MyTargetKlass( "000" );
+    infer new MyTargetKlass( "001" ):
+    infer new MyTargetKlass( "002" );
+end
+
+rule Linkage
+when
+    $k : MyKlass()
+    $t : MyTargetKlass( id == "000" )
+then
+    infer modify( $k, with( $t ) )
+            .links( $t, Lit.ADD );
+
+    list.add( "000" );
+end
+
+rule Linkage2
+when
+    $k : MyKlass( links!.size() == 1 )
+    $t : MyTargetKlass( id == "001" )
+    $q : MyTargetKlass( id == "002" )
+then
+    infer modify( $k, with( $t, $q ) )
+            .links( Arrays.asList( $t, $q ), Lit.ADD );
+
+    list.add( "001" );
+    list.add( "002" );
+end

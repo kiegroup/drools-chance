@@ -141,6 +141,16 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             @end{}
             return this;
         }
+        @if{ ! prop.simple }
+        public @{ typeName }_NewInstance<T> @{ prop.propName }( @{ prop.range } value, org.drools.core.metadata.Lit mode ) {
+            @if{ ! prop.inherited }
+                getSetter().@{ prop.propName }( value, mode );
+                @else{}
+                super.@{ prop.propName }( value, mode );
+            @end{}
+            return this;
+        }
+        @end{}
         @end{ '\n' }
 
         protected @{ typeName }_Modify<T> getSetter() {
@@ -185,6 +195,16 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             @end{}
             return this;
         }
+        @if{ ! prop.simple }
+        public @{typeName}_Modify @{ prop.propName }( @{ prop.range } newVal, org.drools.core.metadata.Lit mode ) {
+            @if{ ! prop.inherited }
+            addTask( @{ prop.propName }, java.util.Collections.singletonList( newVal ), mode );
+            @else{}
+            super.@{ prop.propName }( newVal, mode );
+            @end{}
+            return this;
+        }
+        @end{}
         @end{ '\n' }
 
     }
@@ -222,6 +242,16 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             @end{}
             return this;
         }
+        @if{ ! prop.simple }
+        public @{ typeName }_Don<K,T> @{ prop.propName }( @{ prop.range } value, org.drools.core.metadata.Lit mode ) {
+            @if{ ! prop.inherited }
+            getSetter().@{ prop.propName }( value, mode );
+            @else{}
+            super.@{ prop.propName }( value, mode );
+            @end{}
+            return this;
+        }
+        @end{}
         @end{ '\n' }
 
         protected @{ typeName }_Modify<T> getSetter() {

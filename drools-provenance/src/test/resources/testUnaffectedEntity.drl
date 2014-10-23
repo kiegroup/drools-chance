@@ -1,0 +1,25 @@
+package org.drools.beliefs.provenance;
+
+import org.test.*;
+import com.foo.*;
+import org.drools.core.metadata.*;
+import org.drools.beliefs.provenance.annotations.*;
+import java.util.*;
+
+global List list;
+
+rule Init
+when
+then
+    insertLogical( MyKlass_.newMyKlass( "123" ) );
+    insertLogical( MyTargetKlass_.newMyTargetKlass( "000" ) );
+end
+
+rule Foo
+when
+    $k : MyKlass()
+    $t : MyTargetKlass( id == "000" )
+then
+    insertLogical( MyKlass_
+                    .modify( $k, With.updates( $t ) ).prop( "hello" ) );
+end
