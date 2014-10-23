@@ -4,6 +4,7 @@ import org.test.*;
 import com.foo.*;
 import org.drools.core.metadata.*;
 import org.drools.beliefs.provenance.annotations.*;
+import static org.drools.core.metadata.With.with;
 import java.util.*;
 
 global List list;
@@ -38,7 +39,7 @@ when
     $t : MyTargetKlass()
 then
     insertLogical( MyKlass_
-                    .modify( $k, With.updates( $t ) )
+                    .modify( $k, with( $t ) )
                     .links( Arrays.asList( $t ), Lit.SET ) );
     list.add( $k.getId() );
     list.add( $k.getLinks().get( 0 ).getId() );

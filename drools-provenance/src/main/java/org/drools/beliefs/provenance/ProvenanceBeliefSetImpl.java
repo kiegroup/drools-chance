@@ -152,8 +152,6 @@ public class ProvenanceBeliefSetImpl
                 activity = new ActivityImpl();
         }
 
-        addCommonInfo( activity, task, justifier.getRule() );
-
         if ( justifier.getRule().getMetaData().containsKey( Display.class.getName() ) ) {
             Map<String,Object> context = buildContext( justifier );
             applyDecorations( subject, activity, justifier, context );
@@ -165,7 +163,7 @@ public class ProvenanceBeliefSetImpl
 
     private void addCommonInfo( Activity activity, WorkingMemoryTask task, RuleImpl rule ) {
         activity.addIdentifier( new Literal( task.getId() ) );
-        activity.addEndedAtTime( new Date() );
+        activity.addEndedAtTime( new Date( ((ProvenanceBeliefSystem) getBeliefSystem()).now() ) );
 
         activity.addWasAssociatedWith( DROOLS_ENGINE );
         activity.addAccrualMethod( newRule( rule ) );
@@ -276,12 +274,14 @@ public class ProvenanceBeliefSetImpl
                                         .withInvalidated( new TypificationImpl()
                                                                     .withHadPrimarySource( subject )
                                                                     .withValue( new Literal( getClassIdentifier( shed.getTrait() ) ) ) );
+        addCommonInfo( activity, task, rule );
         return activity;
     }
 
     private Activity newRetraction( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
         Activity activity = new RetractionImpl()
                                         .withInvalidated( subject );
+        addCommonInfo( activity, task, rule );
         return activity;
     }
 
@@ -345,6 +345,7 @@ public class ProvenanceBeliefSetImpl
                                                                 .withHadPrimarySource( subject )
                                                                 .withIdentifier( new Literal( don.getUri().toString() ) )
                                                                 .withValue( new Literal( getClassIdentifier( don.getTrait() ) ) ) );
+        addCommonInfo( activity, task, rule );
         return activity;
     }
 
@@ -352,6 +353,7 @@ public class ProvenanceBeliefSetImpl
         NewInstance newInstance = (NewInstance) task;
         Activity activity = new AssertionImpl()
                                         .withGenerated( subject );
+        addCommonInfo( activity, task, rule );
 
         if ( newInstance.getInitArgs() != null ) {
             Activity setters = newModify( newInstance.getInitArgs(), subject, rule );

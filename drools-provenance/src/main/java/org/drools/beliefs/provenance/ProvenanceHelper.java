@@ -4,10 +4,8 @@ import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.beliefsystem.BeliefSystem;
 import org.drools.core.common.BeliefSystemFactory;
 import org.drools.core.common.NamedEntryPoint;
-import org.drools.core.factmodel.traits.Entity;
 import org.drools.core.factmodel.traits.InstantiatorFactory;
 import org.drools.core.factmodel.traits.Thing;
-import org.drools.core.factmodel.traits.Traitable;
 import org.drools.core.factmodel.traits.TraitableBean;
 import org.drools.core.reteoo.KieComponentFactory;
 import org.drools.core.rule.EntryPointId;
@@ -15,7 +13,6 @@ import org.kie.api.KieBaseConfiguration;
 import org.kie.api.conf.EqualityBehaviorOption;
 import org.kie.api.runtime.KieSession;
 
-import java.net.URI;
 import java.util.UUID;
 
 public class ProvenanceHelper {

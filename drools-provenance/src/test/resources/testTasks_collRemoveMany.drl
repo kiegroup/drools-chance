@@ -5,6 +5,7 @@ import com.foo.*;
 import org.drools.core.metadata.*;
 import org.drools.beliefs.provenance.annotations.*;
 import java.util.*;
+import static org.drools.core.metadata.With.with;
 
 global List list;
 
@@ -23,7 +24,7 @@ when
     $q : MyTargetKlass( id == "001" )
 then
     insertLogical( MyKlass_
-                    .modify( $k, With.updates( $t, $q ) )
+                    .modify( $k, with( $t, $q ) )
                     .links( Arrays.asList( $t, $q ), Lit.SET ) );
 end
 
@@ -35,7 +36,7 @@ when
 then
     System.out.println( "Remove 000"  );
     insertLogical( MyKlass_
-                    .modify( $k, With.updates( $t, $q ) )
+                    .modify( $k, with( $t, $q ) )
                     .links( Arrays.asList( $t, $q ), Lit.REMOVE ) );
     list.add( $k.getLinks().size() );
 end

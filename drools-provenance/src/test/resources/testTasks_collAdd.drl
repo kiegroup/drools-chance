@@ -4,6 +4,7 @@ import org.test.*;
 import com.foo.*;
 import org.drools.core.metadata.*;
 import org.drools.beliefs.provenance.annotations.*;
+import static org.drools.core.metadata.With.with;
 import java.util.*;
 
 global List list;
@@ -23,7 +24,7 @@ when
 then
     System.out.println( "Found 000"  );
     insertLogical( MyKlass_
-                    .modify( $k, With.updates( $t ) )
+                    .modify( $k, with( $t ) )
                     .links( $t, Lit.ADD ) );
     list.add( "000" );
 end
@@ -35,7 +36,7 @@ when
 then
     System.out.println( "Found 001"  );
     insertLogical( MyKlass_
-                    .modify( $k, With.updates( $t ) )
+                    .modify( $k, with( $t ) )
                     .links( $t, Lit.ADD ) );
     list.add( "001" );
 end

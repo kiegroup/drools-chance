@@ -20,18 +20,21 @@ import org.drools.core.reteoo.PropertySpecificUtil;
 import org.drools.core.spi.Activation;
 import org.drools.core.spi.PropagationContext;
 import org.drools.core.util.BitMaskUtil;
+import org.jboss.drools.provenance.Assertion;
+import org.kie.api.time.SessionClock;
 import org.w3.ns.prov.Activity;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class ProvenanceBeliefSystem
         extends SimpleBeliefSystem
         implements Provenance {
-    
+
     protected ProvenanceBeliefSystem( NamedEntryPoint ep, TruthMaintenanceSystem tms ) {
         super( ep, tms );
     }
@@ -194,9 +197,17 @@ public class ProvenanceBeliefSystem
         Collections.sort( history, new Comparator<Activity>() {
             @Override
             public int compare( Activity activity, Activity activity2 ) {
-                return activity.getEndedAtTime().get( 0 ).compareTo( activity2.getEndedAtTime().get( 0 ) );
+                int x = activity.getEndedAtTime().get( 0 ).compareTo( activity2.getEndedAtTime().get( 0 ) );
+                if ( x == 0 ) {
+                    return activity instanceof Assertion ? -1 : 0;
+                }
+                return x;
             }
         } );
         return history;
+    }
+
+    public long now() {
+        return getEp().getInternalWorkingMemory().getSessionClock().getCurrentTime();
     }
 }

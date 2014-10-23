@@ -10,4 +10,5 @@ public interface Provenance {
 
     Collection<? extends Activity> describeProvenance( Object o );
 
+    public long now();
 }

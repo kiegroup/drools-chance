@@ -4,11 +4,10 @@ import org.test.*;
 import com.foo.*;
 import org.drools.core.metadata.*;
 import org.drools.beliefs.provenance.annotations.*;
+import static org.drools.core.metadata.With.with;
 import java.util.*;
 
 global List list;
-
-dialect "mvel"
 
 rule Init
 when
@@ -26,7 +25,7 @@ when
 then
     System.out.println( "Found 000"  );
     insertLogical( MyKlass_
-                    .modify( $k, With.updates( $t ) )
+                    .modify( $k, with( $t ) )
                     .links( $t, Lit.ADD ) );
     list.add( "000" );
 end
@@ -39,7 +38,7 @@ when
 then
     System.out.println( "Found 001 and 002"  );
     insertLogical( MyKlass_
-            .modify( $k, With.updates( $t, $q ) )
+            .modify( $k, with( $t, $q ) )
             .links( Arrays.asList( $t, $q ), Lit.ADD ) );
     list.add( "001" );
     list.add( "002" );
