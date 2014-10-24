@@ -17,6 +17,7 @@ import org.jvnet.hyperjaxb3.maven2.Hyperjaxb3Mojo;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -310,7 +311,10 @@ public class OntoModelCompiler {
         DRLModel drlModel = (DRLModel) compiler.compile( model );
 
         try {
-            FileOutputStream fos = new FileOutputStream( getDrlDir().getPath() + File.separator + model.getName() + "_declare.drl" );
+            File path = new File( getDrlDir().getPath(), model.getDefaultPackage().replace( '.', File.separatorChar ) );
+            path.mkdirs();
+
+            FileOutputStream fos = new FileOutputStream( new File( path, model.getName() + "_declare.drl" ) );
             success = drlModel.stream( fos );
             fos.flush();
             fos.close();
