@@ -76,7 +76,9 @@ public class ProvenanceBeliefSetImpl
 
     public void add( SimpleMode node ) {
         super.add( node );
-        recordActivity( node, true );
+        if ( node.getObject().getObject() instanceof MetaCallableTask ) {
+            recordActivity( node, true );
+        }
     }
 
     public void remove( SimpleMode node ) {
@@ -134,19 +136,19 @@ public class ProvenanceBeliefSetImpl
         Instance subject = getTarget( task );
         switch ( task.kind() ) {
             case ASSERT:
-                activity = newAssert( task, subject, justifier.getRule() );
+                activity = newAssert( task, subject, justifier );
                 break;
             case DON:
-                activity = newDon( task, subject, justifier.getRule() );
+                activity = newDon( task, subject, justifier );
                 break;
             case MODIFY:
-                activity = newModify( task, subject, justifier.getRule() );
+                activity = newModify( task, subject, justifier );
                 break;
             case DELETE:
-                activity = newRetraction( task, subject, justifier.getRule() );
+                activity = newRetraction( task, subject, justifier );
                 break;
             case SHED:
-                activity = newDerogation( task, subject, justifier.getRule() );
+                activity = newDerogation( task, subject, justifier );
                 break;
             default:
                 activity = new ActivityImpl();
@@ -155,14 +157,17 @@ public class ProvenanceBeliefSetImpl
         if ( justifier.getRule().getMetaData().containsKey( Display.class.getName() ) ) {
             Map<String,Object> context = buildContext( justifier );
             applyDecorations( subject, activity, justifier, context );
-
         }
 
         return activity;
     }
 
-    private void addCommonInfo( Activity activity, WorkingMemoryTask task, RuleImpl rule ) {
-        activity.addIdentifier( new Literal( task.getId() ) );
+
+
+
+    private void addCommonInfo( Activity activity, WorkingMemoryTask task, Activation rule ) {
+        activity.addIdentifier( new Literal( rule.getActivationNumber() ) );
+        activity.addIdentifier( new Literal( task.getUri().toString() ) );
         activity.addEndedAtTime( new Date( ((ProvenanceBeliefSystem) getBeliefSystem()).now() ) );
 
         activity.addWasAssociatedWith( DROOLS_ENGINE );
@@ -212,12 +217,13 @@ public class ProvenanceBeliefSetImpl
         }
 
         if ( templateRef != null || inlineTemplate != null ) {
-            CompiledTemplate compiled = TemplateRegistry.getInstance().compileAndCache( inlineTemplate != null ? justifier.getRule().getName() : templateRef,
+            CompiledTemplate compiled = TemplateRegistry.getInstance().compileAndCache( (inlineTemplate != null && inlineTemplate.length() > 0) ?
+                                                                                                justifier.getRule().getName() : templateRef,
                                                                                         inlineTemplate );
 
             String mainText = (String) TemplateRuntime.execute( compiled, context );
             Narrative narrative = new NarrativeImpl().withNarrativeText( mainText );
-            subject.addDisplaysAs( narrative );
+            activity.addDisplaysAs( narrative );
         }
     }
 
@@ -261,14 +267,14 @@ public class ProvenanceBeliefSetImpl
 
     }
 
-    private Rule newRule( RuleImpl rule ) {
+    private Rule newRule( Activation rule ) {
         Rule match = new org.jboss.drools.provenance.RuleImpl();
-        match.addIdentifier( new Literal( rule.getPackageName() ) );
-        match.addIdentifier( new Literal( rule.getName() ) );
+        match.addIdentifier( new Literal( rule.getRule().getPackageName() ) );
+        match.addIdentifier( new Literal( rule.getRule().getName() ) );
         return match;
     }
 
-    private Activity newDerogation( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
+    private Activity newDerogation( WorkingMemoryTask task, Instance subject, Activation rule ) {
         Shed shed = (Shed) task;
         Activity activity = new DerogationImpl()
                                         .withInvalidated( new TypificationImpl()
@@ -278,14 +284,14 @@ public class ProvenanceBeliefSetImpl
         return activity;
     }
 
-    private Activity newRetraction( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
+    private Activity newRetraction( WorkingMemoryTask task, Instance subject, Activation rule ) {
         Activity activity = new RetractionImpl()
                                         .withInvalidated( subject );
         addCommonInfo( activity, task, rule );
         return activity;
     }
 
-    private Activity newModify( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
+    private Activity newModify( WorkingMemoryTask task, Instance subject, Activation rule ) {
         Modify modify = (Modify) task;
         ModifyTask setter = modify.getSetterChain();
 
@@ -338,7 +344,7 @@ public class ProvenanceBeliefSetImpl
         throw new IllegalStateException( "Unrecognized modification mode " + mode );
     }
 
-    private Activity newDon( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
+    private Activity newDon( WorkingMemoryTask task, Instance subject, Activation rule ) {
         Don don = (Don) task;
         Activity activity = new RecognitionImpl()
                                         .withGenerated( new TypificationImpl()
@@ -349,7 +355,7 @@ public class ProvenanceBeliefSetImpl
         return activity;
     }
 
-    private Activity newAssert( WorkingMemoryTask task, Instance subject, RuleImpl rule ) {
+    private Activity newAssert( WorkingMemoryTask task, Instance subject, Activation rule ) {
         NewInstance newInstance = (NewInstance) task;
         Activity activity = new AssertionImpl()
                                         .withGenerated( subject );

@@ -1,7 +1,6 @@
 import org.drools.beliefs.provenance.IdentifiableEntity;
 import org.drools.beliefs.provenance.Provenance;
 import org.drools.beliefs.provenance.ProvenanceHelper;
-import org.drools.compiler.rule.builder.dialect.mvel.MVELConsequenceBuilder;
 import org.drools.core.common.EqualityKey;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.NamedEntryPoint;
@@ -20,7 +19,6 @@ import org.jboss.drools.provenance.Recognition;
 import org.jboss.drools.provenance.Removal;
 import org.jboss.drools.provenance.Setting;
 import org.jboss.drools.provenance.Typification;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.builder.Message;
@@ -32,7 +30,6 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.time.SessionClock;
 import org.kie.internal.marshalling.MarshallerFactory;
 import org.kie.internal.utils.KieHelper;
-import org.mvel2.Macro;
 import org.test.MyKlass;
 import org.test.MyKlassImpl;
 import org.test.MyKlass_;
@@ -163,7 +160,7 @@ public class ProvenanceTest {
 
                 if ( ( (IdentifiableEntity) o ).getUri().toString().equals( "123" ) ) {
                     assertTrue( history.get( 2 ) instanceof Setting );
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertTrue( searchIdContent( mod, "links" ) );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
 
@@ -173,7 +170,7 @@ public class ProvenanceTest {
                         assertTrue( list.contains( lit.toString() ) );
                     }
                 } else {
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "linkedBy" ) );
+                    assertTrue( searchIdContent( mod, "linkedBy" ) );
                     assertTrue( history.get( 2 ) instanceof Addition );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
@@ -224,7 +221,7 @@ public class ProvenanceTest {
 
 
                 if ( ( (IdentifiableEntity) o ).getUri().toString().equals( "123" ) ) {
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertTrue( searchIdContent( mod, "links" ) );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
 
@@ -235,14 +232,14 @@ public class ProvenanceTest {
                     Activity prev = mod.getWasInformedBy().get( 0 );
 
                     assertTrue( prev instanceof Addition );
-                    assertTrue( prev.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertTrue( searchIdContent( prev, "links" ) );
                     assertEquals( 1, prev.getGenerated().size() );
                     Property prevProp = (Property) prev.getGenerated().get( 0 );
                     assertEquals( "http://www.test.org#links", prevProp.getIdentifier().get( 0 ).toString() );
                     assertEquals( "000", prevProp.getValue().get( 0 ).toString() );
 
                 } else {
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "linkedBy" ) );
+                    assertTrue( searchIdContent( mod, "linkedBy" ) );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
 
@@ -292,7 +289,7 @@ public class ProvenanceTest {
 
 
                 if ( ( (IdentifiableEntity) o ).getUri().toString().equals( "123" ) ) {
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertTrue( searchIdContent( mod, "links" ) );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
                     assertEquals( 2, prop.getValue().size() );
@@ -305,14 +302,14 @@ public class ProvenanceTest {
                     Activity prev = mod.getWasInformedBy().get( 0 );
 
                     assertTrue( prev instanceof Addition );
-                    assertTrue( prev.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertTrue( searchIdContent( prev, "links" ) );
                     assertEquals( 1, prev.getGenerated().size() );
                     Property prevProp = (Property) prev.getGenerated().get( 0 );
                     assertEquals( "http://www.test.org#links", prevProp.getIdentifier().get( 0 ).toString() );
                     assertEquals( "000", prevProp.getValue().get( 0 ).toString() );
 
                 } else {
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "linkedBy" ) );
+                    assertTrue( searchIdContent( mod, "linkedBy" ) );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
 
@@ -321,6 +318,16 @@ public class ProvenanceTest {
                 }
             }
         }
+    }
+
+    private boolean searchIdContent( Activity activity, String value ) {
+        boolean found = false;
+        for ( Literal lit : activity.getIdentifier() ) {
+            if ( lit.toString().contains( value ) ) {
+                found = true;
+            }
+        }
+        return found;
     }
 
     @Test
@@ -359,7 +366,7 @@ public class ProvenanceTest {
                 if ( ( (IdentifiableEntity) o ).getUri().toString().equals( "123" ) ) {
                     assertTrue( history.get( 2 ) instanceof Removal );
 
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertTrue( searchIdContent( mod, "links" ) );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
 
@@ -370,7 +377,7 @@ public class ProvenanceTest {
                     Activity prev = mod.getWasInformedBy().get( 0 );
 
                     assertTrue( prev instanceof Setting );
-                    assertTrue( prev.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertTrue( searchIdContent( prev, "links" ) );
                     assertEquals( 1, prev.getGenerated().size() );
                     Property prevProp = (Property) prev.getGenerated().get( 0 );
                     assertEquals( "http://www.test.org#links", prevProp.getIdentifier().get( 0 ).toString() );
@@ -378,13 +385,13 @@ public class ProvenanceTest {
                     assertEquals( "001", prevProp.getValue().get( 1 ).toString() );
 
                 } else {
-                    if ( mod.getIdentifier().get( 0 ).toString().contains( "000" ) ) {
+                    if ( searchIdContent( mod, "000" ) ) {
                         assertTrue( history.get( 2 ) instanceof Removal );
                     } else {
                         assertTrue( history.get( 2 ) instanceof Addition );
                     }
 
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "linkedBy" ) );
+                    assertTrue( searchIdContent( mod, "linkedBy" ) );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
 
@@ -430,7 +437,7 @@ public class ProvenanceTest {
                 if ( ( (IdentifiableEntity) o ).getUri().toString().equals( "123" ) ) {
                     assertTrue( history.get( 2 ) instanceof Removal );
 
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertTrue( searchIdContent( mod, "links" ) );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
 
@@ -441,7 +448,7 @@ public class ProvenanceTest {
                     Activity prev = mod.getWasInformedBy().get( 0 );
 
                     assertTrue( prev instanceof Setting );
-                    assertTrue( prev.getIdentifier().get( 0 ).toString().contains( "links" ) );
+                    assertTrue( searchIdContent( prev, "links" ) );
                     assertEquals( 1, prev.getGenerated().size() );
                     Property prevProp = (Property) prev.getGenerated().get( 0 );
                     assertEquals( "http://www.test.org#links", prevProp.getIdentifier().get( 0 ).toString() );
@@ -451,7 +458,7 @@ public class ProvenanceTest {
                 } else {
                     assertTrue( history.get( 2 ) instanceof Removal );
 
-                    assertTrue( mod.getIdentifier().get( 0 ).toString().contains( "linkedBy" ) );
+                    assertTrue( searchIdContent( mod, "linkedBy" ) );
                     assertEquals( 1, mod.getGenerated().size() );
                     Property prop = (Property) mod.getGenerated().get( 0 );
 
@@ -544,9 +551,9 @@ public class ProvenanceTest {
                         if ( rec.getValue().get( 0 ).toString().contains( "MyKlass" ) ) {
                             assertEquals( "123", rec.getHadPrimarySource().get( 0 ).getIdentifier().get( 0 ).toString() );
                         } else if ( rec.getValue().get( 0 ).toString().contains( "MySubKlass" ) ) {
-                            assertEquals( 1, tgt.getDisplaysAs().size() );
+                            assertEquals( 1, act.getDisplaysAs().size() );
                             assertEquals( "Pretty print hello world from IdentifiableEntity_Proxy",
-                                          tgt.getDisplaysAs().get( 0 ).getNarrativeText().get( 0 ) );
+                                          act.getDisplaysAs().get( 0 ).getNarrativeText().get( 0 ) );
 
                         } else {
                             fail( "Unexpected type " + rec.getValue().get( 0 ).toString() );
