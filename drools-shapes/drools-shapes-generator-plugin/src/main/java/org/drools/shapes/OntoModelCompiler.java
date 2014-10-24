@@ -310,10 +310,10 @@ public class OntoModelCompiler {
 
         DRLModel drlModel = (DRLModel) compiler.compile( model );
 
-        File path = new File( getDrlDir().getPath(), model.getDefaultPackage().replace( '.', File.separatorChar ) );
-        path.mkdirs();
-
         try {
+            File path = new File( getDrlDir().getPath(), model.getDefaultPackage().replace( '.', File.separatorChar ) );
+            path.mkdirs();
+
             FileOutputStream fos = new FileOutputStream( new File( path, model.getName() + "_declare.drl" ) );
             success = drlModel.stream( fos );
             fos.flush();
