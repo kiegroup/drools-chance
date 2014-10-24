@@ -618,7 +618,7 @@ public class ProvenanceTest {
 
     private KieSession loadProvenanceSession( String sourceDrl, List list ) {
         KieServices kieServices = KieServices.Factory.get();
-        Resource traitDRL = kieServices.getResources().newClassPathResource( "tiny_declare.drl" );
+        Resource traitDRL = kieServices.getResources().newClassPathResource( "org/test/tiny_declare.drl" );
         Resource ruleDRL = kieServices.getResources().newClassPathResource( sourceDrl );
 
         KieHelper kieHelper = validateKieBuilder( traitDRL, ruleDRL );
