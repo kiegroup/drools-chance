@@ -100,7 +100,7 @@ public class
                             if ( foreignProperties.containsKey( inverseName ) ) {
                                 inv = foreignProperties.get( inverseName );
                             } else {
-                                inverseName = inverseName + p.simpleTypeName;
+                                inverseName = inverseName + p.domain.substring( p.domain.lastIndexOf( "." ) + 1 );
                                 inv = foreignProperties.get( inverseName );
                             }
                             if ( inv != null ) {

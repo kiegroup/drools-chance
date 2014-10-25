@@ -85,11 +85,6 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
                 }
             }
 
-            for ( Concept sup : new ArrayList<Concept>( con.getSuperConcepts() ) ) {
-                if ( sup.isAnonymous() ) {
-                    con.getSuperConcepts().remove( sup );
-                }
-            }
         }
 
 
@@ -102,6 +97,11 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
             for ( PropertyRelation prop : con.getChosenProperties().values() ) {
                 if ( ! ( con.isAbstrakt() || con.isAnonymous() ) && prop.getTarget().isAbstrakt() || prop.getTarget().isAnonymous() ) {
                     throw new IllegalStateException( "Con " + con.getName() + " property " + prop.getName() + " anonymous range could not be normalized " + prop.getTarget() );
+                }
+            }
+            for ( PropertyRelation prop : con.getChosenProperties().values() ) {
+                if ( ! ( con.isAbstrakt() || con.isAnonymous() ) && prop.getDomain().isAbstrakt() || prop.getDomain().isAnonymous() ) {
+                    throw new IllegalStateException( "Con " + con.getName() + " property " + prop.getName() + " anonymous domain could not be normalized " + prop.getTarget() );
                 }
             }
         }
@@ -133,6 +133,10 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
                             min = min + pr.getMinCard();
                             max = ( max == null || pr.getMaxCard() == null ) ?
                                   null : max + pr.getMaxCard();
+                        }
+
+                        if ( ! con.isAnonymous() && rel.getDomain().isAnonymous() ) {
+                            rel.setDomain( con );
                         }
 
                         rel.setMinCard( min );
@@ -181,12 +185,46 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
                     model.removeProperty( prop );
                 }
             }
+        }
 
+        for ( Concept con : model.getConcepts() ) {
             List<Concept> supers = new ArrayList( con.getSuperConcepts() );
             for ( Concept sup : supers ) {
                 if ( sup.isAbstrakt() ) {
                     con.getSuperConcepts().remove( sup );
-                    con.getProperties().putAll( sup.getProperties() );
+                    for ( String propKey : sup.getProperties().keySet() ) {
+                        if ( ! con.getProperties().containsKey( propKey ) ) {
+                            PropertyRelation prop = sup.getProperty( propKey );
+                            prop = prop.clone();
+                            if ( prop.getDomain().isAnonymous() ) {
+                                prop.setDomain( con );
+                                prop.setBaseProperty( prop );
+                                if ( ! prop.getRestrictedProperties().isEmpty() ) {
+                                    Integer i = 0;
+                                    for ( PropertyRelation restr : prop.getRestrictedProperties() ) {
+                                        if ( restr != prop ) {
+                                            if ( restr.getMaxCard() == null ) {
+                                                i = null;
+                                                break;
+                                            }
+                                            i = Math.max( i, restr.getMaxCard() );
+                                        }
+                                    }
+                                    prop.setMaxCard( i );
+                                    if ( i != null && i <= 1 ) {
+                                        prop.setSimple( true );
+                                    }
+                                }
+
+                            } else {
+                                // Can this ever happen?
+                                throw new UnsupportedOperationException( "TODO..." );
+                            }
+
+                            con.addProperty( propKey, prop.getName(), prop );
+                        }
+                    }
+
                 }
             }
         }
@@ -195,6 +233,17 @@ public class DatabaseModelProcessor implements ModelHierarchyProcessor {
         for ( Concept con : cons ) {
             if ( con.isAbstrakt() || con.isAnonymous() ) {
                 model.removeConcept( con );
+
+                if ( ! con.getSubConcepts().isEmpty() ) {
+                    for ( Concept child : new HashSet<Concept>( con.getSubConcepts() ) ) {
+                        for ( Concept grandpa : new HashSet<Concept>( con.getSuperConcepts() ) ) {
+                            grandpa.getSubConcepts().remove( con );
+                            child.getSuperConcepts().remove( con );
+                            grandpa.getSubConcepts().add( child );
+                            child.addSuperConcept( grandpa );
+                        }
+                    }
+                }
             }
         }
 
