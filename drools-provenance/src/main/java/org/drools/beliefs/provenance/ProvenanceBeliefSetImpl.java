@@ -361,11 +361,6 @@ public class ProvenanceBeliefSetImpl
                                         .withGenerated( subject );
         addCommonInfo( activity, task, rule );
 
-        if ( newInstance.getInitArgs() != null ) {
-            Activity setters = newModify( newInstance.getInitArgs(), subject, rule );
-            setters.addEndedAtTime( new Date() );
-            activity.addRelated( setters );
-        }
         if ( newInstance.getInstanceClass().isInterface() ) {
             Activity typing = new RecognitionImpl().withGenerated( new TypificationImpl()
                                                                            .withHadPrimarySource( subject )
@@ -373,6 +368,12 @@ public class ProvenanceBeliefSetImpl
                                                                            .withValue( new Literal( getClassIdentifier( newInstance.getInstanceClass() ) ) ) );
             addCommonInfo( typing, task, rule );
             activity.addRelated( typing );
+        }
+
+        if ( newInstance.getInitArgs() != null ) {
+            Activity setters = newModify( newInstance.getInitArgs(), subject, rule );
+            setters.addEndedAtTime( new Date() );
+            activity.addRelated( setters );
         }
         return activity;
     }
