@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.clarkparsia.empire.annotation.RdfsClass;
+import java.util.concurrent.ConcurrentHashMap;
 import org.drools.beliefs.provenance.annotations.Display;
 import org.drools.beliefs.provenance.annotations.Evidence;
 import org.drools.beliefs.provenance.templates.TemplateRegistry;
@@ -65,7 +66,7 @@ public class ProvenanceBeliefSetImpl
         extends SimpleBeliefSet
         implements ProvenanceBeliefSet {
 
-    private Map<String,Activity> provenance = new HashMap<String, Activity>();
+    private Map<String,Activity> provenance = new ConcurrentHashMap<String, Activity>();
 
     private static RuleEngine DROOLS_ENGINE = new org.jboss.drools.provenance.RuleEngineImpl()
                                                 .withIdentifier( new Literal( "JBoss Drools " + Drools.getFullVersion() ) );
