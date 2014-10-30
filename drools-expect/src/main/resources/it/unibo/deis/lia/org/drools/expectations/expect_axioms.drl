@@ -1,0 +1,105 @@
+package it.unibo.deis.lia.org.drools.expectations.model;
+
+import org.kie.api.definition.type.Position
+
+
+rule "org.drools.expectations.CloseAll_Fail"
+when
+    $c : Closure( label == "*" )
+    $e : Expectation( $context, $label, $act, $actId, $tuple ; active == true, $ruleName : ruleName  )
+    not Fulfill( label == $label, expId == $actId )
+then
+    insert( new Viol( $context, $label, $actId, drools.getMatch().getActivationNumber(), $tuple , false, $ruleName) );
+    modify ( $e ) {
+        setActive( false );
+    }
+end
+
+rule "org.drools.expectations.CloseAll"
+when
+    $c : Closure( label == "*" )
+    $e : Expectation( $context, $label, $act, $actId, $tuple ; active == true, $t0 : start )
+    exists Fulfill( label == $label, expId == $actId )
+then
+    long t1 = ((org.drools.core.common.EventFactHandle) drools.getFactHandle($c)).getStartTimestamp();
+    modify ( $e ) {
+        setDuration( t1 - $t0 ),
+        setActive( false );
+    }
+end
+
+rule "org.drools.expectations.Closure"
+when
+    $c : Closure( $label ; )
+    $e : Expectation( $context, $label, $act, $actId, $tuple ; active == true, $ruleName : ruleName )
+then
+    insert( new Viol( $context, $label, $actId, drools.getMatch().getActivationNumber(), $tuple , false, $ruleName) );
+end
+
+rule "Clear org.drools.expectations.Closure"
+salience -9999
+when
+    $c : Closure( )
+then
+    delete( $c );
+end
+
+
+
+rule "org.drools.expectations.ClipF"
+when
+    $e : Expectation( $context, $lab, $act, $actId ; active == true, $t0 : start )
+    $f : Fulfill( label == $lab, expId == $actId )
+then
+    long t1 = ( (org.drools.core.common.EventFactHandle) drools.getFactHandle($f) ).getStartTimestamp();
+    modify ( $e ) {
+        setDuration( t1 - $t0 );
+    }
+end
+
+
+rule "org.drools.expectations.Pending"
+@Direct
+when
+    Expectation( $context, $lab , $act, $actId, $tuple ; active == true )
+then
+    insertLogical( new Pending( $lab, $act, $actId, $tuple ) );
+end
+
+
+rule "org.drools.expectations.Mark"
+@Direct
+when
+    $e: Expectation( $context, $label, $act, $actId ; active == true, fulfilled == false )
+    Fulfill( label == $label, expId == $actId )
+then
+    modify ( $e ) {
+        setFulfilled( true );
+    }
+end
+
+rule "org.drools.expectations.OneShot"
+salience -1
+when
+    $e: OneShotExpectation( $context, $label, $act, $actId ; active == true )
+    Fulfill( label == $label, expId == $actId )
+then
+    modify ( $e ) {
+        setActive( false );
+    }
+end
+
+
+rule "org.drools.expectations.Repair"
+when
+    $viol : Viol( $label : label, $tup : pending, compensated == false,
+                  $originId : originId, $expId : expId, $ruleName : ruleName  )
+            Compensation( $label ; $compenser : tuple, tuple.containsAll( $tup ) )
+then
+    modify ( $viol ) {
+        setCompensated( true );
+    }
+
+    Fulfill ful = new Fulfill( $originId, $label, $expId, drools.getMatch().getActivationNumber(), $tup, $compenser, $ruleName );
+    insert( ful );
+end
