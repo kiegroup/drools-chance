@@ -1,0 +1,27 @@
+package org.drools.beliefs.provenance;
+
+import org.test.*;
+import com.foo.*;
+import org.drools.core.metadata.*;
+import org.drools.beliefs.provenance.annotations.*;
+import static org.drools.core.metadata.With.*;
+import org.drools.core.metadata.Lit;
+import java.util.*;
+
+global List list;
+
+rule Link
+when
+    $t : MyTargetKlass( )
+then
+    insertLogical( MyKlass_.newMyKlass( "1", with( $t ) ).links( $t, Lit.ADD) );
+end
+
+rule Check
+when
+    MyTargetKlass( $linkedBy : linkedBy )
+then
+    list.add( $linkedBy );
+end
+
+

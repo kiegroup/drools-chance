@@ -30,11 +30,7 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.time.SessionClock;
 import org.kie.internal.marshalling.MarshallerFactory;
 import org.kie.internal.utils.KieHelper;
-import org.test.MyKlass;
-import org.test.MyKlassImpl;
-import org.test.MyKlass_;
-import org.test.MyTargetKlass;
-import org.test.MyTargetKlass_;
+import org.test.*;
 import org.w3.ns.prov.Activity;
 import org.w3.ns.prov.Entity;
 
@@ -619,6 +615,44 @@ public class ProvenanceTest {
             }
         }
 
+    }
+
+
+
+    @Test
+    public void testProvenanceModifyWith() {
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession("testTasks_modifyWith.drl", list );
+
+        MyKlass mk = new MyKlassImpl();
+        MyTargetKlass mtk = new MyTargetKlassImpl();
+
+        kieSession.insert( mk );
+        kieSession.insert( mtk );
+        kieSession.fireAllRules();
+
+        TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
+        assertEquals( 2, tms.getEqualityKeyMap().size() );
+
+        assertEquals(1, list.size());
+    }
+
+
+
+    @Test
+    public void testProvenanceNewWith() {
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession("testTasks_newWith.drl", list );
+
+        MyTargetKlass mtk = new MyTargetKlassImpl();
+
+        kieSession.insert( mtk );
+        kieSession.fireAllRules();
+
+        TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
+        assertEquals( 2, tms.getEqualityKeyMap().size() );
+
+        assertEquals(1, list.size());
     }
 
 

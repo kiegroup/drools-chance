@@ -45,7 +45,6 @@ import org.jboss.drools.provenance.DerogationImpl;
 import org.jboss.drools.provenance.Instance;
 import org.jboss.drools.provenance.InstanceImpl;
 import org.jboss.drools.provenance.Modification;
-import org.jboss.drools.provenance.ModificationImpl;
 import org.jboss.drools.provenance.Narrative;
 import org.jboss.drools.provenance.NarrativeImpl;
 import org.jboss.drools.provenance.Property;
@@ -325,7 +324,7 @@ public class ProvenanceBeliefSetImpl
         return activity;
     }
 
-    
+
 
     private String toRef( Object value ) {
         if ( value instanceof Identifiable ) {
@@ -362,6 +361,7 @@ public class ProvenanceBeliefSetImpl
                                         .withGenerated( subject );
         addCommonInfo( activity, task, rule );
 
+        Activity tip = activity;
         if ( newInstance.getInstanceClass().isInterface() ) {
             Activity typing = new RecognitionImpl().withGenerated( new TypificationImpl()
                                                                            .withHadPrimarySource( subject )
@@ -369,12 +369,13 @@ public class ProvenanceBeliefSetImpl
                                                                            .withValue( new Literal( getClassIdentifier( newInstance.getInstanceClass() ) ) ) );
             addCommonInfo( typing, task, rule );
             activity.addRelated( typing );
+            tip = typing;
         }
 
         if ( newInstance.getInitArgs() != null ) {
             Activity setters = newModify( newInstance.getInitArgs(), subject, rule );
             setters.addEndedAtTime( new Date() );
-            activity.addRelated( setters );
+            tip.addRelated( setters );
         }
         return activity;
     }
