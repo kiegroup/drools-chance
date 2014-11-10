@@ -51,6 +51,7 @@ public class ProvenanceBeliefSystem
 
         if ( node.getObject() instanceof MetaCallableTask ) {
 
+            // TODO: This is never used - should it be?
             PropagationContext unravelContext = getEp().getInternalWorkingMemory().getKnowledgeBase().getConfiguration().getComponentFactory().getPropagationContextFactory().createPropagationContext(
                     getEp().getInternalWorkingMemory().getNextPropagationIdCounter(),
                     PropagationContext.DELETION,
@@ -65,16 +66,19 @@ public class ProvenanceBeliefSystem
             getEp().delete( taskHandle, task, typeConf, node.getJustifier().getRule(), node.getJustifier() );
             getEp().getTruthMaintenanceSystem().remove( getEp().getTruthMaintenanceSystem().get( task ) );
 
-
+            Modify setters;
             switch ( task.kind() ) {
                 case ASSERT :
                     beliefSet = ensureBeliefSetConsistency( beliefSet, executeNew( (NewInstance) task, node ) );
+                    setters = ((NewInstance) task).getSetters();
                     break;
                 case MODIFY : executeModify( (Modify) task, node );
                     beliefSet = ensureBeliefSetConsistency( beliefSet, ( (Modify) task ).getTarget() );
+                    setters = (Modify) task;
                     break;
                 case DON    : executeDon( (Don) task, node );
                     beliefSet = ensureBeliefSetConsistency( beliefSet, ( (Don) task ).getCore() );
+                    setters = ((Don) task).getSetters();
                     break;
                 default:
                     throw new UnsupportedOperationException( "Unrecognized Meta TASK type" );
@@ -82,8 +86,8 @@ public class ProvenanceBeliefSystem
 
             beliefSet.add( node.getMode() );
 
-            if ( task.kind() == MetaCallableTask.KIND.MODIFY && ((Modify) task).getAdditionalUpdates() != null ) {
-                for ( Object extra : ( (Modify) task ).getAdditionalUpdates() ) {
+            if ( setters != null && setters.getAdditionalUpdates() != null ) {
+                for ( Object extra : setters.getAdditionalUpdates() ) {
                     if ( extra instanceof TraitProxy ) {
                         extra = ((TraitProxy) extra).getObject();
                     }
