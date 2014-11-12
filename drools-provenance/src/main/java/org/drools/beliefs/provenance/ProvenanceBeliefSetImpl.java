@@ -85,22 +85,29 @@ public class ProvenanceBeliefSetImpl
         super.remove( node );
         recordActivity( node, false );
     }
+
     private void recordActivity( SimpleMode node, boolean positiveAssertion ) {
     	Activity activity = this.createActivity( node, positiveAssertion );
         if ( activity == null ) {
             // no activity was actually performed
             return;
         }
-        Iterator relateds = activity.getRelated().iterator();
 
+        processActivities( activity );
+    }
+
+    private void processActivities( Activity activity ) {
         addActivity( activity );
+
+        Iterator relateds = activity.getRelated().iterator();
         while ( relateds.hasNext() ) {
             Object x = relateds.next();
             if ( x instanceof Activity ) {
-                addActivity( (Activity) x );
+                processActivities( (Activity) x );
             }
         }
     }
+
 
     private void addActivity( Activity activity ) {
         String key = activity.getGenerated().get( 0 ).getIdentifier().get( 0 ).getLit().toString();
