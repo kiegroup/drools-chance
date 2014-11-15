@@ -8,13 +8,17 @@ import static org.drools.core.metadata.With.*;
 import org.drools.core.metadata.Lit;
 import java.util.*;
 
+import static com.foo.MetaFactory.*;
+import static org.test.MetaFactory.*;
+
+
 global List list;
 
 rule Link
 when
     $t : MyTargetKlass( )
 then
-    insertLogical( MyKlass_.newMyKlass( "1", with( $t ) ).links( $t, Lit.ADD) );
+    insertLogical( newMyKlass( "1", with( $t ) ).links( $t, Lit.ADD) );
 end
 
 rule Check

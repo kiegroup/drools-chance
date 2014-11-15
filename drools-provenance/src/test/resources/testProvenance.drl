@@ -6,42 +6,54 @@ import org.test.MyKlassImpl;
 import org.test.MyKlass;
 import org.test.MyKlass_;
 import com.foo.MySubKlass_;
+import static com.foo.MetaFactory.*;
+import static org.test.MetaFactory.*;
 import org.drools.core.metadata.Modify;
-import org.drools.beliefs.provenance.annotations.*;
+import org.drools.beliefs.provenance.annotations.*
+import org.drools.core.common.InternalFactHandle;
 
 global java.util.List list;
 
+
 rule Init
+dialect "mvel"
 when
 then
-    insertLogical( MyKlass_.newMyKlass( "123" ).prop( "hello" ) );
+    x = insertLogical( newMyKlass( "123" ).prop( "hello" ) ).object;
+    System.out.println( "@@@@@" + x );
+    list.add( x );
     insert( "fooo" );
 end
+
+
 
 rule Don
 @Display( "Pretty print @{$e_1}" )
 no-loop
+dialect "mvel"
 when
     $e : MyKlass( $p : prop ) @Evidence( @Display( type="1", value="@{$p} world from @{$e.getClass().getSimpleName()}" ) )
     $s : String()
 then
-    insertLogical( MySubKlass_.donMySubKlass( $e ) );
+    list.add( insertLogical( donMySubKlass( $e ) ).object );
 end
 
 
 rule SetAttribute
 @Display( template = "anotherExample" )
+dialect "mvel"
 when
     $e : MySubKlass() @Evidence( value = { @Display( type="1", value = "hello" ), @Display( type="2", template = "example" ) } )
 then
-    insertLogical( MySubKlass_.modify( $e ).subProp( 12 ) );
+    list.add( insertLogical( modifyMySubKlass( $e ).subProp( 12 ) ).object );
 end
 
 rule AnotherSetAttribute
+dialect "mvel"
 when
     $k : MySubKlass() @Evidence
 then
-    insertLogical( MySubKlass_.modify( $k ).subProp( 42 ) );
+    list.add( insertLogical( modifyMySubKlass( $k ).subProp( 42 ) ).object );
 end
 
 

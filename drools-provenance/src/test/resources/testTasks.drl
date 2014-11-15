@@ -2,6 +2,8 @@ package org.drools.beliefs.provenance;
 
 import org.test.*;
 import com.foo.*;
+import static com.foo.MetaFactory.*;
+import static org.test.MetaFactory.*;
 import org.drools.core.metadata.*;
 import org.drools.beliefs.provenance.annotations.*;
 import static org.drools.core.metadata.With.with;
@@ -12,8 +14,8 @@ global List list;
 rule Init
 when
 then
-    insertLogical( MyKlass_.newMyKlass( "123" ).prop( "hello" ) );
-    insertLogical( MyTargetKlass_.newMyTargetKlass( "000" ) );
+    insertLogical( newMyKlass( "123" ).prop( "hello" ) );
+    insertLogical( newMyTargetKlass( "000" ) );
 end
 
 
@@ -38,8 +40,7 @@ when
     $k : MyKlass()
     $t : MyTargetKlass()
 then
-    insertLogical( MyKlass_
-                    .modify( $k, with( $t ) )
+    insertLogical( modifyMyKlass( $k, with( $t ) )
                     .links( Arrays.asList( $t ), Lit.SET ) );
     list.add( $k.getId() );
     list.add( $k.getLinks().get( 0 ).getId() );

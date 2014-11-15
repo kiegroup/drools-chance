@@ -47,7 +47,10 @@ public class ProvenanceBeliefSystem
     }
 
     @Override
-    public void insert( LogicalDependency node, BeliefSet beliefSet, PropagationContext context, ObjectTypeConf typeConf ) {
+    public BeliefSet insert( LogicalDependency node,
+                             BeliefSet beliefSet,
+                             PropagationContext context,
+                             ObjectTypeConf typeConf ) {
 
         if ( node.getObject() instanceof MetaCallableTask ) {
 
@@ -102,8 +105,9 @@ public class ProvenanceBeliefSystem
                 }
             }
 
+            return beliefSet;
         } else {
-            super.insert( node, beliefSet, context, typeConf );
+            return super.insert( node, beliefSet, context, typeConf );
         }
 
 

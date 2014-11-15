@@ -7,13 +7,17 @@ import org.drools.beliefs.provenance.annotations.*;
 import static org.drools.core.metadata.With.with;
 import java.util.*;
 
+import static com.foo.MetaFactory.*;
+import static org.test.MetaFactory.*;
+
+
 global List list;
 
 rule Init
 when
 then
-    insertLogical( MyKlass_.newMyKlass( "123" ) );
-    insertLogical( MyTargetKlass_.newMyTargetKlass( "000" ) );
+    insertLogical( newMyKlass( "123" ) );
+    insertLogical( newMyTargetKlass( "000" ) );
 end
 
 rule Foo
@@ -21,6 +25,5 @@ when
     $k : MyKlass()
     $t : MyTargetKlass( id == "000" )
 then
-    insertLogical( MyKlass_
-                    .modify( $k, with( $t ) ).prop( "hello" ) );
+    insertLogical( modifyMyKlass( $k, with( $t ) ).prop( "hello" ) );
 end

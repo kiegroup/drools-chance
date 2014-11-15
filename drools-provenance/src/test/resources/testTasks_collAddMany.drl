@@ -7,15 +7,18 @@ import org.drools.beliefs.provenance.annotations.*;
 import static org.drools.core.metadata.With.with;
 import java.util.*;
 
+import static com.foo.MetaFactory.*;
+import static org.test.MetaFactory.*;
+
 global List list;
 
 rule Init
 when
 then
-    insertLogical( MyKlass_.newMyKlass( "123" ) );
-    insertLogical( MyTargetKlass_.newMyTargetKlass( "000" ) );
-    insertLogical( MyTargetKlass_.newMyTargetKlass( "001" ) );
-    insertLogical( MyTargetKlass_.newMyTargetKlass( "002" ) );
+    insertLogical( newMyKlass( "123" ) );
+    insertLogical( newMyTargetKlass( "000" ) );
+    insertLogical( newMyTargetKlass( "001" ) );
+    insertLogical( newMyTargetKlass( "002" ) );
 end
 
 rule Linkage
@@ -24,8 +27,7 @@ when
     $t : MyTargetKlass( id == "000" )
 then
     System.out.println( "Found 000"  );
-    insertLogical( MyKlass_
-                    .modify( $k, with( $t ) )
+    insertLogical( modifyMyKlass( $k, with( $t ) )
                     .links( $t, Lit.ADD ) );
     list.add( "000" );
 end
@@ -37,8 +39,7 @@ when
     $q : MyTargetKlass( id == "002" )
 then
     System.out.println( "Found 001 and 002"  );
-    insertLogical( MyKlass_
-            .modify( $k, with( $t, $q ) )
+    insertLogical( modifyMyKlass( $k, with( $t, $q ) )
             .links( Arrays.asList( $t, $q ), Lit.ADD ) );
     list.add( "001" );
     list.add( "002" );

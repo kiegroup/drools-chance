@@ -7,6 +7,7 @@ import org.drools.core.common.NamedEntryPoint;
 import org.drools.core.common.TruthMaintenanceSystem;
 import org.drools.core.marshalling.impl.ProtobufMarshaller;
 import org.drools.core.metadata.Identifiable;
+import org.drools.core.metadata.MetaCallableTask;
 import org.drools.core.rule.EntryPointId;
 import org.drools.core.util.ObjectHashMap;
 import org.drools.semantics.Literal;
@@ -529,7 +530,12 @@ public class ProvenanceTest {
         KieSession kieSession = loadProvenanceSession( "testProvenance.drl", list );
 
         Provenance provenance = ProvenanceHelper.getProvenance( kieSession );
-        assertEquals( Arrays.asList( "RESULT" ), list );
+        assertTrue( list.contains( "RESULT" ) );
+
+        assertEquals( 5, list.size() );
+        for ( Object o : list ) {
+            assertFalse( o instanceof MetaCallableTask );
+        }
 
         for ( Object o : kieSession.getObjects() ) {
             if ( provenance.hasProvenanceFor( o ) ) {
