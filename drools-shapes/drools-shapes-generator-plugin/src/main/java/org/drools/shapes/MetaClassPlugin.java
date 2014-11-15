@@ -24,15 +24,19 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class
         MetaClassPlugin extends MetadataPlugin {
 
     private static String metaClassTempl = "metaClass";
     private static String metaAttribTempl = "metaAttrib";
+    private static String metaFactoryTempl = "metaFactory";
 
 
     public String getOptionName() {
@@ -183,8 +187,72 @@ public class
 
         }
 
+        Set<String> packages = new HashSet<String>();
+        for ( ClassOutline co : outline.getClasses() ) {
+            CPluginCustomization c = co.target.getCustomizations().find( uri.toString(), "type" );
+            if( c == null ) {
+                continue;
+            }
+            Element keyed = c.element;
+            if ( keyed.hasAttribute( "package" ) ) {
+                packages.add( keyed.getAttribute( "package" ) );
+            }
+        }
+        for ( String pack : packages ) {
+            buildFactory( pack, outline.getClasses(), opt );
+        }
+
         return true;
     }
+
+
+
+    private void buildFactory( String pack, Collection<? extends ClassOutline> classes, Options opt ) {
+        Map<String,String> classNames = new HashMap<String, String>();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put( "classNames", classNames );
+        map.put( "package", pack );
+
+        for ( ClassOutline co : classes ) {
+            CPluginCustomization c = co.target.getCustomizations().find( uri.toString(), "type" );
+            if ( c == null ) {
+                continue;
+            }
+            Element keyed = c.element;
+            if ( ! pack.equals( keyed.getAttribute( "package" ) ) ) {
+                continue;
+            }
+            String simpleName = keyed.getAttribute( "name" );
+            classNames.put( simpleName , pack + "." + simpleName );
+        }
+        String metaFactory = SemanticXSDModelCompilerImpl.getTemplatedCode( metaFactoryTempl, map );
+
+        FileOutputStream fos = null;
+        try {
+            File metaFile = new File( opt.targetDir.getPath().replace( "xjc", "java" ) +
+                                      File.separator +
+                                      StringUtils.replace( pack, ".", File.separator ) +
+                                      File.separator +
+                                      "MetaFactory.java" );
+            if ( ! metaFile.getParentFile().exists() ) {
+                metaFile.getParentFile().mkdirs();
+            }
+            fos = new FileOutputStream( metaFile );
+            fos.write( metaFactory.getBytes() );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        } finally {
+            if ( fos != null ) {
+                try {
+                    fos.close();
+                } catch ( IOException e ) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
 
     private String getJavaType( String name ) {
         // try built ins to resolve xsd:simpletypes. if not, assume a regular java class

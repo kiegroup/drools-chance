@@ -64,6 +64,7 @@ public class DLTemplateManager {
             "model/java/metaDescr.template",
             "model/java/metaClass.template",
             "model/java/metaAttrib.template",
+            "model/java/metaFactory.template",
             "model/java/inferredGetter.template"
     };
     protected static final String[] FALC_TABLEAU_TEMPLATES = new String[] {

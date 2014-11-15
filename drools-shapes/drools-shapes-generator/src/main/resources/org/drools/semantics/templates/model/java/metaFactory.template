@@ -1,0 +1,29 @@
+@declare{'metaFactoryTemplate'}
+
+package @{ package };
+
+public class MetaFactory {
+
+    @foreach{ klass : classNames.keySet() }
+    @code{ fqKlassName = classNames[ klass ]; }
+        public static <X extends @{ fqKlassName }> @{ klass }_.@{ klass }_NewInstance<X> new@{ klass }( Object id, org.drools.core.metadata.With... args ) {
+            return @{ fqKlassName }_.new@{ klass }( id, args );
+        }
+        public static <X extends @{ fqKlassName }> @{ klass }_.@{ klass }_NewInstance<X> new@{ klass }( org.drools.core.metadata.With... args ) {
+            return @{ fqKlassName }_.new@{ klass }( args );
+        }
+
+        public static <X, K extends @{ fqKlassName }> @{ klass }_.@{ klass }_Don<X,K> don@{ klass }( X core, org.drools.core.metadata.With... args ) {
+            return @{ fqKlassName }_.don@{ klass }( core, args );
+        }
+
+        public static @{ fqKlassName }_.@{ klass }_Modify<? extends @{ fqKlassName }> modify@{ klass }( @{ fqKlassName } x, org.drools.core.metadata.With... args ) {
+            return @{ fqKlassName }_.modify( x, args );
+        }
+    @end{}
+
+}
+
+@end{}
+
+@includeNamed{'metaFactoryTemplate'}
