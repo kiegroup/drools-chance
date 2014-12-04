@@ -11,15 +11,7 @@ import org.drools.core.metadata.MetaCallableTask;
 import org.drools.core.rule.EntryPointId;
 import org.drools.core.util.ObjectHashMap;
 import org.drools.semantics.Literal;
-import org.jboss.drools.provenance.Addition;
-import org.jboss.drools.provenance.Assertion;
-import org.jboss.drools.provenance.Instance;
-import org.jboss.drools.provenance.Modification;
-import org.jboss.drools.provenance.Property;
-import org.jboss.drools.provenance.Recognition;
-import org.jboss.drools.provenance.Removal;
-import org.jboss.drools.provenance.Setting;
-import org.jboss.drools.provenance.Typification;
+import org.jboss.drools.provenance.*;
 import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.builder.Message;
@@ -37,20 +29,10 @@ import org.w3.ns.prov.Entity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class ProvenanceTest {
 
@@ -644,6 +626,63 @@ public class ProvenanceTest {
     }
 
 
+    @Test
+    public void testProvenanceMultipleDisplaysPerEvidence() {
+        KieSession kieSession = loadProvenanceSession("testProvenanceMultipleDisplays.drl", null );
+
+        MyKlass mk = new MyKlassImpl();
+
+        kieSession.insert( mk );
+        kieSession.insert( "Test Display" );
+        kieSession.fireAllRules();
+
+        TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
+        assertEquals( 1, tms.getEqualityKeyMap().size() );
+
+        Provenance provenance = ProvenanceHelper.getProvenance( kieSession );
+
+        Collection<? extends Object> sessionObjects = kieSession.getObjects();
+
+        for ( Object o : sessionObjects ) {
+            if ( provenance.hasProvenanceFor( o ) ) {
+                Collection<? extends Activity> acts = provenance.describeProvenance( o );
+
+                assertEquals( 1, acts.size() );
+
+                Activity act = acts.iterator().next();
+
+                assertEquals( 1, act.getUsed().size() );
+
+                Entity entity = act.getUsed().get( 0 );
+
+                assertEquals( 2, entity.getDisplaysAs().size() );
+
+                boolean found1 = false;
+                boolean found2 = false;
+
+                for( Narrative narrative : entity.getDisplaysAs() ) {
+                    assertEquals( 1, narrative.getNarrativeType().size() );
+                    assertEquals( 1, narrative.getNarrativeText().size() );
+
+                    if( narrative.getNarrativeType().get( 0 ).equals( "1" ) ) {
+                        assertEquals( "Value 1", narrative.getNarrativeText().get( 0 ) );
+                        found1 = true;
+                    }
+                    if( narrative.getNarrativeType().get( 0 ).equals( "2" ) ) {
+                        assertEquals( "Value 2", narrative.getNarrativeText().get( 0 ) );
+                        found2 = true;
+                    }
+                }
+
+                assertTrue( "Didn't find display1", found1 );
+                assertTrue( "Didn't find display2", found2 );
+
+                return;
+            }
+        }
+
+        fail( "Displays not found." );
+    }
 
     @Test
     public void testProvenanceNewWith() {
