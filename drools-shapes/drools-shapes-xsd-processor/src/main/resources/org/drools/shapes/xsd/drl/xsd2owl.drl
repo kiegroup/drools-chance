@@ -787,7 +787,7 @@ end
 
 rule "Build Group"
 when
-    $x : Anon( $group, $c ; kls == null, $and : and, $siz : siz )
+    $x : Anon( $group, $c ; kls == null, $and : and, $siz : siz > 0 )
     accumulate( Anon( $e, $group, $kls ; $kls != null ),
         $set : collectSet( $kls );
         $set.size() == $siz )
