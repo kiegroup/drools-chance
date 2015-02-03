@@ -3,13 +3,11 @@ package org.drools.beliefs.provenance.templates;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -19,7 +17,7 @@ public class TemplateRegistry {
 
     private static TemplateRegistry instance = new TemplateRegistry();
 
-    public static final String TEMPLATE_PATH = "/displayTemplates";
+    public static final String TEMPLATE_PATH = "classpath*:/displayTemplates/*";
 
     public static TemplateRegistry getInstance() {
         return instance;
@@ -32,24 +30,16 @@ public class TemplateRegistry {
 
     private void prepareTemplates() {
         try {
-            String path = TEMPLATE_PATH;
-            URL res = TemplateRegistry.class.getResource( path );
-            File folder = null;
-            try {
-                folder = new File( res.toURI() );
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException("File path is not a valid URI", e);
-            }
-            if ( folder != null && folder.isDirectory() ) {
-                for ( File child : folder.listFiles() ) {
-                    InputStream stream = new FileInputStream( child );
-                    if ( stream != null ) {
-                        String name = child.getPath().substring( child.getPath().lastIndexOf( File.separator ) + 1 );
-                        name = name.substring( 0, name.lastIndexOf( '.' ) );
-                        registry.addNamedTemplate( name,
-                                                   TemplateCompiler.compileTemplate( read( stream ) ) );
-                    }
-                }
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+            Resource[] resources = resolver.getResources(TEMPLATE_PATH);
+
+            for(Resource resource : resources) {
+                String path = resource.getURL().getPath();
+                String name = path.substring( path.lastIndexOf( '/' ) + 1 );
+                name = name.substring( 0, name.lastIndexOf( '.' ) );
+                registry.addNamedTemplate( name,
+                                           TemplateCompiler.compileTemplate( read( resource.getInputStream() ) ) );
             }
         } catch (IOException e) {
             e.printStackTrace();
