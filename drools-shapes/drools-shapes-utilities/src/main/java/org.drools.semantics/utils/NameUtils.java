@@ -638,7 +638,7 @@ public final class NameUtils {
         } else if ( "xsd:string".equals( dataType ) ) {
             return "java.lang.String";
         } else if ( "xsd:anyURI".equals( dataType ) ) {
-            return "java.lang.String";
+            return URI.class.getName();
         } else if ( "xsd:dateTime".equals( dataType ) ) {
             return "java.util.Date";
         } else if ( "xsd:date".equals( dataType ) ) {

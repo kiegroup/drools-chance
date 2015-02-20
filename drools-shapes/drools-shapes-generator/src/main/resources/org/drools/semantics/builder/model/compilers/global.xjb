@@ -34,6 +34,11 @@
               parseMethod="org.drools.semantics.utils.LiteralDatatypeConverter.parseLiteral"
               printMethod="org.drools.semantics.utils.LiteralDatatypeConverter.printLiteral"
         />
+    <javaType name="java.net.URI" hasNsContext="true"
+              xmlType="xsd:anyURI"
+              parseMethod="org.drools.semantics.utils.LiteralDatatypeConverter.parseURI"
+              printMethod="org.drools.semantics.utils.LiteralDatatypeConverter.printURI"
+        />
   </globalBindings>
 
 
