@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2014 Red Hat, Inc. and/or its affiliates.
+  ~
+  ~ Licensed under the Eclipse Public License version 1.0, available at
+  ~ http://www.eclipse.org/legal/epl-v10.html
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>drools-shapes-terms</artifactId>
+		<groupId>org.drools</groupId>
+		<version>6.3.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.drools</groupId>
+	<artifactId>drools-shapes-terms-api</artifactId>
+	<version>6.3.0-SNAPSHOT</version>
+
+	<properties>
+		<chance.version>6.3.0-SNAPSHOT</chance.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-shapes-utilities</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals><goal>add-source</goal></goals>
+						<configuration>
+							<sources>
+								<source>target/generated-sources/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-shapes-generator-plugin</artifactId>
+				<version>${chance.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>cast</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<outputDirectory>${pom.basedir}</outputDirectory>
+					<ontology>${pom.basedir}/src/main/resources/terms.owl</ontology>
+					<ontologyImports>
+						<ontologyImport>${pom.basedir}/src/main/resources/skos.rdf</ontologyImport>
+						<ontologyImport>${pom.basedir}/src/main/resources/lmm_l1.owl</ontologyImport>
+					</ontologyImports>
+					<modelName>terms</modelName>
+					<axiomInference>lite</axiomInference>
+					<generateInterfaces>true</generateInterfaces>
+					<generateInterfaceJar>false</generateInterfaceJar>
+					<generateTraitDRL>false</generateTraitDRL>
+					<generateDefaultImplClasses>false</generateDefaultImplClasses>
+					<inheritanceMode>OPTIMIZED</inheritanceMode>
+					<generateIndividuals>false</generateIndividuals>
+					<compilationOptionsPackage>default</compilationOptionsPackage>
+					<compilationOptions>
+						<compilationOption>-XtoString</compilationOption>
+					</compilationOptions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
