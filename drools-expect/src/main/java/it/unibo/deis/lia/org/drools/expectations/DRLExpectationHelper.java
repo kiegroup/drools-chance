@@ -36,7 +36,6 @@ import org.drools.compiler.lang.descr.OrDescr;
 import org.drools.compiler.lang.descr.PatternDescr;
 import org.drools.compiler.lang.descr.RuleDescr;
 import org.drools.core.util.StringUtils;
-import org.kie.api.definition.rule.Eager;
 
 import java.util.*;
 
@@ -59,7 +58,11 @@ public class DRLExpectationHelper {
     }
 
     public String nextLabel(String rule) {
-        return "_$exp_"+rule+"_" + nextCount();
+        return "_$exp_"+ escape(rule) +"_" + nextCount();
+    }
+
+    private static String escape(String rule) {
+        return rule.replace(" ", "_").replace("-", "_").replace(":", "_");
     }
 
     public void mirrorConditions( ConditionalElementDescr target, ConditionalElementDescr source ) {
@@ -232,9 +235,9 @@ public class DRLExpectationHelper {
         AndDescr metaRoot = (AndDescr) ruleDescr.getExpectations();
 
         RuleDescrBuilder successRule = packageDescrBuilder.newRule();
-        successRule.newAnnotation( Eager.class.getName() );
+        successRule.newAnnotation( "Propagation( EAGER )" );
         RuleDescrBuilder failRule = packageDescrBuilder.newRule();
-        failRule.newAnnotation( Eager.class.getName() );
+        failRule.newAnnotation( "Propagation( EAGER )" );
 
         CEDescrBuilder sLHSBuilder = successRule.lhs();
         PatternDescrBuilder smaster = sLHSBuilder.pattern();
@@ -307,7 +310,7 @@ public class DRLExpectationHelper {
     public void buildFulfillRule( PackageDescrBuilder builder, ExpectationRuleDescr rule, ExpectationDescr expectations ) {
 
         RuleDescr fulfillRule = expectations.getFulfill();
-        fulfillRule.addAnnotation( Eager.class.getName(), Boolean.toString( true ) );
+        fulfillRule.addAnnotation( "Propagation", "EAGER" );
         boolean addMatchConsequence = ! StringUtils.isEmpty( fulfillRule.getConsequence().toString().trim() );
 
         AndDescr fulfillLhs = fulfillRule.getLhs();
@@ -348,7 +351,7 @@ public class DRLExpectationHelper {
     public void buildViolationRule( PackageDescrBuilder builder, ExpectationRuleDescr rule, ExpectationDescr expectations ) {
 
         RuleDescr violRule = expectations.getViolation();
-        violRule.addAnnotation( Eager.class.getName(), Boolean.toString( true ) );
+        violRule.addAnnotation( "Propagation", "EAGER" );
 
         AndDescr violLhs = violRule.getLhs();
 
