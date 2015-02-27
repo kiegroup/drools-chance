@@ -19,7 +19,7 @@ when
     $k : MyKlass( )
     $t : MyTargetKlass( )
 then
-    insertLogical( modifyMyKlass( $k, with( $t ) ).links( $t, Lit.ADD) );
+    infer( modifyMyKlass( $k, with( $t ) ).links( $t, Lit.ADD) );
 end
 
 rule Check

@@ -4,7 +4,8 @@ import org.test.*;
 import com.foo.*;
 import org.drools.core.metadata.*;
 import org.drools.beliefs.provenance.annotations.*;
-import static org.drools.core.metadata.With.with;
+import static org.drools.core.metadata.With.*;
+import org.drools.core.metadata.Lit;
 import java.util.*;
 
 import static com.foo.MetaFactory.*;
@@ -13,17 +14,16 @@ import static org.test.MetaFactory.*;
 
 global List list;
 
-rule Init
+rule Link
 when
+    $t : MyTargetKlass( )
 then
-    infer( newMyKlass( "123" ) );
-    infer( newMyTargetKlass( "000" ) );
+    infer( newMyKlass( "1" ) );
 end
 
-rule Foo
+rule Check
 when
     $k : MyKlass()
-    $t : MyTargetKlass( id == "000" )
 then
-    infer( modifyMyKlass( $k, with( $t ) ).prop( "hello" ) );
+    list.add( $k );
 end

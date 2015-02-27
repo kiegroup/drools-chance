@@ -22,5 +22,5 @@ dialect "mvel"
 when
     $e : MyKlass() @Evidence( { @Display( type="1", value="Value 1" ), @Display( type="2", value="Value 2" ) } )
 then
-    insertLogical( MySubKlass_.donMySubKlass( $e ) );
+    infer( MySubKlass_.donMySubKlass( $e ) );
 end

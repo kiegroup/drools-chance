@@ -35,7 +35,7 @@ when
     $e : MyKlass( $p : prop ) @Evidence( @Display( type="1", value="@{$p} world from @{$e.getClass().getSimpleName()}" ) )
     $s : String()
 then
-    list.add( insertLogical( donMySubKlass( $e ) ).object );
+    list.add( infer( donMySubKlass( $e ) ).object );
 end
 
 
@@ -45,7 +45,7 @@ dialect "mvel"
 when
     $e : MySubKlass() @Evidence( value = { @Display( type="1", value = "hello" ), @Display( type="2", template = "example" ) } )
 then
-    list.add( insertLogical( modifyMySubKlass( $e ).subProp( 12 ) ).object );
+    list.add( infer( modifyMySubKlass( $e ).subProp( 12 ) ).object );
 end
 
 rule AnotherSetAttribute
@@ -53,7 +53,7 @@ dialect "mvel"
 when
     $k : MySubKlass() @Evidence
 then
-    list.add( insertLogical( modifyMySubKlass( $k ).subProp( 42 ) ).object );
+    list.add( infer( modifyMySubKlass( $k ).subProp( 42 ) ).object );
 end
 
 

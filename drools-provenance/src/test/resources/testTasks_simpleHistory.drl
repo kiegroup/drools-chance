@@ -23,14 +23,14 @@ rule Setter
 when
     $k : MyKlass()
 then
-    insertLogical( modifyMyKlass( $k ).prop( "fooVal" ) );
+    infer( modifyMyKlass( $k ).prop( "fooVal" ) );
 end
 
 rule Setter2
 when
     $k : MyKlass( prop == "fooVal" )
 then
-    insertLogical( modifyMyKlass( $k ).prop( "barVal" ) );
+    infer( modifyMyKlass( $k ).prop( "barVal" ) );
 end
 
 

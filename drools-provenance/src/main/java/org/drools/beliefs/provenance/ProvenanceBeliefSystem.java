@@ -1,8 +1,10 @@
 package org.drools.beliefs.provenance;
 
 import org.drools.core.beliefsystem.BeliefSet;
+import org.drools.core.beliefsystem.ModedAssertion;
 import org.drools.core.beliefsystem.simple.SimpleBeliefSystem;
 import org.drools.core.beliefsystem.simple.SimpleLogicalDependency;
+import org.drools.core.beliefsystem.simple.SimpleMode;
 import org.drools.core.common.EqualityKey;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.LogicalDependency;
@@ -22,6 +24,7 @@ import org.drools.core.spi.PropagationContext;
 import org.drools.core.util.BitMaskUtil;
 import org.jboss.drools.provenance.Assertion;
 import org.kie.api.time.SessionClock;
+import org.kie.internal.runtime.beliefs.Mode;
 import org.w3.ns.prov.Activity;
 
 import java.util.ArrayList;
@@ -54,20 +57,16 @@ public class ProvenanceBeliefSystem
 
         if ( node.getObject() instanceof MetaCallableTask ) {
 
-            // TODO: This is never used - should it be?
-            PropagationContext unravelContext = getEp().getInternalWorkingMemory().getKnowledgeBase().getConfiguration().getComponentFactory().getPropagationContextFactory().createPropagationContext(
-                    getEp().getInternalWorkingMemory().getNextPropagationIdCounter(),
-                    PropagationContext.DELETION,
-                    node.getJustifier().getRule(),
-                    node.getJustifier().getTuple(),
-                    beliefSet.getFactHandle()
-            );
             MetaCallableTask task = (MetaCallableTask) node.getObject();
             InternalFactHandle taskHandle = beliefSet.getFactHandle();
 
             getEp().getObjectStore().removeHandle( taskHandle );
             getEp().delete( taskHandle, task, typeConf, node.getJustifier().getRule(), node.getJustifier() );
-            getEp().getTruthMaintenanceSystem().remove( getEp().getTruthMaintenanceSystem().get( task ) );
+            EqualityKey k = getEp().getTruthMaintenanceSystem().get( task );
+            if ( k != null ) {
+                getEp().getTruthMaintenanceSystem().remove( k );
+            }
+
 
             Modify setters;
             switch ( task.kind() ) {
@@ -104,6 +103,10 @@ public class ProvenanceBeliefSystem
                     }
                 }
             }
+
+            // set the proper target on the dependency inside the mode
+            SimpleLogicalDependency dep = (SimpleLogicalDependency) ((SimpleMode)node.getMode()).getObject();
+            dep.setObject( beliefSet.getFactHandle().getObject() );
 
             return beliefSet;
         } else {

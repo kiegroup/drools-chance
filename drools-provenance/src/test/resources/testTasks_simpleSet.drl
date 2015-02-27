@@ -16,7 +16,7 @@ rule Setter
 when
     $k : MyKlass()
 then
-    insertLogical( modifyMyKlass( $k ).prop( "fooVal" ) );
+    infer( modifyMyKlass( $k ).prop( "fooVal" ) );
 end
 
 rule PropCheck

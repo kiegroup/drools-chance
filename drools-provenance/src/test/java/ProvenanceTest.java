@@ -1,15 +1,18 @@
 import org.drools.beliefs.provenance.IdentifiableEntity;
 import org.drools.beliefs.provenance.Provenance;
 import org.drools.beliefs.provenance.ProvenanceHelper;
+import org.drools.core.beliefsystem.BeliefSet;
+import org.drools.core.beliefsystem.BeliefSystem;
 import org.drools.core.common.EqualityKey;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.NamedEntryPoint;
 import org.drools.core.common.TruthMaintenanceSystem;
+import org.drools.core.factmodel.traits.TraitProxy;
 import org.drools.core.marshalling.impl.ProtobufMarshaller;
 import org.drools.core.metadata.Identifiable;
 import org.drools.core.metadata.MetaCallableTask;
 import org.drools.core.rule.EntryPointId;
-import org.drools.core.util.ObjectHashMap;
+import org.drools.core.util.*;
 import org.drools.semantics.Literal;
 import org.jboss.drools.provenance.*;
 import org.junit.Test;
@@ -29,6 +32,7 @@ import org.w3.ns.prov.Entity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -457,6 +461,21 @@ public class ProvenanceTest {
         KieSession ksession = loadProvenanceSession( "testTasks.drl", list );
         ksession.fireAllRules();
 
+        assertEquals( 4, ksession.getObjects().size() );
+        TruthMaintenanceSystem tms = ( (NamedEntryPoint) ksession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
+        assertEquals( 2, tms.getEqualityKeyMap().size() );
+
+        org.drools.core.util.Iterator<ObjectHashMap.ObjectEntry> it = tms.getEqualityKeyMap().iterator();
+        Object o;
+        while ( ( o = it.next() ) != null ) {
+            EqualityKey k = (EqualityKey) (( ObjectHashMap.ObjectEntry) o ).getKey();
+            assertNotNull( k.getBeliefSet() );
+            BeliefSet bs = k.getBeliefSet();
+            assertNotNull( bs );
+            assertTrue( bs.getFactHandle().getObject() instanceof Serializable );
+        }
+
+
         ProtobufMarshaller marshaller = (ProtobufMarshaller) MarshallerFactory.newMarshaller( ksession.getKieBase(),
                                                                                               (ObjectMarshallingStrategy[]) ksession.getEnvironment().get( EnvironmentName.OBJECT_MARSHALLING_STRATEGIES ) );
         long time = ksession.<SessionClock>getSessionClock().getCurrentTime();
@@ -697,7 +716,37 @@ public class ProvenanceTest {
         TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
         assertEquals( 2, tms.getEqualityKeyMap().size() );
 
-        assertEquals(1, list.size());
+        assertEquals( 1, list.size() );
+    }
+
+    @Test
+    public void testInfer() {
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession("testTasks_infer.drl", list );
+
+        MyTargetKlass mtk = new MyTargetKlassImpl();
+
+        InternalFactHandle handle1 = (InternalFactHandle) kieSession.insert( mtk );
+        kieSession.fireAllRules();
+        assertEquals( 1, list.size() );
+        InternalFactHandle handle2 = (InternalFactHandle) kieSession.getFactHandle( list.get( 0 ) );
+        InternalFactHandle handle3 = (InternalFactHandle) kieSession.getFactHandle( ((TraitProxy) handle2.getObject() ).getObject() );
+
+        TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
+
+        assertEquals( 3, kieSession.getObjects().size() );
+        assertEquals( 1, tms.getEqualityKeyMap().size() );
+
+        assertNotNull( handle2 );
+        assertNull( handle1.getEqualityKey() );
+        assertNull( handle2.getEqualityKey() );
+        assertNotNull( handle3.getEqualityKey() );
+
+        EqualityKey k3 = handle3.getEqualityKey();
+        BeliefSet bs = k3.getBeliefSet();
+
+        assertNotNull( bs );
+
     }
 
 

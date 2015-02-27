@@ -7,6 +7,7 @@ import org.drools.beliefs.provenance.templates.TemplateRegistry;
 import org.drools.core.InitialFact;
 import org.drools.core.beliefsystem.BeliefSystem;
 import org.drools.core.beliefsystem.simple.SimpleBeliefSet;
+import org.drools.core.beliefsystem.simple.SimpleLogicalDependency;
 import org.drools.core.beliefsystem.simple.SimpleMode;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.LogicalDependency;
