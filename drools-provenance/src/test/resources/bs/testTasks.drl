@@ -14,8 +14,8 @@ global List list;
 rule Init
 when
 then
-    infer( newMyKlass( "123" ).prop( "hello" ) );
-    infer( newMyTargetKlass( "000" ) );
+    bolster( newMyKlass( "123" ).prop( "hello" ) );
+    bolster( newMyTargetKlass( "000" ) );
 end
 
 
@@ -40,7 +40,7 @@ when
     $k : MyKlass()
     $t : MyTargetKlass()
 then
-    infer( modifyMyKlass( $k, with( $t ) )
+    bolster( modifyMyKlass( $k, with( $t ) )
                     .links( Arrays.asList( $t ), Lit.SET ) );
     list.add( $k.getId() );
     list.add( $k.getLinks().get( 0 ).getId() );

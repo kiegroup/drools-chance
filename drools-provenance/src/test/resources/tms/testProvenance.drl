@@ -1,0 +1,73 @@
+package org.drools.beliefs.provenance;
+
+import org.drools.core.factmodel.traits.Entity
+import com.foo.MySubKlass;
+import org.test.MyKlassImpl;
+import org.test.MyKlass;
+import org.test.MyKlass_;
+import com.foo.MySubKlass_;
+import static com.foo.MetaFactory.*;
+import static org.test.MetaFactory.*;
+import org.drools.core.metadata.Modify;
+import org.drools.beliefs.provenance.annotations.*
+import org.drools.core.common.InternalFactHandle;
+
+global java.util.List list;
+
+
+rule Init
+dialect "mvel"
+when
+then
+    x = insertLogical( newMyKlass( "123" ).prop( "hello" ) ).object;
+    System.out.println( "@@@@@" + x );
+    list.add( x );
+    insert( "fooo" );
+end
+
+
+
+rule Don
+@Display( "Pretty print @{$e_1}" )
+no-loop
+dialect "mvel"
+when
+    $e : MyKlass( $p : prop ) @Evidence( @Display( type="1", value="@{$p} world from @{$e.getClass().getSimpleName()}" ) )
+    $s : String()
+then
+    list.add( insertLogical( donMySubKlass( $e ) ).object );
+end
+
+
+rule SetAttribute
+@Display( template = "anotherExample" )
+dialect "mvel"
+when
+    $e : MySubKlass() @Evidence( value = { @Display( type="1", value = "hello" ), @Display( type="2", template = "example" ) } )
+then
+    list.add( insertLogical( modifyMySubKlass( $e ).subProp( 12 ) ).object );
+end
+
+rule AnotherSetAttribute
+dialect "mvel"
+when
+    $k : MySubKlass() @Evidence
+then
+    list.add( insertLogical( modifyMySubKlass( $k ).subProp( 42 ) ).object );
+end
+
+
+rule React
+when
+    $k : MySubKlass( subProp == 42 )
+then
+    list.add( "RESULT" );
+end
+
+
+rule NeverEver
+when
+    Modify()
+then
+    throw new IllegalStateException( "This rule should have never fired! : reified 'modifies' should never propagate directly" );
+end

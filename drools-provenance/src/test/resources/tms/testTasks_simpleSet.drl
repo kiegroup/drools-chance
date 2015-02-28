@@ -4,8 +4,6 @@ import org.test.*;
 import com.foo.*;
 import org.drools.core.metadata.*;
 import org.drools.beliefs.provenance.annotations.*;
-import static org.drools.core.metadata.With.*;
-import org.drools.core.metadata.Lit;
 import java.util.*;
 
 import static com.foo.MetaFactory.*;
@@ -14,19 +12,18 @@ import static org.test.MetaFactory.*;
 
 global List list;
 
-rule Link
+rule Setter
 when
-    $k : MyKlass( )
-    $t : MyTargetKlass( )
+    $k : MyKlass()
 then
-    infer( modifyMyKlass( $k, with( $t ) ).links( $t, Lit.ADD) );
+    insertLogical( modifyMyKlass( $k ).prop( "fooVal" ) );
 end
 
-rule Check
+rule PropCheck
 when
-    MyTargetKlass( $linkedBy : linkedBy )
+    $k : MyKlass( $p : prop )
 then
-    list.add( $linkedBy );
+    list.add( $p );
 end
 
 

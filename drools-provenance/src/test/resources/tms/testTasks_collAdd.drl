@@ -14,9 +14,9 @@ global List list;
 rule Init
 when
 then
-    infer( newMyKlass( "123" ) );
-    infer( newMyTargetKlass( "000" ) );
-    infer( newMyTargetKlass( "001" ) );
+    insertLogical( newMyKlass( "123" ) );
+    insertLogical( newMyTargetKlass( "000" ) );
+    insertLogical( newMyTargetKlass( "001" ) );
 end
 
 rule Linkage
@@ -25,7 +25,7 @@ when
     $t : MyTargetKlass( id == "000" )
 then
     System.out.println( "Found 000"  );
-    infer( modifyMyKlass( $k, with( $t ) )
+    insertLogical( modifyMyKlass( $k, with( $t ) )
                     .links( $t, Lit.ADD ) );
     list.add( "000" );
 end
@@ -36,7 +36,7 @@ when
     $t : MyTargetKlass( id == "001" )
 then
     System.out.println( "Found 001"  );
-    infer( modifyMyKlass( $k, with( $t ) )
+    insertLogical( modifyMyKlass( $k, with( $t ) )
                     .links( $t, Lit.ADD ) );
     list.add( "001" );
 end

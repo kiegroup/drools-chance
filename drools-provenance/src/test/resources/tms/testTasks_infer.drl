@@ -18,7 +18,7 @@ rule Link
 when
     $t : MyTargetKlass( )
 then
-    infer( newMyKlass( "1" ) );
+    insertLogical( newMyKlass( "1" ) );
 end
 
 rule Check

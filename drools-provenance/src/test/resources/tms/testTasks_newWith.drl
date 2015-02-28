@@ -18,7 +18,7 @@ rule Link
 when
     $t : MyTargetKlass( )
 then
-    infer( newMyKlass( "1", with( $t ) ).links( $t, Lit.ADD) );
+    insertLogical( newMyKlass( "1", with( $t ) ).links( $t, Lit.ADD) );
 end
 
 rule Check

@@ -1,0 +1,26 @@
+package org.drools.beliefs.provenance;
+
+import org.drools.core.factmodel.traits.Entity;
+import com.foo.MySubKlass;
+import org.test.MyKlassImpl;
+import org.test.MyKlass;
+import org.test.MyKlass_;
+import com.foo.MySubKlass_;
+import static com.foo.MetaFactory.*;
+import static org.test.MetaFactory.*;
+import org.drools.core.metadata.Modify;
+import org.drools.beliefs.provenance.annotations.Evidence;
+import org.drools.beliefs.provenance.annotations.Display;
+import org.drools.core.common.InternalFactHandle;
+
+global java.util.List list;
+
+rule Test
+@Display
+no-loop
+dialect "mvel"
+when
+    $e : MyKlass() @Evidence( { @Display( type="1", value="Value 1" ), @Display( type="2", value="Value 2" ) } )
+then
+    bolster( MySubKlass_.donMySubKlass( $e ) );
+end

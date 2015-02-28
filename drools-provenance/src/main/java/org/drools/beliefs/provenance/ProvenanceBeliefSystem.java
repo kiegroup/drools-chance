@@ -44,7 +44,10 @@ public class ProvenanceBeliefSystem
 
     @Override
     public void delete( LogicalDependency node, BeliefSet beliefSet, PropagationContext context ) {
-        if ( ! ( node.getObject() instanceof MetaCallableTask ) ) {
+        Object justified = node.getJustified();
+        if ( justified instanceof ProvenanceBeliefSet && ((ProvenanceBeliefSetImpl) justified).getFactHandle().getObject() instanceof MetaCallableTask ) {
+            // right now, provenance is never retracted. The task itself is not in the WM / BS / TMS, so do nothing
+        } else {
             super.delete( node, beliefSet, context );
         }
     }
@@ -60,8 +63,8 @@ public class ProvenanceBeliefSystem
             MetaCallableTask task = (MetaCallableTask) node.getObject();
             InternalFactHandle taskHandle = beliefSet.getFactHandle();
 
-            getEp().getObjectStore().removeHandle( taskHandle );
-            getEp().delete( taskHandle, task, typeConf, node.getJustifier().getRule(), node.getJustifier() );
+//            getEp().getObjectStore().removeHandle( taskHandle );
+//            getEp().delete( taskHandle, task, typeConf, node.getJustifier().getRule(), node.getJustifier() );
             EqualityKey k = getEp().getTruthMaintenanceSystem().get( task );
             if ( k != null ) {
                 getEp().getTruthMaintenanceSystem().remove( k );

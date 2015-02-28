@@ -16,6 +16,8 @@ import org.drools.core.util.*;
 import org.drools.semantics.Literal;
 import org.jboss.drools.provenance.*;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.kie.api.KieServices;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
@@ -38,7 +40,25 @@ import java.util.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(value = Parameterized.class)
 public class ProvenanceTest {
+
+
+    private String path;
+
+    public ProvenanceTest( String path ) {
+        this.path = path;
+    }
+
+    @Parameterized.Parameters
+    public static Collection paths() {
+        return Arrays.asList( new String[][]
+                                      {
+                                              { "tms/" },
+                                              { "bs/" }
+                                      } );
+    }
+
 
     @Test
     public void testProvenanceWithStatedObjects() {
@@ -754,7 +774,7 @@ public class ProvenanceTest {
     private KieSession loadProvenanceSession( String sourceDrl, List list ) {
         KieServices kieServices = KieServices.Factory.get();
         Resource traitDRL = kieServices.getResources().newClassPathResource( "org/test/tiny_declare.drl" );
-        Resource ruleDRL = kieServices.getResources().newClassPathResource( sourceDrl );
+        Resource ruleDRL = kieServices.getResources().newClassPathResource( path + sourceDrl );
 
         KieHelper kieHelper = validateKieBuilder( traitDRL, ruleDRL );
         KieSession kieSession = kieHelper.build( ProvenanceHelper.getProvenanceEnabledKieBaseConfiguration() ).newKieSession();

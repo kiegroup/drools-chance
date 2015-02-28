@@ -16,8 +16,8 @@ global List list;
 rule Init
 when
 then
-    infer( newMyKlass( "123" ) );
-    infer( newMyTargetKlass( "000" ) );
+    bolster( newMyKlass( "123" ) );
+    bolster( newMyTargetKlass( "000" ) );
 end
 
 rule Foo
@@ -25,5 +25,5 @@ when
     $k : MyKlass()
     $t : MyTargetKlass( id == "000" )
 then
-    infer( modifyMyKlass( $k, with( $t ) ).prop( "hello" ) );
+    bolster( modifyMyKlass( $k, with( $t ) ).prop( "hello" ) );
 end

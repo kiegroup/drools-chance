@@ -16,10 +16,10 @@ global List list;
 rule Init
 when
 then
-    infer( newMyKlass( "123" ) );
-    infer( newMyTargetKlass( "000" ) );
-    infer( newMyTargetKlass( "001" ) );
-    infer( newMyTargetKlass( "002" ) );
+    insertLogical( newMyKlass( "123" ) );
+    insertLogical( newMyTargetKlass( "000" ) );
+    insertLogical( newMyTargetKlass( "001" ) );
+    insertLogical( newMyTargetKlass( "002" ) );
 end
 
 rule Linkage
@@ -28,7 +28,7 @@ when
          accumulate( $t : MyTargetKlass(), $l : collectList( $t ) )
 then
     System.out.println( "Found list " + $l );
-    infer( modifyMyKlass( $k, with( $l ) )
+    insertLogical( modifyMyKlass( $k, with( $l ) )
                     .links( $l, Lit.SET ) );
 end
 
