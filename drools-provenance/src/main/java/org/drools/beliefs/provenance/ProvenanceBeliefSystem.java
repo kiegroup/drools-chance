@@ -61,15 +61,12 @@ public class ProvenanceBeliefSystem
         if ( node.getObject() instanceof MetaCallableTask ) {
 
             MetaCallableTask task = (MetaCallableTask) node.getObject();
-            InternalFactHandle taskHandle = beliefSet.getFactHandle();
-
-//            getEp().getObjectStore().removeHandle( taskHandle );
-//            getEp().delete( taskHandle, task, typeConf, node.getJustifier().getRule(), node.getJustifier() );
-            EqualityKey k = getEp().getTruthMaintenanceSystem().get( task );
-            if ( k != null ) {
-                getEp().getTruthMaintenanceSystem().remove( k );
+            if ( node.getJustified() instanceof ProvenanceBeliefSet ) {
+                EqualityKey k = ((ProvenanceBeliefSetImpl) node.getJustified()).getFactHandle().getEqualityKey();
+                if ( k.getStatus() == EqualityKey.JUSTIFIED ) {
+                    getEp().getTruthMaintenanceSystem().remove( k );
+                }
             }
-
 
             Modify setters;
             switch ( task.kind() ) {
