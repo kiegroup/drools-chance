@@ -769,6 +769,14 @@ public class ProvenanceTest {
 
     }
 
+    @Test
+    public void testCastTask() {
+        List list = new ArrayList();
+        KieSession kieSession = loadProvenanceSession("testTasks_cast.drl", list );
+
+        assertEquals( Arrays.asList( "1" ), list );
+    }
+
 
 
     private KieSession loadProvenanceSession( String sourceDrl, List list ) {
