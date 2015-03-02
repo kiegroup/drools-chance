@@ -127,4 +127,14 @@ public interface OntoModel extends Cloneable {
     public void buildAreaTaxonomy();
 
     public AreaTxn<Concept,PropertyRelation> getAreaTaxonomy();
+
+    /* interface only - do not extend drools Thing */
+    public boolean isStandalone();
+
+    public void setStandalone( boolean standalone );
+
+    /* interface only - expose only the minimal functionalities */
+    public boolean isMinimal();
+
+    public void setMinimal( boolean minimal );
 }

@@ -21,10 +21,14 @@ package org.drools.semantics.builder.model.compilers;
  import org.drools.semantics.builder.model.OntoModel;
  import org.drools.semantics.utils.NameUtils;
 
+ import java.util.ArrayList;
  import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.List;
  import java.util.Map;
+ import java.util.Set;
 
-public abstract class ModelCompilerImpl implements ModelCompiler {
+ public abstract class ModelCompilerImpl implements ModelCompiler {
 
     protected CompiledOntoModel model;
 
@@ -56,7 +60,7 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
             map.put( "iri", con.getIri() );
             map.put( "name", con.getName().substring( con.getName().lastIndexOf(".") + 1 ) );
             map.put( "fullyQualifiedName", con.getFullyQualifiedName() );
-            map.put( "superConcepts", con.getSuperConcepts() );
+            map.put( "superConcepts", getEffectiveSuperConcepts( con.getSuperConcepts(), model.isStandalone() ) );
             map.put( "subConcepts", con.getSubConcepts() );
             map.put( "properties", con.getProperties() );
             map.put( "implInterface", con.isResolved() && con.getResolvedAs().equals( Concept.Resolution.IFACE ) ? con.getFullyQualifiedName() : null );
@@ -69,11 +73,23 @@ public abstract class ModelCompilerImpl implements ModelCompiler {
             }
             map.put( "keys", con.getKeys() );
             map.put( "shadowed", con.isShadowed() );
+            map.put( "standalone", model.isStandalone() );
+            map.put( "minimal", model.isMinimal() );
 
             compile( con, NameUtils.getInstance(), map );
         }
 
         return getModel();
+    }
+
+    protected Set<Concept> getEffectiveSuperConcepts( Set<Concept> superConcepts, boolean standalone ) {
+        Set<Concept> sups = new HashSet<Concept>( superConcepts );
+        for ( Concept con : superConcepts ) {
+            if ( con.isTop() && standalone ) {
+                sups.remove( con );
+            }
+        }
+        return sups;
     }
 
 

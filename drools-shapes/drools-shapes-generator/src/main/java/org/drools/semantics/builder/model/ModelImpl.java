@@ -189,4 +189,23 @@ public abstract class ModelImpl implements OntoModel {
         return innerModel.getAreaTaxonomy();
     }
 
+    @Override
+    public boolean isStandalone() {
+        return innerModel.isStandalone();
+    }
+
+    @Override
+    public void setStandalone( boolean standalone ) {
+        innerModel.setStandalone( standalone );
+    }
+
+    @Override
+    public boolean isMinimal() {
+        return innerModel.isMinimal();
+    }
+
+    @Override
+    public void setMinimal( boolean minimal ) {
+        innerModel.setMinimal( minimal );
+    }
 }

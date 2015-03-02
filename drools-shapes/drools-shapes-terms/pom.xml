@@ -9,6 +9,8 @@
 		<module>drools-shapes-terms-file</module>
 		<module>drools-shapes-terms-fhir</module>
 		<module>drools-shapes-terms-impl</module>
+		<module>drools-shapes-terms-graph</module>
+		<module>drools-shapes-terms-internal</module>
 	</modules>
 
 	<parent>
@@ -46,6 +48,31 @@
 			<dependency>
 				<groupId>org.drools</groupId>
 				<artifactId>drools-shapes-terms-api</artifactId>
+				<version>6.3.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-shapes-terms-cts2</artifactId>
+				<version>6.3.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-shapes-terms-fhir</artifactId>
+				<version>6.3.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-shapes-terms-file</artifactId>
+				<version>6.3.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-shapes-terms-graph</artifactId>
+				<version>6.3.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-shapes-terms-internal</artifactId>
 				<version>6.3.0-SNAPSHOT</version>
 			</dependency>
 

@@ -47,6 +47,10 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private ConceptAreaTxn areaTxn;
 
+    private boolean minimal;
+
+    private boolean standalone;
+
     protected GenericModelImpl newInstance() {
         return new GenericModelImpl();
     }
@@ -377,5 +381,25 @@ public class GenericModelImpl implements OntoModel, Cloneable {
             buildAreaTaxonomy();
         }
         return areaTxn;
+    }
+
+    @Override
+    public boolean isMinimal() {
+        return minimal;
+    }
+
+    @Override
+    public void setMinimal( boolean minimal ) {
+        this.minimal = minimal;
+    }
+
+    @Override
+    public boolean isStandalone() {
+        return standalone;
+    }
+
+    @Override
+    public void setStandalone( boolean standalone ) {
+        this.standalone = standalone;
     }
 }

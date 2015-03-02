@@ -269,7 +269,7 @@ public class ShapeCaster
     /**
      * @parameter
      */
-    private List<String> compilationOptions;
+    private List<String> compilationOptions = Collections.emptyList();
 
     public List<String> getCompilationOptions() {
         return compilationOptions;
@@ -287,6 +287,9 @@ public class ShapeCaster
         File target = new File( outputDirectory.getAbsolutePath() );
 
         OntoModel results = processOntology( mode );
+        results.setMinimal( compilationOptions.contains( "-minimal" ) );
+        results.setStandalone( compilationOptions.contains( "-standalone" ) );
+
         OntoModelCompiler compiler = new OntoModelCompiler( results, target );
 
 

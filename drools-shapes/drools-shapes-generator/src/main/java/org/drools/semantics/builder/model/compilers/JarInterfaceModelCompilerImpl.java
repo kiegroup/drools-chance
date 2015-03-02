@@ -23,6 +23,7 @@ import com.clarkparsia.empire.annotation.RdfProperty;
 import com.clarkparsia.empire.annotation.RdfsClass;
 import org.drools.core.factmodel.BuildUtils;
 import org.drools.core.factmodel.traits.Trait;
+import org.drools.semantics.Thing;
 import org.drools.semantics.builder.model.CompiledOntoModel;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.JarModel;
@@ -87,7 +88,8 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
         MethodVisitor mv;
         AnnotationVisitor av0;
 
-
+        Boolean standalone = (Boolean) params.get( "standalone" );
+        Boolean minimal = (Boolean) params.get( "minimal" );
         Set<Concept> sup = ( (Set<Concept>) params.get( "superConcepts" ) );
         String implInterface = (String) params.get( "implInterface" );
         int N = sup.size()
@@ -101,7 +103,11 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             superTypes[ j++ ] = implInterface.replace( ".", "/" );
         }
         for ( Iterator<Concept> iter = sup.iterator(); iter.hasNext(); ) {
-            superTypes[ j++ ] = iter.next().getFullyQualifiedName().replace( ".", "/" );
+            String iface = iter.next().getFullyQualifiedName();
+            if ( ! standalone || ! Thing.class.getName().equals( iface ) ) {
+                superTypes[ j ] = iface.replace( ".", "/" );
+            }
+            j++;
         }
 
 
@@ -208,46 +214,47 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                     mv.visitEnd();
                 }
             }
-            {
-                if ( ! rel.isRestricted() && ! rel.getTarget().isPrimitive() && ! rel.isTransient() ) {
-                    mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            "add" + NameUtils.compactUpperCase( rel.getName() ),
-                            "(" + Type.getDescriptor( Object.class ) + ")V",
-                            null,
-                            null );
-                    {
-                        av0 = mv.visitAnnotation( Type.getDescriptor( Transient.class ), true );
-                        av0.visitEnd();
-                    }
-                    mv.visitEnd();
+            if ( ! minimal ) {
+                {
+                    if ( !rel.isRestricted() && !rel.getTarget().isPrimitive() && !rel.isTransient() ) {
+                        mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
+                                             "add" + NameUtils.compactUpperCase( rel.getName() ),
+                                             "(" + Type.getDescriptor( Object.class ) + ")V",
+                                             null,
+                                             null );
+                        {
+                            av0 = mv.visitAnnotation( Type.getDescriptor( Transient.class ), true );
+                            av0.visitEnd();
+                        }
+                        mv.visitEnd();
 
+                    }
+                }
+                {
+                    if ( rel.isSimple() || ( ( rel.getMaxCard() == null || rel.getMaxCard() > 1 ) && !rel.isTransient() ) ) {
+                        mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
+                                             "add" + NameUtils.compactUpperCase( rel.getName() ),
+                                             "(L" + NameUtils.map( rel.getTarget().getFullyQualifiedName(), true ).replace( ".", "/" ) + ";)V",
+                                             null,
+                                             null );
+                        {
+                            av0 = mv.visitAnnotation( Type.getDescriptor( Transient.class ), true );
+                            av0.visitEnd();
+                        }
+                        mv.visitEnd();
+                        mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
+                                             "remove" + NameUtils.compactUpperCase( rel.getName() ),
+                                             "(" + Type.getDescriptor( Object.class ) + ")V",
+                                             null,
+                                             null );
+                        {
+                            av0 = mv.visitAnnotation( Type.getDescriptor( Transient.class ), true );
+                            av0.visitEnd();
+                        }
+                        mv.visitEnd();
+                    }
                 }
             }
-            {
-                if ( rel.isSimple() || ( ( rel.getMaxCard() == null || rel.getMaxCard() > 1 ) && ! rel.isTransient() ) ) {
-                    mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            "add" + NameUtils.compactUpperCase( rel.getName() ),
-                            "(L" + NameUtils.map( rel.getTarget().getFullyQualifiedName(), true ).replace( ".", "/" ) + ";)V",
-                            null,
-                            null );
-                    {
-                        av0 = mv.visitAnnotation( Type.getDescriptor( Transient.class ), true );
-                        av0.visitEnd();
-                    }
-                    mv.visitEnd();
-                    mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            "remove" + NameUtils.compactUpperCase( rel.getName() ),
-                            "(" + Type.getDescriptor( Object.class ) + ")V",
-                            null,
-                            null );
-                    {
-                        av0 = mv.visitAnnotation( Type.getDescriptor( Transient.class ), true );
-                        av0.visitEnd();
-                    }
-                    mv.visitEnd();
-                }
-            }
-
         }
 
 

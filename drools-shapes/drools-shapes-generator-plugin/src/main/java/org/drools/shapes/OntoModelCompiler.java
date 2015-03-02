@@ -659,6 +659,7 @@ public class OntoModelCompiler {
 
             mojo.generateEquals = false;
             mojo.generateHashCode = false;
+            mojo.setCleanPackageDirectories( false );
             mojo.setProject( mp );
 
             mojo.setArgs( args );

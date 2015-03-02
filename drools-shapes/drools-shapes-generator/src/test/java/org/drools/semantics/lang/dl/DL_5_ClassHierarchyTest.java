@@ -75,7 +75,7 @@ public class DL_5_ClassHierarchyTest {
         assertNotNull( results.getConcept( "<_Test>" ) );
         assertNotNull( results.getConcept( "<_Fact>" ) );
 
-        assertEquals( 8, results.getSubConcepts().size() );
+        assertEquals( 9, results.getSubConcepts().size() );
         assertNotNull( results.getSubConceptOf( "<" + ns + "Zimple1Domain>", "<http://www.w3.org/2002/07/owl#Thing>" ) );
         assertNotNull( results.getSubConceptOf( "<" + ns + "Zimple2Domain>", "<" + ns + "Zimple1Domain>" ) );
         assertNotNull( results.getSubConceptOf( "<_Test2>", "<" + ns + "Zimple2Domain>" ) );

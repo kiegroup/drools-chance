@@ -97,7 +97,7 @@ function Double cardOf( java.math.BigInteger x ) {
 
 query "axioms" ( Set $set )
     accumulate( Link( $s, $t ; ),
-                $set : collectSet( $t ) )
+                $set := collectSet( $t ) )
 end
 
 

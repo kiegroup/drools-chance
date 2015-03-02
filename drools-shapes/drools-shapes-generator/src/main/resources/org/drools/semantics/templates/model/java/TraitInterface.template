@@ -38,20 +38,10 @@ import javax.persistence.Basic;
 @thewebsemantic.RdfType( "@{namespace}@{name}" )
 @org.drools.core.factmodel.traits.Trait
 @org.kie.api.definition.type.PropertyReactive
-public interface @{name} extends org.drools.semantics.Thing, org.drools.core.metadata.Metadatable  @if{ implInterface != null} , @{ implInterface } @end{}
+public interface @{name} extends @if{ ! standalone } org.drools.semantics.Thing, @end{} org.drools.core.metadata.Metadatable  @if{ implInterface != null} , @{ implInterface } @end{}
                                  @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{sup.package}.@{compactUpperCase( sup.name ) } @end{','} @end{}
 {
 
-    /*
-    @javax.xml.bind.annotation.XmlID
-    public java.lang.String getDyEntryId();
-
-    public void setDyEntryId( java.lang.String id );
-
-    public String getDyReference();
-
-    public void setDyReference( java.lang.String dyReference );
-    */
 
 @if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }
     @code{ prop = properties[ propKey ] }
@@ -94,6 +84,7 @@ public interface @{name} extends org.drools.semantics.Thing, org.drools.core.met
     @end{} @comment{ do not generate restricted setters for simple, primitive properties }
 
 
+    @if{ ! minimal }
 
     @if{ ! prop.restricted && ! prop.target.primitive && ! prop.transient }
         @javax.persistence.Transient
@@ -109,7 +100,7 @@ public interface @{name} extends org.drools.semantics.Thing, org.drools.core.met
     public void remove@{ capitalize(prop.name) }( java.lang.Object x );
     @end{}
 
-
+    @end{}
 
   @end{}  @end{}
 

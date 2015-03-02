@@ -202,6 +202,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         registerComplexConcept( "http://www.w3.org/2001/XMLSchema#List", "List" );
 
+        registerComplexConcept( "http://www.w3.org/1999/02/22-rdf-syntax-ns#List", "List" );
+
     }
 
 

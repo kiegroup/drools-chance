@@ -19,6 +19,7 @@ package org.drools.semantics.builder.model;
 import org.drools.semantics.utils.NameUtils;
 import org.kie.api.definition.type.Position;
 import org.semanticweb.owlapi.model.IRI;
+import org.w3._2002._07.owl.Thing;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -363,7 +364,9 @@ public class Concept implements Cloneable {
     }
 
 
-
+    public boolean isTop() {
+        return iri != null &&  Thing.IRI.equals( iri.toQuotedString() );
+    }
 
 
     public Concept getChosenSuperConcept() {
