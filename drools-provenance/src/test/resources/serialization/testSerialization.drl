@@ -1,0 +1,17 @@
+package org.drools.beliefs.provenance;
+
+import org.test.*;
+import com.foo.*;
+import org.drools.core.metadata.*;
+import org.drools.beliefs.provenance.annotations.*;
+import java.util.*;
+
+import static com.foo.MetaFactory.*;
+import static org.test.MetaFactory.*;
+
+rule "Test New"
+when
+
+then
+    bolster( newMyKlass( "111" ) );
+end
