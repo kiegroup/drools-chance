@@ -131,7 +131,7 @@ public class ProvenanceTest {
         Property prevProp = (Property) prev.getGenerated().iterator().next();
         assertEquals( "fooVal", prevProp.getValue().iterator().next().getLit() );
 
-        assertTrue( act.getEndedAtTime().get( 0 ).after( prev.getEndedAtTime().get( 0 ) ) );
+        assertTrue( act.getEndedAtTime().get( 0 ).getTime() >= prev.getEndedAtTime().get( 0 ).getTime() );
     }
 
 

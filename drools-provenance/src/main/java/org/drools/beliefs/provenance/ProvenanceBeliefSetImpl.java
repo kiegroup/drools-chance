@@ -7,13 +7,12 @@ import org.drools.beliefs.provenance.templates.TemplateRegistry;
 import org.drools.core.InitialFact;
 import org.drools.core.beliefsystem.BeliefSystem;
 import org.drools.core.beliefsystem.simple.SimpleBeliefSet;
-import org.drools.core.beliefsystem.simple.SimpleLogicalDependency;
 import org.drools.core.beliefsystem.simple.SimpleMode;
 import org.drools.core.common.InternalFactHandle;
-import org.drools.core.common.LogicalDependency;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.factmodel.AnnotationDefinition;
 import org.drools.core.metadata.*;
+import org.drools.core.process.core.Work;
 import org.drools.core.rule.Pattern;
 import org.drools.core.rule.RuleConditionElement;
 import org.drools.core.spi.Activation;
@@ -41,20 +40,9 @@ public class ProvenanceBeliefSetImpl
         super( beliefSystem, rootHandle );
     }
 
-    public void add( SimpleMode node ) {
-        super.add( node );
-        if ( node.getObject().getObject() instanceof MetaCallableTask ) {
-            recordActivity( node, true );
-        }
-    }
 
-    public void remove( SimpleMode node ) {
-        super.remove( node );
-        recordActivity( node, false );
-    }
-
-    private void recordActivity( SimpleMode node, boolean positiveAssertion ) {
-    	Activity activity = this.createActivity( node, positiveAssertion );
+    public void recordActivity( MetaCallableTask task, Activation activation, boolean positiveAssertion ) {
+    	Activity activity = this.createActivity( task, activation, positiveAssertion );
         if ( activity == null ) {
             // no activity was actually performed
             return;
@@ -86,22 +74,18 @@ public class ProvenanceBeliefSetImpl
         this.provenance.put( key, activity );
     }
 
-    protected Activity createActivity( SimpleMode node, boolean positiveAssertion ) {
-        LogicalDependency dep = node.getObject();
-        if ( dep.getObject() instanceof WorkingMemoryTask ) {
-            WorkingMemoryTask task = (WorkingMemoryTask) dep.getObject();
-            if ( ! task.getTargetId().equals( MetadataContainer.getIdentifier( getFactHandle().getObject() ) ) ) {
-                task = ((ModifyLiteral) task.getSetters()).getInverse( fh.getObject() );
-            }
-            if ( task.kind() == MetaCallableTask.KIND.MODIFY && task.getSetters().getSetterChain() == null ) {
-                // no activity was actually performed on this related object
-                return null;
-            }
-            return toActivity( task,
-                               dep.getJustifier(),
-                               positiveAssertion );
+    protected Activity createActivity( MetaCallableTask mct, Activation activation, boolean positiveAssertion ) {
+        WorkingMemoryTask task = (WorkingMemoryTask) mct;
+        if ( ! task.getTargetId().equals( MetadataContainer.getIdentifier( getFactHandle().getObject() ) ) ) {
+            task = ((ModifyLiteral) task.getSetters()).getInverse( fh.getObject() );
         }
-        return null;
+        if ( task.kind() == MetaCallableTask.KIND.MODIFY && task.getSetters().getSetterChain() == null ) {
+            // no activity was actually performed on this related object
+            return null;
+        }
+        return toActivity( task,
+                           activation,
+                           positiveAssertion );
     }
 
     protected Activity toActivity( WorkingMemoryTask task, Activation justifier, boolean positiveAssertion ) {

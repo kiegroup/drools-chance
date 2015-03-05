@@ -10,6 +10,7 @@ import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.LogicalDependency;
 import org.drools.core.common.NamedEntryPoint;
 import org.drools.core.common.TruthMaintenanceSystem;
+import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.factmodel.traits.BitMaskKey;
 import org.drools.core.factmodel.traits.TraitFactory;
 import org.drools.core.factmodel.traits.TraitProxy;
@@ -17,6 +18,7 @@ import org.drools.core.metadata.Don;
 import org.drools.core.metadata.MetaCallableTask;
 import org.drools.core.metadata.Modify;
 import org.drools.core.metadata.NewInstance;
+import org.drools.core.metadata.WorkingMemoryTask;
 import org.drools.core.reteoo.ObjectTypeConf;
 import org.drools.core.reteoo.PropertySpecificUtil;
 import org.drools.core.spi.Activation;
@@ -52,17 +54,27 @@ public class ProvenanceBeliefSystem
         }
     }
 
+    public BeliefSet<SimpleMode> insert(LogicalDependency<SimpleMode> node,
+                                        BeliefSet<SimpleMode> beliefSet,
+                                        PropagationContext context,
+                                        ObjectTypeConf typeConf) {
+        return insert( node.getMode(), node.getJustifier().getRule(), node.getJustifier(), node.getObject(), beliefSet, context, typeConf );
+    }
+
     @Override
-    public BeliefSet insert( LogicalDependency node,
+    public BeliefSet insert( SimpleMode mode,
+                             RuleImpl rule,
+                             Activation activation,
+                             Object payload,
                              BeliefSet beliefSet,
                              PropagationContext context,
                              ObjectTypeConf typeConf ) {
 
-        if ( node.getObject() instanceof MetaCallableTask ) {
+        if ( payload instanceof MetaCallableTask ) {
 
-            MetaCallableTask task = (MetaCallableTask) node.getObject();
-            if ( node.getJustified() instanceof ProvenanceBeliefSet ) {
-                EqualityKey k = ((ProvenanceBeliefSetImpl) node.getJustified()).getFactHandle().getEqualityKey();
+            MetaCallableTask task = (MetaCallableTask) payload;
+            if ( beliefSet instanceof ProvenanceBeliefSet ) {
+                EqualityKey k = beliefSet.getFactHandle().getEqualityKey();
                 if ( k.getStatus() == EqualityKey.JUSTIFIED ) {
                     getEp().getTruthMaintenanceSystem().remove( k );
                 }
@@ -71,14 +83,14 @@ public class ProvenanceBeliefSystem
             Modify setters;
             switch ( task.kind() ) {
                 case ASSERT :
-                    beliefSet = ensureBeliefSetConsistency( beliefSet, executeNew( (NewInstance) task, node ) );
+                    beliefSet = ensureBeliefSetConsistency( beliefSet, executeNew( (NewInstance) task, activation, rule ) );
                     setters = ((NewInstance) task).getSetters();
                     break;
-                case MODIFY : executeModify( (Modify) task, node );
+                case MODIFY : executeModify( (Modify) task, activation );
                     beliefSet = ensureBeliefSetConsistency( beliefSet, ( (Modify) task ).getTarget() );
                     setters = (Modify) task;
                     break;
-                case DON    : executeDon( (Don) task, node );
+                case DON    : executeDon( (Don) task, activation );
                     beliefSet = ensureBeliefSetConsistency( beliefSet, ( (Don) task ).getCore() );
                     setters = ((Don) task).getSetters();
                     break;
@@ -86,7 +98,10 @@ public class ProvenanceBeliefSystem
                     throw new UnsupportedOperationException( "Unrecognized Meta TASK type" );
             }
 
-            beliefSet.add( node.getMode() );
+            if ( mode != null ) {
+                beliefSet.add( mode );
+            }
+            ((ProvenanceBeliefSet) beliefSet).recordActivity( task, activation, true );
 
             if ( setters != null && setters.getAdditionalUpdates() != null ) {
                 for ( Object extra : setters.getAdditionalUpdates() ) {
@@ -99,18 +114,21 @@ public class ProvenanceBeliefSystem
                         if ( ek.getBeliefSet() == null ) {
                             ek.setBeliefSet( newBeliefSet( ek.getFactHandle() ) );
                         }
-                        ek.getBeliefSet().add( node.getMode() );
+                        ek.getBeliefSet().add( mode );
+                        ((ProvenanceBeliefSet)ek.getBeliefSet()).recordActivity( task, activation, true );
                     }
                 }
             }
 
             // set the proper target on the dependency inside the mode
-            SimpleLogicalDependency dep = (SimpleLogicalDependency) ((SimpleMode)node.getMode()).getObject();
-            dep.setObject( beliefSet.getFactHandle().getObject() );
+            if ( mode != null ) {
+                SimpleLogicalDependency dep = (SimpleLogicalDependency) mode.getObject();
+                dep.setObject( beliefSet.getFactHandle().getObject() );
+            }
 
             return beliefSet;
         } else {
-            return super.insert( node, beliefSet, context, typeConf );
+            return super.insert( mode, rule, activation, payload, beliefSet, context, typeConf );
         }
 
 
@@ -134,15 +152,15 @@ public class ProvenanceBeliefSystem
         return beliefSet;
     }
 
-    private void executeDon( Don don, LogicalDependency node ) {
-        getEp().getTraitHelper().don( node.getJustifier(),
+    private void executeDon( Don don, Activation activation ) {
+        getEp().getTraitHelper().don( activation,
                                     don.getCore(),
                                     don.getTrait(),
                                     null,
                                     false );
     }
 
-    private void executeModify( Modify modify, LogicalDependency node ) {
+    private void executeModify( Modify modify, Activation activation ) {
         Object target = modify.getTarget();
         modify.call( getEp().getKnowledgeBase() );
 
@@ -150,7 +168,7 @@ public class ProvenanceBeliefSystem
                    target,
                    modify.getModificationMask(),
                    modify.getModificationClass(),
-                   node.getJustifier() );
+                   activation );
 
         Object[] updates = modify.getAdditionalUpdates();
         if ( updates != null ) {
@@ -159,17 +177,17 @@ public class ProvenanceBeliefSystem
                            updates[ j ],
                            modify.getAdditionalUpdatesModificationMask( j ),
                            updates[ j ].getClass(),
-                           node.getJustifier() );
+                           activation );
             }
         }
     }
 
-    private Object executeNew( NewInstance newInstance, LogicalDependency node ) {
+    private Object executeNew( NewInstance newInstance, Activation activation, RuleImpl rule ) {
         if ( newInstance.isInterface() ) {
             newInstance.setInstantiatorFactory( TraitFactory.getTraitBuilderForKnowledgeBase( getEp().getKnowledgeBase() ).getInstantiatorFactory() );
             Object target = newInstance.callUntyped();
 
-            getEp().getTraitHelper().don( node.getJustifier(),
+            getEp().getTraitHelper().don( activation,
                                         target,
                                         newInstance.getInstanceClass(),
                                         newInstance.getInitArgs(),
@@ -178,9 +196,9 @@ public class ProvenanceBeliefSystem
         } else {
             Object target = newInstance.call();
             getEp().insert( target,
-                      false,
-                       node.getJustifier().getRule(),
-                       node.getJustifier() );
+                            false,
+                            rule,
+                            activation );
             return target;
         }
     }
@@ -220,5 +238,10 @@ public class ProvenanceBeliefSystem
 
     public long now() {
         return getEp().getInternalWorkingMemory().getSessionClock().getCurrentTime();
+    }
+
+    @Override
+    public SimpleMode asMode( Object value ) {
+        return (SimpleMode) value;
     }
 }

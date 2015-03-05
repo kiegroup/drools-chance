@@ -19,7 +19,7 @@ rule Init
 dialect "mvel"
 when
 then
-    x = insertLogical( newMyKlass( "123" ).prop( "hello" ) ).object;
+    x = bolster( newMyKlass( "123" ).prop( "hello" ) ).object;
     System.out.println( "@@@@@" + x );
     list.add( x );
     insert( "fooo" );
