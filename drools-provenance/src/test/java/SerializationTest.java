@@ -18,7 +18,7 @@ public class SerializationTest {
     public void testRunAllWithNoExceptionsStoreAndRetrieve() throws Exception {
         KieSession session = loadProvenanceSession( "serialization/testSerialization.drl" );
 
-        assertEquals(1, session.fireAllRules());
+        assertEquals(2, session.fireAllRules());
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -42,7 +42,6 @@ public class SerializationTest {
 
         KieHelper kieHelper = validateKieBuilder( traitDRL, ruleDRL );
         KieSession kieSession = kieHelper.build( ProvenanceHelper.getProvenanceEnabledKieBaseConfiguration() ).newKieSession();
-        kieSession.fireAllRules();
 
         return kieSession;
     }
