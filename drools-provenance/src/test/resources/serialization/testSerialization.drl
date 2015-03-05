@@ -1,17 +1,28 @@
 package org.drools.beliefs.provenance;
 
-import org.test.*;
-import com.foo.*;
-import org.drools.core.metadata.*;
-import org.drools.beliefs.provenance.annotations.*;
-import java.util.*;
+import com.foo.MySubKlass_;
+import com.foo.MySubKlass;
+import org.test.MyKlass;
 
-import static com.foo.MetaFactory.*;
-import static org.test.MetaFactory.*;
+dialect "mvel"
+
+declare Test
+    @Traitable
+    prop : java.lang.String
+end
 
 rule "Test New"
 when
-
+    not MyKlass(  )
 then
-    bolster( newMyKlass( "111" ) );
+    $test = new Test();
+
+    bolster( MySubKlass_.donMySubKlass( $test ) );
+end
+
+rule "Test Find"
+when
+    MyKlass( )
+then
+    System.out.println("Found MyKlass");
 end
