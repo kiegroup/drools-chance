@@ -104,20 +104,7 @@
 
     <!-- http://www.drools.org/ont/lmm/LMM_L1.owl#Expression -->
 
-    <owl:Class rdf:about="&lmm;Expression">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&lmm;hasInterpretant"/>
-                <owl:someValuesFrom rdf:resource="&lmm;Meaning"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&lmm;denotes"/>
-                <owl:someValuesFrom rdf:resource="&lmm;Reference"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
+    <owl:Class rdf:about="&lmm;Expression"/>
     
 
 

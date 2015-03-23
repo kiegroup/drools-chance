@@ -6,17 +6,19 @@ import com.google.common.cache.LoadingCache;
 import edu.mayo.cts2.framework.core.client.Cts2RestClient;
 import edu.mayo.cts2.framework.model.core.URIAndEntityName;
 import edu.mayo.cts2.framework.model.valuesetdefinition.IteratableResolvedValueSet;
-import org.drools.drools_shapes.terms.Code;
-import org.drools.shapes.terms.Terms;
+import org.drools.drools_shapes.terms.ConceptDescriptor;
+import org.drools.shapes.terms.operations.Terms;
 
 import java.util.concurrent.ExecutionException;
 
 /**
  * OMG(R) CTS2 REST-Based ValueSetProcessor.
  */
-public class Cts2ValueSetProcessor implements Terms {
+public class Cts2TermsImpl implements Terms {
 
-    private final static String BASE_URL = "http://some/server/cts2/valuesetdefinitionbyuri/resolution?uri={uri}";
+    public static final String KIND = "cts2";
+
+    public static String BASE_URL = "http://some/server/cts2/valuesetdefinitionbyuri/resolution?uri={uri}";
 
     private LoadingCache<String, IteratableResolvedValueSet> valueSetCache = CacheBuilder.newBuilder()
             .maximumSize(10)
@@ -34,7 +36,7 @@ public class Cts2ValueSetProcessor implements Terms {
 
     private Cts2RestClient client = Cts2RestClient.instance();
 
-    public boolean isEntityInSet(Code entity, Code target) {
+    public boolean isEntityInSet(ConceptDescriptor entity, ConceptDescriptor target) {
         IteratableResolvedValueSet vs = null;
         try {
             vs = this.valueSetCache.get(target.getCode());
@@ -49,7 +51,7 @@ public class Cts2ValueSetProcessor implements Terms {
         return this.containsCode(vs, target);
     }
 
-    protected boolean containsCode( IteratableResolvedValueSet valueSet, Code code ) {
+    protected boolean containsCode( IteratableResolvedValueSet valueSet, ConceptDescriptor code ) {
         for( URIAndEntityName entry : valueSet.getEntry() ) {
             if( code.getCode().equals( entry.getName() ) && code.getCodeSystem().equals( entry.getNamespace() ) ) {
                 return true;

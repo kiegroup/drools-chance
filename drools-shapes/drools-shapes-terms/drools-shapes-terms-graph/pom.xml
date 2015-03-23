@@ -16,39 +16,12 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>drools-shapes-terms-impl</artifactId>
+	<artifactId>drools-shapes-terms-graph</artifactId>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-shapes-terms-api</artifactId>
-		</dependency>
-
-		<!--dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-shapes-terms-cts2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-shapes-terms-fhir</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-shapes-terms-file</artifactId>
-		</dependency-->
-
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-shapes-terms-graph</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-shapes-terms-internal</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
 

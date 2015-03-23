@@ -6,8 +6,8 @@ import com.google.common.cache.LoadingCache;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.drools.core.io.impl.ClassPathResource;
-import org.drools.drools_shapes.terms.Code;
-import org.drools.shapes.terms.Terms;
+import org.drools.drools_shapes.terms.ConceptDescriptor;
+import org.drools.shapes.terms.operations.Terms;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,7 +18,9 @@ import java.util.concurrent.ExecutionException;
 
 
 @SuppressWarnings("unused")
-public class FileBasedValueSetProcessor implements Terms {
+public class FileTermsImpl implements Terms {
+
+    public static final String KIND = "file";
 
     private final String NAMESPACE = "http://mayo.edu/sprint/";
 
@@ -58,8 +60,7 @@ public class FileBasedValueSetProcessor implements Terms {
                         }
                     });
 
-    @Override
-    public boolean isEntityInSet(Code code, Code target) {
+    public boolean isEntityInSet(ConceptDescriptor code, ConceptDescriptor target) {
     	if(code == null || StringUtils.isEmpty(code.getCode())) {
     		return false;
     	}

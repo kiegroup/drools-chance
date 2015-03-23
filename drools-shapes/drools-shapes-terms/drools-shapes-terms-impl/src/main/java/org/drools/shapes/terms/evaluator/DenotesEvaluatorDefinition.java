@@ -1,5 +1,6 @@
 package org.drools.shapes.terms.evaluator;
 
+import com.clarkparsia.empire.annotation.RdfProperty;
 import org.drools.core.base.BaseEvaluator;
 import org.drools.core.base.ValueType;
 import org.drools.core.base.evaluators.EvaluatorDefinition;
@@ -11,40 +12,37 @@ import org.drools.core.rule.VariableRestriction;
 import org.drools.core.spi.Evaluator;
 import org.drools.core.spi.FieldValue;
 import org.drools.core.spi.InternalReadAccessor;
-import org.drools.drools_shapes.terms.Code;
-import org.drools.shapes.terms.Terms;
-import org.drools.shapes.terms.ValueSetProcessorFactory;
+import org.drools.drools_shapes.terms.ConceptDescriptor;
+import org.drools.shapes.terms.TermsInferenceServiceFactory;
 
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.net.URI;
 
 /**
- * Custom Drools 'inValueSet' operator.
+ * Custom Drools 'denotes' operator.
  */
-public class ValueSetEvaluator implements EvaluatorDefinition {
+public class DenotesEvaluatorDefinition implements EvaluatorDefinition {
 
-    private static final String IN_VALUE_SET_OP = "expresses";
+    private static final String DENOTES_OP = "denotes";
 
-    private Terms valueSetProcessor;
-
-    private ValueSetEval valueSetEval = new ValueSetEval(
-    		Operator.addOperatorToRegistry(IN_VALUE_SET_OP, false)
+    private DenotesEval denotesEval = new DenotesEval(
+    		Operator.addOperatorToRegistry(DENOTES_OP, false)
     );
     
-    private ValueSetEval valueSetEvalNot = new ValueSetEval(
-    		Operator.addOperatorToRegistry(IN_VALUE_SET_OP, true)
+    private DenotesEval notDenotesEval = new DenotesEval(
+    		Operator.addOperatorToRegistry(DENOTES_OP, true)
     );
 
-    public ValueSetEvaluator() {
+    public DenotesEvaluatorDefinition() {
         super();
-        this.valueSetProcessor = ValueSetProcessorFactory.instance().getValueSetProcessor();
     }
 
     
     @Override
     public String[] getEvaluatorIds() {
-        return new String[]{ IN_VALUE_SET_OP };
+        return new String[]{ DENOTES_OP };
     }
 
     @Override
@@ -54,22 +52,22 @@ public class ValueSetEvaluator implements EvaluatorDefinition {
 
     @Override
     public Evaluator getEvaluator(ValueType type, String operatorId, boolean isNegated, String parameterText, Target leftTarget, Target rightTarget) {
-        return isNegated ? valueSetEvalNot : valueSetEval;
+        return isNegated ? notDenotesEval : denotesEval;
     }
 
     @Override
     public Evaluator getEvaluator(ValueType type, String operatorId, boolean isNegated, String parameterText) {
-    	return isNegated ? valueSetEvalNot : valueSetEval;
+    	return isNegated ? notDenotesEval : denotesEval;
     }
 
     @Override
     public Evaluator getEvaluator(ValueType type, Operator operator, String parameterText) {
-    	return operator.isNegated() ? valueSetEvalNot : valueSetEval;
+    	return operator.isNegated() ? notDenotesEval : denotesEval;
     }
 
     @Override
     public Evaluator getEvaluator(ValueType type, Operator operator) {
-    	return operator.isNegated() ? valueSetEvalNot : valueSetEval;
+    	return operator.isNegated() ? notDenotesEval : denotesEval;
     }
 
     @Override
@@ -92,37 +90,33 @@ public class ValueSetEvaluator implements EvaluatorDefinition {
         throw new UnsupportedOperationException();
     }
 
-    private class ValueSetEval extends BaseEvaluator {
+    private class DenotesEval extends BaseEvaluator {
 
-        public ValueSetEval(Operator operator) {
-			super(null, operator);
+        private DenotesEvaluatorImpl eval;
+
+        public DenotesEval(Operator operator) {
+            super(null, operator);
+            eval = new DenotesEvaluatorImpl( TermsInferenceServiceFactory.instance().getValueSetProcessor() );
 		}
 
 		@Override
         public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor extractor, InternalFactHandle factHandle, FieldValue value) {        	
-            Code valueSet = (Code) value.getValue();
-            
-        	Object target = extractor.getValue( factHandle.getObject() );
+            Object right = value.getValue();
+        	Object left = extractor.getValue( factHandle.getObject() );
 
-            if(target instanceof TraitProxy) {
-                target = ((TraitProxy)target).getObject();
+            if( left instanceof TraitProxy ) {
+                left = ( (TraitProxy) left ).getObject();
             }
+            //TODO : these casts are potentially unsafe, but the check should be done at compile time, not at runtime
 
-            if( target instanceof Code ) {
-                Code code;
-                code = ((Code)target);
-                boolean found = this.matches(code, valueSet);
-                return this.getOperator().isNegated() ? !found : found;
-            } else {
-                return false;
-            }
-
+            boolean answer = eval.denotes( (ConceptDescriptor) left, (ConceptDescriptor) right, getPropertyURI( extractor ) );
+            return this.getOperator().isNegated() ? ! answer : answer;
         }
 
-        protected boolean matches(Code code, Code valueSetUri) {
-            return valueSetProcessor.isEntityInSet( code, valueSetUri );
+        private String getPropertyURI( InternalReadAccessor extractor ) {
+            RdfProperty ann = extractor.getNativeReadMethod().getAnnotation( RdfProperty.class );
+            return ann != null ? ann.value() : null;
         }
-
 
         @Override
         public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, InternalFactHandle left, InternalReadAccessor rightExtractor, InternalFactHandle right) {

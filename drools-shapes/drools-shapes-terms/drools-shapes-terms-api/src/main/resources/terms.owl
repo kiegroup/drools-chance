@@ -16,13 +16,46 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      ontologyIRI="http://www.drools.org/drools-shapes/terms">
-    <Prefix name="terms" IRI="http://www.drools.org/drools-shapes/terms#"/>
-    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
-    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
-    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
-    <Import>http://www.drools.org/ont/lmm/LMM_L1.owl</Import>
-    <Import>http://www.w3.org/2004/02/skos/core</Import>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Prefix name="terms" IRI="http://www.drools.org/drools-shapes/terms#"/>
+    <Import>http://www.omg.org/spec/CTS2/1.1</Import>
+    <Declaration>
+        <Class IRI="#AtomicConceptDescriptor"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#CompositeConceptDescriptor"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ConceptCode"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ExtensionalConceptDescriptor"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#IntensionalConceptDescriptor"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#MultiTaxonomy"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Ontology"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Symbol"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Taxonomy"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Thesaurus"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Vocabulary"/>
+    </Declaration>
     <Declaration>
         <DataProperty IRI="#code"/>
     </Declaration>
@@ -36,60 +69,132 @@
         <DataProperty IRI="#uri"/>
     </Declaration>
     <SubClassOf>
-        <Class IRI="#Code"/>
+        <Class IRI="#AtomicConceptDescriptor"/>
+        <Class IRI="#ConceptDescriptor"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#CompositeConceptDescriptor"/>
+        <Class IRI="#ConceptDescriptor"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConceptCode"/>
+        <Class IRI="#ConceptDescriptor"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConceptCode"/>
         <Class IRI="http://www.drools.org/ont/lmm/LMM_L1.owl#Expression"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#Code"/>
+        <Class IRI="#ConceptDescriptor"/>
+        <Class IRI="#Symbol"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConceptDescriptor"/>
         <DataExactCardinality cardinality="1">
             <DataProperty IRI="#code"/>
             <Datatype abbreviatedIRI="xsd:string"/>
         </DataExactCardinality>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#Code"/>
+        <Class IRI="#ConceptDescriptor"/>
         <DataExactCardinality cardinality="1">
             <DataProperty IRI="#codeSystem"/>
             <Datatype abbreviatedIRI="xsd:string"/>
         </DataExactCardinality>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#Code"/>
+        <Class IRI="#ConceptDescriptor"/>
         <DataMaxCardinality cardinality="1">
             <DataProperty IRI="#displayName"/>
             <Datatype abbreviatedIRI="xsd:string"/>
         </DataMaxCardinality>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#Code"/>
+        <Class IRI="#ConceptDescriptor"/>
         <DataMaxCardinality cardinality="1">
             <DataProperty IRI="#uri"/>
             <Datatype abbreviatedIRI="xsd:anyURI"/>
         </DataMaxCardinality>
     </SubClassOf>
     <SubClassOf>
+        <Class IRI="#ExtensionalConceptDescriptor"/>
+        <Class IRI="#CompositeConceptDescriptor"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#IntensionalConceptDescriptor"/>
+        <Class IRI="#CompositeConceptDescriptor"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#MultiTaxonomy"/>
+        <Class IRI="#Taxonomy"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#MultiTaxonomy"/>
+        <Class IRI="#Thesaurus"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Ontology"/>
+        <Class IRI="#MultiTaxonomy"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Taxonomy"/>
+        <Class IRI="#Vocabulary"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Thesaurus"/>
+        <Class IRI="#Vocabulary"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Vocabulary"/>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Collection"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.drools.org/ont/lmm/LMM_L1.owl#Expression"/>
+        <Class IRI="#Symbol"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.omg.org/spec/CTS2#EntityReference"/>
+        <Class IRI="#Symbol"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.omg.org/spec/CTS2#NameAndMeaningReference"/>
+        <Class IRI="#Symbol"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.omg.org/spec/CTS2#NameOrURI"/>
+        <Class IRI="#Symbol"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.omg.org/spec/CTS2#ValueSet"/>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+    </SubClassOf>
+    <SubClassOf>
         <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
-        <Class IRI="http://www.drools.org/ont/lmm/LMM_L1.owl#Meaning"/>
+        <Class IRI="http://www.omg.org/spec/CTS2#Entity"/>
     </SubClassOf>
     <SubClassOf>
         <Class IRI="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
-        <Class IRI="http://www.drools.org/ont/lmm/LMM_L1.owl#Meaning"/>
+        <Class IRI="http://www.omg.org/spec/CTS2#Entity"/>
     </SubClassOf>
     <DataPropertyDomain>
         <DataProperty IRI="#code"/>
-        <Class IRI="#Code"/>
+        <Class IRI="#ConceptDescriptor"/>
     </DataPropertyDomain>
     <DataPropertyDomain>
         <DataProperty IRI="#codeSystem"/>
-        <Class IRI="#Code"/>
+        <Class IRI="#ConceptDescriptor"/>
     </DataPropertyDomain>
     <DataPropertyDomain>
         <DataProperty IRI="#displayName"/>
-        <Class IRI="#Code"/>
+        <Class IRI="#ConceptDescriptor"/>
     </DataPropertyDomain>
     <DataPropertyDomain>
         <DataProperty IRI="#uri"/>
-        <Class IRI="#Code"/>
+        <Class IRI="#ConceptDescriptor"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
     </DataPropertyDomain>
     <DataPropertyRange>
         <DataProperty IRI="#code"/>
@@ -106,6 +211,10 @@
     <DataPropertyRange>
         <DataProperty IRI="#uri"/>
         <Datatype abbreviatedIRI="xsd:anyURI"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
 </Ontology>
 

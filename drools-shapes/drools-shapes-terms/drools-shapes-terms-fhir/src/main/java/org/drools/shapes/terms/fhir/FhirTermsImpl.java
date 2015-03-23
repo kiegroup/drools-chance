@@ -8,15 +8,16 @@ import ca.uhn.fhir.rest.client.IGenericClient;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.drools.drools_shapes.terms.Code;
-import org.drools.shapes.terms.Terms;
+import org.drools.drools_shapes.terms.ConceptDescriptor;
+import org.drools.shapes.terms.operations.Terms;
 
 import java.lang.String;
 import java.util.concurrent.ExecutionException;
 
-public class FhirValueSetProcessor implements Terms {
+public class FhirTermsImpl implements Terms {
 
-
+    public static final String KIND = "fhir";
+    
     IGenericClient client;
 
     private LoadingCache<String, ValueSet> valueSetCache = CacheBuilder.newBuilder()
@@ -33,13 +34,13 @@ public class FhirValueSetProcessor implements Terms {
         return (ValueSet) b.getEntries().iterator().next().getResource();
     }
 
-    public FhirValueSetProcessor(String serviceUrl, String username, String password) {
+    public FhirTermsImpl( String serviceUrl, String username, String password ) {
         super();
         client = new FhirContext().newRestfulGenericClient( serviceUrl );
     }
 
 
-    public boolean isEntityInSet(Code code, Code target) {
+    public boolean isEntityInSet(ConceptDescriptor code, ConceptDescriptor target) {
         if(target == null || code == null || code.getCode() == null) {
             return false;
         }
@@ -58,7 +59,7 @@ public class FhirValueSetProcessor implements Terms {
         return this.containsCode(vs, code);
     }
 
-    protected boolean containsCode(ValueSet valueSet, Code code) {
+    protected boolean containsCode(ValueSet valueSet, ConceptDescriptor code) {
         if(valueSet.getDefine() != null) {
             for(ValueSet.DefineConcept concept : valueSet.getDefine().getConcept()) {
                 if(code.getCode().equals(concept.getCode().getValue())) {
