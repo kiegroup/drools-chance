@@ -5,11 +5,9 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>drools-shapes-terms-api</module>
-		<module>drools-shapes-terms-cts2</module>
-		<module>drools-shapes-terms-file</module>
-		<module>drools-shapes-terms-fhir</module>
 		<module>drools-shapes-terms-impl</module>
 		<module>drools-shapes-terms-graph</module>
+        <module>drools-shapes-terms-cts2</module>
 		<module>drools-shapes-terms-internal</module>
 	</modules>
 
@@ -45,9 +43,9 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.omg.cts2</groupId>
-				<artifactId>cts2-pim-java</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<groupId>edu.mayo.cts2.framework</groupId>
+				<artifactId>cts2-service</artifactId>
+				<version>1.1.3-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
@@ -101,22 +99,6 @@
 					<exclusion>
 						<groupId>xml-apis</groupId>
 						<artifactId>xml-apis</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>edu.mayo.cts2.framework</groupId>
-				<artifactId>cts2-core</artifactId>
-				<version>1.1.0-SNAPSHOT</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-httpclient</groupId>
-						<artifactId>commons-httpclient</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>net.sf.saxon</groupId>
-						<artifactId>saxon</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>

@@ -1,63 +1,98 @@
 package org.drools.shapes.terms.cts2;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import edu.mayo.cts2.framework.core.client.Cts2RestClient;
-import edu.mayo.cts2.framework.model.core.URIAndEntityName;
-import edu.mayo.cts2.framework.model.valuesetdefinition.IteratableResolvedValueSet;
-import org.drools.drools_shapes.terms.ConceptDescriptor;
-import org.drools.shapes.terms.operations.Terms;
+import edu.mayo.cts2.framework.service.profile.Cts2Profile;
+import edu.mayo.cts2.framework.service.profile.conceptdomain.ConceptDomainReadService;
+import edu.mayo.cts2.framework.service.profile.conceptdomainbinding.ConceptDomainBindingReadService;
+import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQueryService;
+import edu.mayo.cts2.framework.service.profile.mapentry.MapEntryReadService;
+import edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService;
+import edu.mayo.cts2.framework.service.profile.valueset.ValueSetReadService;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ValueSetDefinitionReadService;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ValueSetDefinitionResolutionService;
+import edu.mayo.cts2.framework.service.provider.ServiceProvider;
+import org.drools.shapes.terms.operations.internal.TermsInferenceService;
 
-import java.util.concurrent.ExecutionException;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 /**
  * OMG(R) CTS2 REST-Based ValueSetProcessor.
  */
-public class Cts2TermsImpl implements Terms {
+public class Cts2TermsImpl implements TermsInferenceService {
 
     public static final String KIND = "cts2";
 
-    public static String BASE_URL = "http://some/server/cts2/valuesetdefinitionbyuri/resolution?uri={uri}";
+    private ServiceProvider serviceProvider;
 
-    private LoadingCache<String, IteratableResolvedValueSet> valueSetCache = CacheBuilder.newBuilder()
-            .maximumSize(10)
-            .build(
-                    new CacheLoader<String, IteratableResolvedValueSet>() {
-                        public IteratableResolvedValueSet load(String key) {
-                            try {
-                                return client.getCts2Resource(BASE_URL, null, null, IteratableResolvedValueSet.class, key);
-                            } catch (Exception e) {
-                                return null;
-                            }
-                        }
-                    });
-
-
-    private Cts2RestClient client = Cts2RestClient.instance();
-
-    public boolean isEntityInSet(ConceptDescriptor entity, ConceptDescriptor target) {
-        IteratableResolvedValueSet vs = null;
-        try {
-            vs = this.valueSetCache.get(target.getCode());
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-
-        if(vs == null){
-            return false;
-        }
-
-        return this.containsCode(vs, target);
+    public Cts2TermsImpl() {
+        this( null );
     }
 
-    protected boolean containsCode( IteratableResolvedValueSet valueSet, ConceptDescriptor code ) {
-        for( URIAndEntityName entry : valueSet.getEntry() ) {
-            if( code.getCode().equals( entry.getName() ) && code.getCodeSystem().equals( entry.getNamespace() ) ) {
-                return true;
+    public Cts2TermsImpl( ServiceProvider serviceProvider ) {
+        super();
+        if( serviceProvider == null ) {
+            ServiceLoader serviceLoader = ServiceLoader.load(ServiceProvider.class);
+            Iterator<ServiceProvider> providers = serviceLoader.iterator();
+            if(providers.hasNext()) {
+                this.serviceProvider = providers.next();
+                if( providers.hasNext() ) {
+                    throw new ExceptionInInitializerError("More than one CTS2 ServiceProvider found.");
+                }
+            } else {
+                throw new ExceptionInInitializerError("Could not find a CTS2 ServiceProvider.");
             }
+        } else {
+            this.serviceProvider = serviceProvider;
+        }
+    }
+
+    @Override
+    public ConceptDomainReadService conceptDomainCatalogRead() {
+        return this.getCts2Service(ConceptDomainReadService.class);
+    }
+
+    @Override
+    public ConceptDomainBindingReadService conceptDomainBindingRead() {
+        return this.getCts2Service(ConceptDomainBindingReadService.class);
+    }
+
+    @Override
+    public MapEntryReadService mapEntryRead() {
+        return this.getCts2Service(MapEntryReadService.class);
+    }
+
+    @Override
+    public EntityDescriptionQueryService entityDescriptionQuery() {
+        return this.getCts2Service(EntityDescriptionQueryService.class);
+    }
+
+    @Override
+    public ResolvedValueSetResolutionService resolvedValueSetResolution() {
+        return this.getCts2Service(ResolvedValueSetResolutionService.class);
+    }
+
+    @Override
+    public ValueSetReadService valueSetCatalogRead() {
+        return this.getCts2Service(ValueSetReadService.class);
+    }
+
+    @Override
+    public ValueSetDefinitionResolutionService valueSetDefinitionResolution() {
+        return this.getCts2Service(ValueSetDefinitionResolutionService.class);
+    }
+
+    @Override
+    public ValueSetDefinitionReadService valueSetDefinitionRead() {
+        return this.getCts2Service(ValueSetDefinitionReadService.class);
+    }
+
+    protected <T extends Cts2Profile> T getCts2Service(Class<T> serviceClass) {
+        T service = this.serviceProvider.getService(serviceClass);
+
+        if(service == null) {
+            throw new RuntimeException("Could not find CTS2 service for class: " + serviceClass.getName());
         }
 
-        return false;
+        return service;
     }
 }

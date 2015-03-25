@@ -1,13 +1,31 @@
 package org.drools.shapes.terms.evaluator;
 
+
+import edu.mayo.cts2.framework.model.command.ResolvedFilter;
+import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
+import edu.mayo.cts2.framework.model.core.ScopedEntityName;
+import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI;
+import edu.mayo.cts2.framework.model.service.core.NameOrURI;
+import edu.mayo.cts2.framework.model.service.core.NameOrURIList;
+import edu.mayo.cts2.framework.model.service.core.Query;
+import edu.mayo.cts2.framework.model.util.ModelUtils;
+import edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions;
+import edu.mayo.cts2.framework.service.profile.entitydescription.EntitiesFromAssociationsQuery;
+import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery;
+import edu.mayo.cts2.framework.service.profile.mapentry.name.MapEntryReadId;
+import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.name.ValueSetDefinitionReadId;
+import org.apache.commons.lang.StringUtils;
 import org.drools.drools_shapes.terms.ConceptDescriptor;
 import org.drools.shapes.terms.operations.TermsInference;
 import org.drools.shapes.terms.operations.internal.TermsInferenceService;
-import org.omg.spec.cts2.EntityReferenceList;
-import org.omg.spec.cts2.MapEntry;
-import org.omg.spec.cts2.NameOrURI;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 
 public class DenotesEvaluatorImpl implements TermsInference {
 
@@ -20,21 +38,14 @@ public class DenotesEvaluatorImpl implements TermsInference {
     public boolean denotes( ConceptDescriptor left, ConceptDescriptor right, String leftPropertyUri ) {
         if ( isValueSet( right ) ) {
             // it is a valueSet
-            return ! provider.resolvedValueSetResolution().contains( right.getUri(), asSingletonList( left ) ).getEntry().isEmpty();
+            return provider.resolvedValueSetResolution().contains( toResolvedValueSetId(right), asEntityNameOrURIList( left ) ).getEntry().length > 0;
         } else if ( isValueSetDefinition( right ) ) {
             // it is a value set definition
-            return ! provider.valueSetDefinitionResolution().contains( right.getUri(), asSingletonList( left ) ).getEntry().isEmpty();
+            return provider.valueSetDefinitionResolution().contains( toValueSetDefinitionId( right ), asEntityNameOrURIList( left )).getEntry().length > 0;
         } else {
-            URI leftUri = left.getUri();
-            if ( ! sameCodeSystem( left, right ) ) {
-                leftUri = mapIntoCodeSystem( left, right );
-                if ( leftUri == null ) {
-                    return false;
-                }
-            }
 
             if ( sameConceptDomain( left, right, leftPropertyUri ) ) {
-                return provider.entityDescriptionQuery().isEntityInSet( descendants( right.getUri() ), leftUri );
+                return provider.entityDescriptionQuery().isEntityInSet( asEntityNameOrURI(left), descendants( right ), getReadContext() );
             } else {
                 // no other cases supported for now
                 return false;
@@ -43,14 +54,29 @@ public class DenotesEvaluatorImpl implements TermsInference {
 
     }
 
-    private URI mapIntoCodeSystem( ConceptDescriptor left, ConceptDescriptor right ) {
-        MapEntry me = provider.mapEntryRead().read( asMapNameOrUri( left, right ), asNameOrURI( left ) );
-        if ( me.getMapsTo().isEmpty() ) {
-            return null;
-        }
-        return me.getMapsTo().iterator().next().getUri();
+    private EntityDescriptionQuery descendants(ConceptDescriptor right) {
+        EntityNameOrURI nameOrURI = new EntityNameOrURI();
+        nameOrURI.setEntityName( ModelUtils.createScopedEntityName( right.getCode(), right.getCodeSystem() ) );
+
+        return new HierarchyEntityDescriptionQueryImpl( nameOrURI );
     }
 
+    private ResolvedValueSetReadId toResolvedValueSetId(ConceptDescriptor right) {
+        return new ResolvedValueSetReadId( null, ModelUtils.nameOrUriFromName( right.getValueSet() ), null );
+    }
+
+    private ValueSetDefinitionReadId toValueSetDefinitionId(ConceptDescriptor conceptDescriptor ) {
+        return new ValueSetDefinitionReadId( conceptDescriptor.getValueSet() );
+    }
+
+    private MapEntryReadId toMapEntryId(ConceptDescriptor conceptDescriptor) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    private URI mapIntoCodeSystem( ConceptDescriptor left, ConceptDescriptor right ) {
+        //todo:
+        return null;
+    }
 
     private boolean sameCodeSystem( ConceptDescriptor left, ConceptDescriptor right ) {
         return left.getCodeSystem().equals( right.getCodeSystem() );
@@ -61,46 +87,128 @@ public class DenotesEvaluatorImpl implements TermsInference {
             return true;
         }
         NameOrURI domainUri = asNameOrURI( URI.create( leftPropertyURI ) );
-        if ( ! provider.conceptDomainCatalogRead().exists( domainUri ) ) {
+        if ( ! provider.conceptDomainCatalogRead().exists( domainUri, getReadContext() ) ) {
             return true;
         }
 
-        URI bindingsUri = provider.conceptDomainCatalogRead().read( domainUri ).getBindings();
-        NameOrURI domainBindingURI = provider.conceptDomainBindingRead().readByURI( bindingsUri ).getBindingForNameOrURI();
-        return ! provider.resolvedValueSetResolution().contains( domainBindingURI.getUri(), asSingletonList( right ) ).getEntry().isEmpty();
+        //todo:
+
+        return true;
     }
 
     private boolean isValueSetDefinition( ConceptDescriptor right ) {
-        return provider.valueSetDefinitionRead().exists( right.getUri() );
+        // TODO: ValueSetDefinitionReadService not up yet
+        return false;
     }
 
     private boolean isValueSet( ConceptDescriptor right ) {
-        return provider.valueSetCatalogRead().exists( asNameOrURI( right ) );
+        return StringUtils.isNotBlank( right.getValueSet() );
     }
 
+    private NameOrURIList asNameOrURIList( ConceptDescriptor... cds ) {
+        NameOrURIList list = new NameOrURIList();
 
+        List<NameOrURI> nameOrURIList = new ArrayList<NameOrURI>();
+        for(ConceptDescriptor cd : cds) {
+            NameOrURI nameOrURI = asNameOrURI(cd);
+            nameOrURIList.add(nameOrURI);
+        }
 
-    private EntityReferenceList asSingletonList( ConceptDescriptor cd ) {
-        // TODO!!
-        return null;
+        return list;
+    }
+
+    private Set<EntityNameOrURI> asEntityNameOrURIList( ConceptDescriptor... cds ) {
+        Set<EntityNameOrURI> nameOrURIList = new HashSet<EntityNameOrURI>();
+        for(ConceptDescriptor cd : cds) {
+            EntityNameOrURI nameOrURI = asEntityNameOrURI(cd);
+            nameOrURIList.add(nameOrURI);
+        }
+
+        return nameOrURIList;
     }
 
     private NameOrURI asNameOrURI( ConceptDescriptor cd ) {
-        // TODO!!
-        return null;
+        NameOrURI nameOrURI = new NameOrURI();
+        nameOrURI.setUri(cd.getUri().toString());
+
+        return nameOrURI;
     }
 
     private NameOrURI asNameOrURI( URI uri ) {
-        // TODO!!
+        NameOrURI nameOrURI = new NameOrURI();
+        nameOrURI.setUri(uri.toString());
+
+        return nameOrURI;
+    }
+
+    private EntityNameOrURI asEntityNameOrURI( URI uri ) {
+        EntityNameOrURI entityNameOrURI = new EntityNameOrURI();
+        entityNameOrURI.setUri(uri.toString());
+
+        return entityNameOrURI;
+    }
+
+    private EntityNameOrURI asEntityNameOrURI( ConceptDescriptor cd ) {
+        EntityNameOrURI entityNameOrURI = new EntityNameOrURI();
+
+        if(StringUtils.isNotBlank(cd.getCode())) {
+            ScopedEntityName name = new ScopedEntityName();
+            name.setName(cd.getCode());
+            name.setNamespace(cd.getCodeSystem());
+            entityNameOrURI.setEntityName(name);
+        } else {
+            entityNameOrURI.setUri(cd.getUri().toString());
+        }
+
+        return entityNameOrURI;
+    }
+
+    private ResolvedReadContext getReadContext() {
         return null;
     }
 
-    private NameOrURI asMapNameOrUri( ConceptDescriptor left, ConceptDescriptor right ) {
-        URI mapUri = URI.create( left.getUri() + "/map?tgt=" + right.getCodeSystem() );
-        return null;
+    private static class HierarchyEntityDescriptionQueryImpl implements EntityDescriptionQuery {
+
+        private EntityNameOrURI entity;
+
+        private HierarchyEntityDescriptionQueryImpl(EntityNameOrURI entity) {
+            super();
+            this.entity = entity;
+        }
+
+        @Override
+        public EntitiesFromAssociationsQuery getEntitiesFromAssociationsQuery() {
+            return null;
+        }
+
+        @Override
+        public EntityDescriptionQueryServiceRestrictions getRestrictions() {
+            EntityDescriptionQueryServiceRestrictions restrictions = new EntityDescriptionQueryServiceRestrictions();
+
+            EntityDescriptionQueryServiceRestrictions.HierarchyRestriction hierarchyRestriction = new EntityDescriptionQueryServiceRestrictions.HierarchyRestriction();
+            hierarchyRestriction.setHierarchyType(EntityDescriptionQueryServiceRestrictions.HierarchyRestriction.HierarchyType.DESCENDANTS);
+
+            hierarchyRestriction.setEntity(this.entity);
+
+            restrictions.setHierarchyRestriction(hierarchyRestriction);
+
+            return restrictions;
+        }
+
+        @Override
+        public Query getQuery() {
+            return null;
+        }
+
+        @Override
+        public Set<ResolvedFilter> getFilterComponent() {
+            return null;
+        }
+
+        @Override
+        public ResolvedReadContext getReadContext() {
+            return null;
+        }
     }
 
-    private URI descendants( URI entityURI ) {
-        return URI.create( entityURI.toString() + "/descendants" );
-    }
 }

@@ -19,31 +19,64 @@
 	<artifactId>drools-shapes-terms-impl</artifactId>
 
 	<dependencies>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>4.1.1.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>edu.mayo.cts2.framework</groupId>
+            <artifactId>cts2-service</artifactId>
+        </dependency>
+
 		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-shapes-terms-api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 
-		<!--dependency>
+		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-shapes-terms-cts2</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-core</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-shapes-terms-fhir</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-shapes-terms-file</artifactId>
-		</dependency-->
 
 		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-shapes-terms-graph</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
+
 		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-shapes-terms-internal</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 
 		<dependency>

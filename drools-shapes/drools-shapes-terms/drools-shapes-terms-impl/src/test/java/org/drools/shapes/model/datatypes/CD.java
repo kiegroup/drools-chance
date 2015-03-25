@@ -13,11 +13,16 @@ import java.net.URI;
 
 public class CD implements ConceptDescriptor {
 
+    private String valueSet;
     private String code;
     private String displayName;
     private String codeSystem;
     private String codeSystemName;
     private URI uri;
+
+    public CD() {
+        super();
+    }
 
     public CD( URI codeURI, String code, String displayName, String codeSystem, String codeSystemName ) {
         this.code = code;
@@ -84,6 +89,15 @@ public class CD implements ConceptDescriptor {
         this.codeSystemName = codeSystemName;
     }
 
+    @Override
+    public String getValueSet() {
+        return this.valueSet;
+    }
+
+    @Override
+    public void setValueSet(String valueSet) {
+        this.valueSet = valueSet;
+    }
 
     @Override
     public boolean equals( Object o ) {

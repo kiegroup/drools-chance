@@ -1,0 +1,390 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.omg.org/spec/CTS2"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     ontologyIRI="http://www.omg.org/spec/CTS2"
+     versionIRI="http://www.omg.org/spec/CTS2/1.1">
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="core" IRI="http://www.w3.org/2004/02/skos/core#"/>
+    <Prefix name="cts2" IRI="http://www.omg.org/spec/CTS2#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Prefix name="lmm_l1" IRI="http://www.drools.org/ont/lmm/LMM_L1.owl#"/>
+    <Import>http://www.drools.org/ont/lmm/LMM_L1.owl</Import>
+    <Import>http://www.w3.org/2004/02/skos/core</Import>
+    <Declaration>
+        <Class IRI="#CodeSystemCatalog"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ConceptDomainBinding"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ConceptDomainCatalogEntry"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#DataStructure"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#DefinedValueSet"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Entity"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#EntityDescription"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#EntityReference"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#EntityReferenceList"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#EnumeratedValueSet"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#FormatReference"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#LanguageReference"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#MapEntry"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#MapSet"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#MapTarget"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#NameAndMeaningReference"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#NameOrURI"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#OpaqueData"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Reference"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ResolvedValueSet"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#URIAndEntityName"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ValueSet"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#bindingFor"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#boundValueSet"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#entry"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#format"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#language"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#mapSet"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#mapTarget"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#mapTo"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#mapsTo"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#bindings"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#name"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#schema"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#uri"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#value"/>
+    </Declaration>
+    <EquivalentClasses>
+        <Class IRI="#ResolvedValueSet"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty abbreviatedIRI="lmm_l1:hasInterpretant"/>
+            <Class IRI="#ValueSet"/>
+        </ObjectSomeValuesFrom>
+    </EquivalentClasses>
+    <SubClassOf>
+        <Class IRI="#CodeSystemCatalog"/>
+        <Class abbreviatedIRI="core:Collection"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConceptDomainBinding"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConceptDomainBinding"/>
+        <ObjectMaxCardinality cardinality="1">
+            <ObjectProperty IRI="#bindingFor"/>
+        </ObjectMaxCardinality>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConceptDomainBinding"/>
+        <ObjectMaxCardinality cardinality="1">
+            <ObjectProperty IRI="#boundValueSet"/>
+        </ObjectMaxCardinality>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConceptDomainCatalogEntry"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConceptDomainCatalogEntry"/>
+        <DataMaxCardinality cardinality="1">
+            <DataProperty IRI="#bindings"/>
+            <Datatype abbreviatedIRI="xsd:anyURI"/>
+        </DataMaxCardinality>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#DefinedValueSet"/>
+        <Class IRI="#ValueSet"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Entity"/>
+        <Class abbreviatedIRI="lmm_l1:Meaning"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#EntityDescription"/>
+        <Class abbreviatedIRI="lmm_l1:Expression"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#EntityReference"/>
+        <Class IRI="#Reference"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#EntityReferenceList"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#EnumeratedValueSet"/>
+        <Class IRI="#ValueSet"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#FormatReference"/>
+        <Class IRI="#Reference"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#LanguageReference"/>
+        <Class IRI="#NameAndMeaningReference"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#MapEntry"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#MapSet"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#MapTarget"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#NameAndMeaningReference"/>
+        <Class IRI="#Reference"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#NameOrURI"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#NameOrURI"/>
+        <DataMaxCardinality cardinality="1">
+            <DataProperty IRI="#uri"/>
+            <Datatype abbreviatedIRI="xsd:anyURI"/>
+        </DataMaxCardinality>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#OpaqueData"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Reference"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ResolvedValueSet"/>
+        <Class abbreviatedIRI="core:Collection"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#URIAndEntityName"/>
+        <Class IRI="#DataStructure"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#URIAndEntityName"/>
+        <DataMaxCardinality cardinality="1">
+            <DataProperty IRI="#uri"/>
+            <Datatype abbreviatedIRI="xsd:anyURI"/>
+        </DataMaxCardinality>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ValueSet"/>
+        <Class IRI="#Entity"/>
+    </SubClassOf>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#bindingFor"/>
+        <Class IRI="#ConceptDomainBinding"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#boundValueSet"/>
+        <Class IRI="#ConceptDomainBinding"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#entry"/>
+        <Class IRI="#EntityReferenceList"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#format"/>
+        <Class IRI="#OpaqueData"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#language"/>
+        <Class IRI="#OpaqueData"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#mapSet"/>
+        <Class IRI="#MapEntry"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#mapTarget"/>
+        <Class IRI="#MapSet"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#mapTo"/>
+        <Class IRI="#MapTarget"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#mapsTo"/>
+        <Class IRI="#MapEntry"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#bindingFor"/>
+        <Class IRI="#NameOrURI"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#boundValueSet"/>
+        <Class IRI="#NameOrURI"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#entry"/>
+        <Class IRI="#EntityReference"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#format"/>
+        <Class IRI="#FormatReference"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#language"/>
+        <Class IRI="#FormatReference"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#mapSet"/>
+        <Class IRI="#MapSet"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#mapTarget"/>
+        <Class IRI="#MapTarget"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#mapTo"/>
+        <Class IRI="#URIAndEntityName"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#mapsTo"/>
+        <Class IRI="#URIAndEntityName"/>
+    </ObjectPropertyRange>
+    <SubObjectPropertyOf>
+        <ObjectPropertyChain>
+            <ObjectProperty IRI="#mapSet"/>
+            <ObjectProperty IRI="#mapTarget"/>
+            <ObjectProperty IRI="#mapTo"/>
+        </ObjectPropertyChain>
+        <ObjectProperty IRI="#mapsTo"/>
+    </SubObjectPropertyOf>
+    <DataPropertyDomain>
+        <DataProperty IRI="#bindings"/>
+        <Class IRI="#ConceptDomainCatalogEntry"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#name"/>
+        <Class IRI="#NameOrURI"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#schema"/>
+        <Class IRI="#OpaqueData"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#uri"/>
+        <ObjectUnionOf>
+            <Class IRI="#NameOrURI"/>
+            <Class IRI="#URIAndEntityName"/>
+        </ObjectUnionOf>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#value"/>
+        <Class IRI="#OpaqueData"/>
+    </DataPropertyDomain>
+    <DataPropertyRange>
+        <DataProperty IRI="#bindings"/>
+        <Datatype abbreviatedIRI="xsd:anyURI"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#name"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#schema"/>
+        <Datatype abbreviatedIRI="xsd:anyURI"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#uri"/>
+        <Datatype abbreviatedIRI="xsd:anyURI"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#value"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+

@@ -8,20 +8,20 @@
 package org.drools.shapes.terms;
 
 
+import edu.mayo.cts2.framework.service.profile.conceptdomain.ConceptDomainReadService;
+import edu.mayo.cts2.framework.service.profile.conceptdomainbinding.ConceptDomainBindingReadService;
+import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQueryService;
+import edu.mayo.cts2.framework.service.profile.mapentry.MapEntryReadService;
+import edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService;
+import edu.mayo.cts2.framework.service.profile.valueset.ValueSetReadService;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ValueSetDefinitionReadService;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ValueSetDefinitionResolutionService;
 import org.drools.core.util.HierarchyEncoder;
 import org.drools.core.util.HierarchyEncoderImpl;
 import org.drools.drools_shapes.terms.ConceptDescriptor;
 import org.drools.drools_shapes.terms.MemberRange;
 import org.drools.shapes.terms.operations.internal.TermsInferenceService;
 import org.drools.shapes.terms.workinprogress.vocabularies.Taxonomy;
-import org.omg.spec.cts2.ConceptDomainBindingRead;
-import org.omg.spec.cts2.ConceptDomainCatalogReadService;
-import org.omg.spec.cts2.EntityDescriptionQueryService;
-import org.omg.spec.cts2.MapEntryReadService;
-import org.omg.spec.cts2.ResolvedValueSetResolution;
-import org.omg.spec.cts2.ValueSetCatalogRead;
-import org.omg.spec.cts2.ValueSetDefinitionRead;
-import org.omg.spec.cts2.ValueSetDefinitionResolution;
 
 import java.util.List;
 
@@ -51,43 +51,44 @@ public class InternalTermsImpl implements TermsInferenceService, Taxonomy {
         throw new UnsupportedOperationException( "Use addSubConceptOf instead" );
     }
 
+
     @Override
-    public ConceptDomainCatalogReadService conceptDomainCatalogRead() {
-        return null;
+    public ConceptDomainReadService conceptDomainCatalogRead() {
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public ConceptDomainBindingRead conceptDomainBindingRead() {
-        return null;
+    public ConceptDomainBindingReadService conceptDomainBindingRead() {
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
     public MapEntryReadService mapEntryRead() {
-        return null;
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
     public EntityDescriptionQueryService entityDescriptionQuery() {
-        return null;
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public ResolvedValueSetResolution resolvedValueSetResolution() {
-        return null;
+    public ResolvedValueSetResolutionService resolvedValueSetResolution() {
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public ValueSetCatalogRead valueSetCatalogRead() {
-        return null;
+    public ValueSetReadService valueSetCatalogRead() {
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public ValueSetDefinitionResolution valueSetDefinitionResolution() {
-        return null;
+    public ValueSetDefinitionResolutionService valueSetDefinitionResolution() {
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public ValueSetDefinitionRead valueSetDefinitionRead() {
-        return null;
+    public ValueSetDefinitionReadService valueSetDefinitionRead() {
+        throw new UnsupportedOperationException("not implemented");
     }
 }

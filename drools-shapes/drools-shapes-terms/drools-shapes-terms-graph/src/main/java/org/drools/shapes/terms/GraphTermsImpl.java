@@ -16,4 +16,14 @@ public class GraphTermsImpl implements Terms {
 
     public static final String KIND = "graph";
 
+    @Override
+    public boolean denotes(ConceptDescriptor entity, ConceptDescriptor complexConcept, String leftPropertyURI) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public boolean mapsTo(ConceptDescriptor source, ConceptDescriptor target) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
 }
