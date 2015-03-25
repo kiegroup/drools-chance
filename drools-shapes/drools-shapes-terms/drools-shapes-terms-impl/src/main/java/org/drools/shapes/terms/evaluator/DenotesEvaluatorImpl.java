@@ -45,13 +45,21 @@ public class DenotesEvaluatorImpl implements TermsInference {
         } else {
 
             if ( sameConceptDomain( left, right, leftPropertyUri ) ) {
-                return provider.entityDescriptionQuery().isEntityInSet( asEntityNameOrURI(left), descendants( right ), getReadContext() );
+                if( isSelf( left, right ) ) {
+                    return true;
+                } else {
+                    return provider.entityDescriptionQuery().isEntityInSet( asEntityNameOrURI(left), descendants( right ), getReadContext() );
+                }
             } else {
                 // no other cases supported for now
                 return false;
             }
         }
 
+    }
+
+    private boolean isSelf(ConceptDescriptor left, ConceptDescriptor right) {
+        return left.getUri().equals(right.getUri());
     }
 
     private EntityDescriptionQuery descendants(ConceptDescriptor right) {
