@@ -34,7 +34,7 @@ public class DenotesEvaluatorImplTest {
         ConceptDescriptor right = new CD();
         right.setValueSet("rimvalueset:EndocervicalRoute");
 
-        assertFalse(evaluator.denotes(left, right, null));
+        assertFalse( evaluator.denotes( left, right, null ) );
     }
 
     @Test
@@ -47,6 +47,21 @@ public class DenotesEvaluatorImplTest {
 
         ConceptDescriptor right = new CD();
         right.setCode("2704003");
+        right.setCodeSystem( "sctid" );
+
+        assertTrue( evaluator.denotes( left, right, null ) );
+    }
+
+    @Test
+    public void testEntitySelfSubsumes() {
+        DenotesEvaluatorImpl evaluator = new DenotesEvaluatorImpl( this.getTermsInferenceService() );
+
+        ConceptDescriptor left = new CD();
+        left.setCode("95653008");
+        left.setCodeSystem("sctid");
+
+        ConceptDescriptor right = new CD();
+        right.setCode("95653008");
         right.setCodeSystem("sctid");
 
         assertTrue(evaluator.denotes(left, right, null));

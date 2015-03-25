@@ -29,5 +29,8 @@ public class TestVocabulary {
     public static final ConceptDescriptor EndocrineSystemDisease = TestCodeFactory.get().buildCode( "99.1", "endocrine system disease", codeSystem, codeSystemName );
     public static final ConceptDescriptor Disease = TestCodeFactory.get().buildCode( "99", "disease", codeSystem, codeSystemName );
 
+
+    public static final ConceptDescriptor AcuteDisease = TestCodeFactory.get().buildCode( "2704003", "acute disease", codeSystem, codeSystemName );
+
 }
 

@@ -1,7 +1,9 @@
 package org.drools.shapes;
 
 import org.drools.shapes.model.Condition;
+import org.drools.shapes.model.Observation;
 import org.drools.shapes.model.datatypes.CD;
+import org.drools.shapes.terms.SNOMED;
 import org.drools.shapes.terms.TestVocabulary;
 import org.drools.shapes.terms.evaluator.DenotesEvaluatorDefinition;
 import org.junit.Ignore;
@@ -44,23 +46,37 @@ public class TestDenotes {
     }
 
     @Test
-    @Ignore
     public void testDenotesInRule() {
         String rule = "package org.drools.shapes.terms; " +
                       "import " + Condition.class.getName() + "; " +
+                      "import " + Observation.class.getName() + "; " +
                       "import " + CD.class.getName() + "; " +
-                      "import " + TestVocabulary.class.getName() + "; " +
+                      "import " + SNOMED.class.getName() + "; " +
 
                       "rule RedAlert " +
+                      "dialect 'mvel' " +
                       "when " +
-                      "     $c : Observation( $pid : pid, value resolvesAs SNOMED.Lung ) " +
+                      "     $c : Observation( $pid : pid, code denotes SNOMED.MedicalProblem, " +
+                      "                       $val : value denotes SNOMED.AcuteDisease ) " +
                       "then " +
-                      "     don( $c, UnusuallyHighBloodPressureObservationOccurrence.class ) ; " +
+                      "     System.out.println( 'Patient ' + $pid + ' has an acute disease : ' + $val ); " +
                       "end ";
 
-        Condition c1 = new Condition( "1",
+        // This is not the RIM observation, but a similar thing : Observation( id, effectiveTime, code, value, patientId )
+        Observation c1 = new Observation( "obs1",
                                       new Date(),
-                                      new CD( "99.1.2.3", "gestational diabetes", TestVocabulary.codeSystemURI, TestVocabulary.codeSystem, TestVocabulary.codeSystemName ),
+                                      // we can use "literal" CDs
+                                      (CD) SNOMED.MedicalProblem,
+                                      // or CDs built on the fly
+                                      new CD( "95653008", "acute migraine", SNOMED.codeSystemURI, SNOMED.codeSystem, SNOMED.codeSystemName ),
+                                      "JohnDoe" );
+
+        Observation c2 = new Observation( "obs2",
+                                      new Date(),
+                                      // we can use "literal" CDs
+                                      (CD) SNOMED.MedicalProblem,
+                                      // or CDs built on the fly
+                                      (CD) SNOMED.DiabetesTypeII,
                                       "JohnDoe" );
 
         KieSession ks = new KieHelper( EvaluatorOption.get( "denotes", new DenotesEvaluatorDefinition() ) )
@@ -69,6 +85,7 @@ public class TestDenotes {
                 .newKieSession();
 
         ks.insert( c1 );
+        ks.insert( c2 );
         ks.fireAllRules();
 
     }

@@ -115,4 +115,12 @@ public class CD implements ConceptDescriptor {
     public int hashCode() {
         return getUri().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "CD{" +
+               "code='" + code + '\'' +
+               ", displayName='" + displayName + '\'' +
+               '}';
+    }
 }
