@@ -68,6 +68,9 @@
     <Declaration>
         <DataProperty IRI="#uri"/>
     </Declaration>
+    <Declaration>
+        <DataProperty IRI="#valueSet"/>
+    </Declaration>
     <SubClassOf>
         <Class IRI="#AtomicConceptDescriptor"/>
         <Class IRI="#ConceptDescriptor"/>
@@ -114,6 +117,13 @@
         <DataMaxCardinality cardinality="1">
             <DataProperty IRI="#uri"/>
             <Datatype abbreviatedIRI="xsd:anyURI"/>
+        </DataMaxCardinality>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ConceptDescriptor"/>
+        <DataMaxCardinality cardinality="1">
+            <DataProperty IRI="#valueSet"/>
+            <Datatype abbreviatedIRI="xsd:string"/>
         </DataMaxCardinality>
     </SubClassOf>
     <SubClassOf>
@@ -193,6 +203,10 @@
         <Class IRI="#ConceptDescriptor"/>
     </DataPropertyDomain>
     <DataPropertyDomain>
+        <DataProperty IRI="#valueSet"/>
+        <Class IRI="#ConceptDescriptor"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
         <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
         <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
     </DataPropertyDomain>
@@ -211,6 +225,10 @@
     <DataPropertyRange>
         <DataProperty IRI="#uri"/>
         <Datatype abbreviatedIRI="xsd:anyURI"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#valueSet"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <DataPropertyRange>
         <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>

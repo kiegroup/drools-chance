@@ -7,19 +7,18 @@
 
 package org.drools.shapes.terms.operations.internal;
 
-import CTS_PIM.ComputationalModel.ConceptDomainBindingServices.ConceptDomainBindingRead.ConceptDomainBindingReadService;
-import CTS_PIM.ComputationalModel.ConceptDomainCatalogServices.ConceptDomainCatalogRead.ConceptDomainCatalogReadService;
-import CTS_PIM.ComputationalModel.EntityDescriptionServices.EntityDescriptionQuery.EntityDescriptionQueryService;
-import CTS_PIM.ComputationalModel.MapEntryServices.MapEntryRead.MapEntryReadService;
-import CTS_PIM.ComputationalModel.ValueSetCatalogServices.ValueSetCatalogRead.ValueSetCatalogReadService;
-import CTS_PIM.ComputationalModel.ValueSetDefinitionServices.ResolvedValueSetServices.ResolvedValueSetResolution;
-import CTS_PIM.ComputationalModel.ValueSetDefinitionServices.ValueSetDefinitionRead.ValueSetDefinitionReadService;
-import CTS_PIM.ComputationalModel.ValueSetDefinitionServices.ValueSetDefinitionResolution.ValueSetDefinitionResolution;
+import edu.mayo.cts2.framework.service.profile.conceptdomain.ConceptDomainReadService;
+import edu.mayo.cts2.framework.service.profile.conceptdomainbinding.ConceptDomainBindingReadService;
+import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQueryService;
+import edu.mayo.cts2.framework.service.profile.mapentry.MapEntryReadService;
+import edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService;
+import edu.mayo.cts2.framework.service.profile.valueset.ValueSetReadService;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ValueSetDefinitionReadService;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ValueSetDefinitionResolutionService;
 
 public interface TermsInferenceService {
 
-
-    public ConceptDomainCatalogReadService conceptDomainCatalogRead();
+    public ConceptDomainReadService conceptDomainCatalogRead();
 
     public ConceptDomainBindingReadService conceptDomainBindingRead();
 
@@ -27,11 +26,11 @@ public interface TermsInferenceService {
 
     public EntityDescriptionQueryService entityDescriptionQuery();
 
-    public ResolvedValueSetResolution resolvedValueSetResolution();
+    public ResolvedValueSetResolutionService resolvedValueSetResolution();
 
-    public ValueSetCatalogReadService valueSetCatalogRead();
+    public ValueSetReadService valueSetCatalogRead();
 
-    public ValueSetDefinitionResolution valueSetDefinitionResolution();
+    public ValueSetDefinitionResolutionService valueSetDefinitionResolution();
 
     public ValueSetDefinitionReadService valueSetDefinitionRead();
 

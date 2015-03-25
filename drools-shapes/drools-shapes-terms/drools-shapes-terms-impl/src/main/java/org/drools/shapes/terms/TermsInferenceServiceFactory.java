@@ -1,6 +1,7 @@
 package org.drools.shapes.terms;
 
 
+import org.drools.shapes.terms.cts2.Cts2TermsImpl;
 import org.drools.shapes.terms.operations.internal.TermsInferenceService;
 
 import java.util.Map;
@@ -23,10 +24,6 @@ public class TermsInferenceServiceFactory {
 
         // TODO DO This dynamically...
         instance.termsServices.put( Cts2TermsImpl.KIND, new Cts2TermsImpl() );
-        //instance.termsServices.put( FileTermsImpl.KIND, new FileTermsImpl() );
-        //instance.termsServices.put( FhirTermsImpl.KIND, new FhirTermsImpl( ... ) );
-        //instance.termsServices.put( GraphTermsImpl.KIND, new GraphTermsImpl() );
-        //instance.termsServices.put( InternalTermsImpl.KIND, new InternalTermsImpl() );
 
         instance.defaultService = instance.termsServices.get( Cts2TermsImpl.KIND );
 

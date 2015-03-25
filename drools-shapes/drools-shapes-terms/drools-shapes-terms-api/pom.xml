@@ -25,10 +25,10 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.omg.cts2</groupId>
-			<artifactId>cts2-pim-java</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>edu.mayo.cts2.framework</groupId>
+            <artifactId>cts2-service</artifactId>
+        </dependency>
 
 		<dependency>
 			<groupId>org.drools</groupId>

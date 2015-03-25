@@ -19,10 +19,17 @@
 	<artifactId>drools-shapes-terms-internal</artifactId>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-shapes-terms-api</artifactId>
 		</dependency>
+
+        <dependency>
+            <groupId>edu.mayo.cts2.framework</groupId>
+            <artifactId>cts2-service</artifactId>
+        </dependency>
+
 	</dependencies>
 
 </project>
