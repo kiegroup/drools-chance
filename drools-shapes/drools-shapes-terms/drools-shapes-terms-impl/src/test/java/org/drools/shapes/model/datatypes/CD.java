@@ -73,12 +73,16 @@ public class CD implements ConceptDescriptor {
 
     @Override
     public URI getUri() {
-        return uri;
+        if(uri == null) {
+            return URI.create( this.codeSystem + this.code );
+        } else {
+            return uri;
+        }
     }
 
     @Override
-    public void setUri( URI value ) {
-
+    public void setUri( URI uri ) {
+        this.uri = uri;
     }
 
     public String getCodeSystemName() {
