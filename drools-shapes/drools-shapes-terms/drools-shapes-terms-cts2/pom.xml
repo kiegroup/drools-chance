@@ -45,7 +45,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>4.1.1.Release</version>
         </dependency>
 
 	</dependencies>

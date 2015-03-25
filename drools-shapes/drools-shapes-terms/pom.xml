@@ -7,7 +7,7 @@
 		<module>drools-shapes-terms-api</module>
 		<module>drools-shapes-terms-impl</module>
 		<module>drools-shapes-terms-graph</module>
-        <module>drools-shapes-terms-cts2</module>
+		<module>drools-shapes-terms-cts2</module>
 		<module>drools-shapes-terms-internal</module>
 	</modules>
 
@@ -26,13 +26,7 @@
 
 			<dependency>
 				<groupId>org.springframework</groupId>
-				<artifactId>spring-web</artifactId>
-				<version>4.1.1.RELEASE</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
+				<artifactId>spring-core</artifactId>
 				<version>4.1.1.RELEASE</version>
 			</dependency>
 
