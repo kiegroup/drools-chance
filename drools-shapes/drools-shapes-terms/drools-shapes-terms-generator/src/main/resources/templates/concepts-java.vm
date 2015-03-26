@@ -1,0 +1,25 @@
+package $packageName;
+
+import org.drools.drools_shapes.terms.ConceptDescriptor;
+
+import java.net.URI;
+
+public class $className {
+
+    public static final String codeSystemName = "$codeSystem.codeSystemName";
+    public static final String codeSystem = "$codeSystem.codeSystemName";
+    public static final URI codeSystemURI = URI.create( "$codeSystem.codeSystemUri" );
+
+    public static final ConceptDescriptor SELF = CodeFactory.get().buildCode( codeSystemURI, codeSystem, codeSystemName, null, null );
+
+    static {
+        VocabularyCatalog.get().register( codeSystem, SELF );
+    }
+
+
+#foreach( $concept in $codeSystem.concepts )
+    public static final ConceptDescriptor $JavaGenerator.getPropertyName($concept.name) = CodeFactory.get().buildCode( "$concept.code", "$concept.name", "$concept.codeSystem", "$codeSystem.codeSystemName" );
+
+#end
+
+}

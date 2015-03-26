@@ -9,6 +9,8 @@
 		<module>drools-shapes-terms-graph</module>
 		<module>drools-shapes-terms-cts2</module>
 		<module>drools-shapes-terms-internal</module>
+        <module>drools-shapes-terms-generator</module>
+        <module>drools-shapes-terms-generator-plugin</module>
 	</modules>
 
 	<parent>

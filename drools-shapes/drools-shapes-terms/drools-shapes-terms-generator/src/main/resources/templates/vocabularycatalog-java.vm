@@ -1,0 +1,12 @@
+package $packageName;
+
+import org.drools.shapes.terms.workinprogress.AbstractVocabularyCatalog;
+
+public class VocabularyCatalog extends AbstractVocabularyCatalog {
+
+    private static final org.drools.shapes.terms.workinprogress.VocabularyCatalog SELF = new VocabularyCatalog();
+
+    public static org.drools.shapes.terms.workinprogress.VocabularyCatalog get() {
+        return SELF;
+    }
+}

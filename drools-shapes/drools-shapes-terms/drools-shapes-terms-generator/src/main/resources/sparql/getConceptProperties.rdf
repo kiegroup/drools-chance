@@ -1,0 +1,16 @@
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT distinct ?name ?code ?codeSystem
+WHERE {
+
+    ?name rdf:type skos:Concept ;
+        skos:notation ?code ;
+        skos:inScheme ?codeSystem .
+
+        { SELECT ?name ( count(?notations) as ?cnt ) { ?name skos:notation ?notations . } GROUP BY ?name }
+        FILTER ( ?cnt = 1 )
+
+}
