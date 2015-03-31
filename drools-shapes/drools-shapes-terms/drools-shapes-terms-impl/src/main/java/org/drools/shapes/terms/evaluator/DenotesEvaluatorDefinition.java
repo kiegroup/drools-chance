@@ -18,7 +18,6 @@ import org.drools.shapes.terms.TermsInferenceServiceFactory;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.net.URI;
 
 /**
  * Custom Drools 'denotes' operator.
@@ -95,7 +94,7 @@ public class DenotesEvaluatorDefinition implements EvaluatorDefinition {
         private DenotesEvaluatorImpl eval;
 
         public DenotesEval(Operator operator) {
-            super(null, operator);
+            super(ValueType.BOOLEAN_TYPE, operator);
             eval = new DenotesEvaluatorImpl( TermsInferenceServiceFactory.instance().getValueSetProcessor() );
 		}
 
@@ -104,12 +103,16 @@ public class DenotesEvaluatorDefinition implements EvaluatorDefinition {
             Object right = value.getValue();
         	Object left = extractor.getValue( factHandle.getObject() );
 
+            if(right == null || left == null) {
+                return this.getOperator().isNegated() ? true : false;
+            }
+
             if( left instanceof TraitProxy ) {
                 left = ( (TraitProxy) left ).getObject();
             }
             //TODO : these casts are potentially unsafe, but the check should be done at compile time, not at runtime
 
-            boolean answer = eval.denotes( (ConceptDescriptor) left, (ConceptDescriptor) right, getPropertyURI( extractor ) );
+            boolean answer = eval.denotes( toConceptDescriptor( left ), toConceptDescriptor( right ), getPropertyURI( extractor ) );
             return this.getOperator().isNegated() ? ! answer : answer;
         }
 
@@ -119,7 +122,7 @@ public class DenotesEvaluatorDefinition implements EvaluatorDefinition {
         }
 
         @Override
-        public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, InternalFactHandle left, InternalReadAccessor rightExtractor, InternalFactHandle right) {
+        public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, InternalFactHandle leftFh, InternalReadAccessor rightExtractor, InternalFactHandle rightFh) {
             throw new UnsupportedOperationException();
         }
 
@@ -132,6 +135,11 @@ public class DenotesEvaluatorDefinition implements EvaluatorDefinition {
         public boolean evaluateCachedRight(InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle left) {
             throw new UnsupportedOperationException();
         }
+
     };
+
+    protected ConceptDescriptor toConceptDescriptor(Object object) {
+        return (ConceptDescriptor) object;
+    }
 
 }
