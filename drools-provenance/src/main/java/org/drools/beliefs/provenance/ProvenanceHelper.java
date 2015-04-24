@@ -11,6 +11,7 @@ import org.drools.core.reteoo.KieComponentFactory;
 import org.drools.core.rule.EntryPointId;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.conf.EqualityBehaviorOption;
+import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieSession;
 
 import java.util.UUID;
@@ -28,6 +29,12 @@ public class ProvenanceHelper {
 
     public static Provenance getProvenance( KieSession kieSession ) {
         return getProvenance( kieSession, EntryPointId.DEFAULT.getEntryPointId() );
+    }
+
+    public static KieBaseConfiguration getProvenanceEnabledKieBaseConfiguration(boolean enableStreamingEvents) {
+        KieBaseConfiguration returnVal = getProvenanceEnabledKieBaseConfiguration();
+        returnVal.setOption(EventProcessingOption.STREAM);
+        return returnVal;
     }
 
     public static KieBaseConfiguration getProvenanceEnabledKieBaseConfiguration() {

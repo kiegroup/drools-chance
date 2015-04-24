@@ -8,7 +8,7 @@ import java.util.List;
 
 @Role( Role.Type.EVENT )
 @PropertyReactive
-public class Viol {
+public class Viol implements ExpectationResult {
 
     // id of the initial activation
     @Key

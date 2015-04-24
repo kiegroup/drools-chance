@@ -1,0 +1,50 @@
+package org.drools.beliefs.provenance;
+import org.test.*;
+import com.foo.*;
+import org.drools.core.metadata.*;
+import org.drools.beliefs.provenance.annotations.*;
+import java.util.*;
+
+import static com.foo.MetaFactory.*;
+import static org.test.MetaFactory.*;
+
+
+global List list;
+
+declare MyKlassEvent
+    @role(event)
+    myKlass:    MyKlass @key
+end
+
+declare MySubKlassEvent
+    @role(event)
+    mySubKlass: MySubKlass @key
+end
+
+rule "Create MyKlassEvent"
+when
+    $mk: MyKlass( )
+    not MyKlassEvent( myKlass == $mk )
+then
+    insert(new MyKlassEvent($mk));
+end
+
+rule "Create MySubKlassEvent"
+when
+    $msk: MySubKlass( )
+then
+    insert(new MySubKlassEvent($msk));
+end
+
+rule "Expecting SubKlass"
+when
+    $trigger: MyKlassEvent( $mk: myKlass != null )
+then
+    expect MySubKlassEvent( this after[0,100ms] $trigger )
+    onFulfill {
+        insertLogical( modifyMyKlass($mk).prop("fooVal"));
+    } onViolation {
+        insertLogical( modifyMyKlass($mk).prop("booVal"));
+    }
+end
+

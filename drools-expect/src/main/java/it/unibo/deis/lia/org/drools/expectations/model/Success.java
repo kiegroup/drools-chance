@@ -5,7 +5,7 @@ import org.kie.api.definition.type.Role;
 import java.util.List;
 
 @Role( Role.Type.EVENT )
-public class Success {
+public class Success implements ExpectationResult {
 
     private long originId;
 

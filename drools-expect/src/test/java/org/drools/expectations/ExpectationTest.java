@@ -89,6 +89,9 @@ public class ExpectationTest extends ExpTestBase {
 
 
 
+        for (Object o: kSession.getObjects()) {
+            System.out.println(o.getClass().getName());
+        }
         assertEquals( Arrays.asList( 0, "F1Y" ), list );
         assertEquals( 1, countMeta( Fulfill.class.getName(), kSession ) );
         assertEquals( 1, countMeta( Pending.class.getName(), kSession ) );

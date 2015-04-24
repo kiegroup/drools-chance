@@ -9,7 +9,7 @@ import java.util.List;
 
 @Role( Role.Type.EVENT )
 @PropertyReactive
-public class Fulfill {
+public class Fulfill implements ExpectationResult {
 
     // id of the initial activation
     @Key

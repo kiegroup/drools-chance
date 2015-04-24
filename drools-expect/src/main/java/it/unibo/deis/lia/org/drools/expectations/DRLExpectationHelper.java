@@ -173,7 +173,7 @@ public class DRLExpectationHelper {
     }
 
     public String insertFulfill( String label, String ruleName ) {
-        StringBuilder sb = new StringBuilder( "\t insert( " ).append( Expectations.class.getName() ).append( ".newFulfill( " )
+        StringBuilder sb = new StringBuilder( "\t bolster( " ).append( Expectations.class.getName() ).append( ".newFulfill( " )
                 .append( newline() ).append( '\"' ).append( label ).append( '\"' ).append( ", " )
                 .append( newline() ).append( '\"' ).append( ruleName ).append( '\"' ).append( ", " )
                 .append( newline() ).append( "drools.getMatch()" ).append( ", " )
@@ -183,7 +183,7 @@ public class DRLExpectationHelper {
     }
 
     public String insertViolation( String label, String ruleName ) {
-        StringBuilder sb = new StringBuilder( "\t insert( " ).append( Expectations.class.getName() ).append( ".newViolation( " )
+        StringBuilder sb = new StringBuilder( "\t bolster( " ).append( Expectations.class.getName() ).append( ".newViolation( " )
                 .append( newline() ).append( '\"' ).append( label ).append( '\"' ).append( ", " )
                 .append( newline() ).append( '\"' ).append( ruleName ).append( '\"' ).append( ", " )
                 .append( newline() ).append( "drools.getMatch()" ).append( ", " )
@@ -213,7 +213,7 @@ public class DRLExpectationHelper {
 
 
     public String successRHS( String name ) {
-        StringBuilder sb = new StringBuilder( "\t insert( " ).append( Expectations.class.getName() ).append( ".newSuccess( " )
+        StringBuilder sb = new StringBuilder( "\t bolster( " ).append( Expectations.class.getName() ).append( ".newSuccess( " )
                 .append( newline() ).append( "$context" ).append( ", " )
                 .append( newline() ).append( '\"' ).append( name ).append( '\"' ).append( ", " )
                 .append( newline() ).append( "drools.getMatch()" ).append( " ) ); \n" );
@@ -222,7 +222,7 @@ public class DRLExpectationHelper {
 
 
     public String failRHS(String name) {
-        StringBuilder sb = new StringBuilder( "\t insert( " ).append( Expectations.class.getName() ).append( ".newFailure( " )
+        StringBuilder sb = new StringBuilder( "\t bolster( " ).append( Expectations.class.getName() ).append( ".newFailure( " )
                 .append( newline() ).append( "$context" ).append( ", " )
                 .append( newline() ).append( '\"' ).append( name ).append( '\"' ).append( ", " )
                 .append( newline() ).append( "drools.getMatch()" ).append( " ) ); \n" );

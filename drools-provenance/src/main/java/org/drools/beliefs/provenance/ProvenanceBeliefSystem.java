@@ -1,5 +1,6 @@
 package org.drools.beliefs.provenance;
 
+import it.unibo.deis.lia.org.drools.expectations.model.ExpectationResult;
 import org.drools.core.beliefsystem.BeliefSet;
 import org.drools.core.beliefsystem.ModedAssertion;
 import org.drools.core.beliefsystem.simple.SimpleBeliefSystem;
@@ -70,7 +71,11 @@ public class ProvenanceBeliefSystem
                              PropagationContext context,
                              ObjectTypeConf typeConf ) {
 
-        if ( payload instanceof MetaCallableTask ) {
+        if ( payload instanceof MetaCallableTask || payload instanceof ExpectationResult) {
+
+            if (payload instanceof ExpectationResult) {
+                return super.insert( mode, rule, activation, payload, beliefSet, context, typeConf );
+            }
 
             MetaCallableTask task = (MetaCallableTask) payload;
             if ( beliefSet instanceof ProvenanceBeliefSet ) {
