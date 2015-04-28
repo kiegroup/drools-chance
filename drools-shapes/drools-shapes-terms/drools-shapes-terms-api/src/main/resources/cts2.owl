@@ -10,13 +10,13 @@
 
 
 <Ontology xmlns="http://www.w3.org/2002/07/owl#"
-     xml:base="http://www.omg.org/spec/CTS2"
+     xml:base="http://www.drools.org/ont/omg/spec/CTS2"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     ontologyIRI="http://www.omg.org/spec/CTS2"
-     versionIRI="http://www.omg.org/spec/CTS2/1.1">
+     ontologyIRI="http://www.drools.org/ont/omg/spec/CTS2"
+     versionIRI="http://www.drools.org/ont/omg/spec/CTS2/1.1">
     <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
@@ -28,358 +28,358 @@
     <Import>http://www.drools.org/ont/lmm/LMM_L1.owl</Import>
     <Import>http://www.w3.org/2004/02/skos/core</Import>
     <Declaration>
-        <Class IRI="#CodeSystemCatalog"/>
+        <Class abbreviatedIRI="cts2:CodeSystemCatalog"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ConceptDomainBinding"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainBinding"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ConceptDomainCatalogEntry"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainCatalogEntry"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#DefinedValueSet"/>
+        <Class abbreviatedIRI="cts2:DefinedValueSet"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#Entity"/>
+        <Class abbreviatedIRI="cts2:Entity"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#EntityDescription"/>
+        <Class abbreviatedIRI="cts2:EntityDescription"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#EntityReference"/>
+        <Class abbreviatedIRI="cts2:EntityReference"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#EntityReferenceList"/>
+        <Class abbreviatedIRI="cts2:EntityReferenceList"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#EnumeratedValueSet"/>
+        <Class abbreviatedIRI="cts2:EnumeratedValueSet"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#FormatReference"/>
+        <Class abbreviatedIRI="cts2:FormatReference"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#LanguageReference"/>
+        <Class abbreviatedIRI="cts2:LanguageReference"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#MapEntry"/>
+        <Class abbreviatedIRI="cts2:MapEntry"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#MapSet"/>
+        <Class abbreviatedIRI="cts2:MapSet"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#MapTarget"/>
+        <Class abbreviatedIRI="cts2:MapTarget"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#NameAndMeaningReference"/>
+        <Class abbreviatedIRI="cts2:NameAndMeaningReference"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#NameOrURI"/>
+        <Class abbreviatedIRI="cts2:NameOrURI"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#OpaqueData"/>
+        <Class abbreviatedIRI="cts2:OpaqueData"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#Reference"/>
+        <Class abbreviatedIRI="cts2:Reference"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ResolvedValueSet"/>
+        <Class abbreviatedIRI="cts2:ResolvedValueSet"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#URIAndEntityName"/>
+        <Class abbreviatedIRI="cts2:URIAndEntityName"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#ValueSet"/>
+        <Class abbreviatedIRI="cts2:ValueSet"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#bindingFor"/>
+        <ObjectProperty abbreviatedIRI="cts2:bindingFor"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#boundValueSet"/>
+        <ObjectProperty abbreviatedIRI="cts2:boundValueSet"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#entry"/>
+        <ObjectProperty abbreviatedIRI="cts2:entry"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#format"/>
+        <ObjectProperty abbreviatedIRI="cts2:format"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#language"/>
+        <ObjectProperty abbreviatedIRI="cts2:language"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#mapSet"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapSet"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#mapTarget"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapTarget"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#mapTo"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapTo"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#mapsTo"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapsTo"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#bindings"/>
+        <DataProperty abbreviatedIRI="cts2:bindings"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#name"/>
+        <DataProperty abbreviatedIRI="cts2:name"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#schema"/>
+        <DataProperty abbreviatedIRI="cts2:schema"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#uri"/>
+        <DataProperty abbreviatedIRI="cts2:uri"/>
     </Declaration>
     <Declaration>
-        <DataProperty IRI="#value"/>
+        <DataProperty abbreviatedIRI="cts2:value"/>
     </Declaration>
     <EquivalentClasses>
-        <Class IRI="#ResolvedValueSet"/>
+        <Class abbreviatedIRI="cts2:ResolvedValueSet"/>
         <ObjectSomeValuesFrom>
             <ObjectProperty abbreviatedIRI="lmm_l1:hasInterpretant"/>
-            <Class IRI="#ValueSet"/>
+            <Class abbreviatedIRI="cts2:ValueSet"/>
         </ObjectSomeValuesFrom>
     </EquivalentClasses>
     <SubClassOf>
-        <Class IRI="#CodeSystemCatalog"/>
+        <Class abbreviatedIRI="cts2:CodeSystemCatalog"/>
         <Class abbreviatedIRI="core:Collection"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ConceptDomainBinding"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainBinding"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ConceptDomainBinding"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainBinding"/>
         <ObjectMaxCardinality cardinality="1">
-            <ObjectProperty IRI="#bindingFor"/>
+            <ObjectProperty abbreviatedIRI="cts2:bindingFor"/>
         </ObjectMaxCardinality>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ConceptDomainBinding"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainBinding"/>
         <ObjectMaxCardinality cardinality="1">
-            <ObjectProperty IRI="#boundValueSet"/>
+            <ObjectProperty abbreviatedIRI="cts2:boundValueSet"/>
         </ObjectMaxCardinality>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ConceptDomainCatalogEntry"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainCatalogEntry"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ConceptDomainCatalogEntry"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainCatalogEntry"/>
         <DataMaxCardinality cardinality="1">
-            <DataProperty IRI="#bindings"/>
+            <DataProperty abbreviatedIRI="cts2:bindings"/>
             <Datatype abbreviatedIRI="xsd:anyURI"/>
         </DataMaxCardinality>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#DefinedValueSet"/>
-        <Class IRI="#ValueSet"/>
+        <Class abbreviatedIRI="cts2:DefinedValueSet"/>
+        <Class abbreviatedIRI="cts2:ValueSet"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#Entity"/>
+        <Class abbreviatedIRI="cts2:Entity"/>
         <Class abbreviatedIRI="lmm_l1:Meaning"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#EntityDescription"/>
+        <Class abbreviatedIRI="cts2:EntityDescription"/>
         <Class abbreviatedIRI="lmm_l1:Expression"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#EntityReference"/>
-        <Class IRI="#Reference"/>
+        <Class abbreviatedIRI="cts2:EntityReference"/>
+        <Class abbreviatedIRI="cts2:Reference"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#EntityReferenceList"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:EntityReferenceList"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#EnumeratedValueSet"/>
-        <Class IRI="#ValueSet"/>
+        <Class abbreviatedIRI="cts2:EnumeratedValueSet"/>
+        <Class abbreviatedIRI="cts2:ValueSet"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#FormatReference"/>
-        <Class IRI="#Reference"/>
+        <Class abbreviatedIRI="cts2:FormatReference"/>
+        <Class abbreviatedIRI="cts2:Reference"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#LanguageReference"/>
-        <Class IRI="#NameAndMeaningReference"/>
+        <Class abbreviatedIRI="cts2:LanguageReference"/>
+        <Class abbreviatedIRI="cts2:NameAndMeaningReference"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#MapEntry"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:MapEntry"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#MapSet"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:MapSet"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#MapTarget"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:MapTarget"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#NameAndMeaningReference"/>
-        <Class IRI="#Reference"/>
+        <Class abbreviatedIRI="cts2:NameAndMeaningReference"/>
+        <Class abbreviatedIRI="cts2:Reference"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#NameOrURI"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:NameOrURI"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#NameOrURI"/>
+        <Class abbreviatedIRI="cts2:NameOrURI"/>
         <DataMaxCardinality cardinality="1">
-            <DataProperty IRI="#uri"/>
+            <DataProperty abbreviatedIRI="cts2:uri"/>
             <Datatype abbreviatedIRI="xsd:anyURI"/>
         </DataMaxCardinality>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#OpaqueData"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:OpaqueData"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#Reference"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:Reference"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ResolvedValueSet"/>
+        <Class abbreviatedIRI="cts2:ResolvedValueSet"/>
         <Class abbreviatedIRI="core:Collection"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#URIAndEntityName"/>
-        <Class IRI="#DataStructure"/>
+        <Class abbreviatedIRI="cts2:URIAndEntityName"/>
+        <Class abbreviatedIRI="cts2:DataStructure"/>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#URIAndEntityName"/>
+        <Class abbreviatedIRI="cts2:URIAndEntityName"/>
         <DataMaxCardinality cardinality="1">
-            <DataProperty IRI="#uri"/>
+            <DataProperty abbreviatedIRI="cts2:uri"/>
             <Datatype abbreviatedIRI="xsd:anyURI"/>
         </DataMaxCardinality>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#ValueSet"/>
-        <Class IRI="#Entity"/>
+        <Class abbreviatedIRI="cts2:ValueSet"/>
+        <Class abbreviatedIRI="cts2:Entity"/>
     </SubClassOf>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#bindingFor"/>
-        <Class IRI="#ConceptDomainBinding"/>
+        <ObjectProperty abbreviatedIRI="cts2:bindingFor"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainBinding"/>
     </ObjectPropertyDomain>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#boundValueSet"/>
-        <Class IRI="#ConceptDomainBinding"/>
+        <ObjectProperty abbreviatedIRI="cts2:boundValueSet"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainBinding"/>
     </ObjectPropertyDomain>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#entry"/>
-        <Class IRI="#EntityReferenceList"/>
+        <ObjectProperty abbreviatedIRI="cts2:entry"/>
+        <Class abbreviatedIRI="cts2:EntityReferenceList"/>
     </ObjectPropertyDomain>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#format"/>
-        <Class IRI="#OpaqueData"/>
+        <ObjectProperty abbreviatedIRI="cts2:format"/>
+        <Class abbreviatedIRI="cts2:OpaqueData"/>
     </ObjectPropertyDomain>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#language"/>
-        <Class IRI="#OpaqueData"/>
+        <ObjectProperty abbreviatedIRI="cts2:language"/>
+        <Class abbreviatedIRI="cts2:OpaqueData"/>
     </ObjectPropertyDomain>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#mapSet"/>
-        <Class IRI="#MapEntry"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapSet"/>
+        <Class abbreviatedIRI="cts2:MapEntry"/>
     </ObjectPropertyDomain>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#mapTarget"/>
-        <Class IRI="#MapSet"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapTarget"/>
+        <Class abbreviatedIRI="cts2:MapSet"/>
     </ObjectPropertyDomain>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#mapTo"/>
-        <Class IRI="#MapTarget"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapTo"/>
+        <Class abbreviatedIRI="cts2:MapTarget"/>
     </ObjectPropertyDomain>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#mapsTo"/>
-        <Class IRI="#MapEntry"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapsTo"/>
+        <Class abbreviatedIRI="cts2:MapEntry"/>
     </ObjectPropertyDomain>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#bindingFor"/>
-        <Class IRI="#NameOrURI"/>
+        <ObjectProperty abbreviatedIRI="cts2:bindingFor"/>
+        <Class abbreviatedIRI="cts2:NameOrURI"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#boundValueSet"/>
-        <Class IRI="#NameOrURI"/>
+        <ObjectProperty abbreviatedIRI="cts2:boundValueSet"/>
+        <Class abbreviatedIRI="cts2:NameOrURI"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#entry"/>
-        <Class IRI="#EntityReference"/>
+        <ObjectProperty abbreviatedIRI="cts2:entry"/>
+        <Class abbreviatedIRI="cts2:EntityReference"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#format"/>
-        <Class IRI="#FormatReference"/>
+        <ObjectProperty abbreviatedIRI="cts2:format"/>
+        <Class abbreviatedIRI="cts2:FormatReference"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#language"/>
-        <Class IRI="#FormatReference"/>
+        <ObjectProperty abbreviatedIRI="cts2:language"/>
+        <Class abbreviatedIRI="cts2:FormatReference"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#mapSet"/>
-        <Class IRI="#MapSet"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapSet"/>
+        <Class abbreviatedIRI="cts2:MapSet"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#mapTarget"/>
-        <Class IRI="#MapTarget"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapTarget"/>
+        <Class abbreviatedIRI="cts2:MapTarget"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#mapTo"/>
-        <Class IRI="#URIAndEntityName"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapTo"/>
+        <Class abbreviatedIRI="cts2:URIAndEntityName"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#mapsTo"/>
-        <Class IRI="#URIAndEntityName"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapsTo"/>
+        <Class abbreviatedIRI="cts2:URIAndEntityName"/>
     </ObjectPropertyRange>
     <SubObjectPropertyOf>
         <ObjectPropertyChain>
-            <ObjectProperty IRI="#mapSet"/>
-            <ObjectProperty IRI="#mapTarget"/>
-            <ObjectProperty IRI="#mapTo"/>
+            <ObjectProperty abbreviatedIRI="cts2:mapSet"/>
+            <ObjectProperty abbreviatedIRI="cts2:mapTarget"/>
+            <ObjectProperty abbreviatedIRI="cts2:mapTo"/>
         </ObjectPropertyChain>
-        <ObjectProperty IRI="#mapsTo"/>
+        <ObjectProperty abbreviatedIRI="cts2:mapsTo"/>
     </SubObjectPropertyOf>
     <DataPropertyDomain>
-        <DataProperty IRI="#bindings"/>
-        <Class IRI="#ConceptDomainCatalogEntry"/>
+        <DataProperty abbreviatedIRI="cts2:bindings"/>
+        <Class abbreviatedIRI="cts2:ConceptDomainCatalogEntry"/>
     </DataPropertyDomain>
     <DataPropertyDomain>
-        <DataProperty IRI="#name"/>
-        <Class IRI="#NameOrURI"/>
+        <DataProperty abbreviatedIRI="cts2:name"/>
+        <Class abbreviatedIRI="cts2:NameOrURI"/>
     </DataPropertyDomain>
     <DataPropertyDomain>
-        <DataProperty IRI="#schema"/>
-        <Class IRI="#OpaqueData"/>
+        <DataProperty abbreviatedIRI="cts2:schema"/>
+        <Class abbreviatedIRI="cts2:OpaqueData"/>
     </DataPropertyDomain>
     <DataPropertyDomain>
-        <DataProperty IRI="#uri"/>
+        <DataProperty abbreviatedIRI="cts2:uri"/>
         <ObjectUnionOf>
-            <Class IRI="#NameOrURI"/>
-            <Class IRI="#URIAndEntityName"/>
+            <Class abbreviatedIRI="cts2:NameOrURI"/>
+            <Class abbreviatedIRI="cts2:URIAndEntityName"/>
         </ObjectUnionOf>
     </DataPropertyDomain>
     <DataPropertyDomain>
-        <DataProperty IRI="#value"/>
-        <Class IRI="#OpaqueData"/>
+        <DataProperty abbreviatedIRI="cts2:value"/>
+        <Class abbreviatedIRI="cts2:OpaqueData"/>
     </DataPropertyDomain>
     <DataPropertyRange>
-        <DataProperty IRI="#bindings"/>
+        <DataProperty abbreviatedIRI="cts2:bindings"/>
         <Datatype abbreviatedIRI="xsd:anyURI"/>
     </DataPropertyRange>
     <DataPropertyRange>
-        <DataProperty IRI="#name"/>
+        <DataProperty abbreviatedIRI="cts2:name"/>
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
     <DataPropertyRange>
-        <DataProperty IRI="#schema"/>
+        <DataProperty abbreviatedIRI="cts2:schema"/>
         <Datatype abbreviatedIRI="xsd:anyURI"/>
     </DataPropertyRange>
     <DataPropertyRange>
-        <DataProperty IRI="#uri"/>
+        <DataProperty abbreviatedIRI="cts2:uri"/>
         <Datatype abbreviatedIRI="xsd:anyURI"/>
     </DataPropertyRange>
     <DataPropertyRange>
-        <DataProperty IRI="#value"/>
+        <DataProperty abbreviatedIRI="cts2:value"/>
         <Datatype abbreviatedIRI="xsd:string"/>
     </DataPropertyRange>
 </Ontology>

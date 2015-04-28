@@ -1,0 +1,445 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.drools.org/ont/test/concepts/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     ontologyIRI="http://www.drools.org/ont/test/concepts/">
+    <Prefix name="test" IRI="http://www.drools.org/ont/test/concepts/"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Import>http://www.drools.org/drools-shapes/terms</Import>
+    <Declaration>
+        <Class IRI="ConceptOfBodyTemp"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="CD_age"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="abdominalSurgery"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="age"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="alt_hgb"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="bodyTemp"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="bodyTemp1"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="bodyTemp2"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="bodyTempVS"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="gender"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="hemoglobinConcentration"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="labObservable"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="labz"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="pelvicSurgery"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="surgz"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="testScheme"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="abstract"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="identifier"/>
+    </Declaration>
+    <EquivalentClasses>
+        <Class IRI="ConceptOfBodyTemp"/>
+        <ObjectOneOf>
+            <NamedIndividual IRI="bodyTemp1"/>
+            <NamedIndividual IRI="bodyTemp2"/>
+            <NamedIndividual IRI="bodyTemp"/>
+        </ObjectOneOf>
+    </EquivalentClasses>
+    <SubClassOf>
+        <Class IRI="ConceptOfBodyTemp"/>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+    </SubClassOf>
+    <ClassAssertion>
+        <Class IRI="http://www.drools.org/drools-shapes/terms#AtomicConceptDescriptor"/>
+        <NamedIndividual IRI="CD_age"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="abdominalSurgery"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="age"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="alt_hgb"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="bodyTemp"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="bodyTemp1"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="bodyTemp2"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.omg.org/spec/CTS2#EnumeratedValueSet"/>
+        <NamedIndividual IRI="bodyTempVS"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="gender"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="hemoglobinConcentration"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="labObservable"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <NamedIndividual IRI="labz"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <NamedIndividual IRI="pelvicSurgery"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <NamedIndividual IRI="surgz"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <NamedIndividual IRI="testScheme"/>
+    </ClassAssertion>
+    <ObjectPropertyAssertion>
+        <Annotation>
+            <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+            <Literal datatypeIRI="&rdf;PlainLiteral">This property requires the CD and the concept to be in the same space.
+It is usually inferred/implied</Literal>
+        </Annotation>
+        <ObjectProperty IRI="http://www.drools.org/ont/lmm/LMM_L1.owl#denotes"/>
+        <NamedIndividual IRI="CD_age"/>
+        <NamedIndividual IRI="age"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="abdominalSurgery"/>
+        <NamedIndividual IRI="abdominalSurgery"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#inScheme"/>
+        <NamedIndividual IRI="abdominalSurgery"/>
+        <NamedIndividual IRI="surgz"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <Annotation>
+            <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+            <Literal datatypeIRI="&rdf;PlainLiteral">emulate reflexivity</Literal>
+        </Annotation>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="age"/>
+        <NamedIndividual IRI="age"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#inScheme"/>
+        <NamedIndividual IRI="age"/>
+        <NamedIndividual IRI="testScheme"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="alt_hgb"/>
+        <NamedIndividual IRI="alt_hgb"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <Annotation>
+            <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+            <Literal datatypeIRI="&rdf;PlainLiteral">Use SKOS relationships between Concepts.
+Cts-2 &apos;mapsto&apos; is defined between names, or Expressions of Concepts.</Literal>
+        </Annotation>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#exactMatch"/>
+        <NamedIndividual IRI="alt_hgb"/>
+        <NamedIndividual IRI="hemoglobinConcentration"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="bodyTemp"/>
+        <NamedIndividual IRI="bodyTemp"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#inScheme"/>
+        <NamedIndividual IRI="bodyTemp"/>
+        <NamedIndividual IRI="testScheme"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="bodyTemp1"/>
+        <NamedIndividual IRI="bodyTemp1"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="bodyTemp1"/>
+        <NamedIndividual IRI="bodyTemp"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#inScheme"/>
+        <NamedIndividual IRI="bodyTemp1"/>
+        <NamedIndividual IRI="testScheme"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="bodyTemp2"/>
+        <NamedIndividual IRI="bodyTemp"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="bodyTemp2"/>
+        <NamedIndividual IRI="bodyTemp2"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#inScheme"/>
+        <NamedIndividual IRI="bodyTemp2"/>
+        <NamedIndividual IRI="testScheme"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="gender"/>
+        <NamedIndividual IRI="gender"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#inScheme"/>
+        <NamedIndividual IRI="gender"/>
+        <NamedIndividual IRI="testScheme"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="hemoglobinConcentration"/>
+        <NamedIndividual IRI="hemoglobinConcentration"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <Annotation>
+            <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+            <Literal datatypeIRI="&rdf;PlainLiteral">this is the basic model of subsumption between concepts</Literal>
+        </Annotation>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="hemoglobinConcentration"/>
+        <NamedIndividual IRI="labObservable"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#inScheme"/>
+        <NamedIndividual IRI="hemoglobinConcentration"/>
+        <NamedIndividual IRI="labz"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="labObservable"/>
+        <NamedIndividual IRI="labObservable"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#inScheme"/>
+        <NamedIndividual IRI="labObservable"/>
+        <NamedIndividual IRI="labz"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="pelvicSurgery"/>
+        <NamedIndividual IRI="abdominalSurgery"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+        <NamedIndividual IRI="pelvicSurgery"/>
+        <NamedIndividual IRI="pelvicSurgery"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://www.w3.org/2004/02/skos/core#inScheme"/>
+        <NamedIndividual IRI="pelvicSurgery"/>
+        <NamedIndividual IRI="surgz"/>
+    </ObjectPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.drools.org/drools-shapes/terms#code"/>
+        <NamedIndividual IRI="CD_age"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">1234-56</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.drools.org/drools-shapes/terms#codeSystem"/>
+        <NamedIndividual IRI="CD_age"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">TEST</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.drools.org/drools-shapes/terms#displayName"/>
+        <NamedIndividual IRI="CD_age"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">the age...</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.drools.org/drools-shapes/terms#uri"/>
+        <NamedIndividual IRI="CD_age"/>
+        <Literal datatypeIRI="&xsd;anyURI">http://www.drools.org/ont/test/concepts/testScheme/1234-56</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="abdominalSurgery"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">ABD_SRG</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <Annotation>
+            <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+            <Literal datatypeIRI="&rdf;PlainLiteral">this is the &apos;code&apos;</Literal>
+        </Annotation>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="age"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">1234-56</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="alt_hgb"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">HgB</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="bodyTemp1"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">BT1</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="bodyTemp2"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">BT2</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="gender"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">GEND</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="hemoglobinConcentration"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">HGB-000</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="labz"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">LABZ</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="pelvicSurgery"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">PLV_SRG</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="surgz"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">SURGERIES</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <Annotation>
+            <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+            <Literal datatypeIRI="&rdf;PlainLiteral">this is the compact name of the code system</Literal>
+        </Annotation>
+        <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
+        <NamedIndividual IRI="testScheme"/>
+        <Literal datatypeIRI="&rdf;PlainLiteral">TEST</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>CD_age</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A CD referencing a concept</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <Annotation>
+            <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+            <Literal datatypeIRI="&rdf;PlainLiteral">A local identifier, modelled as annotation since it does carry any semantics</Literal>
+        </Annotation>
+        <AnnotationProperty IRI="identifier"/>
+        <IRI>age</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">xyz-00000-94752</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>age</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Single, standalone concept example</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="http://www.w3.org/2004/02/skos/core#altLabel"/>
+        <IRI>age</IRI>
+        <Literal xml:lang="it" datatypeIRI="&rdf;PlainLiteral">età del soggetto</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+        <IRI>age</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Age in nanoseconds since forever</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>alt_hgb</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Example of concept with &apos;equivalent&apos; mapping</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="abstract"/>
+        <IRI>bodyTemp</IRI>
+        <Literal datatypeIRI="&xsd;boolean">true</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>gender</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">This standalone concept should actually have a VS attached</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>hemoglobinConcentration</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">Example of concept in a hierarchy</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <Annotation>
+            <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+            <Literal datatypeIRI="&rdf;PlainLiteral">concepts used for hierarchical / subsumption reasons, but which can&apos;t be used to describe data</Literal>
+        </Annotation>
+        <AnnotationProperty IRI="abstract"/>
+        <IRI>labObservable</IRI>
+        <Literal datatypeIRI="&xsd;boolean">true</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+        <IRI>testScheme</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">My preferred test concept scheme</Literal>
+    </AnnotationAssertion>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+

@@ -22,7 +22,7 @@
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
     <Prefix name="terms" IRI="http://www.drools.org/drools-shapes/terms#"/>
-    <Import>http://www.omg.org/spec/CTS2/1.1</Import>
+    <Import>http://www.drools.org/ont/omg/spec/CTS2/1.1</Import>
     <Declaration>
         <Class IRI="#AtomicConceptDescriptor"/>
     </Declaration>
@@ -208,7 +208,7 @@
     </DataPropertyDomain>
     <DataPropertyDomain>
         <DataProperty IRI="http://www.w3.org/2004/02/skos/core#notation"/>
-        <Class IRI="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <Class IRI="http://www.omg.org/spec/CTS2#Entity"/>
     </DataPropertyDomain>
     <DataPropertyRange>
         <DataProperty IRI="#code"/>
