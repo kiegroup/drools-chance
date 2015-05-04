@@ -76,7 +76,7 @@ public class ProvenanceTest {
     public static Collection paths() {
         return Arrays.asList( new String[][]
                                       {
-                                              { "tms/" },
+//                                              { "tms/" },
                                               { "bs/" }
                                       } );
     }
@@ -89,36 +89,39 @@ public class ProvenanceTest {
     @After
     public void after() {
         ConcurrentLinkedQueue<KieRuntimeEvent> queue = (ConcurrentLinkedQueue<KieRuntimeEvent>)events;
+        boolean inFire = false;
         while (!queue.isEmpty()) {
             KieRuntimeEvent event = queue.poll();
             if (event instanceof ProcessEventListener) {
 
             } else if (event instanceof MatchCreatedEvent) {
-                System.out.println("Match Created: "+((MatchCreatedEvent) event).getMatch().getRule().getName());
+                System.out.println((inFire ? "   ":"")+"[Match Created  ]: "+((MatchCreatedEvent) event).getMatch().getRule().getName());
             } else if (event instanceof MatchCancelledEvent) {
-                System.out.println("Match Cancelled: "+((MatchCancelledEvent) event).getMatch().getRule().getName());
+                System.out.println((inFire ? "   ":"")+"[Match Cancelled]: "+((MatchCancelledEvent) event).getMatch().getRule().getName());
             } else if (event instanceof ObjectInsertedEvent) {
                 if (((ObjectInsertedEvent) event).getRule() != null) {
-                    System.out.println("Object inserted: " + ((ObjectInsertedEvent) event).getRule().getName()+"/"+((ObjectInsertedEvent) event).getObject().getClass().getName());
+                    System.out.println((inFire ? "   ":"")+"[Object inserted]: " + ((ObjectInsertedEvent) event).getRule().getName()+"/"+((ObjectInsertedEvent) event).getObject().getClass().getName());
                 } else {
-                    System.out.println("Object inserted: "+((ObjectInsertedEvent) event).getObject().getClass().getName());
+                    System.out.println((inFire ? "   ":"")+"[Object inserted]: "+((ObjectInsertedEvent) event).getObject().getClass().getName());
                 }
             } else if (event instanceof ObjectUpdatedEvent) {
                 if (((ObjectUpdatedEvent) event).getRule() != null) {
-                    System.out.println("Object updated: " + ((ObjectUpdatedEvent) event).getRule().getName()+"/"+((ObjectUpdatedEvent) event).getObject().getClass().getName());
+                    System.out.println((inFire ? "   ":"")+"[Object updated ]: " + ((ObjectUpdatedEvent) event).getRule().getName()+"/"+((ObjectUpdatedEvent) event).getObject().getClass().getName());
                 } else {
-                    System.out.println("Object updated: "+((ObjectUpdatedEvent) event).getObject().getClass().getName());
+                    System.out.println((inFire ? "   ":"")+"[Object updated ]: "+((ObjectUpdatedEvent) event).getObject().getClass().getName());
                 }
             } else if (event instanceof ObjectDeletedEvent) {
                 if (((ObjectDeletedEvent) event).getRule() != null) {
-                    System.out.println("Object deleted: " + ((ObjectDeletedEvent) event).getRule().getName()+"/"+((ObjectDeletedEvent) event).getOldObject().getClass().getName());
+                    System.out.println((inFire ? "   ":"")+"[Object deleted ]: " + ((ObjectDeletedEvent) event).getRule().getName()+"/"+((ObjectDeletedEvent) event).getOldObject().getClass().getName());
                 } else {
-                    System.out.println("Object deleted: "+((ObjectDeletedEvent) event).getOldObject().getClass().getName());
+                    System.out.println((inFire ? "   ":"")+"[Object deleted ]: "+((ObjectDeletedEvent) event).getOldObject().getClass().getName());
                 }
             } else if (event instanceof BeforeMatchFiredEvent) {
-                System.out.println("Before match fired: "+((BeforeMatchFiredEvent) event).getMatch().getRule().getName());
+                System.out.println("[Before match fired]: "+((BeforeMatchFiredEvent) event).getMatch().getRule().getName());
+                inFire = true;
             } else if (event instanceof AfterMatchFiredEvent) {
-                System.out.println("After match fired: "+((AfterMatchFiredEvent) event).getMatch().getRule().getName());
+                System.out.println("[After match fired ]: "+((AfterMatchFiredEvent) event).getMatch().getRule().getName());
+                inFire = false;
             }
         }
     }
@@ -249,11 +252,11 @@ public class ProvenanceTest {
     @Test
     public void basicECETestFulfill() {
         List list = new ArrayList();
+//        KieSession kieSession = loadProvenanceSession( "testTasks_simpleSet.drl", list );
         KieSession kieSession = loadProvenanceSession("testSimpleECE.ece", list);
-//        kieSession.addEventListener(new MyAgendaListener());
-//        kieSession.addEventListener(new MyRuleListener());
         MyKlass mk = (MyKlass) new MyKlassImpl().withDyEntryId( "123-000" );
-        kieSession.insert(mk);
+        mk.setFlag(Boolean.FALSE);
+        InternalFactHandle handle = (InternalFactHandle) kieSession.insert(mk);
         kieSession.fireAllRules();
         sleep(kieSession, 10);
 
@@ -262,23 +265,31 @@ public class ProvenanceTest {
         kieSession.fireAllRules();
         sleep(kieSession, 100);
         kieSession.fireAllRules();
-        Collection<Fulfill> objs = (Collection<Fulfill>)kieSession.getObjects(new ClassObjectFilter(Fulfill.class));
-        if (objs != null) {
-            System.out.println("Fulfill objects: "+objs.size());
-        } else {
-            System.out.println("No Fulfill objects available");
-        }
+        List<Activity> history = getProvenanceHistory( kieSession, handle.getObject() );
+        assertEquals(1, history.size());
+
+        Activity act = history.iterator().next();
+
+        assertTrue(act instanceof Modification);
 //        TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
-//        assertEquals(3, tms.getEqualityKeyMap().size());
-        assert("fooVal".equals(mk.getProp()));
+//        assertEquals(2, tms.getEqualityKeyMap().size());
+//        assert("fooVal".equals(mk.getProp()));
     }
 
     @Test
     public void basicECETestViolation() {
         List list = new ArrayList();
         KieSession kieSession = loadProvenanceSession("testSimpleECE.ece", list);
+        kieSession.addEventListener(new MyRuleListener());
+        kieSession.addEventListener(new MyAgendaListener());
         MyKlass mk = (MyKlass) new MyKlassImpl().withDyEntryId( "123-000" );
         kieSession.insert(mk);
+        kieSession.fireAllRules();
+        sleep(kieSession, 10);
+
+        MyKlass tk = (MyKlass) new MyKlassImpl().withDyEntryId("234-000");
+        tk.setProp("fooVal");
+        kieSession.insert(tk);
         kieSession.fireAllRules();
         sleep(kieSession, 101);
 
@@ -287,8 +298,8 @@ public class ProvenanceTest {
         kieSession.fireAllRules();
         sleep(kieSession, 100);
         kieSession.fireAllRules();
-        TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
-        assertEquals( 2, tms.getEqualityKeyMap().size() );
+//        TruthMaintenanceSystem tms = ( (NamedEntryPoint) kieSession.getEntryPoint( EntryPointId.DEFAULT.getEntryPointId() ) ).getTruthMaintenanceSystem();
+//        assertEquals( 2, tms.getEqualityKeyMap().size() );
         assert("booVal".equals(mk.getProp()));
     }
 

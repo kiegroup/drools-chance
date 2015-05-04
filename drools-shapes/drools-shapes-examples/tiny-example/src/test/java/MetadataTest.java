@@ -15,10 +15,7 @@ import org.test.MyTargetKlass;
 import org.w3._2002._07.owl.ThingImpl;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -167,6 +164,26 @@ public class MetadataTest {
 
         @Override
         public void removeLinks( Object x ) {
+
+        }
+
+        @Override
+        public Date getTimestamp() {
+            return (Date)map.get("timestamp");
+        }
+
+        @Override
+        public void setTimestamp(Date value) {
+            map.put("timestamp",value);
+        }
+
+        @Override
+        public void addTimestamp(Date x) {
+
+        }
+
+        @Override
+        public void removeTimestamp(Object x) {
 
         }
 

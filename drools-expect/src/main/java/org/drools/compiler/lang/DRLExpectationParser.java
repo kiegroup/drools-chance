@@ -17,17 +17,20 @@
 package org.drools.compiler.lang;
 
 
+import it.unibo.deis.lia.org.drools.expectations.model.Expectation;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
-import org.drools.compiler.lang.api.ECEConditionalElementDescrBuilder;
-import org.drools.compiler.lang.api.ECEDescrBuilder;
-import org.drools.compiler.lang.api.ECEPackageDescrBuilder;
-import org.drools.compiler.lang.api.ECERuleDescrBuilder;
+import org.drools.compiler.lang.api.*;
+import org.drools.compiler.lang.api.impl.ExpectationDescrBuilderImpl;
 import org.drools.compiler.lang.descr.AndDescr;
+import org.drools.compiler.lang.descr.BaseDescr;
 import org.drools.compiler.lang.descr.ExpectationRuleDescr;
 import it.unibo.deis.lia.org.drools.expectations.DRLExpectationHelper;
+import org.drools.compiler.lang.descr.PatternDescr;
+
+import java.util.List;
 
 public class DRLExpectationParser  {
 
@@ -140,7 +143,7 @@ public class DRLExpectationParser  {
     private void expectationAnd( ECEPackageDescrBuilder packageDescr, ECERuleDescrBuilder rule, ECEConditionalElementDescrBuilder<?, AndDescr> or ) throws RecognitionException {
         ECEConditionalElementDescrBuilder eceAnd = (ECEConditionalElementDescrBuilder) or.and();
 
-        expectation( packageDescr, rule, eceAnd );
+        expectation(packageDescr, rule, eceAnd);
 
         if ( state.failed ) return;
 
@@ -159,7 +162,7 @@ public class DRLExpectationParser  {
                     helper.emit( Location.LOCATION_LHS_BEGIN_OF_CONDITION_AND_OR );
                 }
 
-                expectation( packageDescr, rule, eceAnd );
+                expectation(packageDescr, rule, eceAnd);
 
                 if ( state.failed ) return;
             }
@@ -230,6 +233,8 @@ public class DRLExpectationParser  {
                 parser.lhsPattern( null, label, false );
             }
 
+            expires(packageDescr, expectDescr, (ExpectationRuleDescr) rule.getDescr() );
+
             onFulfill( packageDescr, expectDescr, (ExpectationRuleDescr) rule.getDescr() );
 
             onViolation( packageDescr, expectDescr, (ExpectationRuleDescr) rule.getDescr() );
@@ -240,6 +245,27 @@ public class DRLExpectationParser  {
 
         return expLabel;
 
+    }
+
+    public void expires( ECEPackageDescrBuilder packageDescr, ECEDescrBuilder expect, ExpectationRuleDescr parentRule ) throws RecognitionException {
+        if ( helper.validateIdentifierKey( ExpectationSoftKeywords.EXPIRES)) {
+            parser.match(input,
+                    DRL6Lexer.ID,
+                    ExpectationSoftKeywords.EXPIRES,
+                    null,
+                    DroolsEditorType.KEYWORD);
+            if ( state.failed ) return;
+            String label = null;
+            ECERuleDescrBuilder expireRule = expect.expire(packageDescr, parentRule);
+            List<BaseDescr> descrs = parentRule.getLhs().getDescrs();
+            for (BaseDescr descr: descrs) {
+                if (descr instanceof PatternDescr && !Expectation.class.getName().equals(((PatternDescr)descr).getObjectType())) {
+                    PatternDescr pattern = (PatternDescr)descr;
+                    label = pattern.getIdentifier();
+                }
+            }
+            parser.lhsPattern(expireRule.lhs().pattern(), label, false);
+        }
     }
 
 

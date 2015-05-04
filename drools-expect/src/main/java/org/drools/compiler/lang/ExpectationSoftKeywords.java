@@ -19,6 +19,7 @@ package org.drools.compiler.lang;
 public class ExpectationSoftKeywords {
 
     public static final String EXPECT         = "expect";
+    public static final String EXPIRES        = "expires";
     public static final String REPAIR         = "repair";
     public static final String ONFULFILL      = "onFulfill";
     public static final String ONVIOLATION    = "onViolation";

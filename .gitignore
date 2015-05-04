@@ -11,3 +11,10 @@
 
 # Repository wide ignore mac DS_Store files
 .DS_Store
+drools-informer/drools-informer-core/drools-informer-core.iml
+drools-informer/drools-informer-interaction/drools-informer-interaction.iml
+drools-informer/drools-informer-loader/drools-informer-loader.iml
+drools-informer/drools-informer-pmml/drools-informer-pmml.iml
+drools-informer/drools-informer.iml
+drools-informer/human-task-helpers/human-task-helpers.iml
+drools-pmml/drools-pmml.iml

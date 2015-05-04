@@ -118,10 +118,14 @@ public class ECEVisitor {
         }
 
         if ( expectations.getLabel() != null && ! rule.isExpectationDisabled() ) {
-            helper.buildExpirationRule( rule.getLhs(),
-                                        expectations.getLabel(),
-                                        expectations.getExpectLhs(),
-                                        builder );
+            if (expectations.getExpired() != null) {
+                helper.buildExpirationRule(builder, rule, expectations);
+            } else {
+                helper.buildExpirationRule(rule.getLhs(),
+                        expectations.getLabel(),
+                        expectations.getExpectLhs(),
+                        builder);
+            }
         }
 
     }

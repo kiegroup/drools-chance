@@ -58,6 +58,17 @@ public class ExpectationDescrBuilderImpl<P extends ECEConditionalElementDescrBui
     }
 
     @Override
+    public ECERuleDescrBuilder expire(PackageDescrBuilder packageDescrBuilder, ExpectationRuleDescr parent) {
+        ECERuleDescrBuilder ece = new ExpectationRuleDescrBuilderImpl( packageDescrBuilder );
+        ece.name(this.getDescr().getLabel()+"__Expire");
+        this.getDescr().setExpired((ExpectationRuleDescr)ece.getDescr());
+        for ( AnnotationDescr ad : parent.getAnnotations() ) {
+            ece.getDescr().addAnnotation( ad );
+        }
+        return ece;
+    }
+
+    @Override
     public ECERuleDescrBuilder fulfill( PackageDescrBuilder packageDescrBuilder, ExpectationRuleDescr parent ) {
         ECERuleDescrBuilder ece = new ExpectationRuleDescrBuilderImpl( packageDescrBuilder );
         this.getDescr().setFulfill( (ExpectationRuleDescr) ece.getDescr() );

@@ -21,6 +21,7 @@ public class ExpectationDescr extends AnnotatedBaseDescr {
     private AndDescr expectLhs = new AndDescr();
     private ExpectationRuleDescr fulfill;
     private ExpectationRuleDescr violation;
+    private ExpectationRuleDescr expired;
     private String label;
     private boolean matchOne;
 
@@ -43,6 +44,10 @@ public class ExpectationDescr extends AnnotatedBaseDescr {
     public AndDescr getExpectLhs() {
         return expectLhs;
     }
+
+    public void setExpired( ExpectationRuleDescr expired ) { this.expired = expired; }
+
+    public RuleDescr getExpired() { return expired; }
 
     public void setExpectLhs( AndDescr expectLhs ) {
         this.expectLhs = expectLhs;

@@ -24,7 +24,6 @@ end
 rule "Create MyKlassEvent"
 when
     $mk: MyKlass( )
-    not MyKlassEvent( myKlass == $mk )
 then
     insert(new MyKlassEvent($mk));
 end

@@ -91,7 +91,16 @@ public class DRLExpectationHelper {
     }
 
 
+    public void buildExpirationRule( PackageDescrBuilder builder, ExpectationRuleDescr rule, ExpectationDescr expectations ) {
+        RuleDescr expireRule = expectations.getExpired();
+        AndDescr expireLhs = expireRule.getLhs();
+        expireLhs.addDescr(expectPattern(expectations.getLabel(), extractVars(rule.getLhs(),expectations.getLabel()),false));
+        expireRule.setConsequence(removePending(expectations.getLabel()));
+        builder.getDescr().addRule(expireRule);
+    }
+
     public void buildExpirationRule( AndDescr trigger, String expLabel, AndDescr and, PackageDescrBuilder packBuilder ) {
+
 
         long offset = ExpirationCalc.calcExpirationOffset( trigger, and );
 
