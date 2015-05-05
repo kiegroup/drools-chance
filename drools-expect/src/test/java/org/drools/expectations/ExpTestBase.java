@@ -113,6 +113,21 @@ public class ExpTestBase {
         return null;
     }
 
+    protected Object newInterrupt( KieSession kSession, String reason ) {
+        try {
+            FactType intType = kSession.getKieBase().getFactType("org.drools","Interrupt");
+            Object o = null;
+            o = intType.newInstance();
+            intType.set(o, "reason", reason);
+            return o;
+        } catch (InstantiationException e) {
+            fail(e.getMessage());
+        } catch (IllegalAccessException e) {
+            fail(e.getMessage());
+        }
+        return null;
+    }
+
 
     protected Object newReading(KieSession kSession, String probe, Double value ) {
         try {

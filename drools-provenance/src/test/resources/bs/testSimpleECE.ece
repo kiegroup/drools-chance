@@ -20,10 +20,11 @@ then
 end
 
 rule PropCheck
+@Display( "Set expectation - @{$sk_1}" )
 when
     $k : MyKlass( $p : prop, timestamp != null )
 then
-    expect $sk: MySubKlass( timestamp after $k.timestamp )
+    expect $sk: MySubKlass( ) @Evidence( @Display( type = "1", value = "subpropery - @{$sk.subProp}"))
     onFulfill { bolster( modifyMySubKlass($sk).subProp(10)); }
     onViolation { bolster( modifyMyKlass($k).prop("booVal")); }
     list.add( $p );

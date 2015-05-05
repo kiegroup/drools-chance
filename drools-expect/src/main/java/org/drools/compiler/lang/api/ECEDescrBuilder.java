@@ -28,7 +28,7 @@ public interface ECEDescrBuilder<P extends ECEConditionalElementDescrBuilder<?,E
 
     public ECEDescrBuilder<P> one();
 
-    public ECERuleDescrBuilder expire(PackageDescrBuilder packageDescrBuilder, ExpectationRuleDescr parent);
+    public ECERuleDescrBuilder failsOn(PackageDescrBuilder packageDescrBuilder, ExpectationRuleDescr parent);
 
     public ECERuleDescrBuilder fulfill( PackageDescrBuilder packageDescrBuilder, ExpectationRuleDescr parent );
 

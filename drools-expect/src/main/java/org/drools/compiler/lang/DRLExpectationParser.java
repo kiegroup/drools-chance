@@ -233,7 +233,7 @@ public class DRLExpectationParser  {
                 parser.lhsPattern( null, label, false );
             }
 
-            expires(packageDescr, expectDescr, (ExpectationRuleDescr) rule.getDescr() );
+            failsOn(packageDescr, expectDescr, (ExpectationRuleDescr) rule.getDescr() );
 
             onFulfill( packageDescr, expectDescr, (ExpectationRuleDescr) rule.getDescr() );
 
@@ -247,23 +247,17 @@ public class DRLExpectationParser  {
 
     }
 
-    public void expires( ECEPackageDescrBuilder packageDescr, ECEDescrBuilder expect, ExpectationRuleDescr parentRule ) throws RecognitionException {
-        if ( helper.validateIdentifierKey( ExpectationSoftKeywords.EXPIRES)) {
+    public void failsOn( ECEPackageDescrBuilder packageDescr, ECEDescrBuilder expect, ExpectationRuleDescr parentRule ) throws RecognitionException {
+        if ( helper.validateIdentifierKey( ExpectationSoftKeywords.FAILSON)) {
+            // consume "failsOn" keyword
             parser.match(input,
                     DRL6Lexer.ID,
-                    ExpectationSoftKeywords.EXPIRES,
+                    ExpectationSoftKeywords.FAILSON,
                     null,
                     DroolsEditorType.KEYWORD);
             if ( state.failed ) return;
             String label = null;
-            ECERuleDescrBuilder expireRule = expect.expire(packageDescr, parentRule);
-            List<BaseDescr> descrs = parentRule.getLhs().getDescrs();
-            for (BaseDescr descr: descrs) {
-                if (descr instanceof PatternDescr && !Expectation.class.getName().equals(((PatternDescr)descr).getObjectType())) {
-                    PatternDescr pattern = (PatternDescr)descr;
-                    label = pattern.getIdentifier();
-                }
-            }
+            ECERuleDescrBuilder expireRule = expect.failsOn(packageDescr, parentRule);
             parser.lhsPattern(expireRule.lhs().pattern(), label, false);
         }
     }

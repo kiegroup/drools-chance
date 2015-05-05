@@ -25,7 +25,11 @@ import it.unibo.deis.lia.org.drools.expectations.model.Success;
 import it.unibo.deis.lia.org.drools.expectations.model.Viol;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.kie.api.definition.KiePackage;
+import org.kie.api.definition.rule.Global;
 import org.kie.api.event.rule.DebugAgendaEventListener;
+import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
+import org.kie.api.event.rule.DefaultAgendaEventListener;
 import org.kie.api.runtime.KieSession;
 
 import java.util.Arrays;
@@ -37,6 +41,68 @@ import static org.junit.Assert.*;
 
 public class ExpectationTest extends ExpTestBase {
 
+    @Test
+    public void testFailsOn() {
+        String src = "" +
+                "package org.drools; " +
+
+                "declare Msg " +
+                "   @role(event) " +
+                "   sender   :   String @key " +
+                "   receiver   :   String @key " +
+                "   body      :   String @key " +
+                "   more      :   String " +
+                "end " +
+                " " +
+                "declare Interrupt " +
+                "   reason   :   String @key " +
+                "end " +
+                " " +
+                "global java.util.List list; " +
+
+                "rule FailsOn_Test_Rule " +
+                "when " +
+                "   $trigger: Msg( 'John', 'Peter', 'Hello' ; ) " +
+                "then " +
+                "   expect Msg( 'Peter', 'John', 'Hello back', $more ; this after[0,100ms] $trigger ) " +
+                "   failsOn Interrupt( 'ignore' ; ) " +
+                "   onFulfill { " +
+                "      list.add( 'F1'+$more ); " +
+                "      System.out.println( 'Expectation fulfilled' ); " +
+                "   } onViolation { " +
+                "      System.out.println( 'Expectation violated' ); " +
+                "   } " +
+                "   list.add( 0 ); " +
+                "   System.out.println( 'Triggered expectation: '+$trigger ); " +
+                "end";
+
+        KieSession kSession = buildKnowledgeSession( src.getBytes() );
+//        kSession.addEventListener(new DebugRuleRuntimeEventListener(System.out));
+//        kSession.addEventListener(new DebugAgendaEventListener(System.out));
+        List<Object> list = new LinkedList<Object>();
+        kSession.setGlobal("list", list);
+
+        System.out.println("====================================================================================");
+        kSession.insert(newMessage(kSession, "John", "Peter", "Hello", "X"));
+        kSession.fireAllRules();
+        assertTrue(list.contains(0));
+
+        /**
+         * Causes the failsOn rule (which currently is named with *__Expire suffix) to activate
+         **/
+        sleep(10);
+        kSession.insert(newInterrupt(kSession, "ignore"));
+        kSession.fireAllRules();
+        sleep(50);
+
+        /**
+         * Shouldn't cause anything more to activate (due to Closure occurring earlier),
+         * but at this time the onFulfill rule activates
+         */
+        kSession.insert(newMessage(kSession, "Peter", "John", "Hello back", "Y"));
+        kSession.fireAllRules();
+        System.out.println( reportWMObjects( kSession ) );
+    }
 
     @Test
     public void testSimpleFulfill() {
@@ -89,9 +155,6 @@ public class ExpectationTest extends ExpTestBase {
 
 
 
-        for (Object o: kSession.getObjects()) {
-            System.out.println(o.getClass().getName());
-        }
         assertEquals( Arrays.asList( 0, "F1Y" ), list );
         assertEquals( 1, countMeta( Fulfill.class.getName(), kSession ) );
         assertEquals( 1, countMeta( Pending.class.getName(), kSession ) );
@@ -106,9 +169,6 @@ public class ExpectationTest extends ExpTestBase {
         assertEquals( 0, countMeta( Pending.class.getName(), kSession ) );
         assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
 
-        for ( Object o : kSession.getObjects() ) {
-            System.out.println( "======== " + o );
-        }
 
     }
 

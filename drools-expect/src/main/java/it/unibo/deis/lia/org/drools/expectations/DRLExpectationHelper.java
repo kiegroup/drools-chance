@@ -93,16 +93,18 @@ public class DRLExpectationHelper {
 
     public void buildExpirationRule( PackageDescrBuilder builder, ExpectationRuleDescr rule, ExpectationDescr expectations ) {
         RuleDescr expireRule = expectations.getExpired();
+        expireRule.addAnnotation( "Propagation", "EAGER" );
         AndDescr expireLhs = expireRule.getLhs();
+        mirrorConditions(expireLhs, rule.getLhs());
         expireLhs.addDescr(expectPattern(expectations.getLabel(), extractVars(rule.getLhs(),expectations.getLabel()),false));
-        expireRule.setConsequence(removePending(expectations.getLabel()));
+        expireRule.setConsequence(insertFailsOnClosure(null,expectations.getLabel()));
         builder.getDescr().addRule(expireRule);
     }
 
     public void buildExpirationRule( AndDescr trigger, String expLabel, AndDescr and, PackageDescrBuilder packBuilder ) {
 
 
-        long offset = ExpirationCalc.calcExpirationOffset( trigger, and );
+        long offset = ExpirationCalc.calcExpirationOffset(trigger, and);
 
         if( offset < 0 || offset == Long.MAX_VALUE ) {
             return;
@@ -113,15 +115,15 @@ public class DRLExpectationHelper {
 
         ruleBuilder.attribute( "duration", "" + offset );
 
-        ruleBuilder.rhs( removePending( expLabel ) );
+        ruleBuilder.rhs(removePending(expLabel));
 
         CEDescrBuilder<RuleDescrBuilder,AndDescr> lhs = ruleBuilder.lhs();
 
         PatternDescrBuilder expect = lhs.pattern();
-            expect.type( Expectation.class.getName() );
-            expect.isQuery( false );
-            expect.id( expLabel, false );
-            expect.constraint( "label == \"" + expLabel + "\"", false );
+            expect.type(Expectation.class.getName());
+            expect.isQuery(false);
+            expect.id(expLabel, false);
+            expect.constraint("label == \"" + expLabel + "\"", false);
     }
 
 
@@ -137,13 +139,13 @@ public class DRLExpectationHelper {
         sb.append(" ]");
 
         PatternDescr patternDescr = new PatternDescr( EXP_PACKAGE + ".Expectation", label );
-        patternDescr.setQuery( false );
+        patternDescr.setQuery(false);
 
-        patternDescr.addConstraint( constraint( VAR_CONTEXT ,true, patternDescr ) );
+        patternDescr.addConstraint(constraint(VAR_CONTEXT, true, patternDescr));
         patternDescr.addConstraint( constraint( "\"" + label + "\"", true, patternDescr ) );
-        patternDescr.addConstraint( constraint( VAR_PENDING__EXPECTATION__ACT, true, patternDescr ) );
-        patternDescr.addConstraint( constraint( "$actId", true, patternDescr ) );
-        patternDescr.addConstraint( constraint( "tuple.equals( " + sb.toString() + " )", false, patternDescr ) );
+        patternDescr.addConstraint(constraint(VAR_PENDING__EXPECTATION__ACT, true, patternDescr));
+        patternDescr.addConstraint(constraint("$actId", true, patternDescr));
+        patternDescr.addConstraint(constraint("tuple.equals( " + sb.toString() + " )", false, patternDescr));
 
         if ( unfulfilledOnly ) {
             patternDescr.addConstraint( constraint( "fulfilled == false", false, patternDescr ) );
@@ -158,8 +160,8 @@ public class DRLExpectationHelper {
 
     protected ExprConstraintDescr constraint( String epxr, boolean positional, PatternDescr patternDescr ) {
         ExprConstraintDescr constr = new ExprConstraintDescr( epxr );
-        constr.setType( positional ? ExprConstraintDescr.Type.POSITIONAL : ExprConstraintDescr.Type.NAMED );
-        constr.setPosition( patternDescr.getDescrs().size() );
+        constr.setType(positional ? ExprConstraintDescr.Type.POSITIONAL : ExprConstraintDescr.Type.NAMED);
+        constr.setPosition(patternDescr.getDescrs().size());
         return constr;
 
     }
@@ -182,7 +184,17 @@ public class DRLExpectationHelper {
     }
 
     public String insertFulfill( String label, String ruleName ) {
-        StringBuilder sb = new StringBuilder( "\t bolster( " ).append( Expectations.class.getName() ).append( ".newFulfill( " )
+        StringBuilder sb = new StringBuilder( "\t insert( " ).append(Expectations.class.getName()).append( ".newFulfill( " )
+                .append(newline()).append( '\"' ).append(label).append( '\"' ).append( ", " )
+                .append(newline()).append( '\"' ).append(ruleName).append( '\"' ).append( ", " )
+                .append( newline() ).append( "drools.getMatch()" ).append( ", " )
+                .append( newline() ).append( VAR_CONTEXT ).append( ", " )
+                .append( newline() ).append( VAR_PENDING__EXPECTATION__ACT ).append( " ) ); \n" );
+        return sb.toString();
+    }
+
+    public String insertViolation( String label, String ruleName ) {
+        StringBuilder sb = new StringBuilder( "\t insert( " ).append( Expectations.class.getName() ).append( ".newViolation( " )
                 .append( newline() ).append( '\"' ).append( label ).append( '\"' ).append( ", " )
                 .append( newline() ).append( '\"' ).append( ruleName ).append( '\"' ).append( ", " )
                 .append( newline() ).append( "drools.getMatch()" ).append( ", " )
@@ -191,13 +203,9 @@ public class DRLExpectationHelper {
         return sb.toString();
     }
 
-    public String insertViolation( String label, String ruleName ) {
-        StringBuilder sb = new StringBuilder( "\t bolster( " ).append( Expectations.class.getName() ).append( ".newViolation( " )
-                .append( newline() ).append( '\"' ).append( label ).append( '\"' ).append( ", " )
-                .append( newline() ).append( '\"' ).append( ruleName ).append( '\"' ).append( ", " )
-                .append( newline() ).append( "drools.getMatch()" ).append( ", " )
-                .append( newline() ).append( VAR_CONTEXT ).append( ", " )
-                .append( newline() ).append( VAR_PENDING__EXPECTATION__ACT ).append( " ) ); \n" );
+    public String insertFailsOnClosure( String label, String ruleName ) {
+        StringBuilder sb = new StringBuilder("\t insert( " );
+        sb.append("new Closure( \"").append(ruleName).append("\" ) ); ");
         return sb.toString();
     }
 
@@ -222,7 +230,7 @@ public class DRLExpectationHelper {
 
 
     public String successRHS( String name ) {
-        StringBuilder sb = new StringBuilder( "\t bolster( " ).append( Expectations.class.getName() ).append( ".newSuccess( " )
+        StringBuilder sb = new StringBuilder( "\t insert( " ).append( Expectations.class.getName() ).append( ".newSuccess( " )
                 .append( newline() ).append( "$context" ).append( ", " )
                 .append( newline() ).append( '\"' ).append( name ).append( '\"' ).append( ", " )
                 .append( newline() ).append( "drools.getMatch()" ).append( " ) ); \n" );
@@ -231,7 +239,7 @@ public class DRLExpectationHelper {
 
 
     public String failRHS(String name) {
-        StringBuilder sb = new StringBuilder( "\t bolster( " ).append( Expectations.class.getName() ).append( ".newFailure( " )
+        StringBuilder sb = new StringBuilder( "\t insert( " ).append( Expectations.class.getName() ).append( ".newFailure( " )
                 .append( newline() ).append( "$context" ).append( ", " )
                 .append( newline() ).append( '\"' ).append( name ).append( '\"' ).append( ", " )
                 .append( newline() ).append( "drools.getMatch()" ).append( " ) ); \n" );
