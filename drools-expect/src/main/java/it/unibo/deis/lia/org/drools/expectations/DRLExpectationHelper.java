@@ -95,7 +95,17 @@ public class DRLExpectationHelper {
         RuleDescr expireRule = expectations.getExpired();
         expireRule.addAnnotation( "Propagation", "EAGER" );
         AndDescr expireLhs = expireRule.getLhs();
+        List<BaseDescr> existingDescrs = null;
+        if (!expireLhs.getDescrs().isEmpty()) {
+            existingDescrs = new ArrayList<BaseDescr>(expireLhs.getDescrs());
+            expireLhs.getDescrs().clear();
+        }
         mirrorConditions(expireLhs, rule.getLhs());
+        if (existingDescrs != null) {
+            for (BaseDescr descr: existingDescrs) {
+                expireLhs.addDescr(descr);
+            }
+        }
         expireLhs.addDescr(expectPattern(expectations.getLabel(), extractVars(rule.getLhs(),expectations.getLabel()),false));
         expireRule.setConsequence(insertFailsOnClosure(null,expectations.getLabel()));
         builder.getDescr().addRule(expireRule);
