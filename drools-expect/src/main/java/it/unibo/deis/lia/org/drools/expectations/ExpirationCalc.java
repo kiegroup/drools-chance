@@ -76,6 +76,11 @@ public class ExpirationCalc {
                                 RelationalExprDescr rel = (RelationalExprDescr) descr;
                                 if ( isTemporalOp( rel.getOperator() ) ) {
                                     OperatorDescr op = rel.getOperatorDescr();
+                                    // Added to replace commented section that follows
+                                    max = Math.min(max, calOffset(op));
+                                    /**
+                                     * Commented out for the purpose of getting this to work
+                                     * when we don't have full event-ization
                                     if ( ids.contains( rel.getRight().toString() ) && "this".equals( rel.getLeft().toString() ) ) {
                                         max = Math.min( max, calOffset( op ) );
                                     } else if ( ids.contains( rel.getLeft().toString() ) && "this".equals( rel.getRight().toString() ) ) {
@@ -83,6 +88,7 @@ public class ExpirationCalc {
                                     } else {
                                         throw new UnsupportedOperationException( "Defensive : unrelated temporal relationship!" );
                                     }
+                                    */
                                 }
                             }
                         }
@@ -97,7 +103,7 @@ public class ExpirationCalc {
 
     private static long calOffset( OperatorDescr op ) {
         if ( "after".equals( op.getOperator() ) ) {
-            if ( op.getParameters().isEmpty() || op.getParameters().size() == 1 ) {
+            if ( op.getParameters() == null || op.getParameters().isEmpty() || op.getParameters().size() == 1 ) {
                 return Long.MAX_VALUE;
             } else if ( op.getParameters().size() == 2 ) {
                 Long[] range = tp.parse( op.getParametersText() );
@@ -106,7 +112,7 @@ public class ExpirationCalc {
                 throw new IllegalStateException( "After operator can have 2 param max, found " + op.getParameters() );
             }
         } else if ( "before".equals( op.getOperator() ) ) {
-                if ( op.getParameters().isEmpty() || op.getParameters().size() == 1 ) {
+                if ( op.getParameters() == null || op.getParameters().isEmpty() || op.getParameters().size() == 1 ) {
                     return 0;
                 } else if ( op.getParameters().size() == 2 ) {
                     Long[] range = tp.parse( op.getParametersText() );
