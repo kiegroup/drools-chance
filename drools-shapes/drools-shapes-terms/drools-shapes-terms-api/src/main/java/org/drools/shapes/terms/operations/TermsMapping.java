@@ -7,7 +7,7 @@
 
 package org.drools.shapes.terms.operations;
 
-import org.drools.drools_shapes.terms.ConceptDescriptor;
+import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 
 public interface TermsMapping {
 

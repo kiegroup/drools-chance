@@ -1,6 +1,6 @@
 package org.drools.shapes.terms.evaluator;
 
-import org.drools.drools_shapes.terms.ConceptDescriptor;
+import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 import org.drools.shapes.model.datatypes.CD;
 import org.drools.shapes.terms.cts2.Cts2TermsImpl;
 import org.drools.shapes.terms.operations.internal.TermsInferenceService;

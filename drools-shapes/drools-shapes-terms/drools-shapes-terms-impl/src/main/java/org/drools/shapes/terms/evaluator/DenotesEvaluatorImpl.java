@@ -15,8 +15,8 @@ import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescripti
 import edu.mayo.cts2.framework.service.profile.mapentry.name.MapEntryReadId;
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId;
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.name.ValueSetDefinitionReadId;
+import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 import org.apache.commons.lang.StringUtils;
-import org.drools.drools_shapes.terms.ConceptDescriptor;
 import org.drools.shapes.terms.operations.TermsInference;
 import org.drools.shapes.terms.operations.internal.TermsInferenceService;
 

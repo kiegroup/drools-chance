@@ -7,9 +7,11 @@
 
 package org.drools.shapes.model.datatypes;
 
-import org.drools.drools_shapes.terms.ConceptDescriptor;
+
+import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 
 import java.net.URI;
+import java.util.List;
 
 public class CD implements ConceptDescriptor {
 

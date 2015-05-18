@@ -7,7 +7,7 @@
 
 package org.drools.shapes.terms;
 
-import org.drools.drools_shapes.terms.ConceptDescriptor;
+import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 import org.drools.shapes.terms.operations.Terms;
 
 

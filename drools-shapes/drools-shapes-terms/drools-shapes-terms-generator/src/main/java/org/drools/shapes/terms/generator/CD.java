@@ -7,7 +7,7 @@
 
 package org.drools.shapes.terms.generator;
 
-import org.drools.drools_shapes.terms.ConceptDescriptor;
+import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 
 import java.net.URI;
 

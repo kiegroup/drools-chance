@@ -1,6 +1,7 @@
 package org.drools.shapes.terms.evaluator;
 
 import com.clarkparsia.empire.annotation.RdfProperty;
+import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 import org.drools.core.base.BaseEvaluator;
 import org.drools.core.base.ValueType;
 import org.drools.core.base.evaluators.EvaluatorDefinition;
@@ -12,7 +13,6 @@ import org.drools.core.rule.VariableRestriction;
 import org.drools.core.spi.Evaluator;
 import org.drools.core.spi.FieldValue;
 import org.drools.core.spi.InternalReadAccessor;
-import org.drools.drools_shapes.terms.ConceptDescriptor;
 import org.drools.shapes.terms.TermsInferenceServiceFactory;
 
 import java.io.IOException;

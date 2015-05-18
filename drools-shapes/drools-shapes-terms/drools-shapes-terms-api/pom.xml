@@ -25,10 +25,14 @@
 	</properties>
 
 	<dependencies>
-        <dependency>
-            <groupId>edu.mayo.cts2.framework</groupId>
-            <artifactId>cts2-service</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>edu.mayo.cts2.framework</groupId>
+			<artifactId>cts2-service</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>edu.mayo.cts2</groupId>
+			<artifactId>terms-metamodel</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.drools</groupId>
@@ -71,11 +75,11 @@
 				</executions>
 				<configuration>
 					<outputDirectory>${pom.basedir}</outputDirectory>
-					<ontology>${pom.basedir}/src/main/resources/terms.owl</ontology>
+					<ontology>/terms.owl</ontology>
 					<ontologyImports>
-						<ontologyImport>${pom.basedir}/src/main/resources/skos.rdf</ontologyImport>
-						<ontologyImport>${pom.basedir}/src/main/resources/lmm_l1.owl</ontologyImport>
-						<ontologyImport>${pom.basedir}/src/main/resources/cts2.owl</ontologyImport>
+						<ontologyImport>/skos.owl</ontologyImport>
+						<ontologyImport>/cts2.owl</ontologyImport>
+						<ontologyImport>/lmm_l1.owl</ontologyImport>
 					</ontologyImports>
 					<modelName>terms</modelName>
 					<axiomInference>lite</axiomInference>
@@ -92,6 +96,13 @@
 						<compilationOption>-standalone</compilationOption>
 					</compilationOptions>
 				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>edu.mayo.cts2</groupId>
+						<artifactId>terms-metamodel</artifactId>
+						<version>1.0-SNAPSHOT</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
