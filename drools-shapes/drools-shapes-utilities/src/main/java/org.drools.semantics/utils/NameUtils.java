@@ -36,9 +36,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 
 public final class NameUtils {
+
+
+    public final static Pattern URN_PATTERN = Pattern.compile(
+            "^urn:[a-z0-9][a-z0-9-]{0,31}:([a-z0-9()+,\\-.:=@;$_!*']|%[0-9a-f]{2})+$",
+            Pattern.CASE_INSENSITIVE);
 
 
     public enum IdentifierType {

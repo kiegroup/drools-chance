@@ -69,7 +69,8 @@ public class DLFactoryImpl implements DLFactory {
             config.setMissingOntologyHeaderStrategy( OWLOntologyLoaderConfiguration.MissingOntologyHeaderStrategy.IMPORT_GRAPH );
 
             OWLOntology onto = null;
-            for ( Resource res : resources ) {
+            for ( int j = 0; j < resources.length; j++ ) {
+                Resource res = resources[ j ];
                 OWLOntologyDocumentSource source = new StreamDocumentSource( res.getInputStream() );
                 onto = manager.loadOntologyFromOntologyDocument( source, config );
             }

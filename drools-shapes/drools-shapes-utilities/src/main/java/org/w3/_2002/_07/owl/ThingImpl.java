@@ -56,7 +56,9 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -522,6 +524,39 @@ public class ThingImpl
         return getFullName();
     }
 
+
+    @XmlTransient
+    private Set<BitSet> otns;
+    @XmlTransient
+    private BitSet propagationTypeCode = new BitSet();
+
+
+    public void assignOtn( BitSet typeCode ) {
+        if ( otns == null ) {
+            otns = new HashSet<BitSet>();
+        }
+        otns.add( typeCode );
+        propagationTypeCode.or( typeCode );
+    }
+
+    public void clearOtns() {
+        if ( otns != null ) {
+            otns.clear();
+        }
+        propagationTypeCode.clear();
+    }
+
+    public Set<BitSet> listAssignedOtnTypeCodes() {
+        return otns != null ? Collections.unmodifiableSet( otns ) : Collections.EMPTY_SET;
+    }
+
+    @Override
+    public boolean hasTypeCode( BitSet typeCode ) {
+        if ( otns == null ) {
+            return false;
+        }
+        return otns.contains( typeCode );
+    }
     @Transient
     public URI getUri() {
         return URI.create( getDyEntryId() );

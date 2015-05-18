@@ -5,7 +5,7 @@ import com.sun.tools.xjc.Options;
 import com.sun.tools.xjc.model.CPluginCustomization;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.drools.core.metadata.ManyToManyPropertyLiteral;
 import org.drools.core.metadata.ManyToOnePropertyLiteral;
 import org.drools.core.metadata.MetadataHolder;

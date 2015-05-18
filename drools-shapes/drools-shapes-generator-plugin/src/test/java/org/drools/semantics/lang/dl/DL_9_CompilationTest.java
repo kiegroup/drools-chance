@@ -24,7 +24,7 @@ import com.clarkparsia.empire.sesame.OpenRdfEmpireModule;
 import com.clarkparsia.empire.sesame.RepositoryDataSourceFactory;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.drools.semantics.UIdAble;
 import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;

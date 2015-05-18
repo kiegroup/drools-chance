@@ -25,11 +25,13 @@ import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.OntoModel;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -389,21 +391,7 @@ public class ShapeCaster
 
 
     private OntoModel processOntology( OntoModel.Mode mode ) throws MojoExecutionException {
-        InputStream ontologyStream = null;
-        File ontoFile = new File( ontology );
-        if ( ontoFile.exists() ) {
-            try {
-                ontologyStream = new FileInputStream( new File( ontology ) );
-            } catch ( FileNotFoundException e ) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                ontologyStream = ResourceFactory.newClassPathResource( ontology ).getInputStream();
-            } catch ( IOException e ) {
-                //
-            }
-        }
+        InputStream ontologyStream = getResourceStream( ontology );
 
         DLFactory factory = DLFactoryBuilder.newDLFactoryInstance();
         if ( ontologyImports == null ) {
@@ -414,11 +402,8 @@ public class ShapeCaster
         Resource[] res = new Resource[ n ];
         int j = 0;
         for ( String imp : ontologyImports ) {
-            if ( new File( imp ).exists() ) {
-                res[j++] = ResourceFactory.newFileResource( imp );
-            } else {
-                res[j++] = ResourceFactory.newClassPathResource( imp );
-            }
+            InputStream importStream = getResourceStream( imp );
+            res[ j++ ] = ResourceFactory.newInputStreamResource( importStream );
         }
         res[j] = ResourceFactory.newInputStreamResource( ontologyStream );
 
@@ -431,6 +416,34 @@ public class ShapeCaster
                                    res,
                                    conf,
                                    Thread.currentThread().getContextClassLoader() );
+    }
+
+    private InputStream getResourceStream( String path ) {
+        InputStream ontologyStream = null;
+        File ontoFile = new File( path );
+        if ( ontoFile.exists() ) {
+            try {
+                ontologyStream = new FileInputStream( new File( path ) );
+            } catch ( FileNotFoundException e ) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                ontologyStream = ResourceFactory.newClassPathResource( path ).getInputStream();
+            } catch ( Exception e ) {
+                try {
+                    InputStream tempStream = ShapeCaster.class.getResourceAsStream( path );
+
+                    byte[] data = new byte[ tempStream.available() ];
+                    tempStream.read( data );
+                    ontologyStream = new ByteArrayInputStream( data );
+                } catch ( Exception e1 ) {
+                    e1.printStackTrace();
+                }
+
+            }
+        }
+        return ontologyStream;
     }
 
 

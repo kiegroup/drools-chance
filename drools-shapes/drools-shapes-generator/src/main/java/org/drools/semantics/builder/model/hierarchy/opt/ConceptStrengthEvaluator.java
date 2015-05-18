@@ -1,7 +1,7 @@
 package org.drools.semantics.builder.model.hierarchy.opt;
 
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.drools.semantics.builder.model.Concept;
 
 import java.util.Comparator;
