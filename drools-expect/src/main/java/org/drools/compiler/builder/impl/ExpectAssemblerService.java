@@ -52,7 +52,7 @@ public class ExpectAssemblerService implements KieAssemblerService {
         new ECEVisitor( packageDescr ).visit( packageDescrBuilder );
 
         DrlDumper dumpr = new DrlDumper();
-//        System.err.println( dumpr.dump( packageDescr ) );
+        System.err.println( dumpr.dump( packageDescr ) );
 
         KnowledgeBuilderImpl kbuilderImpl = (KnowledgeBuilderImpl) kbuilder;
         kbuilderImpl.addPackage( packageDescr );

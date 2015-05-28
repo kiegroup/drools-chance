@@ -76,7 +76,7 @@ public class ProvenanceTest {
     public static Collection paths() {
         return Arrays.asList( new String[][]
                                       {
-//                                              { "tms/" },
+                                              { "tms/" },
                                               { "bs/" }
                                       } );
     }
