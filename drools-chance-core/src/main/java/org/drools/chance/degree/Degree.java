@@ -18,6 +18,7 @@ package org.drools.chance.degree;
 
 import org.drools.chance.degree.interval.IntervalDegree;
 import org.drools.chance.degree.simple.SimpleDegree;
+import org.kie.internal.runtime.beliefs.Mode;
 
 import java.io.Serializable;
 

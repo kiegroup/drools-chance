@@ -188,8 +188,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                         0 );
             }
         }
-        mv.visitMaxs( 0,
-                0 );
+        mv.visitMaxs( 0, 0 );
         mv.visitEnd();
 
 
@@ -235,8 +234,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     l1,
                     0 );
         }
-        mv.visitMaxs( hasObjects ? 3 : 0,
-                hasObjects ? 1 : 0 );
+        mv.visitMaxs( 0, 0 );
         mv.visitEnd();
 
 
@@ -535,7 +533,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             }
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs( 3, 3 );
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
 
         }
@@ -769,7 +767,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     ifld.getName() + "_$$Imp",
                     BuildUtils.getTypeDescriptor( ImperfectField.class.getName() ));
             mv.visitInsn(ARETURN);
-            mv.visitMaxs(1, 1);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -790,7 +788,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     "getCurrent",
                     "()Lorg/drools/chance/distribution/Distribution;");
             mv.visitInsn(ARETURN);
-            mv.visitMaxs(1, 1);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -802,7 +800,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             mv.visitCode();
             getTargetValue( mv, ifld, proxyName, core );
             mv.visitInsn(ARETURN);
-            mv.visitMaxs(1, 1);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -838,7 +836,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -884,7 +882,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(2, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -913,7 +911,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     "setValue",
                     "(Ljava/lang/Object;Z)V");
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -953,7 +951,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             setTargetValue( mv, core, ifld );
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -991,7 +989,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             mv.visitTypeInsn(CHECKCAST, BuildUtils.getInternalType( ifld.getTypeName() ) );
             setTargetValue( mv, core, ifld );
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1028,7 +1026,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             setTargetValue( mv, core, ifld );
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(2, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1069,7 +1067,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     BuildUtils.getTypeDescriptor( ifld.getTypeName() ) );
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(4, 4);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1111,7 +1109,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     BuildUtils.getTypeDescriptor( ifld.getTypeName() ) );
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(4, 4);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1144,7 +1142,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     ifld.getName() + "_$$Imp",
                     BuildUtils.getTypeDescriptor( ImperfectField.class.getName() ));
             mv.visitInsn( ARETURN );
-            mv.visitMaxs( 1, 1 );
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1167,7 +1165,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     "getCurrent",
                     "()Lorg/drools/chance/distribution/Distribution;");
             mv.visitInsn( ARETURN );
-            mv.visitMaxs( 1, 1 );
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1179,7 +1177,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             mv.visitCode();
             getTargetValue( mv, ifld, proxyName, coreName );
             mv.visitInsn(ARETURN);
-            mv.visitMaxs(1, 1);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1230,7 +1228,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
             setTargetValue( mv, coreName, tfld );
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1284,7 +1282,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
             setTargetValue( mv, coreName, tfld );
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1324,7 +1322,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
             setTargetValue( mv, coreName, tfld );
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1341,7 +1339,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             setTargetValue( mv, coreName, ifld );
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1401,7 +1399,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
             setTargetValue( mv, coreName, tfld );
             mv.visitInsn(RETURN);
-            mv.visitMaxs(2, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1452,7 +1450,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
             setTargetValue( mv, coreName, tfld );
             mv.visitInsn(RETURN);
-            mv.visitMaxs(2, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1491,7 +1489,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
             setTargetValue( mv, coreName, tfld );
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1554,7 +1552,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     BuildUtils.getTypeDescriptor( tfld.getTypeName() ) );
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(4, 4);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1618,7 +1616,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
                     BuildUtils.getTypeDescriptor( tfld.getTypeName() ) );
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(4, 4);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1636,7 +1634,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             mv.visitCode();
             getTargetValue( mv, tfld, proxyName, coreName );
             mv.visitInsn(ARETURN);
-            mv.visitMaxs(1, 1);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1686,7 +1684,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
             mv.visitVarInsn(ALOAD, 1);
             setTargetValue( mv, coreName, tfld );
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 3);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
 
@@ -1704,7 +1702,7 @@ public class ChanceBeanBuilderImpl extends DefaultBeanClassBuilder {
 
 
             mv.visitInsn(RETURN);
-            mv.visitMaxs(3, 2);
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
     }

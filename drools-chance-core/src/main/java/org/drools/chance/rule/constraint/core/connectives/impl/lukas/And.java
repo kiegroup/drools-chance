@@ -42,10 +42,10 @@ public class And extends AbstractConnective {
     }
 
     public Degree eval(Degree left, Degree right) {
-        return left.sub( Not.getInstance().eval(right) );
+        return left.sub( Not.getInstance().eval( right ) );
     }
 
-    public Degree eval(Degree... degs) {
+    public Degree eval( Degree... degs ) {
         Degree deg = degs[0];
         for (int j = 1; j < degs.length; j++) {
             deg = this.eval(deg,degs[j]);
@@ -53,16 +53,13 @@ public class And extends AbstractConnective {
         return deg;
     }
 
-    public Degree eval(Evaluation... degs) {
+    public Degree eval( Evaluation... degs ) {
         Degree deg = degs[0].getDegree();
         for (int j = 1; j < degs.length; j++) {
             deg = this.eval( deg, degs[j].getDegree() );
         }
         return deg;
     }
-
-
-
 
     public boolean isUnary() {
         return false;

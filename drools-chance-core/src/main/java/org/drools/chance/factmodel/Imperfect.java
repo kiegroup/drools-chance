@@ -19,6 +19,7 @@ package org.drools.chance.factmodel;
 import org.drools.chance.degree.DegreeType;
 import org.drools.chance.distribution.ImpKind;
 import org.drools.chance.distribution.ImpType;
+import org.drools.chance.rule.constraint.core.connectives.impl.MvlFamilies;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,11 +34,15 @@ public @interface Imperfect {
 
     ImpType type();
 
+    MvlFamilies family();
+
     DegreeType degree() default DegreeType.SIMPLE;
 
     int history() default 0;
 
     String support() default "";
+
+    String label() default "";
 
 
 }

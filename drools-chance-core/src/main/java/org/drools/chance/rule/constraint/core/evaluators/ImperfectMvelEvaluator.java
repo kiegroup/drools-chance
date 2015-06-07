@@ -42,7 +42,7 @@ public class ImperfectMvelEvaluator extends BaseImperfectEvaluator {
     protected Degree matchDistributionToValue( Distribution leftDist, Object rightValue, InternalWorkingMemory workingMemory ) {
 
         Degree deg = getBaseDegree().False();
-        String expr = expression != null ? expression : "this " + ChanceOperators.makePerfect(getOperator().getOperatorString()) + " " + rightValue;
+        String expr = expression != null ? expression : makeComparisonExpression( getOperator(), rightValue );
 
         if ( leftDist.isDiscrete() ) {
             if ( leftDist.domainSize().intValue() == 0 ) {
@@ -77,7 +77,17 @@ public class ImperfectMvelEvaluator extends BaseImperfectEvaluator {
         return deg;
     }
 
-
+    private String makeComparisonExpression( Operator operator, Object rightValue ) {
+        StringBuilder sb = new StringBuilder()
+                .append( "this " )
+                .append(  ChanceOperators.makePerfect( operator.getOperatorString() ) );
+        if ( rightValue instanceof String ) {
+            sb.append( "\"" ).append( rightValue.toString() ).append( "\"" );
+        } else {
+            sb.append( rightValue );
+        }
+        return sb.toString();
+    }
 
 
     private Map<String, Object> holder = new HashMap<String,Object>(2);

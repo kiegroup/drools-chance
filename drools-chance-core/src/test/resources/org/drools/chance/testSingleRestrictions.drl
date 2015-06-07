@@ -22,7 +22,6 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
 
 import java.util.Map;
 
@@ -69,16 +68,6 @@ then
 end
 
 
-rule "Crisp field as perfect"
-when
-    $b : Imperson( $a: age == 18 )
-then
-    Degree x = chance.getDegree();
-    System.out.println( "W " + x );  // 1.0
-    map.put( "W", x.getValue() );
-end
-
-
 rule "Crisp field as imperfect"
 when
     $b : Imperson( $a: age ~== 18 )
@@ -89,3 +78,11 @@ then
 end
 
 
+rule "Crisp field as perfect"
+when
+    $b : Imperson( $a: age == 18 )
+then
+    Degree x = chance.getDegree();
+    System.out.println( "W " + x );  // 1.0
+    map.put( "W", x.getValue() );
+end

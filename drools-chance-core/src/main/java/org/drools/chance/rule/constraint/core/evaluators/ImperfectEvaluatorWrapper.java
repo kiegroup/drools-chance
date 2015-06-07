@@ -20,12 +20,6 @@ public class ImperfectEvaluatorWrapper extends EvaluatorWrapper implements Imper
 
     public Degree match( InternalFactHandle left,
                          InternalFactHandle right ) {
-//        if( getLeftBinding() != null ) {
-//            left = getLeftHandle();
-//        }
-//        if( getRightBinding() != null ) {
-//            right = getRightHandle();
-//        }
 
         if ( getEvaluator() instanceof ImperfectEvaluator ) {
             return ((ImperfectEvaluator) getEvaluator()).match( getWorkingMemory(),

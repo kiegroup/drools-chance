@@ -1,9 +1,16 @@
 package org.drools.chance.rule.builder;
 
 
+import org.drools.chance.rule.constraint.core.evaluators.HoldsEvaluatorDefinition;
+import org.drools.chance.rule.constraint.core.evaluators.ImperfectBaseEvaluatorDefinition;
+import org.drools.chance.rule.constraint.core.evaluators.IsAEvaluatorDefinition;
+import org.drools.chance.rule.constraint.core.evaluators.linguistic.IsEvaluatorDefinition;
+import org.drools.core.base.evaluators.EvaluatorDefinition;
 import org.drools.core.base.evaluators.Operator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ChanceOperators {
 
@@ -25,6 +32,19 @@ public class ChanceOperators {
 
 
     public static final String[] standard_imperfectOperators;
+
+    private final static List<EvaluatorDefinition> IMPERFECT_EVALUATOR_DEFINITIONS = new ArrayList<EvaluatorDefinition>();
+
+    static {
+        IMPERFECT_EVALUATOR_DEFINITIONS.add( new IsEvaluatorDefinition() );
+        IMPERFECT_EVALUATOR_DEFINITIONS.add( new HoldsEvaluatorDefinition() );
+        IMPERFECT_EVALUATOR_DEFINITIONS.add( new IsAEvaluatorDefinition() );
+        IMPERFECT_EVALUATOR_DEFINITIONS.add( new ImperfectBaseEvaluatorDefinition() );
+    }
+
+    public static List<EvaluatorDefinition> getImperfectEvaluatorDefinitions() {
+        return IMPERFECT_EVALUATOR_DEFINITIONS;
+    }
 
     static {
         standard_imperfectOperators = new String[] {

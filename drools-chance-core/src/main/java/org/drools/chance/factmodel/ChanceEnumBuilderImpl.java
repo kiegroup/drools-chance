@@ -56,7 +56,7 @@ public class ChanceEnumBuilderImpl extends DefaultEnumClassBuilder {
                                 "valueOf",
                                 "(Ljava/lang/String;)" + BuildUtils.getTypeDescriptor( classDef.getClassName() ) );
             mv.visitInsn( ARETURN );
-            mv.visitMaxs( 1, 2 );
+            mv.visitMaxs( 0, 0 );
             mv.visitEnd();
         }
     }

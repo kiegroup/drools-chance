@@ -12,6 +12,8 @@ public class QueryEvaluation implements Evaluation {
     private String label;    
     
     private AggregateEvaluation parent;
+
+    private Evaluation next;
     
     public QueryEvaluation( int id, Evaluation eval, String label ) {
         this.nodeId = id;
@@ -50,9 +52,35 @@ public class QueryEvaluation implements Evaluation {
         return null;
     }
 
-    public void merge( Evaluation other ) {
+    @Override
+    public boolean isAggregate() {
+        return false;
+    }
+
+    @Override
+    public boolean isOuter() {
+        return false;
+    }
+
+    public Evaluation merge( Evaluation other ) {
         throw new UnsupportedOperationException("Should Query evals support merge?");
 //        this.degree = other.getDegree();
+    }
+
+    @Override
+    public Evaluation attach( Evaluation other ) {
+        other.setNext( this );
+        return other;
+    }
+
+    @Override
+    public Evaluation getNext() {
+        return next;
+    }
+
+    @Override
+    public void setNext( Evaluation next ) {
+        this.next = next;
     }
 
     @Override

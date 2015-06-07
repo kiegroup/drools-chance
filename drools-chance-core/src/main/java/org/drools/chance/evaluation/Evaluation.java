@@ -15,12 +15,22 @@ public interface Evaluation extends Serializable {
     
     public String getLabel();
     
-    public void merge( Evaluation other );
-    
+    public Evaluation merge( Evaluation other );
+
+    public Evaluation attach( Evaluation other );
+
     public AggregateEvaluation getParent();
     
     public void setParent( AggregateEvaluation parent );
 
     public Evaluation lookupLabel( String label );
+
+    public boolean isAggregate();
+
+    public boolean isOuter();
+
+    public Evaluation getNext();
+
+    public void setNext( Evaluation next );
 
 }

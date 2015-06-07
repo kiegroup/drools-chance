@@ -16,10 +16,6 @@ public interface ChanceHelper extends KnowledgeHelper {
     public Evaluation getEvaluation();
     
     public Evaluation getEvaluation( String label );
-    
-    
-    <T, K> T don( K core, Class<T> trait, Degree deg );
-    
-    <T, K> T don( Thing<K> core, Class<T> trait, Degree deg );
 
 }
+

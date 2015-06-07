@@ -22,7 +22,7 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
+
 
 import java.util.Map;
 
@@ -45,8 +45,6 @@ end
 
 
 
-
-
 rule "Crisp version"
 when
     $b : Imperson( name == "philip" || == "mark" || == "frank" )
@@ -55,6 +53,7 @@ then
     System.out.println( "X " + x );  // 1.0
     map.put( "X", x.getValue() );
 end
+
 
 rule "Crisp version 2"
 when

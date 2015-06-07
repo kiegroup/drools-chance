@@ -22,7 +22,6 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
 
 import java.util.Map;
 
@@ -55,16 +54,6 @@ end
 
 
 
-rule "Equals With Distribution"
-when
-    $b : Imperson( name == "philip", name ~== "philip" )
-then
-    Degree x = chance.getDegree();
-    System.out.println( "X " + x );  // 0.7
-    map.put( "X", x.getValue() );
-end
-
-
 rule "InEquals With Distribution"
 when
     $b : Imperson2( name ~!= "philip" )
@@ -72,6 +61,18 @@ then
     Degree x = chance.getDegree();
     System.out.println( "Y " + x );  // 0.8
     map.put( "Y", x.getValue() );
+end
+
+
+
+
+rule "Equals With Distribution"
+when
+    $b : Imperson( name == "philip", name ~== "philip" )
+then
+    Degree x = chance.getDegree();
+    System.out.println( "X " + x );  // 0.7
+    map.put( "X", x.getValue() );
 end
 
 
@@ -86,6 +87,5 @@ then
     System.out.println( "Z " + x );  // 0.3
     map.put( "Z", x.getValue() );
 end
-
 
 

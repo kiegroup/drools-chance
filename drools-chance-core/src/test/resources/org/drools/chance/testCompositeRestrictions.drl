@@ -22,7 +22,7 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
+
 
 import java.util.Map;
 
@@ -42,7 +42,6 @@ when
 then
     insert( new Imperson( ) );
 end
-
 
 
 rule "More custom combination at operator level - standard version"
@@ -65,7 +64,6 @@ then
     System.out.println( "Y " + x );  // 0.52
     map.put( "Y", x.getValue() );
 end
-
 
 
 rule "Yet another custom combination at operator level"

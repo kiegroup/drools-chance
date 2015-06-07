@@ -16,9 +16,19 @@
 
 package org.drools.chance.rule.constraint.core.connectives.impl;
 
+import org.drools.chance.common.ChanceStrategyFactory;
+import org.drools.chance.degree.DegreeType;
+import org.drools.chance.distribution.ImpKind;
+import org.drools.chance.distribution.ImpType;
+import org.drools.chance.factmodel.Imperfect;
 import org.drools.chance.rule.constraint.core.connectives.ConnectiveCore;
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
+import org.drools.chance.rule.constraint.core.connectives.ConnectiveFactory;
+import org.drools.compiler.lang.descr.AnnotationDescr;
+import org.drools.compiler.lang.descr.ConnectiveType;
+import org.drools.core.common.LogicalDependency;
+import org.drools.core.factmodel.AnnotationDefinition;
 
 
 public abstract class AbstractConnective implements ConnectiveCore {
@@ -63,5 +73,51 @@ public abstract class AbstractConnective implements ConnectiveCore {
     }
 
 
+    public String toString() {
+        return this.getType().toString();
+    }
+
+
+    public static ConnectiveCore buildConnective( AnnotationDescr ann, ConnectiveType lc ) {
+
+        if ( ann != null ) {
+            ImpType type = ImpType.parse( (String) ann.getValue( ImpType.name ) );
+            ImpKind kind = ImpKind.parse( (String) ann.getValue( ImpKind.name ) );
+            DegreeType degree = DegreeType.parse( (String) ann.getValue( DegreeType.name ) );
+            MvlFamilies family = MvlFamilies.parse( (String) ann.getValue( MvlFamilies.name ) );
+            return buildConnective( lc, type, kind, degree, family );
+        } else {
+            return buildConnective( lc, null, null, null, null );
+        }
+    }
+
+    public static ConnectiveCore buildConnective( AnnotationDefinition ann, ConnectiveType lc ) {
+        if ( ann != null ) {
+            ImpType type = ImpType.parse( (String) ann.getPropertyValue( ImpType.name ) );
+            ImpKind kind = ImpKind.parse( (String) ann.getPropertyValue( ImpKind.name ) );
+            DegreeType degree = DegreeType.parse( (String) ann.getPropertyValue( DegreeType.name ) );
+            MvlFamilies family = MvlFamilies.parse( (String) ann.getPropertyValue( MvlFamilies.name ) );
+            return buildConnective( lc, type, kind, degree, family );
+        } else {
+            return buildConnective( lc, null, null, null, null );
+        }
+    }
+
+    private static ConnectiveCore buildConnective( ConnectiveType lc, ImpType type, ImpKind kind, DegreeType degree, MvlFamilies family ) {
+        ConnectiveFactory factory = ChanceStrategyFactory.getConnectiveFactory( kind, type );
+        ConnectiveCore conn;
+        switch ( lc ) {
+            case INC_AND:
+            case AND:       conn = family != null ? factory.getAnd( family.value() ) : factory.getAnd();
+                break;
+            case INC_OR:
+            case OR:        conn = family != null ? factory.getOr( family.value() ) : factory.getOr();
+                break;
+            case XOR:       conn = family != null ? factory.getXor( family.value() ) : factory.getXor();
+                break;
+            default:        throw new IllegalStateException( "Unable to find connective for " + lc );
+        }
+        return conn;
+    }
 
 }

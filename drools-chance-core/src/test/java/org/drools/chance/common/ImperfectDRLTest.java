@@ -17,6 +17,7 @@
 package org.drools.chance.common;
 
 import org.drools.chance.Chance;
+import org.drools.chance.kbase.AbstractChanceTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -36,10 +37,15 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 
-public class ImperfectDRLTest {
+public class ImperfectDRLTest extends AbstractChanceTest {
 
     protected KieSession kSession;
     protected List<String> list = new ArrayList<String>();
+
+    @BeforeClass
+    public static void init() {
+        Chance.initialize();
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -49,42 +55,22 @@ public class ImperfectDRLTest {
 
     private void initObjects() throws Exception {
 
-        Chance.initialize();
-
-        KieHelper kieHelper = new KieHelper();
-        kieHelper.addResource( KieServices.Factory.get().getResources().newClassPathResource(
-                "org/drools/chance/factmodel/testImperfectRules.drl" ),
-                               ResourceType.DRL );
-        Results results = kieHelper.verify();
-        if ( results.hasMessages( Message.Level.ERROR ) ) {
-            fail( results.getMessages( Message.Level.ERROR ).toString() );
-        }
-
-        KieBase kBase = kieHelper.build( Chance.getChanceKnowledgeBaseConfiguration() );
-        KieSession kSession = kBase.newKieSession();
-        kSession.fireAllRules();
+        kSession = getChanceEnabledKieSession( KieServices.Factory.get().getResources().newClassPathResource(
+                "org/drools/chance/factmodel/testImperfectRules.drl" ) );
 
         kSession.setGlobal( "list", list );
         kSession.fireAllRules();
 
     }
 
-
-
-
     @After
     public void tearDown() throws Exception {
 
     }
 
-
-
-
     @Test
     public void testRules() {
         assertTrue( list.contains( "OK" ) );
     }
-
-
 
 }

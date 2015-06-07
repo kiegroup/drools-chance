@@ -39,7 +39,7 @@ public class Not extends AbstractConnective {
     }
 
     public Degree eval(Degree deg) {
-        return deg.True().sub(deg);
+        return deg.True().sub( deg );
     }
 
     public Degree eval(Degree left, Degree right) {

@@ -12,7 +12,4 @@ public interface ImperfectBetaConstraint extends BetaNodeFieldConstraint, Imperf
 
     public Degree matchCachedRight( LeftTuple context, ContextEntry tuple );
     
-    public int getNodeId();
-
-    public void setNodeId( int id );
 }

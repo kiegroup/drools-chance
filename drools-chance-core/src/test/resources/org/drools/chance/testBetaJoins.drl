@@ -22,7 +22,7 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
+
 
 import java.util.Map;
 
@@ -60,8 +60,6 @@ then
 end
 
 
-
-
 rule "Crisp join"
 when
     $x1 : Imperson( $id1 : id )
@@ -83,7 +81,6 @@ then
     map.put( "Y" + $id1, x.getValue() );
 end
 
-
 rule "Imperfect comparison"
 when
     $x1 : Imperson( $id1 : id, $h : height )
@@ -93,6 +90,3 @@ then
     System.out.println( "Y"  + $id1 + " " +  x );  // 0.6 ( Lukas! 0.9 x 0.3  +  0.9 x 0.5 )
     map.put( "X" + $id1, x.getValue() );
 end
-
-
-

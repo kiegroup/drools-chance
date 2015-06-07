@@ -110,8 +110,8 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
     }
 
 
-    public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor extractor, InternalFactHandle object, FieldValue value) {
-        return match( workingMemory, extractor, object, value ).toBoolean();
+    public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor extractor, InternalFactHandle handle, FieldValue value) {
+        return match( workingMemory, extractor, handle, value ).toBoolean();
     }
 
     public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, InternalFactHandle left, InternalReadAccessor rightExtractor, InternalFactHandle right) {
@@ -222,7 +222,7 @@ public abstract class BaseImperfectEvaluator extends BaseEvaluator implements Im
 
 
         if ( result != null ) {
-            return imperfectOn ? result : result.fromBoolean(result.toBoolean());
+            return imperfectOn ? result : result.fromBoolean( result.toBoolean() );
         }
 
         throw new UnsupportedOperationException( "Unable to match " + source + " with " + target );

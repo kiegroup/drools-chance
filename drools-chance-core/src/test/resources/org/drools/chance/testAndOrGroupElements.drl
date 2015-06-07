@@ -22,7 +22,7 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
+
 
 import java.util.Map;
 
@@ -47,6 +47,7 @@ end
 rule "Init"
 when
 then
+    System.out.println( "Init" );
     insert( new Imperson( ) );
     insert( new Imperson2( ) );
 end
@@ -64,6 +65,7 @@ then
     System.out.println( "X " + x );  // 0.189
     map.put( "X", x.getValue() );
 end
+
 
 rule "And 2"
 when
@@ -85,7 +87,7 @@ when
     $y : Imperson2( name ~!= "frank" )   //0.9
 then
     Degree x = chance.getDegree();
-    System.out.println( "Z" + x );  // 0.97
+    System.out.println( "Z " + x );  // 0.97
     map.put( "Z", x.getValue() );
 end
 
@@ -97,6 +99,6 @@ when
     )
 then
     Degree x = chance.getDegree();
-    System.out.println( "W" + x );  // 0.97
+    System.out.println( "W " + x );  // 0.97
     map.put( "W", x.getValue() );
 end

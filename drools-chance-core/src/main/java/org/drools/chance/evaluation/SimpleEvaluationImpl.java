@@ -1,6 +1,7 @@
 package org.drools.chance.evaluation;
 
 
+import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.Degree;
 
 public class SimpleEvaluationImpl implements SimpleEvaluation {
@@ -9,25 +10,23 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
 
     private String expression;
 
-    private Degree degree;
+    protected Degree degree;
     
     private AggregateEvaluation parent;
 
     private String label;
-    
+
+    private Evaluation next;
 
     protected SimpleEvaluationImpl() { };
 
     public SimpleEvaluationImpl( int nodeId, Degree degree ) {
-        this.degree = degree;
-        this.nodeId = nodeId;
+        this( nodeId, null, degree, null );
     }
 
 
     public SimpleEvaluationImpl( int nodeId, String expression, Degree degree ) {
-        this.degree = degree;
-        this.expression = expression;
-        this.nodeId = nodeId;
+        this( nodeId, expression, degree, null );
     }
     
     public SimpleEvaluationImpl( int nodeId, String expression, Degree degree, String label ) {
@@ -72,12 +71,26 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
         return null;
     }
 
-    public void merge( Evaluation other ) {
-//        System.err.println( "Simple Evaluation being merged " + this + " with " + other );
-        this.degree = other.getDegree();                
+    @Override
+    public boolean isAggregate() {
+        return false;
     }
 
-    public void setExpression(String expression) {
+    public Evaluation merge( Evaluation other ) {
+        if ( this.degree == null ) {
+            this.degree = other.getDegree();
+        } else {
+            throw new UnsupportedOperationException( "TODO" );
+        }
+        return this;
+    }
+
+    public Evaluation attach( Evaluation other ) {
+        other.setNext( this );
+        return other;
+    }
+
+    public void setExpression( String expression ) {
         this.expression = expression;
     }
 
@@ -87,6 +100,21 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    @Override
+    public Evaluation getNext() {
+        return next;
+    }
+
+    @Override
+    public void setNext( Evaluation next ) {
+        this.next = next;
+    }
+
+    @Override
+    public boolean isOuter() {
+        return false;
     }
 
     @Override

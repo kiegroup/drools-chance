@@ -3,6 +3,8 @@ package org.drools.chance.rule.constraint;
 
 import org.drools.chance.degree.Degree;
 import org.drools.chance.degree.simple.SimpleDegree;
+import org.drools.chance.evaluation.SimpleEvaluationImpl;
+import org.drools.chance.reteoo.ChanceFactHandle;
 import org.drools.chance.rule.constraint.core.evaluators.ImperfectMvelConditionEvaluator;
 import org.drools.core.base.mvel.MVELCompilationUnit;
 import org.drools.core.common.InternalFactHandle;
@@ -21,6 +23,7 @@ import org.mvel2.compiler.CompiledExpression;
 import org.mvel2.compiler.ExecutableStatement;
 
 import java.util.List;
+import java.util.UUID;
 
 public class ImperfectMvelConstraint extends MvelConstraint
         implements ImperfectAlphaConstraint, ImperfectBetaConstraint {
@@ -36,23 +39,45 @@ public class ImperfectMvelConstraint extends MvelConstraint
         return cutting;
     }
 
-    public void setCutting(boolean cutting) {
+    public void setCutting( boolean cutting ) {
         this.cutting = cutting;
     }
 
     public ImperfectMvelConstraint() {
     }
 
-    public ImperfectMvelConstraint(String packageName, String expression, MVELCompilationUnit compilationUnit, IndexUtil.ConstraintType constraintType, FieldValue fieldValue, InternalReadAccessor extractor) {
-        super(packageName, expression, compilationUnit, constraintType, fieldValue, extractor);
+    public ImperfectMvelConstraint( String packageName,
+                                    String expression,
+                                    MVELCompilationUnit compilationUnit,
+                                    IndexUtil.ConstraintType constraintType,
+                                    FieldValue fieldValue,
+                                    InternalReadAccessor extractor,
+                                    String label ) {
+        super( packageName, expression, compilationUnit, constraintType, fieldValue, extractor );
+        setLabel( label );
     }
 
-    public ImperfectMvelConstraint(String packageName, String expression, Declaration[] declarations, MVELCompilationUnit compilationUnit, boolean isDynamic) {
-        super(packageName, expression, declarations, compilationUnit, isDynamic);
+    public ImperfectMvelConstraint( String packageName,
+                                    String expression,
+                                    Declaration[] declarations,
+                                    MVELCompilationUnit compilationUnit,
+                                    boolean isDynamic,
+                                    String label ) {
+        super( packageName, expression, declarations, compilationUnit, isDynamic );
+        setLabel( label );
     }
 
-    public ImperfectMvelConstraint(List<String> packageNames, String expression, Declaration[] declarations, MVELCompilationUnit compilationUnit, IndexUtil.ConstraintType constraintType, Declaration indexingDeclaration, InternalReadAccessor extractor, boolean isUnification) {
-        super(packageNames, expression, declarations, compilationUnit, constraintType, indexingDeclaration, extractor, isUnification);
+    public ImperfectMvelConstraint( List<String> packageNames,
+                                    String expression,
+                                    Declaration[] declarations,
+                                    MVELCompilationUnit compilationUnit,
+                                    IndexUtil.ConstraintType constraintType,
+                                    Declaration indexingDeclaration,
+                                    InternalReadAccessor extractor,
+                                    boolean isUnification,
+                                    String label ) {
+        super( packageNames, expression, declarations, compilationUnit, constraintType, indexingDeclaration, extractor, isUnification );
+        setLabel( label );
     }
 
 
@@ -64,7 +89,10 @@ public class ImperfectMvelConstraint extends MvelConstraint
     protected Degree match(InternalFactHandle handle, InternalWorkingMemory workingMemory, LeftTuple leftTuple) {
         prepare( handle, workingMemory, leftTuple );
         if ( ! wrapsPerfectConstraint ) {
-            return ((ImperfectMvelConditionEvaluator) conditionEvaluator).match(handle, workingMemory, leftTuple);
+            Degree deg = ((ImperfectMvelConditionEvaluator) conditionEvaluator).match(handle, workingMemory, leftTuple);
+            (( ChanceFactHandle ) handle).addEvaluation( getOwningNodeId(),
+                                                         new SimpleEvaluationImpl( getOwningNodeId(), deg ) );
+            return deg;
         } else {
             return conditionEvaluator.evaluate(handle, workingMemory, leftTuple) ? SimpleDegree.TRUE : SimpleDegree.FALSE;
         }
@@ -110,7 +138,10 @@ public class ImperfectMvelConstraint extends MvelConstraint
 
         prepare( handle, wm, tup );
         if ( ! wrapsPerfectConstraint ) {
-            return ((ImperfectMvelConditionEvaluator) conditionEvaluator).match( handle, wm, tup );
+            Degree deg = ((ImperfectMvelConditionEvaluator) conditionEvaluator).match( handle, wm, tup );
+            (( ChanceFactHandle ) handle).addEvaluation( getOwningNodeId(),
+                                                         new SimpleEvaluationImpl( getOwningNodeId(), deg ) );
+            return deg;
         } else {
             return conditionEvaluator.evaluate( handle, wm, tup ) ? SimpleDegree.TRUE : SimpleDegree.FALSE;
         }
@@ -123,7 +154,10 @@ public class ImperfectMvelConstraint extends MvelConstraint
 
         prepare( handle, wm, tup );
         if ( ! wrapsPerfectConstraint ) {
-            return ((ImperfectMvelConditionEvaluator) conditionEvaluator).match( handle, wm, tup );
+            Degree deg = ((ImperfectMvelConditionEvaluator) conditionEvaluator).match( handle, wm, tup );
+            (( ChanceFactHandle ) handle).addEvaluation( getOwningNodeId(),
+                                                         new SimpleEvaluationImpl( getOwningNodeId(), deg ) );
+            return deg;
         } else {
             return conditionEvaluator.evaluate( handle, wm, tup ) ? SimpleDegree.TRUE : SimpleDegree.FALSE;
         }
@@ -141,7 +175,9 @@ public class ImperfectMvelConstraint extends MvelConstraint
         return label;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setLabel( String label ) {
+        this.label = label != null ? label : UUID.randomUUID().toString();
     }
+
+
 }

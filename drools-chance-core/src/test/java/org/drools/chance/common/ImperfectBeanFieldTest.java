@@ -30,6 +30,9 @@ import org.drools.chance.distribution.DistributionStrategies;
 import org.drools.chance.distribution.ImpKind;
 import org.drools.chance.distribution.ImpType;
 import org.drools.chance.distribution.fuzzy.linguistic.LinguisticImperfectField;
+import org.drools.chance.kbase.AbstractChanceTest;
+import org.drools.core.factmodel.traits.TraitFactory;
+import org.drools.core.factmodel.traits.VirtualPropertyMode;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.util.Triple;
 import org.drools.core.util.TripleFactoryImpl;
@@ -53,7 +56,7 @@ import java.util.Collection;
 
 import static junit.framework.Assert.*;
 
-public class ImperfectBeanFieldTest {
+public class ImperfectBeanFieldTest extends AbstractChanceTest {
 
 
     private ImpBean beanHand;
@@ -83,18 +86,12 @@ public class ImperfectBeanFieldTest {
     private void initObjects() throws Exception {
                 
         Chance.initialize();
+        KieSession kSession = getChanceEnabledKieSession( KieServices.Factory.get().getResources().newClassPathResource( "org/drools/chance/factmodel/testImperfectFacts.drl" ) );
+        KieBase kBase = kSession.getKieBase();
+        TraitFactory.setMode( VirtualPropertyMode.TRIPLES, kBase );
 
-        KieHelper kieHelper = new KieHelper();
-        kieHelper.addResource( KieServices.Factory.get().getResources().newClassPathResource( "org/drools/chance/factmodel/testImperfectFacts.drl" ),
-                               ResourceType.DRL );
-        Results results = kieHelper.verify();
-        if ( results.hasMessages( Message.Level.ERROR ) ) {
-            fail( results.getMessages( Message.Level.ERROR ).toString() );
-        }
-
-        KieBase kBase = kieHelper.build( Chance.getChanceKnowledgeBaseConfiguration() );
-        KieSession kSession = kBase.newKieSession();
         kSession.fireAllRules();
+
 
         TripleStore store = (( InternalKnowledgeBase) kBase).getTripleStore();
         
@@ -2079,8 +2076,8 @@ public class ImperfectBeanFieldTest {
 
         assertNotNull( beanHand.getPrice() );
         assertNotNull( traitHand.getPrice() );
-        assertNotNull( beanDrlClass.get(beanDrl, "bucks") );
-        assertNotNull( traitDrlClass.get(traitDrl, "bucks") );
+        assertNotNull( beanDrlClass.get( beanDrl, "bucks") );
+        assertNotNull( traitDrlClass.get( traitDrl, "bucks") );
 
         System.out.println( beanHand.getPrice() + " << " + beanHand.getBodyDistr() );
         System.out.println( traitHand.getPrice() + " << " + traitHand.getBodyDistr() );

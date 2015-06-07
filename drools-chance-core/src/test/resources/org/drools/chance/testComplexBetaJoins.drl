@@ -22,7 +22,7 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
+
 
 import java.util.Map;
 
@@ -73,7 +73,6 @@ then
     System.out.println( "X"  + $id1 + " " +  x );  // 0.7
     map.put( "X" + $id1, x.getValue() );
 end
-
 
 
 rule "Explicit ops"

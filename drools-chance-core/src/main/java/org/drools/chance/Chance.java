@@ -4,15 +4,25 @@ package org.drools.chance;
 import org.drools.chance.common.ChanceStrategyFactory;
 import org.drools.chance.core.util.ImperfectTripleFactory;
 import org.drools.chance.factmodel.*;
+import org.drools.chance.reteoo.ChanceFactHandleFactory;
+import org.drools.chance.reteoo.ChanceFieldFactory;
+import org.drools.chance.reteoo.builder.ChanceKnowledgeHelperFactory;
+import org.drools.chance.reteoo.builder.ChanceLogicTransformerFactory;
+import org.drools.chance.reteoo.builder.ChanceRuleBuilderFactory;
+import org.drools.chance.reteoo.builder.ChanceRuleGroupElementBuilder;
+import org.drools.chance.rule.builder.ChanceConstraintBuilderFactory;
+import org.drools.chance.rule.builder.ChanceOperators;
+import org.drools.chance.rule.builder.ChanceRulePatternBuilder;
 import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.mvl.ManyValuedConnectiveFactory;
-import org.drools.chance.rule.constraint.core.evaluators.HoldsEvaluatorDefinition;
-import org.drools.chance.rule.constraint.core.evaluators.linguistic.IsEvaluatorDefinition;
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.rule.builder.DroolsCompilerComponentFactory;
+import org.drools.compiler.rule.builder.PatternBuilder;
+import org.drools.compiler.rule.builder.dialect.java.JavaDialect;
 import org.drools.compiler.rule.builder.dialect.java.JavaRuleBuilderHelper;
 import org.drools.compiler.rule.builder.dialect.mvel.MVELConsequenceBuilder;
+import org.drools.compiler.rule.builder.dialect.mvel.MVELDialect;
 import org.drools.core.RuleBaseConfiguration;
-import org.drools.core.base.evaluators.IsAEvaluatorDefinition;
+import org.drools.core.base.evaluators.EvaluatorDefinition;
 import org.drools.core.factmodel.ClassBuilderFactory;
 import org.drools.core.reteoo.KieComponentFactory;
 import org.kie.api.KieBaseConfiguration;
@@ -20,6 +30,9 @@ import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.internal.KnowledgeBaseFactory;
 import org.kie.internal.builder.KnowledgeBuilderConfiguration;
 import org.mvel2.Macro;
+import org.mvel2.templates.TemplateCompiler;
+import org.mvel2.templates.TemplateRegistry;
+import org.mvel2.templates.TemplateRuntime;
 
 public class Chance {
 
@@ -28,17 +41,24 @@ public class Chance {
 
         ChanceStrategyFactory.initDefaults();
 
-        /*
+        JavaDialect.setGeBuilder( new ChanceRuleGroupElementBuilder() );
         JavaDialect.setPatternBuilder( new ChanceRulePatternBuilder() );
-        JavaDialect.setGEBuilder( new ChanceRuleGroupElementBuilder() );
         JavaDialect.reinitBuilder();
 
+        MVELDialect.setGeBuilder( new ChanceRuleGroupElementBuilder() );
         MVELDialect.setPatternBuilder( new ChanceRulePatternBuilder() );
-        MVELDialect.setGEBuilder( new ChanceRuleGroupElementBuilder() );
         MVELDialect.reinitBuilder();
-        */
 
-        //JavaRuleBuilderHelper.setConsequenceTemplate( "chanceRule.mvel" );
+
+
+
+
+        TemplateRegistry registry = JavaRuleBuilderHelper.getRuleTemplateRegistry( null );
+        registry.addNamedTemplate( "consequenceMethod",
+                                   TemplateCompiler.compileTemplate( Chance.class.getResourceAsStream(
+                                           "/org/drools/rule/builder/dialect/java/chanceRule.mvel"
+                                   ) ) );
+        TemplateRuntime.execute( registry.getNamedTemplate( "consequenceMethod" ), null, registry );
 
         MVELConsequenceBuilder.macros.put( "chance",
                 new Macro() {
@@ -55,14 +75,16 @@ public class Chance {
 
 
     public static void restoreDefaults() {
-        /*
+
         JavaDialect.setPatternBuilder( new PatternBuilder() );
-        JavaDialect.setGEBuilder( new GroupElementBuilder() );
         JavaDialect.reinitBuilder();
 
         MVELDialect.setPatternBuilder( new PatternBuilder() );
-        MVELDialect.setGEBuilder( new GroupElementBuilder() );
         MVELDialect.reinitBuilder();
+
+        /*
+        JavaDialect.setGEBuilder( new GroupElementBuilder() );
+        MVELDialect.setGEBuilder( new GroupElementBuilder() );
         */
 
         JavaRuleBuilderHelper.setConsequenceTemplate( "javaRule.mvel" );
@@ -74,18 +96,23 @@ public class Chance {
     }
 
     public static KnowledgeBuilderConfiguration getChanceKBuilderConfiguration( KnowledgeBuilderConfiguration baseConf ) {
-        /*
-        PackageBuilderConfiguration pbc = (PackageBuilderConfiguration) baseConf;
 
-        pbc.getEvaluatorRegistry().addEvaluatorDefinition( new IsEvaluatorDefinition() );
-        pbc.getEvaluatorRegistry().addEvaluatorDefinition( new IsAEvaluatorDefinition() );
-        pbc.getEvaluatorRegistry().addEvaluatorDefinition( new HoldsEvaluatorDefinition() );
-        pbc.getEvaluatorRegistry().addEvaluatorDefinition( new ImperfectBaseEvaluatorDefinition() );
+        KnowledgeBuilderConfigurationImpl pbc = (KnowledgeBuilderConfigurationImpl) baseConf;
+
+        for ( EvaluatorDefinition def : ChanceOperators.getImperfectEvaluatorDefinitions() ) {
+            pbc.getEvaluatorRegistry().addEvaluatorDefinition( def );
+        }
 
         DroolsCompilerComponentFactory dcf = new DroolsCompilerComponentFactory();
+
         dcf.setConstraintBuilderFactoryProvider( new ChanceConstraintBuilderFactory() );
-        dcf.setExpressionProcessor( new ChanceMVELDumper() );
         dcf.setFieldDataFactory( new ChanceFieldFactory() );
+
+        /*
+
+        dcf.setExpressionProcessor( new ChanceMVELDumper() );
+
+        */
 
         ClassBuilderFactory cbf = new ClassBuilderFactory();
         cbf.setBeanClassBuilder( new ChanceBeanBuilderImpl() );
@@ -97,7 +124,7 @@ public class Chance {
         pbc.setClassBuilderFactory( cbf );
 
         pbc.setComponentFactory( dcf );
-        */
+
         return baseConf;
     }
 
@@ -110,17 +137,23 @@ public class Chance {
         KieComponentFactory rcf = new KieComponentFactory();
 
         //rbc.addActivationListener( "query", new ChanceQueryActivationListenerFactory() );
+
         /*
-        rcf.setHandleFactoryProvider( new ChanceFactHandleFactory() );
         rcf.setNodeFactoryProvider( new ChanceNodeFactory() );
-        rcf.setRuleBuilderProvider( new ChanceRuleBuilderFactory() );
+
         rcf.setAgendaFactory( new ChanceAgendaFactory() );
+
+
+
+        */
+
+        rcf.setRuleBuilderProvider( new ChanceRuleBuilderFactory() );
+        rcf.setHandleFactoryProvider( new ChanceFactHandleFactory() );
+        rcf.setKnowledgeHelperFactory( new ChanceKnowledgeHelperFactory() );
+        rcf.setBaseTraitProxyClass( ImperfectTraitProxy.class );
+
         rcf.setFieldDataFactory( new ChanceFieldFactory() );
         rcf.setTripleFactory( new ImperfectTripleFactory() );
-        rcf.setKnowledgeHelperFactory( new ChanceKnowledgeHelperFactory() );
-        rcf.setLogicTransformerFactory( new ChanceLogicTransformerFactory() );
-        rcf.setBaseTraitProxyClass( ImperfectTraitProxy.class );
-        */
 
         ClassBuilderFactory cbf = new ClassBuilderFactory();
         cbf.setBeanClassBuilder( new ChanceBeanBuilderImpl() );
@@ -130,8 +163,10 @@ public class Chance {
         cbf.setEnumClassBuilder( new ChanceEnumBuilderImpl() );
 
         rcf.setClassBuilderFactory( cbf );
+        rcf.setLogicTransformerFactory( new ChanceLogicTransformerFactory() );
 
         rbc.setComponentFactory( rcf );
+
 
         return rbc;
     }

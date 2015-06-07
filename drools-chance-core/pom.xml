@@ -41,7 +41,6 @@
     <dependency>
 	    <groupId>de.lab4inf</groupId>
       <artifactId>Lab4Jefis</artifactId>
-	    <version>0.1.0</version>
     </dependency>
 
   </dependencies>

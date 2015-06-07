@@ -22,8 +22,6 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
-
 import java.util.Map;
 
 global java.util.Map map;
@@ -52,6 +50,7 @@ then
     System.out.println( "A " + x );  // 1.0
     map.put( "A", x.getValue() );
 end
+
 
 
 rule "Pure old crisp operators - block"

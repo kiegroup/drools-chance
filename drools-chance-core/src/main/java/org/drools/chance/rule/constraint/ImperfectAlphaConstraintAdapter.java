@@ -59,8 +59,8 @@ public class ImperfectAlphaConstraintAdapter implements ImperfectAlphaConstraint
     }
 
     @Override
-    public AlphaNodeFieldConstraint cloneIfInUse() {
-        return innerConstraint.cloneIfInUse();
+    public AlphaNodeFieldConstraint cloneIfInUse( int forNode ) {
+        return innerConstraint.cloneIfInUse( forNode );
     }
 
     public Declaration[] getRequiredDeclarations() {
@@ -81,6 +81,15 @@ public class ImperfectAlphaConstraintAdapter implements ImperfectAlphaConstraint
 
     public boolean isTemporal() {
         return innerConstraint.isTemporal();
+    }
+
+    @Override
+    public int getOwningNodeId() {
+        return innerConstraint.getOwningNodeId();
+    }
+
+    public void setOwningNodeId( int id ) {
+        innerConstraint.setOwningNodeId( id );
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {

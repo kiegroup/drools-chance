@@ -22,7 +22,7 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
+
 
 import java.util.Map;
 
@@ -39,17 +39,17 @@ declare Imperson
 end
 
 
-query perf( String $id, String $name, Imperson $x )
-    $x := Imperson( $id := id ; name == $name )
-end
+//query perf( String $id, String $name, Imperson $x )
+//    $x := Imperson( $id ; name == $name )
+//end
 
 query imp( String $id, String $name, Imperson $x )
-    $x := Imperson( $id := id ; name ~== $name )
+    $x := Imperson( $id ; name ~== $name )
 end
 
-query imp2( String $id, String $name, Imperson $x )
-    $x := Imperson( $id := id ; name ~== $name )
-end
+//query imp2( String $id, String $name, Imperson $x )
+//    $x := Imperson( $id := id ; name ~== $name )
+//end
 
 
 rule "Init"
@@ -58,21 +58,26 @@ then
     Imperson i1 = new Imperson();
         i1.setId( "x1" );
     insert( i1 );
+end
 
+rule "Init2"
+when
+then
     insert( "x1" );
 end
 
 
-
+/*
 rule "Perfect Query"
 when
-    $x  : String( )
+    $x  : String()
     ?perf( "x1", "philip", $imp ; )
 then
     Degree x = chance.getDegree();
     System.out.println( "X"  + x.getValue() );
     map.put( "X" + $imp.getId(), x.getValue() );
 end
+*/
 
 rule "Imperfect Query"
 when
@@ -85,6 +90,7 @@ then
 end
 
 
+/*
 rule "Double Imperfect Query"
 when
     $x  : String( )
@@ -95,6 +101,6 @@ then
     System.out.println( "Z"  + x.getValue() );
     map.put( "Z" + $imp.getId(), x.getValue() );
 end
-
+*/
 
 

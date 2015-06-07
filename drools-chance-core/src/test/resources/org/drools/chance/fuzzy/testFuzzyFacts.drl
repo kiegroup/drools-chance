@@ -15,7 +15,7 @@
  */
 package org.drools.chance.test;
 
-import org.drools.factmodel.traits.Traitable;
+import org.drools.core.factmodel.traits.Traitable;
 
 import org.drools.chance.factmodel.Imperfect;
 import org.drools.chance.factmodel.LinguisticPartition;
@@ -24,7 +24,7 @@ import de.lab4inf.fuzzy.FuzzySet;
 import de.lab4inf.fuzzy.polygons.FuzzyTriangle;
 
 import org.drools.chance.degree.Degree;
-import org.drools.chance.reteoo.ChanceActivation;
+
 import org.drools.chance.ChanceHelper;
 
 

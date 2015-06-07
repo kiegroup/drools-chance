@@ -16,6 +16,7 @@
 
 package org.drools.chance.factmodel;
 
+import com.sun.corba.se.spi.ior.Writeable;
 import org.drools.chance.common.ImperfectField;
 import org.drools.chance.degree.ChanceDegreeTypeRegistry;
 import org.drools.chance.degree.DegreeType;
@@ -28,6 +29,8 @@ import org.drools.core.factmodel.FieldDefinition;
 import org.drools.core.factmodel.traits.TraitFactory;
 import org.drools.core.factmodel.traits.TraitRegistry;
 import org.drools.core.factmodel.traits.TraitTripleProxyClassBuilderImpl;
+import org.drools.core.spi.InternalReadAccessor;
+import org.drools.core.spi.WriteAccessor;
 import org.mvel2.asm.*;
 
 import java.lang.reflect.Method;
@@ -124,11 +127,19 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
             if ( ! isSoftField ) {
                 FieldVisitor fv;
                 {
-                    fv = cw.visitField(ACC_PUBLIC + ACC_STATIC, field.getName()+"_reader", "Lorg/drools/spi/InternalReadAccessor;", null, null);
+                    fv = cw.visitField( ACC_PUBLIC + ACC_STATIC,
+                                        field.getName() + "_reader",
+                                        Type.getDescriptor( InternalReadAccessor.class ),
+                                        null,
+                                        null );
                     fv.visitEnd();
                 }
                 {
-                    fv = cw.visitField(ACC_PUBLIC + ACC_STATIC, field.getName()+"_writer", "Lorg/drools/spi/WriteAccessor;", null, null);
+                    fv = cw.visitField( ACC_PUBLIC + ACC_STATIC,
+                                        field.getName() + "_writer",
+                                        Type.getDescriptor( WriteAccessor.class ),
+                                        null,
+                                        null );
                     fv.visitEnd();
                 }
 
@@ -235,11 +246,19 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
         if ( ! isSoftField ) {
             FieldVisitor fv;
             {
-                fv = cw.visitField(ACC_PUBLIC + ACC_STATIC, supportField.getName()+"_reader", "Lorg/drools/spi/InternalReadAccessor;", null, null);
+                fv = cw.visitField( ACC_PUBLIC + ACC_STATIC,
+                                    supportField.getName() + "_reader",
+                                    Type.getDescriptor( InternalReadAccessor.class ),
+                                    null,
+                                    null );
                 fv.visitEnd();
             }
             {
-                fv = cw.visitField(ACC_PUBLIC + ACC_STATIC, supportField.getName()+"_writer", "Lorg/drools/spi/WriteAccessor;", null, null);
+                fv = cw.visitField( ACC_PUBLIC + ACC_STATIC,
+                                    supportField.getName() + "_writer",
+                                    Type.getDescriptor( WriteAccessor.class ),
+                                    null,
+                                    null );
                 fv.visitEnd();
             }
 
@@ -264,11 +283,19 @@ public class ChanceTripleProxyBuilderImpl extends TraitTripleProxyClassBuilderIm
 
         } else {
             {
-                fv = cw.visitField(ACC_PUBLIC + ACC_STATIC, field.getName()+"_reader", "Lorg/drools/spi/InternalReadAccessor;", null, null);
+                fv = cw.visitField( ACC_PUBLIC + ACC_STATIC,
+                                    field.getName() + "_reader",
+                                    Type.getDescriptor( InternalReadAccessor.class ),
+                                    null,
+                                    null);
                 fv.visitEnd();
             }
             {
-                fv = cw.visitField(ACC_PUBLIC + ACC_STATIC, field.getName()+"_writer", "Lorg/drools/spi/WriteAccessor;", null, null);
+                fv = cw.visitField( ACC_PUBLIC + ACC_STATIC,
+                                    field.getName() + "_writer",
+                                    Type.getDescriptor( WriteAccessor.class ),
+                                    null,
+                                    null );
                 fv.visitEnd();
             }
 
