@@ -31,7 +31,6 @@
   <name>Drools :: Chance Core</name>
   <description>Imperfect Reasoning extensions</description>
 
-
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
@@ -42,9 +41,6 @@
 	    <groupId>de.lab4inf</groupId>
       <artifactId>Lab4Jefis</artifactId>
     </dependency>
-
   </dependencies>
-
-
 
 </project>
