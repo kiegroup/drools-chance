@@ -77,8 +77,6 @@ public class ExpectationTest extends ExpTestBase {
                 "end";
 
         KieSession kSession = buildKnowledgeSession( src.getBytes() );
-//        kSession.addEventListener(new DebugRuleRuntimeEventListener(System.out));
-//        kSession.addEventListener(new DebugAgendaEventListener(System.out));
         List<Object> list = new LinkedList<Object>();
         kSession.setGlobal("list", list);
 

@@ -66,7 +66,6 @@ public class ProvenanceTest {
 
 
     private String path;
-    private Queue<KieRuntimeEvent> events;
 
     public ProvenanceTest( String path ) {
         this.path = path;
@@ -81,179 +80,11 @@ public class ProvenanceTest {
                                       } );
     }
 
-    @Before
-    public void before() {
-        events = new ConcurrentLinkedQueue<KieRuntimeEvent>();
-    }
-
-    @After
-    public void after() {
-        ConcurrentLinkedQueue<KieRuntimeEvent> queue = (ConcurrentLinkedQueue<KieRuntimeEvent>)events;
-        boolean inFire = false;
-        while (!queue.isEmpty()) {
-            KieRuntimeEvent event = queue.poll();
-            if (event instanceof ProcessEventListener) {
-
-            } else if (event instanceof MatchCreatedEvent) {
-                System.out.println((inFire ? "   ":"")+"[Match Created  ]: "+((MatchCreatedEvent) event).getMatch().getRule().getName());
-            } else if (event instanceof MatchCancelledEvent) {
-                System.out.println((inFire ? "   ":"")+"[Match Cancelled]: "+((MatchCancelledEvent) event).getMatch().getRule().getName());
-            } else if (event instanceof ObjectInsertedEvent) {
-                if (((ObjectInsertedEvent) event).getRule() != null) {
-                    System.out.println((inFire ? "   ":"")+"[Object inserted]: " + ((ObjectInsertedEvent) event).getRule().getName()+"/"+((ObjectInsertedEvent) event).getObject().getClass().getName());
-                } else {
-                    System.out.println((inFire ? "   ":"")+"[Object inserted]: "+((ObjectInsertedEvent) event).getObject().getClass().getName());
-                }
-            } else if (event instanceof ObjectUpdatedEvent) {
-                if (((ObjectUpdatedEvent) event).getRule() != null) {
-                    System.out.println((inFire ? "   ":"")+"[Object updated ]: " + ((ObjectUpdatedEvent) event).getRule().getName()+"/"+((ObjectUpdatedEvent) event).getObject().getClass().getName());
-                } else {
-                    System.out.println((inFire ? "   ":"")+"[Object updated ]: "+((ObjectUpdatedEvent) event).getObject().getClass().getName());
-                }
-            } else if (event instanceof ObjectDeletedEvent) {
-                if (((ObjectDeletedEvent) event).getRule() != null) {
-                    System.out.println((inFire ? "   ":"")+"[Object deleted ]: " + ((ObjectDeletedEvent) event).getRule().getName()+"/"+((ObjectDeletedEvent) event).getOldObject().getClass().getName());
-                } else {
-                    System.out.println((inFire ? "   ":"")+"[Object deleted ]: "+((ObjectDeletedEvent) event).getOldObject().getClass().getName());
-                }
-            } else if (event instanceof BeforeMatchFiredEvent) {
-                System.out.println("[Before match fired]: "+((BeforeMatchFiredEvent) event).getMatch().getRule().getName());
-                inFire = true;
-            } else if (event instanceof AfterMatchFiredEvent) {
-                System.out.println("[After match fired ]: "+((AfterMatchFiredEvent) event).getMatch().getRule().getName());
-                inFire = false;
-            }
-        }
-    }
-
-    private class MyProcessListener implements ProcessEventListener {
-
-        @Override
-        public void beforeProcessStarted(ProcessStartedEvent processStartedEvent) {
-
-        }
-
-        @Override
-        public void afterProcessStarted(ProcessStartedEvent processStartedEvent) {
-
-        }
-
-        @Override
-        public void beforeProcessCompleted(ProcessCompletedEvent processCompletedEvent) {
-
-        }
-
-        @Override
-        public void afterProcessCompleted(ProcessCompletedEvent processCompletedEvent) {
-
-        }
-
-        @Override
-        public void beforeNodeTriggered(ProcessNodeTriggeredEvent processNodeTriggeredEvent) {
-
-        }
-
-        @Override
-        public void afterNodeTriggered(ProcessNodeTriggeredEvent processNodeTriggeredEvent) {
-
-        }
-
-        @Override
-        public void beforeNodeLeft(ProcessNodeLeftEvent processNodeLeftEvent) {
-
-        }
-
-        @Override
-        public void afterNodeLeft(ProcessNodeLeftEvent processNodeLeftEvent) {
-
-        }
-
-        @Override
-        public void beforeVariableChanged(ProcessVariableChangedEvent processVariableChangedEvent) {
-
-        }
-
-        @Override
-        public void afterVariableChanged(ProcessVariableChangedEvent processVariableChangedEvent) {
-
-        }
-    }
-    private class MyRuleListener implements RuleRuntimeEventListener {
-
-        @Override
-        public void objectInserted(ObjectInsertedEvent objectInsertedEvent) {
-            events.add(objectInsertedEvent);
-        }
-
-        @Override
-        public void objectUpdated(ObjectUpdatedEvent objectUpdatedEvent) {
-            events.add(objectUpdatedEvent);
-        }
-
-        @Override
-        public void objectDeleted(ObjectDeletedEvent objectDeletedEvent) {
-            events.add(objectDeletedEvent);
-        }
-    }
-
-    private class MyAgendaListener implements AgendaEventListener {
-
-        @Override
-        public void matchCreated(MatchCreatedEvent matchCreatedEvent) {
-            events.add(matchCreatedEvent);
-        }
-
-        @Override
-        public void matchCancelled(MatchCancelledEvent matchCancelledEvent) {
-            events.add(matchCancelledEvent);
-        }
-
-        @Override
-        public void beforeMatchFired(BeforeMatchFiredEvent beforeMatchFiredEvent) {
-            events.add(beforeMatchFiredEvent);
-        }
-
-        @Override
-        public void afterMatchFired(AfterMatchFiredEvent afterMatchFiredEvent) {
-            events.add(afterMatchFiredEvent);
-        }
-
-        @Override
-        public void agendaGroupPopped(AgendaGroupPoppedEvent agendaGroupPoppedEvent) {
-
-        }
-
-        @Override
-        public void agendaGroupPushed(AgendaGroupPushedEvent agendaGroupPushedEvent) {
-
-        }
-
-        @Override
-        public void beforeRuleFlowGroupActivated(RuleFlowGroupActivatedEvent ruleFlowGroupActivatedEvent) {
-
-        }
-
-        @Override
-        public void afterRuleFlowGroupActivated(RuleFlowGroupActivatedEvent ruleFlowGroupActivatedEvent) {
-
-        }
-
-        @Override
-        public void beforeRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent ruleFlowGroupDeactivatedEvent) {
-
-        }
-
-        @Override
-        public void afterRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent ruleFlowGroupDeactivatedEvent) {
-
-        }
-    }
 
     @Test
     public void basicECETestFulfill() {
         List list = new ArrayList();
-//        KieSession kieSession = loadProvenanceSession( "testTasks_simpleSet.drl", list );
-        KieSession kieSession = loadProvenanceSession("testSimpleECE.ece", list);
+        KieSession kieSession = loadPseudoClockedProvenanceSession("testSimpleECE.ece", list);
         MyKlass mk = (MyKlass) new MyKlassImpl().withDyEntryId( "123-000" );
         mk.setFlag(Boolean.FALSE);
         InternalFactHandle handle = (InternalFactHandle) kieSession.insert(mk);
@@ -279,9 +110,7 @@ public class ProvenanceTest {
     @Test
     public void basicECETestViolation() {
         List list = new ArrayList();
-        KieSession kieSession = loadProvenanceSession("testSimpleECE.ece", list);
-        kieSession.addEventListener(new MyRuleListener());
-        kieSession.addEventListener(new MyAgendaListener());
+        KieSession kieSession = loadPseudoClockedProvenanceSession("testSimpleECE.ece", list);
         MyKlass mk = (MyKlass) new MyKlassImpl().withDyEntryId( "123-000" );
         kieSession.insert(mk);
         kieSession.fireAllRules();
@@ -1026,8 +855,7 @@ public class ProvenanceTest {
     }
 
 
-
-    private KieSession loadProvenanceSession( String sourceDrl, List list ) {
+    private KieSession loadPseudoClockedProvenanceSession( String sourceDrl, List list ) {
         KieServices kieServices = KieServices.Factory.get();
         Resource axioms = kieServices.getResources().newClassPathResource("it/unibo/deis/lia/org/drools/expectations/expect_axioms.drl");
         Resource traitDRL = kieServices.getResources().newClassPathResource( "org/test/tiny_declare.drl" );
@@ -1038,6 +866,21 @@ public class ProvenanceTest {
         KieSessionConfiguration sessionConfiguration = kieServices.newKieSessionConfiguration();
         sessionConfiguration.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.toExternalForm()));
         KieSession kieSession = kieBase.newKieSession(sessionConfiguration,null);
+        kieSession.setGlobal( "list", list );
+        kieSession.fireAllRules();
+
+        return kieSession;
+
+    }
+
+    private KieSession loadProvenanceSession( String sourceDrl, List list ) {
+        KieServices kieServices = KieServices.Factory.get();
+        Resource traitDRL = kieServices.getResources().newClassPathResource( "org/test/tiny_declare.drl" );
+        Resource ruleDRL = kieServices.getResources().newClassPathResource(path + sourceDrl);
+
+        KieHelper kieHelper = validateKieBuilder(traitDRL, ruleDRL);
+        KieBase kieBase = kieHelper.build(ProvenanceHelper.getProvenanceEnabledKieBaseConfiguration(true));
+        KieSession kieSession = kieBase.newKieSession();
         kieSession.setGlobal( "list", list );
         kieSession.fireAllRules();
 

@@ -10,25 +10,16 @@ import static org.test.MetaFactory.*;
 
 global List list;
 
-rule Setter
-@Expect( enabled=FALSE )
-@Display( "MyKlass was received " )
-when
-    $k : MyKlass() @Evidence( @Display( type="1", value="flag: @{$k.flag}"))
-then
-    bolster( modifyMyKlass( $k ).prop( "fooVal" ) );
+declare MyKlassEvent
+    @role(event)
+    myKlass:    MyKlass @key
 end
 
-rule PropCheck
-@Display( "Set expectation - @{$sk_1}" )
-when
-    $k : MyKlass( $p : prop, timestamp != null )
-then
-    expect $sk: MySubKlass( ) @Evidence( @Display( type = "1", value = "subpropery - @{$sk.subProp}"))
-    onFulfill { bolster( modifyMySubKlass($sk).subProp(10)); }
-    onViolation { bolster( modifyMyKlass($k).prop("booVal")); }
-    list.add( $p );
+declare MySubKlassEvent
+    @role(event)
+    mySubKlass: MySubKlass @key
 end
+
 /*
 rule "MyKlass received"
 @Expect( enabled=FALSE )
@@ -41,16 +32,7 @@ then
     x = bolster( newMySubKlass("123-000") );
     System.out.println("@@@@@"+x);
 end
-declare MyKlassEvent
-    @role(event)
-    myKlass:    MyKlass @key
-end
-
-declare MySubKlassEvent
-    @role(event)
-    mySubKlass: MySubKlass @key
-end
-
+*/
 rule "Create MyKlassEvent"
 @Expect( enabled=FALSE )
 when
@@ -78,5 +60,3 @@ then
         bolster( modifyMyKlass($mk).prop("booVal"));
     }
 end
-*/
-//    expires MyKlass( prop == "fooVal")
