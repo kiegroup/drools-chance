@@ -52,7 +52,7 @@ public class TerminologyGenerator {
             for ( OWLClassExpression kls : types ) {
                 if ( kls.toString().contains( "ConceptScheme" ) ) {
                     CodeSystem cs = new CodeSystem();
-                    cs.setCodeSystemUri( ind.toString() );
+                    cs.setCodeSystemUri( ind.getIRI().toString() );
                     for ( OWLDataPropertyAssertionAxiom dp : model.getDataPropertyAssertionAxioms( ind ) ) {
                         if ( dp.getProperty().asOWLDataProperty().getIRI().toString().contains( "notation" ) ) {
                             cs.setCodeSystemName( dp.getObject().getLiteral() );

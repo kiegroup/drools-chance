@@ -276,13 +276,6 @@ public class ThingImpl
         setDyEntryId(value);
         return this;
     }
-    
-
-    public boolean hasTypeCode(BitSet typeCode) {
-        return this.getCurrentTypeCode().equals(typeCode);
-    }
-
-
 
 
     public boolean equals(Object object) {

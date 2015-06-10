@@ -1,6 +1,11 @@
 package org.drools.shapes.terms.generator;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
@@ -11,9 +16,16 @@ import static org.junit.Assert.*;
 
 public class TerminologyGeneratorTest {
 
+    private static Map<String, CodeSystem> codeSystemMap;
+
+    @BeforeClass
+    public static void init() {
+        codeSystemMap = doGenerate();
+    }
+
     @Test
         public void testGenerateCodeSystems() {
-        Map<String, CodeSystem> codeSystemMap = this.doGenerate();
+
         assertEquals(1, codeSystemMap.size());
 
         CodeSystem cs = codeSystemMap.values().iterator().next();
@@ -24,7 +36,6 @@ public class TerminologyGeneratorTest {
 
     @Test
     public void testGenerateConceptsWithReasoning() {
-        Map<String, CodeSystem> codeSystemMap = this.doGenerate();
         assertEquals(1, codeSystemMap.size());
 
         Set<Concept> concepts = codeSystemMap.values().iterator().next().getConcepts();
@@ -34,7 +45,6 @@ public class TerminologyGeneratorTest {
 
     @Test
     public void testGenerateConceptsPopulated() {
-        Map<String, CodeSystem> codeSystemMap = this.doGenerate();
         assertEquals(1, codeSystemMap.size());
 
         Set<Concept> concepts = codeSystemMap.values().iterator().next().getConcepts();
@@ -46,14 +56,16 @@ public class TerminologyGeneratorTest {
         }
     }
 
-    public Map<String, CodeSystem> doGenerate() {
-        TerminologyGenerator generator = new TerminologyGenerator();
-//        try {
-//            return generator.traverse( generator.load(
-//                    new ClassPathResource("test.owl").getInputStream() ) );
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+    public static Map<String, CodeSystem> doGenerate() {
+        try {
+            TerminologyGenerator generator = new TerminologyGenerator();
+            OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
+            OWLOntology o = owlOntologyManager.loadOntologyFromOntologyDocument( new ClassPathResource( "test.owl" ).getInputStream() );
+            return generator.traverse( o );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
         return null;
     }
 
