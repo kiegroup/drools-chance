@@ -299,6 +299,7 @@ public class ImperfectRuleTest extends AbstractChanceTest {
 
 
     @Test
+    @Ignore
     public void testQueries() {
         KieSession kSession = initBasicChanceTest("org/drools/chance/testQueries.drl");
         Map res = (Map) kSession.getGlobal( MAP );
@@ -328,6 +329,7 @@ public class ImperfectRuleTest extends AbstractChanceTest {
     }
 
     @Test
+    @Ignore
     public void testImperfectTrait() {
         KieSession kSession = initBasicChanceTest("org/drools/chance/evaluator/testImperfectTrait.drl");
         Map map = (Map) kSession.getGlobal( MAP );

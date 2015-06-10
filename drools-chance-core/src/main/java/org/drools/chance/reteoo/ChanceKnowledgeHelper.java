@@ -18,6 +18,7 @@ import org.drools.core.base.DefaultKnowledgeHelper;
 import org.drools.core.base.DroolsQuery;
 import org.drools.core.common.BaseNode;
 import org.drools.core.common.InternalFactHandle;
+import org.drools.core.common.NetworkNode;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.factmodel.AnnotationDefinition;
 import org.drools.core.reteoo.BetaNode;
@@ -65,7 +66,7 @@ public class ChanceKnowledgeHelper extends DefaultKnowledgeHelper implements Cha
         RuleTerminalNodeLeftTuple leftTuple = (RuleTerminalNodeLeftTuple) getMatch().getTuple();
         List<FactHandle> handles = leftTuple.getFactHandles();
 
-        Evaluation eval = combineLeftDegrees( leftTuple );
+        Evaluation eval = combineLeftDegrees( leftTuple, leftTuple.getLeftTupleSink().getLeftTupleSource() );
 
         for ( FactHandle handle : handles ) {
             if ( handle instanceof ChanceFactHandle ) {
@@ -77,14 +78,14 @@ public class ChanceKnowledgeHelper extends DefaultKnowledgeHelper implements Cha
         return eval;
     }
 
-    private Evaluation combineLeftDegrees( RuleTerminalNodeLeftTuple leftTuple ) {
-        LeftTupleSink tip = leftTuple.getSink();
-        BaseNode leftSrc = tip.getLeftTupleSource();
-
+    private Evaluation combineLeftDegrees( final LeftTuple leftTuple, final BaseNode initialLeftSource ) {
+        BaseNode leftSrc = initialLeftSource;
         LeftTuple lt = leftTuple;
+
         ChanceFactHandle handle;
         List<Evaluation> args = new LinkedList<Evaluation>();
         List<OuterOperatorEvaluation> outers = new LinkedList<OuterOperatorEvaluation>();
+
         do {
             int nodeId;
             BaseNode rightSource;
@@ -107,9 +108,8 @@ public class ChanceKnowledgeHelper extends DefaultKnowledgeHelper implements Cha
                 handle = (ChanceFactHandle) lt.getParent().getObject();
                 DroolsQuery dq = (DroolsQuery) ((InternalFactHandle) handle).getObject();
                 QueryTerminalNode qtn = (QueryTerminalNode) dq.getQueryNodeMemory().getQuerySegmentMemory().getTipNode();
-                nodeId = 0;
+                nodeId = leftSrc.getId();
                 rightSource = null;
-                //return combineLeftDegrees( qtn.getLeftTupleSource() );
             } else {
                 throw new UnsupportedOperationException( "Unsupported object source" );
             }
@@ -119,12 +119,16 @@ public class ChanceKnowledgeHelper extends DefaultKnowledgeHelper implements Cha
             if ( NodeTypeEnums.isBetaNode( leftSrc ) || NodeTypeEnums.isFromNode( leftSrc ) ) {
                 rEval = handle.getCachedEvaluation( nodeId );
             }
+
             while ( rEval instanceof OuterOperatorEvaluation ) {
                 outers.add( 0, (OuterOperatorEvaluation) rEval );
                 rEval = rEval.getNext();
             }
+
             if ( NodeTypeEnums.isFromNode( leftSrc ) ) {
                 rEval = combineFromDegrees( nodeId, (FromNode) leftSrc, handle, rEval );
+            } else if ( NodeTypeEnums.isQueryElementNode( leftSrc ) ) {
+                rEval = combineLeftDegrees( lt, null );
             } else if ( NodeTypeEnums.isLeftTupleSource( leftSrc ) ) {
                 rEval = combineRightDegrees( nodeId, rightSource, handle, rEval );
             } else {
@@ -143,6 +147,8 @@ public class ChanceKnowledgeHelper extends DefaultKnowledgeHelper implements Cha
                 args.add( 0, outer );
             }
 
+
+
             leftSrc = ( (LeftTupleSource) leftSrc ).getLeftTupleSource();
             if ( leftSrc != null ) {
                 lt = lt.getLeftParent();
@@ -150,11 +156,11 @@ public class ChanceKnowledgeHelper extends DefaultKnowledgeHelper implements Cha
         } while ( leftSrc != null );
 
         if ( args.isEmpty() ) {
-            return new SimpleEvaluationImpl( tip.getId(), ChanceDegreeTypeRegistry.getDefaultOne() );
+            return new SimpleEvaluationImpl( initialLeftSource.getId(), ChanceDegreeTypeRegistry.getDefaultOne() );
         } else if ( args.size() == 1 && args.get( 0 ).isAggregate() ) {
             return args.get( 0 );
         } else {
-            CompositeEvaluation and = new CompositeEvaluation( tip.getId(),
+            CompositeEvaluation and = new CompositeEvaluation( initialLeftSource.getId(),
                                                                null,
                                                                ChanceStrategyFactory.getConnectiveFactory( null, null ).getAnd(),
                                                                args.toArray( new Evaluation[ args.size() ] ) );

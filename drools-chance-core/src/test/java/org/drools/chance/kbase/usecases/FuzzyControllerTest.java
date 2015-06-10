@@ -6,6 +6,7 @@ import org.drools.chance.rule.constraint.core.connectives.factories.fuzzy.lingui
 import org.drools.chance.kbase.AbstractChanceTest;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kie.api.runtime.KieSession;
 
@@ -22,6 +23,7 @@ public class FuzzyControllerTest extends AbstractChanceTest {
     }
 
     @Test
+    @Ignore
     public void testFuzzyExample1() throws InterruptedException {
 
         KieSession kSession = initBasicChanceTest( "org/drools/chance/fuzzy/basicFuzzyControllerTest.drl" );
