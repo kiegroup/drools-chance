@@ -48,12 +48,13 @@ public class TerminologyGeneratorTest {
 
     public Map<String, CodeSystem> doGenerate() {
         TerminologyGenerator generator = new TerminologyGenerator();
-        try {
-            return generator.traverse( generator.load(
-                    new ClassPathResource("test.owl").getInputStream() ) );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            return generator.traverse( generator.load(
+//                    new ClassPathResource("test.owl").getInputStream() ) );
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        return null;
     }
 
 }

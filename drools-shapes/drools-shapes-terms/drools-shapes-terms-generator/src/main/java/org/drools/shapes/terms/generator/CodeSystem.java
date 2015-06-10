@@ -49,4 +49,11 @@ public class CodeSystem {
     public void setCodeSystemUri(String codeSystemUri) {
         this.codeSystemUri = codeSystemUri;
     }
+
+    @Override
+    public String toString() {
+        return "CodeSystem{ " +
+               "Uri = '" + codeSystemUri + "( " + concepts.size() + " )" +
+               '}';
+    }
 }

@@ -1,7 +1,6 @@
 package $packageName;
 
-import org.drools.drools_shapes.terms.ConceptDescriptor;
-
+import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 import java.net.URI;
 
 public class $className {
@@ -10,10 +9,10 @@ public class $className {
     public static final String codeSystem = "$codeSystem.codeSystemName";
     public static final URI codeSystemURI = URI.create( "$codeSystem.codeSystemUri" );
 
-    public static final ConceptDescriptor SELF = CodeFactory.get().buildCode( codeSystemURI, codeSystem, codeSystemName, null, null );
+    public static final ConceptDescriptor __SELF = CodeFactory.get().buildCode( codeSystemURI, codeSystem, codeSystemName, null, null );
 
     static {
-        VocabularyCatalog.get().register( codeSystem, SELF );
+        VocabularyCatalog.get().register( codeSystem, __SELF );
     }
 
 

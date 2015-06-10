@@ -31,15 +31,17 @@ public class JavaGenerator {
         Template template = ve.getTemplate("templates/concepts-java.vm");
 
         for(CodeSystem codeSystem : codeSystems) {
-            String className = getClassName(codeSystem.getCodeSystemName());
+            if ( ! codeSystem.getConcepts().isEmpty() ) {
+                String className = getClassName( codeSystem.getCodeSystemName() );
 
-            VelocityContext context = new VelocityContext();
-            context.put("codeSystem", codeSystem);
-            context.put("className", className);
-            context.put("packageName", packageName);
-            context.put("JavaGenerator", JavaGenerator.class);
+                VelocityContext context = new VelocityContext();
+                context.put( "codeSystem", codeSystem );
+                context.put( "className", className );
+                context.put( "packageName", packageName );
+                context.put( "JavaGenerator", JavaGenerator.class );
 
-            this.writeToFile(template, context, outputDir, packageName, className);
+                this.writeToFile( template, context, outputDir, packageName, className );
+            }
         }
     }
 
@@ -101,7 +103,14 @@ public class JavaGenerator {
     }
 
     public static String getPropertyName(String propertyName) {
+        propertyName = fixSpecialCharacters( propertyName );
         return StringUtils.capitalise( propertyName.replaceAll("[^a-zA-Z0-9]", "_")  );
+    }
+
+    private static String fixSpecialCharacters( String s ) {
+        s = s.replaceAll( ">", "_GT_" );
+        s = s.replaceAll( "<", "_LT_" );
+        return s;
     }
 
 }

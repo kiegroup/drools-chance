@@ -1,7 +1,7 @@
 package $packageName;
 
-import org.drools.drools_shapes.terms.ConceptDescriptor;
-import org.drools.shapes.terms.generator.CD;
+import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
+import org.drools.shapes.terms.CD;
 
 import java.net.URI;
 
