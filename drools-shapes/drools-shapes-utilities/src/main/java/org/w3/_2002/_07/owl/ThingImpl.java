@@ -509,6 +509,11 @@ public class ThingImpl
         return __$$field_Tms$$;
     }
 
+    @Override
+    public void _setFieldTMS( TraitFieldTMS traitFieldTMS ) {
+        __$$field_Tms$$ = traitFieldTMS;
+    }
+
     @Transient
     public BitSet getTypeCode() {
         throw new UnsupportedOperationException( "Shapes generated classes can't predict the type code at compile time" );
