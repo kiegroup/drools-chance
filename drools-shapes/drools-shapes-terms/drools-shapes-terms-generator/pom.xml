@@ -33,6 +33,12 @@
       <artifactId>owlapi-apibinding</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.hermit-reasoner</groupId>
+      <artifactId>org.semanticweb.hermit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>

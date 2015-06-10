@@ -8,6 +8,7 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -74,10 +75,9 @@ public class TerminologyGenerator {
                     Concept concept = new Concept();
                     concept.setUri( ind.getIRI().toString() );
 
-                    for ( OWLDataPropertyAssertionAxiom dp : model.getDataPropertyAssertionAxioms( ind ) ) {
-                        if ( dp.getProperty().asOWLDataProperty().getIRI().toString().contains( "notation" ) ) {
-                            concept.setCode( dp.getObject().getLiteral() );
-                        }
+                    Set<OWLLiteral> values = ind.getDataPropertyValues( odf.getOWLDataProperty( IRI.create( "http://www.w3.org/2004/02/skos/core#notation" ) ), model );
+                    for ( OWLLiteral val : values ) {
+                        concept.setCode( val.getLiteral() );
                     }
 
                     String name = concept.getCode();
