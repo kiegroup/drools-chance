@@ -21,14 +21,14 @@ public class TermsGeneratorPlugin extends AbstractMojo {
     /**
      * @parameter
      */
-    private String owlFile;
+    private String[] owlFiles;
 
-    public String getOwlFile() {
-        return owlFile;
+    public String[] getOwlFile() {
+        return owlFiles;
     }
 
-    public void setOwlFile(String owlFile) {
-        this.owlFile = owlFile;
+    public void setOwlFile(String[] owlFile) {
+        this.owlFiles = owlFiles;
     }
 
     /**
@@ -60,11 +60,12 @@ public class TermsGeneratorPlugin extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             new TerminologyGenerator().generate(
-                    new FileInputStream( this.owlFile ),
+                    this.owlFiles,
                     this.packageName,
                     this.outputDirectory );
         } catch ( Exception e ) {
             System.err.println( e.getMessage() );
+            e.printStackTrace();
             throw new MojoExecutionException( e.getMessage() );
         }
     }

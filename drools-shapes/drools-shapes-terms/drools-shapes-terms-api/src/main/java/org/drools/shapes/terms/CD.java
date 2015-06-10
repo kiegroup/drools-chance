@@ -5,7 +5,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.drools.shapes.terms.generator;
+package org.drools.shapes.terms;
 
 import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 
