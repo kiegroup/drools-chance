@@ -17,6 +17,7 @@ import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedVal
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.name.ValueSetDefinitionReadId;
 import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 import org.apache.commons.lang.StringUtils;
+import org.drools.shapes.terms.TermsInferenceServiceFactory;
 import org.drools.shapes.terms.operations.TermsInference;
 import org.drools.shapes.terms.operations.internal.TermsInferenceService;
 
@@ -30,6 +31,10 @@ import java.util.Set;
 public class DenotesEvaluatorImpl implements TermsInference {
 
     TermsInferenceService provider;
+
+    public DenotesEvaluatorImpl( ) {
+        this.provider = TermsInferenceServiceFactory.instance().getValueSetProcessor();
+    }
 
     public DenotesEvaluatorImpl( TermsInferenceService provider ) {
         this.provider = provider;
