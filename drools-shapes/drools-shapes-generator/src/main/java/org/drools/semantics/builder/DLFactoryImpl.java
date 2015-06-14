@@ -21,6 +21,7 @@ import org.drools.core.io.impl.ClassPathResource;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.inference.DelegateInferenceStrategy;
 import org.drools.semantics.builder.model.inference.ModelInferenceStrategy;
+import org.drools.semantics.utils.NameUtils;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -32,16 +33,14 @@ import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DLFactoryImpl implements DLFactory {
 
-
     private static DLFactoryImpl singleton;
-
-
-
 
 
     private DLFactoryImpl() {
@@ -94,6 +93,7 @@ public class DLFactoryImpl implements DLFactory {
      * @return
      */
     private OntoModel doBuildModel( String name,
+                                    Map<String,String> packageNames,
                                     Resource[] res,
                                     DLFactoryConfiguration conf,
                                     ClassLoader classLoader ) {
@@ -119,11 +119,19 @@ public class DLFactoryImpl implements DLFactory {
             theory.put( ModelInferenceStrategy.InferenceTask.TABLEAU, tableauRules );
         }
 
+        String ontoIRI = ontoDescr.getOntologyID().getOntologyIRI().toString();
+        if ( packageNames == null ) {
+            packageNames = new HashMap<String, String>();
+        }
+        if ( ! packageNames.containsKey( ontoIRI ) ) {
+            packageNames.put( ontoIRI, NameUtils.namespaceURIToPackage( ontoIRI ) );
+        }
         return new DelegateInferenceStrategy().buildModel( name,
-                ontoDescr,
-                conf,
-                theory,
-                classLoader );
+                                                           Collections.unmodifiableMap( packageNames ),
+                                                           ontoDescr,
+                                                           conf,
+                                                           theory,
+                                                           classLoader );
 
     }
 
@@ -143,10 +151,15 @@ public class DLFactoryImpl implements DLFactory {
     }
 
     public OntoModel buildModel( String name, Resource[] res, DLFactoryConfiguration conf, ClassLoader classLoader ) {
+        return buildModel( name, new HashMap<String,String>(), res, conf, classLoader );
+    }
+
+    public OntoModel buildModel( String name, Map<String,String> packageNames, Resource[] res, DLFactoryConfiguration conf, ClassLoader classLoader ) {
         return doBuildModel( name,
-                res,
-                conf,
-                classLoader );
+                             packageNames,
+                             res,
+                             conf,
+                             classLoader );
     }
 
 

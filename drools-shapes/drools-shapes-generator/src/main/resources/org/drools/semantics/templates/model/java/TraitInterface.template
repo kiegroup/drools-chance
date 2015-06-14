@@ -70,7 +70,6 @@ public interface @{name} extends @if{ ! standalone } org.drools.semantics.Thing,
         @{ getter( prop.name, map( prop.target.fullyQualifiedName, true ), prop.maxCard ) }();
 
 
-    @if{ ! prop.readOnly }
     // @{prop.property}
     public void @{ setter( prop.name ) }(
         @if{ prop.maxCard == 1 }
@@ -81,18 +80,18 @@ public interface @{name} extends @if{ ! standalone } org.drools.semantics.Thing,
         value );
     @end{}
 
-    @end{} @comment{ do not generate restricted setters for simple, primitive properties }
+    @comment{ do not generate restricted setters for simple, primitive properties }
 
 
     @if{ ! minimal }
 
-    @if{ ! prop.restricted && ! prop.target.primitive && ! prop.transient }
+    @if{ ! prop.restricted && ! prop.target.primitive && ! prop.transient && ! ( prop.attribute && prop.maxCard == 1 ) }
         @javax.persistence.Transient
     public void add@{ capitalize(prop.name) }( java.lang.Object x );
     @end{}
 
 
-    @if{ ( prop.simple && ! ( prop.restricted && prop.target.primitive ) ) || ( ( prop.maxCard == null || prop.maxCard > 1 ) && ! prop.transient )  }
+    @if{ ( ( prop.simple && ! ( prop.restricted && prop.target.primitive ) ) || ( ( prop.maxCard == null || prop.maxCard > 1 ) && ! prop.transient ) ) && ! ( prop.attribute && prop.maxCard == 1 ) }
         @javax.persistence.Transient
     public void add@{ capitalize(prop.name) }( @{ map( prop.target.fullyQualifiedName, true ) } x );
 

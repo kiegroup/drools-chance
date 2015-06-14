@@ -54,6 +54,7 @@ import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message;
 import org.kie.api.io.ResourceType;
+import org.w3._2002._07.owl.Thing;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -666,6 +667,7 @@ public class DL_8_ModelTest {
     }
 
     @Test
+    @Ignore
     public void testPizzaOntology() {
         Resource res = ResourceFactory.newClassPathResource( "ontologies/pizza.owl" );
         OntoModel results = factory.buildModel( "partest", res, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );

@@ -60,10 +60,14 @@ public class Concept implements Cloneable {
 
 
 
-    public Concept( IRI iri, String name, boolean primitive ) {
+    public Concept( IRI iri, Map<String,String> pack, String name, boolean primitive ) {
         this.iri = iri;
         this.name = primitive ? name : NameUtils.compactUpperCase( name );
-        this.pack = NameUtils.namespaceURIToPackage( iri.getNamespace() );
+        if ( pack == null || Thing.IRI.equals( iri.toQuotedString() ) || ! pack.containsKey( iri.getNamespace() ) ) {
+            this.pack = NameUtils.namespaceURIToPackage( iri.getNamespace() );
+        } else {
+            this.pack = pack.get( iri.getNamespace() );
+        }
         this.superConcepts = new HashSet();
         this.subConcepts = new HashSet();
         this.properties = new HashMap();
@@ -408,7 +412,7 @@ public class Concept implements Cloneable {
 
 
     public Concept clone() {
-        Concept con = new Concept( iri, name, primitive );
+        Concept con = new Concept( iri, null, name, primitive );
 
         con.getSuperConcepts().addAll( getSuperConcepts() );
         con.getProperties().putAll( getProperties() );

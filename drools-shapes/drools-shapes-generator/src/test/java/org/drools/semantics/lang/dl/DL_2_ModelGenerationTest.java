@@ -16,6 +16,7 @@
 
 package org.drools.semantics.lang.dl;
 
+import org.drools.semantics.builder.model.PropertyRelation;
 import org.junit.Ignore;
 import org.kie.api.io.Resource;
 import org.kie.internal.io.ResourceFactory;
@@ -31,8 +32,13 @@ import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.w3._2002._07.owl.Thing;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -58,8 +64,25 @@ public class DL_2_ModelGenerationTest {
         assertNotNull( ontoDescr );
     }
 
+    @Test
+    public void testPackageOverride() {
+        String source = "ontologies/kmr2/kmr2_mini.owl";
 
+        Resource res = ResourceFactory.newClassPathResource(source);
 
+        Map<String,String> overrides = new HashMap<String, String>( );
+        overrides.put( "http://www.kmr.org/ontology/", "my.foo.test" );
+        OntoModel model = factory.buildModel( "mini", overrides, new Resource[]{ res }, DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE ), null );
+
+        for ( Concept con : model.getConcepts() ) {
+            if ( con.getIri().equals( Thing.IRI ) ) {
+                assertEquals( "org.w3._2002._07.owl", con.getPackage() );
+            } else {
+                assertEquals( "my.foo.test", con.getPackage() );
+            }
+        }
+
+    }
 
     @Test
     public void testDiamondModelGenerationExternal() {
@@ -192,7 +215,7 @@ public class DL_2_ModelGenerationTest {
         assertTrue(
                 results.getConcept( "<" + ns +"ZimpleDomain>").getProperties().get(
                         "<_zimple>"
-                ).getTarget().equals( new Concept( IRI.create( "http://www.w3.org/2001/XMLSchema#int" ), "java.lang.Integer", true ) )
+                ).getTarget().equals( new Concept( IRI.create( "http://www.w3.org/2001/XMLSchema#int" ), null, "java.lang.Integer", true ) )
         );
 
 
@@ -233,6 +256,86 @@ public class DL_2_ModelGenerationTest {
         assertTrue( ontoModel.isHierarchyConsistent() );
 
     }
+
+    @Test
+    public void testRestrictedCardinalityProperty() {
+
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/cardinalAttribute.owl" );
+        OWLOntology onto = factory.parseOntology( res );
+        OntoModel ontoModel = factory.buildModel( "test",
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED,
+                                                                                           DLFactoryConfiguration.defaultAxiomGenerators ) );
+        assertTrue( ontoModel.isHierarchyConsistent() );
+
+        Concept c = ontoModel.getConcept( "<http://org/drools/test#Klass>" );
+        assertNotNull( c );
+
+        assertEquals( 2, c.getProperties().size() );
+
+        PropertyRelation p1 = c.getProperty( "<http://org/drools/test#myAttr>" );
+        assertNotNull( p1 );
+        assertTrue( p1.isSimple() );
+        assertTrue( p1.isAttribute() );
+        assertFalse( p1.isRestricted() );
+
+        PropertyRelation p2 = c.getProperty( "<http://org/drools/test#myRelTgt>" );
+        assertNotNull( p2 );
+        assertFalse( p2.isSimple() );
+        assertFalse( p2.isAttribute() );
+        assertTrue( p2.isRestricted() );
+
+    }
+
+   @Test
+    public void testCrossAttributes() {
+
+        Resource res = ResourceFactory.newClassPathResource( "ontologies/crossAttributes.owl" );
+        OWLOntology onto = factory.parseOntology( res );
+        OntoModel ontoModel = factory.buildModel( "test",
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED,
+                                                                                           DLFactoryConfiguration.defaultAxiomGenerators ) );
+        assertTrue( ontoModel.isHierarchyConsistent() );
+
+       Concept c1 = ontoModel.getConcept( "<http://org/drools/test#Klass1>" );
+       Concept t1 = ontoModel.getConcept( "<http://org/drools/test#Tgt1>" );
+       Concept c2 = ontoModel.getConcept( "<http://org/drools/test#Klass2>" );
+       Concept t2 = ontoModel.getConcept( "<http://org/drools/test#Tgt2>" );
+       Concept dom = ontoModel.getConcept( "<http://org/drools/test#MyAttrDomain>" );
+       Concept ran = ontoModel.getConcept( "<http://org/drools/test#MyAttrRange>" );
+       assertNotNull( c1 );
+       assertNotNull( t1 );
+       assertNotNull( c2 );
+       assertNotNull( t2 );
+       assertNotNull( dom );
+       assertNotNull( ran );
+
+       assertEquals( 0, dom.getProperties().size() );
+       assertEquals( 0, ran.getProperties().size() );
+       assertEquals( 1, c1.getProperties().size() );
+       assertEquals( 1, c2.getProperties().size() );
+       assertEquals( 0, t1.getProperties().size() );
+       assertEquals( 0, t2.getProperties().size() );
+
+       PropertyRelation p1 = c1.getProperty( "<http://org/drools/test#myAttr>" );
+       assertNotNull( p1 );
+       assertFalse( p1.isSimple() );
+       assertTrue( p1.isAttribute() );
+       assertFalse( p1.isRestricted() );
+       assertEquals( c1, p1.getDomain() );
+       assertEquals( t1, p1.getTarget() );
+
+
+       PropertyRelation p2 = c2.getProperty( "<http://org/drools/test#myAttr>" );
+       assertNotNull( p2 );
+       assertTrue( p2.isSimple() );
+       assertTrue( p2.isAttribute() );
+       assertFalse( p2.isRestricted() );
+       assertEquals( c2, p2.getDomain() );
+       assertEquals( t2, p2.getTarget() );
+       
+   }
 
 
 }

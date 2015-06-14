@@ -40,7 +40,7 @@ public class DRLModelCompilerImpl extends ModelCompilerImpl implements DRLModelC
     }
 
     public void compile( Concept con, Object context, Map<String, Object> params ) {
-        getModel().addTrait( con.getName(), TemplateRuntime.execute( template, context, params ).toString().trim() );
+        getModel().addTrait( con.getFullyQualifiedName(), TemplateRuntime.execute( template, context, params ).toString().trim() );
     }
 
 }

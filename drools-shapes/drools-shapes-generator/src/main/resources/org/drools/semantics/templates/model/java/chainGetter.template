@@ -20,6 +20,13 @@
 
 @declare{'chainGetter'}
 
+    @@javax.persistence.Transient
+    public void @{ setter( name ) } (
+        @if{ max != 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
+        x
+    ) {
+    }
+
 
     @@javax.persistence.Transient
     public

@@ -41,6 +41,7 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
 
     public OntoModel buildModel( String name,
+                                 Map<String,String> packageNames,
                                  OWLOntology ontoDescr,
                                  DLFactoryConfiguration conf,
                                  Map<InferenceTask, Resource> theory,
@@ -48,12 +49,13 @@ public abstract class AbstractModelInferenceStrategy implements ModelInferenceSt
 
         KieSession kSession = buildKnowledgeSession( theory );
 
-        OntoModel baseModel = ModelFactory.newModel( name, conf.getMode() );
+        OntoModel baseModel = ModelFactory.newModel( name, packageNames, conf.getMode() );
         baseModel.setOntology( ontoDescr );
         baseModel.setClassLoader( classLoader );
 
-        baseModel.setDefaultPackage(NameUtils.namespaceURIToPackage(ontoDescr.getOntologyID().getOntologyIRI().toString()) );
-        baseModel.setDefaultNamespace( ontoDescr.getOntologyID().getOntologyIRI().toString() );
+        String oIRI = ontoDescr.getOntologyID().getOntologyIRI().toString();
+        baseModel.setDefaultPackage( packageNames.get( oIRI ) );
+        baseModel.setDefaultNamespace( oIRI );
 
         kSession.fireAllRules();
 

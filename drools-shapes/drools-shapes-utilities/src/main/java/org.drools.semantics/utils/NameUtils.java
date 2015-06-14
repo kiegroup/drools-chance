@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -549,17 +550,6 @@ public final class NameUtils {
         return cls;
     }
 
-    public static String capitalize( String s ) {
-        StringTokenizer tok = new StringTokenizer( s, "_" );
-        String upName = tok.nextToken();
-        upName = upName.substring( 0, 1 ).toUpperCase() + upName.substring( 1 );
-        while ( tok.hasMoreTokens() ) {
-            String word = tok.nextToken();
-            upName += "_" + word.substring( 0, 1 ).toUpperCase() + word.substring( 1 );
-        }
-        return s.startsWith( "_" ) ? "_" + upName : upName;
-    }
-
     public static String reverse(String aPackage) {
 
 
@@ -573,7 +563,32 @@ public final class NameUtils {
         return ans;
     }
 
-    public static String compactUpperCase( String name ) {
+    public static String capitalize( final String s ) {
+        StringTokenizer tok = new StringTokenizer( s, "_" );
+        String upName = tok.nextToken();
+        upName = upName.substring( 0, 1 ).toUpperCase() + upName.substring( 1 );
+        while ( tok.hasMoreTokens() ) {
+            String word = tok.nextToken();
+            upName += "_" + word.substring( 0, 1 ).toUpperCase() + word.substring( 1 );
+        }
+        upName = s.startsWith( "_" ) ? "_" + upName : upName;
+        if ( s.endsWith( "_" ) ) {
+            upName += trail( s );
+        }
+        return upName;
+    }
+
+    private static String trail( String s ) {
+        //Pattern p = Pattern.compile( "_+$" );
+        //return p.matcher( s.trim() ).group( 1 );
+        int start = s.length() - 1;
+        while ( start > 1 && s.charAt( start ) == '_' ) {
+            start--;
+        }
+        return s.substring( start + 1 );
+    }
+
+    public static String compactUpperCase( final String name ) {
         String idName = nameToIdentifier( name, IdentifierType.CLASS );
         StringTokenizer tok = new StringTokenizer( idName, "_" );
         String upName = tok.nextToken();
@@ -581,16 +596,22 @@ public final class NameUtils {
             String word = tok.nextToken();
             upName += "_" + word.substring( 0, 1 ).toUpperCase() + word.substring( 1 );
         }
+        if ( name.endsWith( "_" ) ) {
+            upName += trail( name );
+        }
         return upName;
     }
 
-    public static String compactVariable( String name ) {
+    public static String compactVariable( final String name ) {
         String idName = nameToIdentifier( name, IdentifierType.VARIABLE );
         StringTokenizer tok = new StringTokenizer( idName, "_" );
         String upName = tok.nextToken();
         while ( tok.hasMoreTokens() ) {
             String word = tok.nextToken();
             upName += word.substring( 0, 1 ).toUpperCase() + word.substring( 1 );
+        }
+        if ( name.endsWith( "_" ) ) {
+            upName += trail( name );
         }
         return upName;
     }

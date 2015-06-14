@@ -29,13 +29,15 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -52,7 +54,7 @@ public class ShapeCaster
 
 
     /**
-     * @parameter default-value="false"
+     * @parameter default-value="OntoModel.Mode.HIERARCHY.name()"
      */
     private String inheritanceMode = OntoModel.Mode.HIERARCHY.name();
     private OntoModel.Mode mode;
@@ -135,6 +137,19 @@ public class ShapeCaster
     }
 
 
+
+    /**
+     * @parameter
+     */
+    private Properties packageNameOverrides;
+
+    public Properties getPackageNameOverrides() {
+        return packageNameOverrides;
+    }
+
+    public void setPackageNameOverrides( Properties packageNameOverrides ) {
+        this.packageNameOverrides = packageNameOverrides;
+    }
 
     /**
      * @parameter default-value="default"
@@ -412,7 +427,18 @@ public class ShapeCaster
         conf.setAxiomGens( OntoModelCompiler.AXIOM_INFERENCE.valueOf( axiomInference.toUpperCase() ).getGenerators() );
         conf.setDisableFullReasoner( this.disableFullReasoning );
 
+        Map<String, String> mappings = null;
+        if ( packageNameOverrides != null ) {
+            mappings = new HashMap<String, String>();
+            Enumeration<?> names = packageNameOverrides.propertyNames();
+            while ( names.hasMoreElements() ) {
+                String ns = (String) names.nextElement();
+                mappings.put( ns, packageNameOverrides.getProperty( ns ) );
+            }
+        }
+
         return factory.buildModel( getModelName(),
+                                   mappings,
                                    res,
                                    conf,
                                    Thread.currentThread().getContextClassLoader() );

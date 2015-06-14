@@ -15,8 +15,9 @@ public class VariantModelProcessor implements ModelHierarchyProcessor {
 
         String rootName = NameUtils.capitalize( model.getName() ) + "Root";
         Concept localRoot = new Concept( IRI.create( NameUtils.separatingName( model.getDefaultNamespace() ), rootName ),
-                rootName,
-                false );
+                                         model.getPackageNameMappings(),
+                                         rootName,
+                                         false );
 //        localRoot.setChosenSuper( Thing.class.getName() );
         localRoot.setChosenSuperConcept( thing );
         thing.getChosenSubConcepts().add( localRoot );

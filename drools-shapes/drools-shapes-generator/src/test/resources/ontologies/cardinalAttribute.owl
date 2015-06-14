@@ -1,0 +1,50 @@
+Prefix: dc: <http://purl.org/dc/elements/1.1/>
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Prefix: xml: <http://www.w3.org/XML/1998/namespace>
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+Prefix: test: <http://org/drools/test#>
+
+
+
+Ontology: <http://org/drools/test>
+
+
+AnnotationProperty: <http://drools.org/shapes/attribute>
+
+    
+Datatype: rdf:PlainLiteral
+
+    
+Datatype: xsd:string
+
+    
+ObjectProperty: test:myRel
+
+    
+ObjectProperty: test:myAttr
+
+    Annotations: 
+        <http://drools.org/shapes/attribute> ""
+    
+    
+Class: test:Tgt
+
+    
+Class: test:Klass
+
+    SubClassOf: 
+        test:myAttr max 1 test:Tgt,
+        test:myRel max 1 test:Tgt
+    
+    
+Individual: test:y
+
+    
+Individual: test:z
+
+    
+Individual: test:x
+
+    

@@ -205,14 +205,14 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
                 mv.visitEnd();
             }
             {
-                if ( ! rel.isReadOnly() ) {
+                //if ( ! rel.isReadOnly() ) {
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
                             NameUtils.setter( rel.getName() ),
                             "(" + propType + ")V",
                             genericSetType,
                             null);
                     mv.visitEnd();
-                }
+                //}
             }
             if ( ! minimal ) {
                 {

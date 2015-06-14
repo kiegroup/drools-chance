@@ -7,6 +7,11 @@ import org.drools.core.util.HierarchyEncoder;
 import org.drools.core.util.HierarchyEncoderImpl;
 import org.drools.core.util.HierarchySorter;
 import org.drools.semantics.util.area.AreaTxn;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.ArrayList;
@@ -41,6 +46,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private Set<String> packageNames = new HashSet<String>();
 
+    private Map<String,String> packageMappings = null;
+
     private ClassLoader classLoader;
 
     private HierarchyEncoder<Concept> hierarchyEncoder = new HierarchyEncoderImpl<Concept>();
@@ -60,7 +67,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
         twin.setDefaultPackage( defaultPackage );
         twin.setOntology( ontology );
         twin.setName( name );
-        twin.setMode(mode);
+        twin.setMode( mode );
+        twin.packageMappings = this.packageMappings;
         twin.setConcepts( new LinkedHashMap<String, Concept>( concepts ) );
         twin.setSubConcepts( new HashSet<SubConceptOf>( subConcepts ) );
         twin.setProperties( new HashMap<String, Set<PropertyRelation>>( properties ) );
@@ -85,6 +93,15 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     public Set<String> getAllPackageNames() {
         return packageNames;
+    }
+
+    @Override
+    public Map<String, String> getPackageNameMappings() {
+        return packageMappings;
+    }
+
+    public void setPackageNameMappings( Map<String, String> packageMappings ) {
+        this.packageMappings = packageMappings;
     }
 
     public String getDefaultNamespace() {

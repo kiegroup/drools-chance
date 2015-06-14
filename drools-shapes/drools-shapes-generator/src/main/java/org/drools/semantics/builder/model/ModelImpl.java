@@ -23,6 +23,7 @@ import org.drools.semantics.util.area.AreaTxn;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class ModelImpl implements OntoModel {
@@ -74,6 +75,10 @@ public abstract class ModelImpl implements OntoModel {
         innerModel.setDefaultNamespace( namespace );
     }
 
+    @Override
+    public Map<String, String> getPackageNameMappings() {
+        return innerModel.getPackageNameMappings();
+    }
 
     public Set<Individual> getIndividuals() {
         return innerModel.getIndividuals();

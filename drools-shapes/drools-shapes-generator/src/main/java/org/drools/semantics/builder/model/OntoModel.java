@@ -28,6 +28,7 @@ import org.drools.semantics.util.area.AreaTxn;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface OntoModel extends Cloneable {
@@ -60,6 +61,8 @@ public interface OntoModel extends Cloneable {
     public String getDefaultPackage();
         
     public void setDefaultPackage( String pack );
+
+    public Map<String,String> getPackageNameMappings();
 
     public Set<String> getAllPackageNames();
 

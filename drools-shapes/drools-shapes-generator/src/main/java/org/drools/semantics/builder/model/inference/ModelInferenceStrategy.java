@@ -33,10 +33,10 @@ public interface ModelInferenceStrategy {
     }
 
     public OntoModel buildModel( String name,
+                                 Map<String,String> packageNames,
                                  OWLOntology ontoDescr,
                                  DLFactoryConfiguration conf,
                                  Map<InferenceTask, Resource> theory,
-//                                 KieSession kSession,
                                  ClassLoader classLoader );
 
 

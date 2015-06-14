@@ -21,6 +21,8 @@ import org.drools.semantics.builder.model.OntoModel;
 import org.kie.api.io.Resource;
 import org.semanticweb.owlapi.model.OWLOntology;
 
+import java.util.Map;
+
 public interface DLFactory {
 
 
@@ -43,6 +45,12 @@ public interface DLFactory {
                                  DLFactoryConfiguration conf );
 
     public OntoModel buildModel( String name,
+                                 Resource[] res,
+                                 DLFactoryConfiguration conf,
+                                 ClassLoader lodaer );
+
+    public OntoModel buildModel( String name,
+                                 Map<String,String> packageNames,
                                  Resource[] res,
                                  DLFactoryConfiguration conf,
                                  ClassLoader lodaer );

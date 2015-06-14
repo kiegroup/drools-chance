@@ -40,6 +40,7 @@ public class PropertyRelation extends Relation implements Cloneable {
     private boolean restricted = false;
     private boolean inherited = false;
     private boolean simple = false;
+    private boolean attribute;
     private PropertyRelation baseProperty;
     private PropertyRelation inverse;
     private List<PropertyRelation> restrictedProperties = new ArrayList<PropertyRelation>();
@@ -157,6 +158,7 @@ public class PropertyRelation extends Relation implements Cloneable {
         rel.simple = this.simple;
         rel.inverse = this.inverse;
         rel.functional = this.functional;
+        rel.attribute = this.attribute;
 
         rel.baseProperty = this.baseProperty;
         rel.restrictedProperties = new ArrayList<PropertyRelation>( this.restrictedProperties );
@@ -275,7 +277,8 @@ public class PropertyRelation extends Relation implements Cloneable {
 
 
     public boolean isReadOnly() {
-        return isChain();
+        //return isChain();
+        return isSimple() && isRestricted();
     }
     
 
@@ -350,6 +353,14 @@ public class PropertyRelation extends Relation implements Cloneable {
         if ( functional ) {
             setSimple( true );
         }
+    }
+
+    public boolean isAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute( boolean attribute ) {
+        this.attribute = attribute;
     }
 }
 

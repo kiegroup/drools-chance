@@ -22,6 +22,7 @@ import org.apache.commons.collections15.map.MultiKeyMap;
 import org.apache.log4j.Logger;
 import org.drools.core.util.HierarchySorter;
 import org.drools.semantics.builder.DLFactoryConfiguration;
+import org.drools.semantics.builder.model.Annotations;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.Individual;
 import org.drools.semantics.builder.model.OntoModel;
@@ -29,7 +30,6 @@ import org.drools.semantics.builder.model.PropertyRelation;
 import org.drools.semantics.builder.model.SubConceptOf;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.semantics.utils.NamespaceUtils;
-import org.jdom.Namespace;
 import org.kie.api.io.Resource;
 import org.kie.api.runtime.KieSession;
 import org.semanticweb.HermiT.Reasoner;
@@ -140,13 +140,13 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
     private static void register( String prim, String klass ) {
         IRI i1 = IRI.create( prim );
-        Concept con = new Concept( i1, klass, true );
+        Concept con = new Concept( i1, null, klass, true );
         primitives.put( i1.toQuotedString(), con );
     }
 
     private static void registerComplexConcept( String conIri, String mappedKlassName ) {
         IRI i1 = IRI.create( conIri );
-        Concept con = new Concept( i1, mappedKlassName, false );
+        Concept con = new Concept( i1, null, mappedKlassName, false );
         complexes.put( i1.toQuotedString(), con );
     }
 
@@ -432,6 +432,13 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 //            }
         }
 
+        for ( PropertyRelation prop : hierarchicalModel.getProperties() ) {
+            if ( prop.isAttribute() && ( prop.getDomain().isAbstrakt() || prop.getTarget().isAbstrakt() ) ) {
+                prop.getDomain().removeProperty( prop.getProperty() );
+                hierarchicalModel.removeProperty( prop );
+            }
+        }
+
     }
 
     private void processSuperClass( OWLClassExpression sup, Concept con, OntoModel hierarchicalModel, OWLDataFactory factory ) {
@@ -446,7 +453,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLDataAllValuesFrom forall = (OWLDataAllValuesFrom) sup;
                 propIri = forall.getProperty().asOWLDataProperty().getIRI().toQuotedString();
                 tgt = getDataRangeConcept( forall.getProperty(), forall.getFiller(), factory );
-                if ( tgt.equals( "xsd:anySimpleType" ) ) {
+                if ( tgt == null || tgt.equals( "xsd:anySimpleType" ) ) {
                     break;
                 }
                 rel = extractProperty( con, propIri, tgt, null, null, true );
@@ -460,6 +467,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLDataMinCardinality min = (OWLDataMinCardinality) sup;
                 propIri = min.getProperty().asOWLDataProperty().getIRI().toQuotedString();
                 tgt = getDataRangeConcept( min.getProperty(), min.getFiller(), factory );
+                if ( tgt == null || tgt.equals( "xsd:anySimpleType" ) ) {
+                    break;
+                }
                 rel = extractProperty( con, propIri, tgt, min.getCardinality(), null, false );
                 if ( rel != null ) {
                     hierarchicalModel.addProperty( rel );
@@ -471,6 +481,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLDataMaxCardinality max = (OWLDataMaxCardinality) sup;
                 propIri = max.getProperty().asOWLDataProperty().getIRI().toQuotedString();
                 tgt = getDataRangeConcept( max.getProperty(), max.getFiller(), factory );
+                if ( tgt == null || tgt.equals( "xsd:anySimpleType" ) ) {
+                    break;
+                }
                 rel = extractProperty( con, propIri, tgt, null, max.getCardinality(), false );
                 if ( rel != null ) {
                     hierarchicalModel.addProperty( rel );
@@ -482,6 +495,9 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 OWLDataExactCardinality ex = (OWLDataExactCardinality) sup;
                 propIri = ex.getProperty().asOWLDataProperty().getIRI().toQuotedString();
                 tgt = getDataRangeConcept( ex.getProperty(), ex.getFiller(), factory );
+                if ( tgt == null || tgt.equals( "xsd:anySimpleType" ) ) {
+                    break;
+                }
                 rel = extractProperty( con, propIri, tgt, ex.getCardinality(), ex.getCardinality(), false );
                 if ( rel != null ) {
                     hierarchicalModel.addProperty( rel );
@@ -517,6 +533,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 }
                 rel = extractProperty( con, propIri, tgt, null, null, true );
                 if ( rel != null ) {
+                    hierarchicalModel.addProperty( rel );
                 } else {
                     logger.warn( " Could not find property " + propIri + " restricted in class " + con.getIri() );
                 }
@@ -703,19 +720,20 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                 }
                 dirty = true;
             }
-//            if ( dirty ) {
-
+            if ( rel.isAttribute() && ! rel.getTarget().equals( target ) ) {
+                dirty = true;
+                rel.setTarget( target );
+            }
             if ( dirty ) {
-                if ( ! target.isPrimitive() || ! rel.getDomain().equals( con ) ) {
-                    rel.setRestricted( true );
-                    rel.setName( originalProperty.getBaseProperty().getName() + restrictedSuffix );
-                    rel.setProperty( restrictedPropIri );
-                } else {
+                if ( ( target.isPrimitive() && rel.getDomain().equals( con ) ) || rel.isAttribute() ) {
                     if ( rel.getMaxCard() != null && rel.getMaxCard() <= 1 ) {
                         rel.setSimple( true );
                     }
+                } else {
+                    rel.setRestricted( true );
+                    rel.setName( originalProperty.getBaseProperty().getName() + restrictedSuffix );
+                    rel.setProperty( restrictedPropIri );
                 }
-
             }
 
             rel.setSubject( con.getIri() );
@@ -785,6 +803,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         clonedRel.setRestricted( rel.isRestricted() );
         clonedRel.setFunctional( rel.isFunctional() );
         clonedRel.setSimple( rel.isSimple() );
+        clonedRel.setAttribute( rel.isAttribute() );
         clonedRel.setInverse( rel.getInverse() );
         return clonedRel;
 
@@ -880,7 +899,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         Concept con = conceptCache.get( rel.getSubject() );
                         rel.setTarget( conceptCache.get( rel.getObject() ) );
                         rel.setDomain( con );
-
+                        rel.setAttribute( Annotations.hasAnnotation( op, Annotations.ATTRIBUTE, ontoDescr ) );
                         rel = hierarchicalModel.addProperty( rel );
                         con.addProperty( rel.getProperty(), rel.getName(), rel );
 
@@ -902,16 +921,16 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         // it is not possible to do this earlier, since datatypes do not have inheritance.
         // so, we create a Concept late in the generation process, which will be mapped to an intf/class
         IRI iri = IRI.create( prop.getIRI().getNamespace(), NameUtils.capitalize( prop.getIRI().getFragment() ) + "DataRange" );
-        Concept rangeCon = new Concept(
-                iri,
-                NameUtils.capitalize( iri.getFragment() ),
-                false );
+        Concept rangeCon = new Concept( iri,
+                                        model.getPackageNameMappings(),
+                                        NameUtils.capitalize( iri.getFragment() ),
+                                        false );
         if ( dataRange instanceof OWLDataUnionOf ) {
             rangeCon.addSuperConcept( conceptCache.get( Thing.IRI ) );
             for ( OWLDataRange member : ( (OWLDataUnionOf) dataRange ).getOperands() ) {
                 OWLDatatype datatype = member.asOWLDatatype();
                 if ( ! primitives.containsKey( datatype.getIRI().toQuotedString() ) ) {
-                    Concept complexDT = new Concept( datatype.getIRI(), datatype.getIRI().getFragment(), false );
+                    Concept complexDT = new Concept( datatype.getIRI(), model.getPackageNameMappings(), datatype.getIRI().getFragment(), false );
                     complexDT.addSuperConcept( rangeCon );
                     conceptCache.put( datatype.getIRI().toQuotedString(), complexDT );
                     model.addConcept( complexDT );
@@ -921,7 +940,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             for ( OWLDataRange member : ( (OWLDataIntersectionOf) dataRange ).getOperands() ) {
                 OWLDatatype datatype = member.asOWLDatatype();
                 if ( ! primitives.containsKey( datatype.getIRI().toQuotedString() ) ) {
-                    Concept complexDT = new Concept( datatype.getIRI(), datatype.getIRI().getFragment(), false );
+                    Concept complexDT = new Concept( datatype.getIRI(), model.getPackageNameMappings(), datatype.getIRI().getFragment(), false );
                     rangeCon.addSuperConcept( complexDT );
                     complexDT.addSuperConcept( conceptCache.get( Thing.IRI ) );
                     conceptCache.put( datatype.getIRI().toQuotedString(), complexDT );
@@ -1903,10 +1922,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
     private void fixRootHierarchy(OntoModel model) {
         Concept thing = model.getConcept( Thing.IRI );
         if ( thing.getProperties().size() > 0 ) {
-            Concept localRoot = new Concept(
-                    IRI.create( NameUtils.separatingName( model.getDefaultNamespace() ) + "RootThing" ),
-                    "RootThing",
-                    false );
+            Concept localRoot = new Concept( IRI.create( NameUtils.separatingName( model.getDefaultNamespace() ) + "RootThing" ),
+                                             model.getPackageNameMappings(),
+                                             "RootThing",
+                                             false );
             model.addConcept( localRoot );
 
             localRoot.addSuperConcept( thing );
@@ -2093,10 +2112,10 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         for ( OWLClass con : ontoDescr.getClassesInSignature( true ) ) {
             if ( baseModel.getConcept( con.getIRI().toQuotedString()) == null ) {
-                Concept concept =  new Concept(
-                        con.getIRI(),
-                        NameUtils.buildNameFromIri( con.getIRI().getStart(), con.getIRI().getFragment() ),
-                        con.isOWLDatatype() );
+                Concept concept =  new Concept( con.getIRI(),
+                                                baseModel.getPackageNameMappings(),
+                                                NameUtils.buildNameFromIri( con.getIRI().getStart(), con.getIRI().getFragment() ),
+                                                con.isOWLDatatype() );
 
                 for ( OWLAnnotation ann : con.getAnnotations( ontoDescr ) ) {
                     if ( ann.getProperty().isComment() && ann.getValue() instanceof OWLLiteral ) {
@@ -2191,7 +2210,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         for ( PropertyRelation rel : model.getProperties() ) {
             if ( ! rel.isRestricted() ) {
-                if ( rel != rel.getBaseProperty() ) {
+                if ( rel != rel.getBaseProperty() && ! rel.isAttribute() ) {
                     throw new IllegalStateException( "Property is not restricted, but not a base property either " + rel + " >> base " + rel.getBaseProperty() );
                 }
             }
@@ -2316,7 +2335,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
         }
 
         OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
-//                if ( owler == null ) {
+
         OWLReasoner owler = reasonerFactory.createReasoner( ontoDescr, config );
         owler.precomputeInferences(
                 InferenceType.CLASS_HIERARCHY,

@@ -16,6 +16,9 @@
 
 package org.drools.semantics.builder.model;
 
+import java.util.Collections;
+import java.util.Map;
+
 public class ModelFactory {
 
 
@@ -25,19 +28,27 @@ public class ModelFactory {
 
 
     public static OntoModel newModel( String name, OntoModel.Mode mode ) {
-        OntoModel model = newModel( CompileTarget.BASE, null );
+        return newModel( name, Collections.EMPTY_MAP, mode );
+    }
+
+    public static OntoModel newModel( String name, Map<String,String> packageNameMappings, OntoModel.Mode mode ) {
+        OntoModel model = newModel( CompileTarget.BASE, packageNameMappings, null );
         model.setName( name );
         ( (GenericModelImpl) model ).setMode( mode );
         return model;
     }
 
     public static OntoModel newModel( String name, CompileTarget target ) {
-        OntoModel model = newModel( target, null );
+        OntoModel model = newModel( target, null, null );
         model.setName( name );
         return model;
     }
 
     public static OntoModel newModel( CompileTarget target, OntoModel base  ) {
+        return newModel( target, null, base );
+    }
+
+    public static OntoModel newModel( CompileTarget target, Map<String,String> nameMappings, OntoModel base  ) {
         switch ( target ) {
             case JAVA   : CompiledOntoModel jmodel = new JavaInterfaceModelImpl();
                             jmodel.initFromBaseModel( base );
@@ -61,7 +72,9 @@ public class ModelFactory {
                             wmodel.initFromBaseModel( base );
                             return wmodel;
             case BASE:
-            default  : return new GenericModelImpl();
+            default  : GenericModelImpl model = new GenericModelImpl();
+                model.setPackageNameMappings( nameMappings );
+                return model;
         }
     }
 

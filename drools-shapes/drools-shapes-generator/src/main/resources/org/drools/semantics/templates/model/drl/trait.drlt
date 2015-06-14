@@ -23,12 +23,6 @@
 declare trait @{fullyQualifiedName} @if{ superConcepts.size > 0 } extends @foreach{ sup : superConcepts } @{ sup.fullyQualifiedName } @end{','} @end{}
 @propertyReactive
 @typesafe(false)
-  @if{ "org.w3._2002._07.owl.Thing".equals( fullyQualifiedName ) }
-    rdfId : com.clarkparsia.empire.SupportsRdfId.RdfKey
-    allTriples : org.openrdf.model.Graph
-    instanceTriples : org.openrdf.model.Graph
-    __IndividualName : java.lang.String
-  @end{}
 
   @if{ properties.size > 0 }    @foreach{ propKey : properties.keySet }
     @code{ prop = properties[ propKey ] } @if{ ! ( prop.simple && prop.restricted && prop.target.primitive ) }
