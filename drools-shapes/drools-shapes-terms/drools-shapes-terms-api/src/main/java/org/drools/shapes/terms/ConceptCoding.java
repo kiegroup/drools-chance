@@ -11,7 +11,7 @@ import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 
 import java.net.URI;
 
-public class CD implements ConceptDescriptor {
+public class ConceptCoding implements ConceptDescriptor {
 
     private String valueSet;
     private String code;
@@ -20,11 +20,11 @@ public class CD implements ConceptDescriptor {
     private String codeSystemName;
     private URI uri;
 
-    public CD() {
+    public ConceptCoding() {
         super();
     }
 
-    public CD(URI codeURI, String code, String displayName, String codeSystem, String codeSystemName) {
+    public ConceptCoding(URI codeURI, String code, String displayName, String codeSystem, String codeSystemName) {
         this.code = code;
         this.displayName = displayName;
         this.codeSystem = codeSystem;
@@ -32,11 +32,11 @@ public class CD implements ConceptDescriptor {
         this.uri = codeURI;
     }
 
-    public CD(String codeURI, String code, String displayName, String codeSystem, String codeSystemName) {
+    public ConceptCoding(String codeURI, String code, String displayName, String codeSystem, String codeSystemName) {
         this( URI.create( codeURI ), code, displayName, codeSystem, codeSystemName );
     }
 
-    public CD(String code, String displayName, URI codeSystemURI, String codeSystem, String codeSystemName) {
+    public ConceptCoding(String code, String displayName, URI codeSystemURI, String codeSystem, String codeSystemName) {
         this( URI.create( codeSystemURI.toString() + code ), code, displayName, codeSystem, codeSystemName );
     }
 

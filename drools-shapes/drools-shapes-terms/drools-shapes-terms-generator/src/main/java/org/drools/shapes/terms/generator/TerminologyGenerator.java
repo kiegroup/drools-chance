@@ -2,6 +2,7 @@ package org.drools.shapes.terms.generator;
 
 import org.drools.shapes.terms.generator.util.Loader;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +29,9 @@ public class TerminologyGenerator {
 
     private static final IRI CONCEPT_SCHEME     = IRI.create( "http://www.w3.org/2004/02/skos/core#ConceptScheme" );
     private static final IRI CONCEPT            = IRI.create( "http://www.w3.org/2004/02/skos/core#Concept" );
+    private static final IRI LABEL              = IRI.create( "http://www.w3.org/2004/02/skos/core#prefLabel" );
+    private static final IRI NOTATION           = IRI.create( "http://www.w3.org/2004/02/skos/core#notation" );
+    private static final IRI OID                = IRI.create( "https://www.hl7.org/oid" );
 
     public void generate( String[] owl, String packageName, File outputDirectory ) throws OWLOntologyCreationException, FileNotFoundException {
 
@@ -54,14 +59,27 @@ public class TerminologyGenerator {
                 if ( kls.toString().contains( "ConceptScheme" ) ) {
                     CodeSystem cs = new CodeSystem();
                     cs.setCodeSystemUri( ind.getIRI().toString() );
-                    for ( OWLDataPropertyAssertionAxiom dp : model.getDataPropertyAssertionAxioms( ind ) ) {
-                        if ( dp.getProperty().asOWLDataProperty().getIRI().toString().contains( "notation" ) ) {
-                            cs.setCodeSystemName( dp.getObject().getLiteral() );
+
+                    for ( OWLLiteral val : ind.getDataPropertyValues( odf.getOWLDataProperty( NOTATION ), model ) ) {
+                        cs.setCodeSystemName( val.getLiteral() );
+                    }
+                    if ( cs.getCodeSystemName() == null ) {
+                        Set<OWLAnnotation> labels = ind.getAnnotations( model, odf.getOWLAnnotationProperty( LABEL ) );
+                        if ( ! labels.isEmpty() ) {
+                            cs.setCodeSystemName( ((OWLLiteral) labels.iterator().next().getValue()).getLiteral() );
                         }
                     }
                     if ( cs.getCodeSystemName() == null ) {
                         cs.setCodeSystemName( ind.getIRI().getFragment().replaceAll( "\\.", "_" ) );
                     }
+
+                    for ( OWLAnnotation val : ind.getAnnotations( model, odf.getOWLAnnotationProperty( OID ) ) ) {
+                        cs.setCodeSystemId( ( (OWLLiteral) val.getValue() ).getLiteral() );
+                    }
+                    if ( cs.getCodeSystemId() == null ) {
+                        cs.setCodeSystemId( URI.create( cs.getCodeSystemUri() ).getFragment() );
+                    }
+
                     codeSystems.put( cs.getCodeSystemUri(), cs );
                 }
             }
@@ -77,7 +95,7 @@ public class TerminologyGenerator {
 
                     Set<OWLLiteral> values = ind.getDataPropertyValues( odf.getOWLDataProperty( IRI.create( "http://www.w3.org/2004/02/skos/core#notation" ) ), model );
                     for ( OWLLiteral val : values ) {
-                        concept.setCode( val.getLiteral() );
+                        concept.setCode( val.getLiteral().toString() );
                     }
 
                     String name = concept.getCode();

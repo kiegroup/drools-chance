@@ -1,0 +1,27 @@
+package @{packageName};
+
+import java.net.URI;
+
+public class CodeFactory implements org.drools.shapes.terms.CodeFactory {
+
+    private static final CodeFactory singleton = new CodeFactory();
+
+    @Override
+    public @{typeIntf.getName()} buildCode( URI URI, String code, String codeName, String codeSystem, String codeSystemName ) {
+        return new @{implClass.getName()}( URI, code, codeName, codeSystem, codeSystemName );
+    }
+
+    @Override
+    public @{typeIntf.getName()} buildCode( String code, String codeName, String codeSystem, String codeSystemName ) {
+        return new @{implClass.getName()}( VocabularyCatalog.get().resolveCode( codeSystem, code ), code, codeName, codeSystem, codeSystemName );
+    }
+
+    @Override
+    public @{typeIntf.getName()} buildCode( String code, String codeName, @{typeIntf.getName()} codeSystem ) {
+        return new @{implClass.getName()}( VocabularyCatalog.get().resolveCode( codeSystem.getCode(), code ), code, codeName, codeSystem.getCode(), codeSystem.getDisplayName() );
+    }
+
+    public static CodeFactory get() {
+        return singleton;
+    }
+}

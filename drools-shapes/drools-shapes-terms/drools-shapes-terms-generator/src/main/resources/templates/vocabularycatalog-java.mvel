@@ -1,0 +1,10 @@
+package @{packageName};
+
+public class VocabularyCatalog extends @{implClass.getName()} {
+
+    private static final @{typeIntf.getName()} SELF = new VocabularyCatalog();
+
+    public static @{typeIntf.getName()} get() {
+        return SELF;
+    }
+}

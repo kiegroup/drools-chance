@@ -2,6 +2,7 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY www "https://www.hl7.org/" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY skos "http://www.w3.org/2004/02/skos/core#" >
@@ -13,11 +14,37 @@
 <rdf:RDF xmlns="http://test/generator#"
      xml:base="http://test/generator"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:www="https://www.hl7.org/"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:skos="http://www.w3.org/2004/02/skos/core#">
     <owl:Ontology rdf:about="http://test/generator#"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#prefLabel -->
+
+    <owl:AnnotationProperty rdf:about="&skos;prefLabel">
+        <rdfs:subPropertyOf rdf:resource="&rdfs;label"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- https://www.hl7.org/oid -->
+
+    <owl:AnnotationProperty rdf:about="&www;oid"/>
     
 
 
@@ -109,6 +136,8 @@
 
     <owl:NamedIndividual rdf:about="http://test/generator#concept_scheme1">
         <rdf:type rdf:resource="&skos;ConceptScheme"/>
+        <www:oid>0.0.0.0</www:oid>
+        <skos:prefLabel>SCH1</skos:prefLabel>
     </owl:NamedIndividual>
     
 

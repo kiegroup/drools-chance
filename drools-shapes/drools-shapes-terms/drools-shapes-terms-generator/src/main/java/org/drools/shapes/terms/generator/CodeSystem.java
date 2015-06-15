@@ -11,6 +11,8 @@ public class CodeSystem {
 
     private String codeSystemUri;
 
+    private String codeSystemId;
+
     public CodeSystem() {
         super();
     }
@@ -48,6 +50,14 @@ public class CodeSystem {
 
     public void setCodeSystemUri(String codeSystemUri) {
         this.codeSystemUri = codeSystemUri;
+    }
+
+    public String getCodeSystemId() {
+        return codeSystemId;
+    }
+
+    public void setCodeSystemId( String codeSystemId ) {
+        this.codeSystemId = codeSystemId;
     }
 
     @Override

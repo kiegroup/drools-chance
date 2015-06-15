@@ -1,0 +1,23 @@
+package @{packageName};
+
+import java.net.URI;
+
+public class @{className} {
+
+    public static final String codeSystemName = "@{codeSystem.codeSystemName}";
+    public static final String codeSystemId = "@{codeSystem.codeSystemId}";
+    public static final URI codeSystemURI = URI.create( "@{codeSystem.codeSystemUri}" );
+
+    public static final @{typeIntf.getName()} __SELF = CodeFactory.get().buildCode( codeSystemURI, codeSystemId, codeSystemName, null, null );
+
+    static {
+        VocabularyCatalog.get().register( codeSystemId, __SELF );
+    }
+
+
+@foreach{ concept : codeSystem.concepts }
+    public static final @{typeIntf.getName()} @{getPropertyName(concept.name)} = CodeFactory.get().buildCode( "@{concept.code}", "@{concept.name}", codeSystemId, codeSystemName );
+
+@end{}
+
+}

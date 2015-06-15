@@ -7,8 +7,8 @@
 
 package org.drools.shapes.terms;
 
-import org.drools.shapes.terms.workinprogress.AbstractVocabularyCatalog;
-import org.drools.shapes.terms.workinprogress.VocabularyCatalog;
+import org.drools.shapes.terms.vocabulary.AbstractVocabularyCatalog;
+import org.drools.shapes.terms.vocabulary.VocabularyCatalog;
 
 public class TestVocabularyCatalog extends AbstractVocabularyCatalog {
 
