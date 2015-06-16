@@ -1,5 +1,7 @@
 package org.drools.shapes.terms.generator.plugin;
 
+import edu.mayo.cts2.terms.TermsComparator;
+import edu.mayo.cts2.terms.TermsNames;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -10,9 +12,16 @@ import org.drools.shapes.terms.generator.util.Loader;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Goal
@@ -24,11 +33,6 @@ import java.util.Map;
  */
 public class TermsGeneratorPlugin extends AbstractMojo {
 
-    private static final List<String> TERMS_METAMODEL_FILES = Arrays.asList(
-            "cts2.owl",
-            "lmm_l1.owl",
-            "skos.owl",
-            "terms.owl");
 
     /**
      * @parameter default-value="false"
@@ -84,9 +88,27 @@ public class TermsGeneratorPlugin extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            this.owlFiles.addAll(TERMS_METAMODEL_FILES);
+            List<String> allFiles = new LinkedList<String>();
 
-            OWLOntology ontology = Loader.loadOntology( this.owlFiles.toArray( new String[this.owlFiles.size()] ) );
+            URL root = TermsGeneratorPlugin.class.getResource( "/" + TermsNames.TERMS_METAMODEL_PACKAGE.replaceAll( "\\.", "/" ) );
+            String path = root.getPath().substring( 0, root.getPath().lastIndexOf( "!" ) );
+            if ( path.startsWith( "file:" ) ) {
+                path = path.substring( "file:".length() );
+            }
+            JarFile jar = new JarFile( path );
+            Enumeration<JarEntry> entries = jar.entries();
+            while ( entries.hasMoreElements() ) {
+                String name = entries.nextElement().getName();
+                if ( name.endsWith( ".owl" ) ) {
+                    allFiles.add( name );
+                }
+            }
+            Collections.sort( allFiles, TermsComparator.getInstance() );
+
+            for ( String owl : owlFiles ) {
+                allFiles.add( owl );
+            }
+            OWLOntology ontology = new Loader().loadOntology( allFiles.toArray( new String[allFiles.size()] ) );
 
             TerminologyGenerator terminologyGenerator = new TerminologyGenerator( ontology, this.reason );
 

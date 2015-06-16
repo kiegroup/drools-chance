@@ -38,10 +38,6 @@ public class DLTemplateManager {
             "model/drl/trait.drlt"
     };
 
-    protected static final String[] NAMED_TEMPLATES_RULES = new String[] {
-            "model/drl/recognitionRule.drlt"
-    };
-
 
     protected static final String[] NAMED_TEMPLATES_JAVA = new String[] {
             "model/java/TraitInterface.template",
@@ -81,7 +77,6 @@ public class DLTemplateManager {
 
 
     public static TemplateRegistry traitRegistry;
-    public static TemplateRegistry ruleRegistry;
     public static TemplateRegistry javaRegistry;
     public static TemplateRegistry accessorsRegistry;
 
@@ -89,12 +84,10 @@ public class DLTemplateManager {
 
     static {
         traitRegistry = new SimpleTemplateRegistry();
-        ruleRegistry = new SimpleTemplateRegistry();
         javaRegistry = new SimpleTemplateRegistry();
         accessorsRegistry = new SimpleTemplateRegistry();
 
         buildRegistry( traitRegistry, NAMED_TEMPLATES_TRAITS );
-        buildRegistry( ruleRegistry, NAMED_TEMPLATES_RULES );
         buildRegistry( javaRegistry, NAMED_TEMPLATES_JAVA );
         buildRegistry( accessorsRegistry, ACCESSOR_TEMPLATES_JAVA );
     }
@@ -105,7 +98,6 @@ public class DLTemplateManager {
             case XSDX : return accessorsRegistry;
             case JAVA : return javaRegistry;
             case DRL  : return traitRegistry;
-            case RL   : return ruleRegistry;
             default   : return traitRegistry;
         }
     }

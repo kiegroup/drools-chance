@@ -9,8 +9,8 @@
 		<module>drools-shapes-terms-graph</module>
 		<module>drools-shapes-terms-cts2</module>
 		<module>drools-shapes-terms-internal</module>
-        <module>drools-shapes-terms-generator</module>
-        <module>drools-shapes-terms-generator-plugin</module>
+		<module>drools-shapes-terms-generator</module>
+		<module>drools-shapes-terms-generator-plugin</module>
 	</modules>
 
 	<parent>
@@ -46,7 +46,6 @@
 			<dependency>
 				<groupId>edu.mayo.cts2</groupId>
 				<artifactId>terms-metamodel</artifactId>
-				<version>1.0-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>

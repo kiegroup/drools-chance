@@ -11,7 +11,7 @@ import java.io.*;
 public class Loader {
 
 
-    public static OWLOntology loadOntology( String[] resources ) throws OWLOntologyCreationException, FileNotFoundException {
+    public OWLOntology loadOntology( String[] resources ) throws OWLOntologyCreationException, FileNotFoundException {
         OWLOntology ontology = null;
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
@@ -22,7 +22,7 @@ public class Loader {
         return ontology;
     }
 
-    private static OWLOntology loadOntologyPiece( String file, OWLOntologyManager manager ) throws OWLOntologyCreationException, FileNotFoundException {
+    private OWLOntology loadOntologyPiece( String file, OWLOntologyManager manager ) throws OWLOntologyCreationException, FileNotFoundException {
         InputStream inputStream;
 
         File res = new File( file );

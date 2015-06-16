@@ -1,5 +1,6 @@
 package org.drools.semantics.builder.reasoner;
 
+import edu.mayo.cts2.terms.TermsNames;
 import org.drools.compiler.lang.DrlDumper;
 import org.drools.compiler.lang.api.AccumulateDescrBuilder;
 import org.drools.compiler.lang.api.CEDescrBuilder;
@@ -17,7 +18,6 @@ import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.PropertyRelation;
 import org.drools.semantics.utils.NameUtils;
-import org.drools.shapes.terms.TermsNames;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -25,7 +25,6 @@ import org.kie.api.builder.Message;
 import org.kie.api.definition.type.PropertyReactive;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.utils.KieHelper;
-import org.semanticweb.owlapi.model.OWLCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
