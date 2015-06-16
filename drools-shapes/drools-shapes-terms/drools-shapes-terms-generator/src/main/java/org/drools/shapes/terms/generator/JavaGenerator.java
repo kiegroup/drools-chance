@@ -1,13 +1,7 @@
 package org.drools.shapes.terms.generator;
 
 import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
-import org.apache.commons.io.IOUtils;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.codehaus.plexus.util.StringUtils;
+
 import org.drools.shapes.terms.ConceptCoding;
 import org.drools.shapes.terms.vocabulary.AbstractVocabularyCatalog;
 import org.drools.shapes.terms.vocabulary.VocabularyCatalog;
@@ -23,12 +17,13 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class JavaGenerator {
 
     private SimpleTemplateRegistry registry;
 
-    protected JavaGenerator() {
+    public JavaGenerator() {
         registry = new SimpleTemplateRegistry();
         prepareTemplates();
     }
@@ -117,13 +112,21 @@ public class JavaGenerator {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            IOUtils.closeQuietly(writer);
+            if ( writer != null ) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     private File createJavaFile(File outputDir, String packageName, String className) {
         File packageDir = new File(outputDir, packageName.replace('.', File.separatorChar));
-        packageDir.mkdirs();
+        if ( ! packageDir.exists() ) {
+            packageDir.mkdirs();
+        }
 
         File outputFile = new File(packageDir, className + ".java");
         try {
@@ -137,18 +140,41 @@ public class JavaGenerator {
     }
 
     public String getClassName( String codeSystemName ) {
-        return StringUtils.capitalise( codeSystemName.replaceAll("[^a-zA-Z0-9]", "_")  );
+        return  capitalize( codeSystemName.replaceAll("[^a-zA-Z0-9]", "_")  );
     }
 
     public String getPropertyName( String propertyName ) {
         propertyName = fixSpecialCharacters( propertyName );
-        return StringUtils.capitalise( propertyName.replaceAll("[^a-zA-Z0-9]", "_")  );
+        return capitalize( propertyName.replaceAll("[^a-zA-Z0-9]", "_")  );
     }
 
     private static String fixSpecialCharacters( String s ) {
         s = s.replaceAll( ">", "_GT_" );
         s = s.replaceAll( "<", "_LT_" );
         return s;
+    }
+
+    public static String capitalize( final String s ) {
+        StringTokenizer tok = new StringTokenizer( s, "_" );
+        String upName = tok.nextToken();
+        upName = upName.substring( 0, 1 ).toUpperCase() + upName.substring( 1 );
+        while ( tok.hasMoreTokens() ) {
+            String word = tok.nextToken();
+            upName += "_" + word.substring( 0, 1 ).toUpperCase() + word.substring( 1 );
+        }
+        upName = s.startsWith( "_" ) ? "_" + upName : upName;
+        if ( s.endsWith( "_" ) ) {
+            upName += trail( s );
+        }
+        return upName;
+    }
+
+    private static String trail( String s ) {
+        int start = s.length() - 1;
+        while ( start > 1 && s.charAt( start ) == '_' ) {
+            start--;
+        }
+        return s.substring( start + 1 );
     }
 
 }

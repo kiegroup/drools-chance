@@ -4,12 +4,9 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.springframework.core.io.ClassPathResource;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
+import java.io.*;
 
 public class Loader {
 
@@ -26,16 +23,21 @@ public class Loader {
     }
 
     private static OWLOntology loadOntologyPiece( String file, OWLOntologyManager manager ) throws OWLOntologyCreationException, FileNotFoundException {
+        InputStream inputStream;
+
         File res = new File( file );
 
         try {
-            return manager.loadOntologyFromOntologyDocument(
-                    new FileInputStream( res )
-            );
+            if(! res.exists() ) {
+                inputStream = new ClassPathResource( file ).getInputStream();
+            } else {
+                inputStream =  new FileInputStream( res );
+            }
         } catch ( IOException e ) {
-            e.printStackTrace();
+            throw new RuntimeException( e );
         }
-        return null;
+
+        return manager.loadOntologyFromOntologyDocument( inputStream );
     }
 
 }

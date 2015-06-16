@@ -7,58 +7,21 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
-import org.semanticweb.owlapi.reasoner.InferenceType;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
-import org.semanticweb.owlapi.util.InferredAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredOntologyGenerator;
-import org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator;
-import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
 import org.springframework.core.io.ClassPathResource;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
+import javax.tools.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static junit.framework.Assert.format;
-import static org.junit.Assert.*;
+import static junit.framework.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 public class TerminologyGeneratorTest {
 
@@ -73,7 +36,7 @@ public class TerminologyGeneratorTest {
     }
 
     @Test
-        public void testGenerateCodeSystems() {
+    public void testGenerateCodeSystems() {
 
         assertEquals(1, codeSystemMap.size());
 
@@ -167,19 +130,12 @@ public class TerminologyGeneratorTest {
 
     public static Map<String, CodeSystem> doGenerate() {
         try {
-            TerminologyGenerator generator = new TerminologyGenerator();
             OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
             OWLOntology o = owlOntologyManager.loadOntologyFromOntologyDocument( new ClassPathResource( "test.owl" ).getInputStream() );
 
-            OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
-            OWLReasoner owler = reasonerFactory.createReasoner( o );
+            TerminologyGenerator generator = new TerminologyGenerator( o, true );
 
-            InferredOntologyGenerator reasoner = new InferredOntologyGenerator( owler );
-
-            reasoner.fillOntology( owlOntologyManager, o );
-
-            owlOntologyManager.saveOntology( o, System.err );
-            return generator.traverse( o );
+            return generator.traverse();
         } catch ( Exception e ) {
             e.printStackTrace();
             fail( e.getMessage() );
