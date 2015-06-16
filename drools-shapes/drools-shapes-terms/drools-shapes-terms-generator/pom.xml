@@ -36,7 +36,6 @@
     <dependency>
       <groupId>com.hermit-reasoner</groupId>
       <artifactId>org.semanticweb.hermit</artifactId>
-      <scope>test</scope>
     </dependency>
 
     </dependencies>

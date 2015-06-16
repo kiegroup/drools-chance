@@ -1,25 +1,12 @@
 package org.drools.shapes.terms.generator;
 
-import org.drools.shapes.terms.generator.util.Loader;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.HermiT.Reasoner;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,20 +20,16 @@ public class TerminologyGenerator {
     private static final IRI NOTATION           = IRI.create( "http://www.w3.org/2004/02/skos/core#notation" );
     private static final IRI OID                = IRI.create( "https://www.hl7.org/oid" );
 
-    public void generate( String[] owl, String packageName, File outputDirectory ) throws OWLOntologyCreationException, FileNotFoundException {
+    private OWLOntology model;
 
-        OWLOntology ontology = Loader.loadOntology( owl );
-
-        Map<String,CodeSystem> codeSystems = traverse( ontology );
-
-        if ( ! outputDirectory.exists() ) {
-            outputDirectory.mkdirs();
+    public TerminologyGenerator( OWLOntology o, boolean reason ) {
+        this.model = o;
+        if( reason ) {
+            this.doReason( o );
         }
-
-        new JavaGenerator().generate( codeSystems.values(), packageName, outputDirectory );
     }
 
-    protected Map<String,CodeSystem> traverse( OWLOntology model ) {
+    public Map<String,CodeSystem> traverse( ) {
         OWLOntologyManager manager = model.getOWLOntologyManager();
         OWLDataFactory odf = manager.getOWLDataFactory();
 
@@ -60,7 +43,7 @@ public class TerminologyGenerator {
                     CodeSystem cs = new CodeSystem();
                     cs.setCodeSystemUri( ind.getIRI().toString() );
 
-                    for ( OWLLiteral val : ind.getDataPropertyValues( odf.getOWLDataProperty( NOTATION ), model ) ) {
+                    for ( OWLLiteral val : ind.getDataPropertyValues(odf.getOWLDataProperty( NOTATION ), model ) ) {
                         cs.setCodeSystemName( val.getLiteral() );
                     }
                     if ( cs.getCodeSystemName() == null ) {
@@ -127,5 +110,15 @@ public class TerminologyGenerator {
         return codeSystems;
     }
 
+    public void doReason( OWLOntology o ) {
+        OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
+        OWLReasoner owler = reasonerFactory.createReasoner( o );
+
+        InferredOntologyGenerator reasoner = new InferredOntologyGenerator( owler );
+
+        OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
+
+        reasoner.fillOntology( owlOntologyManager, o );
+    }
 
 }
