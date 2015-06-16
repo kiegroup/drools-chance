@@ -19,7 +19,6 @@ import org.drools.core.factmodel.traits.TraitType;
 import org.drools.core.factmodel.traits.TraitTypeMap;
 import org.drools.core.factmodel.traits.Traitable;
 import org.drools.core.factmodel.traits.TraitableBean;
-import org.drools.core.metadata.Internal;
 import org.drools.semantics.NamedEntity;
 import org.drools.semantics.UIdAble;
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
@@ -390,7 +389,6 @@ public class ThingImpl
     }
 
     @Transient
-    @Internal
     public String get__IndividualName() {
         return dyEntryId;
     }
