@@ -24,6 +24,7 @@ import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.OntoModel;
+import org.w3._2002._07.owl.Thing;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -218,11 +219,32 @@ public class ShapeCaster
     }
 
 
+    /**
+     * @parameter default-value="false"
+     */
+    private boolean generateRecognitionRules = false;
+
+    public boolean isGenerateRecognitionRules() {
+        return generateRecognitionRules;
+    }
+
+    public void setGenerateRecognitionRules( boolean generateRecognitionRules ) {
+        this.generateRecognitionRules = generateRecognitionRules;
+    }
 
 
+    /**
+     * @parameter
+     */
+    private RecognitionRuleConfig recognitionRuleConfig = new RecognitionRuleConfig();
 
+    public RecognitionRuleConfig getRecognitionRuleConfig() {
+        return recognitionRuleConfig;
+    }
 
-
+    public void setRecognitionRuleConfig( RecognitionRuleConfig recognitionRuleConfig ) {
+        this.recognitionRuleConfig = recognitionRuleConfig;
+    }
 
     /**
      * @parameter default-value="true"
@@ -339,6 +361,10 @@ public class ShapeCaster
 
         if ( isGenerateIndividuals() ) {
             compiler.streamIndividualFactory();
+        }
+
+        if ( isGenerateRecognitionRules() ) {
+            compiler.streamRecognitionRules( recognitionRuleConfig.toProperties() );
         }
 
 
@@ -472,5 +498,84 @@ public class ShapeCaster
         return ontologyStream;
     }
 
+
+
+    public static class RecognitionRuleConfig {
+        protected boolean useTMS                    = true;
+        protected boolean usePropertyReactivity     = true;
+        protected boolean debug                     = true;
+        protected boolean refract                   = true;
+        protected boolean useMetaClass              = true;
+        protected boolean redeclare                 = false;
+        protected String rootClass                  = Thing.class.getCanonicalName();
+
+        public boolean isUseTMS() {
+            return useTMS;
+        }
+
+        public void setUseTMS( boolean useTMS ) {
+            this.useTMS = useTMS;
+        }
+
+        public boolean isUsePropertyReactivity() {
+            return usePropertyReactivity;
+        }
+
+        public void setUsePropertyReactivity( boolean usePropertyReactivity ) {
+            this.usePropertyReactivity = usePropertyReactivity;
+        }
+
+        public boolean isDebug() {
+            return debug;
+        }
+
+        public void setDebug( boolean debug ) {
+            this.debug = debug;
+        }
+
+        public boolean isRefract() {
+            return refract;
+        }
+
+        public void setRefract( boolean refract ) {
+            this.refract = refract;
+        }
+
+        public boolean isUseMetaClass() {
+            return useMetaClass;
+        }
+
+        public void setUseMetaClass( boolean useMetaClass ) {
+            this.useMetaClass = useMetaClass;
+        }
+
+        public boolean isRedeclare() {
+            return redeclare;
+        }
+
+        public void setRedeclare( boolean redeclare ) {
+            this.redeclare = redeclare;
+        }
+
+        public String getRootClass() {
+            return rootClass;
+        }
+
+        public void setRootClass( String rootClass ) {
+            this.rootClass = rootClass;
+        }
+        
+        public Properties toProperties() {
+            Properties prop = new Properties();
+            prop.setProperty( "useTMS", Boolean.toString( useTMS ) );
+            prop.setProperty( "usePropertyReactivity", Boolean.toString( usePropertyReactivity ) );
+            prop.setProperty( "debug", Boolean.toString( debug ) );
+            prop.setProperty( "refract", Boolean.toString( refract ) );
+            prop.setProperty( "useMetaClass", Boolean.toString( useMetaClass ) );
+            prop.setProperty( "redeclare", Boolean.toString( redeclare ) );
+            prop.setProperty( "rootClass", Thing.class.getCanonicalName() );
+            return  prop;
+        }
+    }
 
 }

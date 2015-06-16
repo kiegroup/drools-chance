@@ -40,6 +40,26 @@ public class DLogicTransformer {
         this.onto = onto;
     }
 
+    public Set<OWLClassExpression> getDefinitions( OWLClassExpression expr ) {
+        if ( ! expr.isAnonymous() ) {
+            return expr.asOWLClass().getEquivalentClasses( onto.getImportsClosure() );
+        } else {
+            throw new UnsupportedOperationException( "Unable to process " + expr + ", not a named class." );
+        }
+    }
+
+    public Set<OWLClassExpression> getNormalizedDefinitions( OWLClassExpression expr ) {
+        Set<OWLClassExpression> defs = new HashSet<OWLClassExpression>();
+        if ( ! expr.isAnonymous() ) {
+            for ( OWLClassExpression def : getDefinitions( expr ) ) {
+                defs.add( toDNF( def ) );
+            }
+            return defs;
+        } else {
+            throw new UnsupportedOperationException( "Unable to process " + expr + ", not a named class." );
+        }
+    }
+
     public Map<OWLClassExpression,OWLClassExpression> getDefinitions() {
         Map<OWLClassExpression,OWLClassExpression> defs = new HashMap<OWLClassExpression, OWLClassExpression>();
 

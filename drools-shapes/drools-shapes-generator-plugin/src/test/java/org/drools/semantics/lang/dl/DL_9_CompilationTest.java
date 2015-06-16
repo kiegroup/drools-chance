@@ -31,11 +31,13 @@ import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.shapes.OntoModelCompiler;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.kie.api.builder.Message;
+import org.kie.api.builder.Results;
 import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.utils.KieHelper;
 import org.mvel2.MVEL;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -85,14 +87,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 
 /**
@@ -468,6 +466,73 @@ public class DL_9_CompilationTest {
 
     }
 
+    @Test
+    public void testRecognitionRuleGeneration() {
+
+        OntoModel results = factory.buildModel( "rules",
+                                                ResourceFactory.newClassPathResource( "ontologies/testSimpleDefinition.owl" ),
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+        compiler = new OntoModelCompiler( results, folder.getRoot() );
+
+        // ****** Stream the java interfaces
+        boolean javaOut = compiler.streamJavaInterfaces( true );
+
+        assertTrue( javaOut );
+
+        // ****** Stream the recognition rules
+        boolean recogOut = compiler.streamRecognitionRules( new Properties() );
+
+        assertTrue( recogOut );
+
+        showDirContent( folder );
+
+        // ****** Generate sources
+        boolean mojo = compiler.mojo(  Arrays.asList( "-extension" ), OntoModelCompiler.MOJO_VARIANTS.JPA2 );
+
+        assertTrue( mojo );
+
+        //showDirContent( folder );
+
+        List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler.doCompile();
+
+        //showDirContent( folder );
+
+        boolean success = true;
+        for ( Diagnostic diag : diagnostics ) {
+            System.out.println( "ERROR : " + diag );
+            if ( diag.getKind() == Diagnostic.Kind.ERROR ) {
+                success = false;
+            }
+        }
+        assertTrue( success );
+
+        //printSourceFile( new File( compiler.getDrlDir().getPath() + "/org/test/rules_recognition.drl" ), System.out );
+
+
+        try {
+            ClassLoader urlKL = new URLClassLoader(
+                    new URL[] { compiler.getBinDir().toURI().toURL() },
+                    Thread.currentThread().getContextClassLoader()
+            );
+
+            KieHelper helper = new KieHelper();
+            Results res = helper.setClassLoader( urlKL )
+                    .addFromClassPath( "org/test/rules_recognition.drl" )
+                    .verify();
+            assertEquals( 0, res.getMessages( Message.Level.ERROR ).size() );
+
+            assertEquals( 2, helper.build().getKiePackage( "org.test" ).getRules().size() );
+
+        } catch ( Exception e ) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            fail( e.getMessage() );
+        }
+
+    }
+
     private void copy( String file, String pack, String targetFolder, boolean java ) {
         File klass = new File( ( java ? compiler.getJavaDir().getPath() : compiler.getXjcDir().getPath() )
                                + File.separator
@@ -521,13 +586,10 @@ public class DL_9_CompilationTest {
 
             Class bot = Class.forName( "org.jboss.drools.semantics.diamond.BottomImpl", true, urlKL );
             Class botIF = Class.forName( "org.jboss.drools.semantics.diamond.Bottom", true, urlKL );
-            Assert.assertNotNull( bot );
-            Assert.assertNotNull( botIF );
+            assertNotNull( bot );
+            assertNotNull( botIF );
             Object botInst = bot.newInstance();
-            Assert.assertNotNull( botInst );
-
-
-
+            assertNotNull( botInst );
 
 
             OntoModelCompiler compiler2 = new OntoModelCompiler( results, folder.getRoot() );
@@ -579,7 +641,7 @@ public class DL_9_CompilationTest {
 
 
             Class colf = Class.forName( "some.dependency.test.ChildOfLeftImpl", true, urlKL );
-            Assert.assertNotNull( colf );
+            assertNotNull( colf );
             Object colfInst = colf.newInstance();
 
                     List<String> hierarchy = getHierarchy( colf );
@@ -703,7 +765,7 @@ public class DL_9_CompilationTest {
                 checkEquality( bot, x );
             } catch ( Exception e ) {
                 e.printStackTrace();
-                Assert.fail( e.getMessage() );
+                fail( e.getMessage() );
             }
 
         } finally {

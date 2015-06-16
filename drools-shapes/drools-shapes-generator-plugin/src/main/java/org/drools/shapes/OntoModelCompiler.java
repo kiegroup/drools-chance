@@ -8,16 +8,17 @@ import org.drools.semantics.builder.model.DRLModel;
 import org.drools.semantics.builder.model.JarModel;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.RecognitionRuleModel;
 import org.drools.semantics.builder.model.SemanticXSDModel;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
+import org.drools.semantics.builder.model.compilers.RecognitionRuleCompiler;
 import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompiler;
 import org.drools.semantics.utils.NameUtils;
 import org.jvnet.hyperjaxb3.maven2.Hyperjaxb3Mojo;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
-import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 
 public class OntoModelCompiler {
@@ -326,6 +328,29 @@ public class OntoModelCompiler {
     }
 
 
+    public boolean streamRecognitionRules( Properties properties ) {
+        boolean success;
+        RecognitionRuleCompiler compiler = (RecognitionRuleCompiler) ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.RL );
+        compiler.configure( properties );
+
+        RecognitionRuleModel ruleModel = (RecognitionRuleModel) compiler.compile( model );
+
+        try {
+            File path = new File( getDrlDir().getPath(), model.getDefaultPackage().replace( '.', File.separatorChar ) );
+            path.mkdirs();
+
+            FileOutputStream fos = new FileOutputStream( new File( path, model.getName() + "_recognition.drl" ) );
+            success = ruleModel.stream( fos );
+            fos.flush();
+            fos.close();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+            return false;
+        }
+        return success;
+    }
+
+
     public boolean streamJavaInterfaces( boolean includeJar ) {
         ModelCompiler jcompiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.JAR);
         JarModel jarModel = (JarModel) jcompiler.compile( model );
@@ -464,40 +489,8 @@ public class OntoModelCompiler {
     public List<Diagnostic<? extends JavaFileObject>> doCompile() {
         List<File> list = new LinkedList<File>();
 
-//        Set<File> sourceFolders = new HashSet<File>();
-//
-//
-//        for ( String packageName : model.getAllPackageNames() ) {
-//            sourceFolders.add(
-//                    new File( getXjcDir().getPath() + File.separator + packageName.replace(".", File.separator) )
-//            );
-//            sourceFolders.add(
-//                    new File( getJavaDir().getPath() + File.separator + packageName.replace(".", File.separator) )
-//            );
-//        }
-//
-//        for ( File f : sourceFolders ) {
-//            System.out.println( "************** COMPILER USING SRC FOLDERS AS " + f.getPath() );
-//        }
-//
-//        sourceFolders.add(
-//                new File( getXjcDir().getPath() + File.separator + "org.w3._2001.xmlschema".replace(".", File.separator) )
-//        );
-//
-//
-//        for ( File folder : sourceFolders ) {
-//            if ( folder.exists() ) {
-//                list.addAll( Arrays.asList( folder.listFiles( (FilenameFilter) new WildcardFileFilter( "*.java" ) ) ) );
-//            }
-//        }
-
-
         explore( getJavaDir(), list );
         explore( getXjcDir(), list );
-
-//        for ( File f : list ) {
-//            System.out.println( "************** COMPILER USING SRC FILE AS " + f.getPath() );
-//        }
 
         JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -509,6 +502,8 @@ public class OntoModelCompiler {
         task.call();
 
         copyMetaInfResources();
+
+        copyRuleResources();
 
         return diagnostics.getDiagnostics();
     }
@@ -525,21 +520,34 @@ public class OntoModelCompiler {
         }
     }
 
-
-    private boolean copyMetaInfResources() {
+    private boolean copyRuleResources() {
         boolean success = true;
 
-        success = success && copyMetaInfResources( getMetaInfDir() );
-        success = success && copyMetaInfResources( new File( getXjcDir() + File.separator + METAINF ) );
+        File tgtDRL = new File( getBinDir().getPath() );
+
+        success = success && copyResources( getDrlDir(), tgtDRL );
 
         return success;
     }
 
+    private boolean copyMetaInfResources() {
+        boolean success = true;
 
-    private boolean copyMetaInfResources( File src ) {
-        File tgt = new File( getBinDir().getPath() + File.separator + METAINF );
+        File tgtMetaInf = new File( getBinDir().getPath() + File.separator + METAINF );
+
+        success = success && copyResources( getMetaInfDir(), tgtMetaInf );
+        success = success && copyResources( new File( getXjcDir() + File.separator + METAINF ), tgtMetaInf );
+
+        return success;
+    }
+
+    private boolean copyResources( File src, File tgt ) {
+        if ( ! src.exists() ) {
+            return true;
+        }
+
         if ( ! tgt.exists() ) {
-            tgt.mkdir();
+            tgt.mkdirs();
         }
 
         for ( File f : src.listFiles( new FilenameFilter() {
@@ -548,7 +556,11 @@ public class OntoModelCompiler {
             }
         }) ) {
             try {
-                copyFile( f, tgt );
+                if ( f.isDirectory() ) {
+                    copyResources( f, new File( tgt + File.separator + f.getName() ) );
+                } else {
+                    copyFile( f, tgt );
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;

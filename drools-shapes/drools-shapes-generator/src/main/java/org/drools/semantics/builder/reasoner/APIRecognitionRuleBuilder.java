@@ -11,6 +11,7 @@ import org.drools.compiler.lang.api.RuleDescrBuilder;
 import org.drools.compiler.lang.api.TypeDeclarationDescrBuilder;
 import org.drools.compiler.lang.api.impl.PackageDescrBuilderImpl;
 import org.drools.compiler.lang.descr.PackageDescr;
+import org.drools.compiler.lang.descr.RuleDescr;
 import org.drools.core.base.evaluators.IsAEvaluatorDefinition;
 import org.drools.core.factmodel.traits.Traitable;
 import org.drools.semantics.NamedIndividual;
@@ -75,7 +76,7 @@ public class APIRecognitionRuleBuilder {
     protected String rootClass                  = Thing.class.getCanonicalName();
 
     protected boolean redeclare                 = false;
-    
+
     protected OntoModel model;
 
     public APIRecognitionRuleBuilder( OntoModel model ) {
@@ -87,7 +88,7 @@ public class APIRecognitionRuleBuilder {
 
         PackageDescr root = visit( definitions );
 
-        String drl = validateAndClean( root );
+        String drl = generateDRL( root, true );
 
         System.out.println( "******************************************************************************" );
         System.out.println( "******************************************************************************" );
@@ -101,17 +102,9 @@ public class APIRecognitionRuleBuilder {
     }
 
     protected PackageDescr visit( final Map<OWLClassExpression, OWLClassExpression> definitions ) {
-        PackageDescrBuilder builder = PackageDescrBuilderImpl.newPackage();
+        PackageDescrBuilder builder = PackageDescrBuilderImpl.newPackage().name( model.getDefaultPackage() );;
 
-        builder.name( model.getDefaultPackage() );
-
-        builder.newImport().target( NamedIndividual.class.getName() ).end()
-                .newImport().target( Traitable.class.getName() ).end()
-                .newImport().target( Thing.class.getName() ).end();
-
-        if ( redeclare ) {
-            buildDeclarations( builder );
-        }
+        buildHeader( builder );
 
         for ( OWLClassExpression k : definitions.keySet() ) {
             if ( ! k.isAnonymous() ) {
@@ -120,6 +113,26 @@ public class APIRecognitionRuleBuilder {
         }
 
         return builder.getDescr();
+    }
+
+    public RuleDescr createDRL( final OWLClass klass, final OWLClassExpression definition, boolean withHeader, PackageDescrBuilder builder ) {
+        RuleDescrBuilder rule = builder.newRule();
+        if ( withHeader ) {
+            buildHeader( builder );
+        }
+
+        buildRecognitionRule( klass, definition, rule );
+        return rule.getDescr();
+    }
+
+    private void buildHeader( PackageDescrBuilder builder ) {
+        builder.newImport().target( NamedIndividual.class.getName() ).end()
+                .newImport().target( Traitable.class.getName() ).end()
+                .newImport().target( Thing.class.getName() ).end();
+
+        if ( redeclare ) {
+            buildDeclarations( builder );
+        }
     }
 
     protected void buildRecognitionRule( OWLClass klass, OWLClassExpression defn, RuleDescrBuilder rule ) {
@@ -138,7 +151,7 @@ public class APIRecognitionRuleBuilder {
             .append( " ); \n" );
         }
 
-        processOr( rule.lhs(), (OWLObjectUnionOf) defn, fqn, null );
+        processOr( rule.lhs(), defn, fqn, null );
 
         if ( ! useMetaClass ) {
             rhs.append( "\t" ).append( "don( " )
@@ -152,17 +165,22 @@ public class APIRecognitionRuleBuilder {
         rule.rhs( rhs.toString() );
     }
 
-    protected void processOr( CEDescrBuilder parent, OWLObjectUnionOf union, String typeName, Object source ) {
+    protected void processOr( CEDescrBuilder parent, OWLClassExpression expr, String typeName, Object source ) {
         CEDescrBuilder or = parent.or();
         context.clearBindings();
-        for ( OWLClassExpression expr : union.getOperandsAsList() ) {
-            processAnd( or, (OWLObjectIntersectionOf) expr, typeName, source );
+        if ( expr instanceof OWLObjectUnionOf ) {
+            OWLObjectUnionOf union = (OWLObjectUnionOf) expr;
+            for ( OWLClassExpression sub : union.getOperandsAsList() ) {
+                processAnd( or, sub, typeName, source );
+            }
+        } else if ( ! expr.isAnonymous() ) {
+            processAnd( or, expr, typeName, source );
         }
     }
 
-    protected void processAnd( CEDescrBuilder or, OWLObjectIntersectionOf intersection, String typeName, Object source ) {
+    protected void processAnd( CEDescrBuilder or, OWLClassExpression expr, String typeName, Object source ) {
         CEDescrBuilder and = or.and();
-        processArg( and, intersection, typeName, source );
+        processArg( and, expr, typeName, source );
     }
 
     protected void processArg( CEDescrBuilder parent, OWLClassExpression arg, String typeName, Object source ) {
@@ -185,7 +203,9 @@ public class APIRecognitionRuleBuilder {
                 if ( ! subArg.isAnonymous() ) {
                     pattern.constraint( isA( "this ", true, subArg ) );
                 } else if ( subArg instanceof OWLObjectSomeValuesFrom && isDenotes( (OWLObjectSomeValuesFrom) subArg ) ) {
-                    //,@{ arg.property.IRI.fragment } denotes @code{ String cd = getConcept( arg.filler ); } @{cd}
+                    OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) subArg;
+                    String prop = ( (OWLObjectSomeValuesFrom) subArg ).getProperty().getNamedProperty().getIRI().getFragment();
+                    pattern.constraint( prop + " denotes " );
                 } else if ( subArg instanceof OWLObjectComplementOf && ! ( (OWLObjectComplementOf) subArg ).getOperand().isAnonymous() ) {
                     pattern.constraint( isA( "this", false, ( (OWLObjectComplementOf) subArg ).getOperand() ) );
                 } else if ( subArg instanceof OWLQuantifiedObjectRestriction || subArg instanceof OWLObjectCardinalityRestriction
@@ -211,6 +231,8 @@ public class APIRecognitionRuleBuilder {
                 }
             }
             context.clearBindings();
+        } else if ( ! arg.isAnonymous() ) {
+            pattern.constraint( isA( "this ", true, arg ) );
         }
 
     }
@@ -460,9 +482,6 @@ public class APIRecognitionRuleBuilder {
             }
 
         }
-
-
-
     }
 
 
@@ -493,26 +512,30 @@ public class APIRecognitionRuleBuilder {
     }
 
 
-    protected String validateAndClean( PackageDescr root ) {
+    public static String generateDRL( PackageDescr root, boolean validate ) {
         String drl = new DrlDumper().dump( root );
 
-        KieHelper kh = new KieHelper(
-//                EvaluatorOption.get( "denotes", new EvaluatorDefinition() {
-//                @Override
-//                public String[] getEvaluatorIds() {
-//                    return new String[]{ "denotes" };
-//                }
-//                }  )
-        );
-        KieServices kieServices = KieServices.Factory.get();
-        KieFileSystem kfs = kieServices.newKieFileSystem();
-        kfs.write( kieServices.getResources().newByteArrayResource( drl.getBytes() )
-                           .setSourcePath( "test.drl" )
-                           .setResourceType( ResourceType.DRL ) );
-        KieBuilder kieBuilder = kieServices.newKieBuilder( kfs );
-        kieBuilder.buildAll();
-        if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
-            throw new IllegalStateException( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
+        if ( validate ) {
+            KieHelper kh = new KieHelper(
+                /*
+                EvaluatorOption.get( "denotes", new EvaluatorDefinition() {
+                @Override
+                public String[] getEvaluatorIds() {
+                    return new String[]{ "denotes" };
+                }
+                }  )
+                */
+            );
+            KieServices kieServices = KieServices.Factory.get();
+            KieFileSystem kfs = kieServices.newKieFileSystem();
+            kfs.write( kieServices.getResources().newByteArrayResource( drl.getBytes() )
+                               .setSourcePath( "test.drl" )
+                               .setResourceType( ResourceType.DRL ) );
+            KieBuilder kieBuilder = kieServices.newKieBuilder( kfs );
+            kieBuilder.buildAll();
+            if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
+                throw new IllegalStateException( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
+            }
         }
 
         return cleanWhites( drl );
@@ -520,7 +543,7 @@ public class APIRecognitionRuleBuilder {
 
 
 
-    protected String cleanWhites( String drl ) {
+    protected static String cleanWhites( String drl ) {
         return drl.replaceAll( "^ +| +$|( )+", "$1" ).replaceAll( "\\s*\n+\\s*(\\s*\n+\\s*)+", "\n" );
     }
 

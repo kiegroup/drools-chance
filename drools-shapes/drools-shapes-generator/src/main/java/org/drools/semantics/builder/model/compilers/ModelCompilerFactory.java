@@ -30,6 +30,7 @@ public class ModelCompilerFactory {
             case XSD    : return new XSDModelCompilerImpl();
             case XSDX   : return new SemanticXSDModelCompilerImpl();
             case WORKSET: return new WorkingSetModelCompilerImpl();
+            case RL     : return new RecognitionRuleCompilerImpl();
         }
         return null;
     }

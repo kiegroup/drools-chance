@@ -122,6 +122,10 @@ public class Concept implements Cloneable {
         return iri.toQuotedString();
     }
 
+    public IRI getIRI() {
+        return iri;
+    }
+
     public void setIri( String iri ) {
         this.iri = IRI.create( iri );
     }

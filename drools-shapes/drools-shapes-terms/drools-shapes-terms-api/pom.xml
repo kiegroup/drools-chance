@@ -81,11 +81,11 @@
 				</executions>
 				<configuration>
 					<outputDirectory>${pom.basedir}</outputDirectory>
-					<ontology>/terms.owl</ontology>
+					<ontology>/edu/mayo/cts2/terms/terms.owl</ontology>
 					<ontologyImports>
-						<ontologyImport>/skos.owl</ontologyImport>
-						<ontologyImport>/cts2.owl</ontologyImport>
-						<ontologyImport>/lmm_l1.owl</ontologyImport>
+						<ontologyImport>/edu/mayo/cts2/terms/skos.owl</ontologyImport>
+						<ontologyImport>/edu/mayo/cts2/terms/cts2.owl</ontologyImport>
+						<ontologyImport>/edu/mayo/cts2/terms/lmm_l1.owl</ontologyImport>
 					</ontologyImports>
 					<modelName>terms</modelName>
 					<axiomInference>lite</axiomInference>

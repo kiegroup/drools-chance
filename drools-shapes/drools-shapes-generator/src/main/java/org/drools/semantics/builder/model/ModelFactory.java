@@ -56,9 +56,9 @@ public class ModelFactory {
             case DRL    : CompiledOntoModel dmodel = new DRLModelImpl();
                             dmodel.initFromBaseModel( base );
                             return dmodel;
-            case JAR    : CompiledOntoModel rmodel = new JarModelImpl();
-                            rmodel.initFromBaseModel( base );
-                            return rmodel;
+            case JAR    : CompiledOntoModel zmodel = new JarModelImpl();
+                            zmodel.initFromBaseModel( base );
+                            return zmodel;
             case GRAPH  : CompiledOntoModel gmodel = new GraphModelImpl();
                             gmodel.initFromBaseModel( base );
                             return gmodel;
@@ -71,6 +71,9 @@ public class ModelFactory {
             case WORKSET: CompiledOntoModel wmodel = new WorkingSetModelImpl();
                             wmodel.initFromBaseModel( base );
                             return wmodel;
+            case RL     : CompiledOntoModel rmodel = new RecognitionRuleModelImpl();
+                            rmodel.initFromBaseModel( base );
+                            return rmodel;
             case BASE:
             default  : GenericModelImpl model = new GenericModelImpl();
                 model.setPackageNameMappings( nameMappings );
