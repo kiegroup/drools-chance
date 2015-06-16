@@ -25,8 +25,8 @@ import org.drools.semantics.builder.DLFactory;
 import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.reasoner.APIRecognitionRuleBuilder;
 import org.drools.semantics.builder.reasoner.DLogicTransformer;
-import org.drools.semantics.builder.reasoner.TemplateRecognitionRuleBuilder;
 import org.junit.Test;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -41,6 +41,7 @@ import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.io.ResourceFactory;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -68,17 +69,15 @@ public class DL_7_RuleTest {
     public void testPizzaOntologyRecognition() {
         Resource res = KieServices.Factory.get().getResources().newClassPathResource( "ontologies/pizza.owl" );
 
-        OWLOntology pizza = factory.parseOntology( res );
-
         OntoModel pizzaModel = factory.buildModel( "pizza",
                                                    res,
                                                    DLFactoryConfiguration.newConfiguration( OntoModel.Mode.FLAT,
                                                                                             DLFactoryConfiguration.defaultAxiomGenerators ) );
 
-        String drl = new TemplateRecognitionRuleBuilder().createDRL( pizza, pizzaModel );
+        String drl0 = new APIRecognitionRuleBuilder( pizzaModel ).setRedeclare( true ).setUseMetaClass( false ).createDRL();
 
         System.err.println( "***********************************************************************" );
-        System.err.println( drl );
+        System.err.println( drl0 );
         System.err.println( "***********************************************************************" );
     }
 
@@ -95,28 +94,28 @@ public class DL_7_RuleTest {
                                                   DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
                                                                                            DLFactoryConfiguration.defaultAxiomGenerators ) );
 
-        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
+        String drl2 = "package t.x  " +
+                "import org.drools.semantics.NamedIndividual; " +
+                "" +
+                "rule Init when  " +
+                "then  " +
+                "   NamedIndividual e = new NamedIndividual(); " +
+                "   insert( e );  " +
+                "   don( e, W.class );  " +
+                "end  " +
+                "" +
+                "" +
+                "rule Final when  " +
+                "  $s : String()  " +
+                "  $x : W()  " +
+                "then  " +
+                "   retract( $s );  " +
+                "   shed( $x, W.class );   " +
+                "end  ";
 
-        String drl2 = "package t.x \n" +
-                "import org.drools.semantics.NamedIndividual;\n" +
-                "" +
-                "rule Init when \n" +
-                "then \n" +
-                "   NamedIndividual e = new NamedIndividual();\n" +
-                "   insert( e ); \n" +
-                "   don( e, W.class ); \n" +
-                "end \n" +
-                "" +
-                "" +
-                "rule Final when \n" +
-                "  $s : String() \n" +
-                "  $x : W() \n" +
-                "then \n" +
-                "   retract( $s );\n " +
-                "   shed( $x, W.class ); \n " +
-                "end \n";
+        String drl0 = new APIRecognitionRuleBuilder( ontoModel ).setRedeclare( true ).setUseMetaClass( false ).createDRL();
 
-        KieSession kSession = createSession( drl, drl2 );
+        KieSession kSession = createSession( drl0, drl2 );
         kSession.fireAllRules();
 
         for ( Object o : kSession.getObjects() ) {
@@ -198,9 +197,9 @@ public class DL_7_RuleTest {
                                                   DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
                                                                                            DLFactoryConfiguration.defaultAxiomGenerators ) );
 
-        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
+        String drl0 = new APIRecognitionRuleBuilder( ontoModel ).setRedeclare( true ).setUseMetaClass( false ).createDRL();
 
-        KieSession kSession = createSession( drl, drl2 );
+        KieSession kSession = createSession( drl0, drl2 );
 
         for ( Object o : kSession.getObjects() ) {
             System.err.println( o );
@@ -210,7 +209,6 @@ public class DL_7_RuleTest {
             NamedIndividual e = (NamedIndividual) o;
             assertTrue( ( (NamedIndividual) o ).hasTrait( "t.x.Y" ) );
         }
-
 
     }
 
@@ -330,9 +328,9 @@ public class DL_7_RuleTest {
                                                   DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
                                                                                            DLFactoryConfiguration.defaultAxiomGenerators ) );
 
-        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
+        String drl0 = new APIRecognitionRuleBuilder( ontoModel ).setRedeclare( true ).setUsePropertyReactivity( false ).setUseMetaClass( false ).createDRL();
 
-        KieBase kieBase = createKieBase( drl, drl2 );
+        KieBase kieBase = createKieBase( drl0, drl2 );
         KieSession kSession = kieBase.newKieSession();
 
         for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
@@ -395,8 +393,6 @@ public class DL_7_RuleTest {
             }
 
         }
-
-
 
     }
 
@@ -477,9 +473,9 @@ public class DL_7_RuleTest {
                                                   DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
                                                                                            DLFactoryConfiguration.defaultAxiomGenerators ) );
 
-        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
+        String drl0 = new APIRecognitionRuleBuilder( ontoModel ).setRedeclare( true ).setUseMetaClass( false ).createDRL();
 
-        KieSession kSession = createSession( drl, drl2 );
+        KieSession kSession = createSession( drl0, drl2 );
         kSession.fireAllRules();
 
         for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
@@ -584,16 +580,14 @@ public class DL_7_RuleTest {
 
         Resource res = KieServices.Factory.get().getResources().newByteArrayResource( owl.getBytes() );
 
-        OWLOntology onto = factory.parseOntology( res );
-
         OntoModel ontoModel = factory.buildModel( "test",
                                                   res,
                                                   DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
                                                                                            DLFactoryConfiguration.defaultAxiomGenerators  ) );
+        
+        String drl0 = new APIRecognitionRuleBuilder( ontoModel ).setRedeclare( true ).setUseMetaClass( false ).createDRL();
 
-        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
-
-        KieSession kSession = createSession( drl, drl2 );
+        KieSession kSession = createSession( drl0, drl2 );
         kSession.fireAllRules();
 
         for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {
@@ -677,9 +671,9 @@ public class DL_7_RuleTest {
                                                   DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
                                                                                            DLFactoryConfiguration.defaultAxiomGenerators ) );
 
-        String drl = new TemplateRecognitionRuleBuilder().createDRL( onto, ontoModel );
+        String drl0 = new APIRecognitionRuleBuilder( ontoModel ).setRedeclare( true ).setUseMetaClass( false ).createDRL();
 
-        KieSession kSession = createSession( drl, drl2 );
+        KieSession kSession = createSession( drl0, drl2 );
         kSession.fireAllRules();
 
         for ( Object o : kSession.getObjects( new ClassObjectFilter( NamedIndividual.class ) ) ) {

@@ -54,6 +54,17 @@
       <artifactId>drools-shapes-reasoner</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-shapes-terms-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-shapes-terms-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
 
 
 

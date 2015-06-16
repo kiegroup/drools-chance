@@ -38,6 +38,10 @@
 			<groupId>org.drools</groupId>
 			<artifactId>drools-shapes-utilities</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-api</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
