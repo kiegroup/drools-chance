@@ -387,6 +387,15 @@ public class DRLExpectationHelper {
 
         NotDescr not = new NotDescr( expectations.getExpectLhs()  );
         violLhs.addDescr( not );
+        if (expectations.getExpired() != null) {
+            RuleDescr expireRule = expectations.getExpired();
+            AndDescr additional = expireRule.getLhs();
+            for (BaseDescr descr: additional.getDescrs()) {
+                if (descr instanceof PatternDescr) {
+                    violLhs.addDescr(descr);
+                }
+            }
+        }
 
         if ( ! rule.isExpectationDisabled() ) {
             violLhs.addDescr( expectPattern( expectations.getLabel(), extractVars( rule.getLhs(), expectations.getLabel() ), true ) );

@@ -103,6 +103,99 @@ public class ExpectationTest extends ExpTestBase {
     }
 
     @Test
+    public void testComplexFulfill() {
+
+        String src = "" +
+                "package org.drools; " +
+                "global java.util.List list; " +
+
+                "declare Msg " +
+                "   @role(event) " +
+                "   sender : String     @key " +
+                "   receiver : String   @key " +
+                "   body : String       @key " +
+                "   more : String " +
+                "end " +
+                " " +
+                "declare TextMsg " +
+                "   @role(event) " +
+                "   sendingPhone: String    @key " +
+                "   receivingPhone: String  @key " +
+                "   message: String         @key " +
+                "   emoticon: String " +
+                "end " +
+
+                "rule Expect_Test_Rule " +
+                "when " +
+                "   $trigger : Msg( 'John', 'Peter', 'Hello' ; ) " +
+                "then " +
+                "   expect Msg( 'Peter', 'John', 'Hello back', $more ; this after[0,100ms] $trigger ) " +
+                "          " +
+                "   onFulfill { " +
+                "        \t list.add( 'F1' + $more ); \n" +
+                "        \t System.out.println( 'Expectation fulfilled' ); \n" +
+                "    } onViolation { " +
+                "        \t System.out.println( 'Expectation violated' ); " +
+                "    } " +
+                "   expect TextMsg( '9135551234', '8185551234', 'Did you call?', $more ; this after[0,100ms] $trigger ) " +
+                "   onFulfill { " +
+                "       insert(new TextMsg( drools.getWorkingMemory(), '8185551234', '9135551234', 'Yes', '8^)' ) ); " +
+                "       \t list.add( 'TM1'+$more );\n " +
+                "       \t System.out.println( 'Secondary expectation fulfilled' );\n " +
+                "   } onViolation { " +
+                "       \t System.out.println( 'Secondary expectation violated' ); " +
+                "   }" +
+                "   list.add( 0 ); " +
+                "   System.out.println( 'Triggered expectation ' + $trigger ); " +
+                "end " +
+                "";
+
+        KieSession kSession = buildKnowledgeSession( src.getBytes() );
+        List<Object> list = new LinkedList<Object>();
+        kSession.setGlobal( "list", list );
+
+        System.out.println( "====================================================================================" );
+        kSession.insert( newMessage( kSession, "John", "Peter", "Hello", "X" ) );
+        kSession.fireAllRules();
+        assertTrue( list.contains( 0 ) );
+
+        System.out.println( "================================= SLEEP =========================================" );
+        sleep( 20 );
+        System.out.println( "================================= WAAKE =========================================" );
+
+        kSession.insert( newMessage( kSession, "Peter", "John", "Hello back", "Y" ) );
+        kSession.fireAllRules();
+        System.out.println( "================================= DONE =========================================" );
+
+
+
+
+        assertEquals( Arrays.asList( 0, "F1Y" ), list );
+        assertEquals( 1, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 2, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+
+        sleep(30);
+        kSession.insert(newTextMessage( kSession, "9135551234", "8185551234", "Did you call?", ":-)"));
+        kSession.fireAllRules();
+        assertEquals( Arrays.asList( 0, "F1Y", "TM1:-)" ),list );
+        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 2, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+
+        sleep( 110 );
+
+        kSession.fireAllRules();
+
+        assertEquals( Arrays.asList( 0, "F1Y", "TM1:-)" ),list );
+        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+
+
+    }
+
+    @Test
     public void testSimpleFulfill() {
 
         String src = "" +

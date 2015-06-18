@@ -93,6 +93,24 @@ public class ExpTestBase {
         ((SessionPseudoClock) clock ).advanceTime( time, TimeUnit.MILLISECONDS );
     }
 
+    protected Object newTextMessage( KieSession kSession, String sendingPhone, String receivingPhone, String message, String emoticon ) {
+        try {
+            FactType msgType = kSession.getKieBase().getFactType( "org.drools", "TextMsg" );
+            Object o = null;
+
+            o = msgType.newInstance();
+            msgType.set( o, "sendingPhone", sendingPhone );
+            msgType.set( o, "receivingPhone", receivingPhone );
+            msgType.set( o, "message", message);
+            msgType.set( o, "emoticon", emoticon);
+            return o;
+        } catch ( InstantiationException e ) {
+            fail( e.getMessage() );
+        } catch ( IllegalAccessException e ) {
+            fail( e.getMessage() );
+        }
+        return null;
+    }
 
     protected Object newMessage( KieSession kSession, String sender, String receiver, String body, String more ) {
         try {
