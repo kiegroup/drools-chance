@@ -5,16 +5,14 @@ import edu.mayo.cts2.terms.TermsNames;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.drools.shapes.terms.generator.CodeSystem;
+import org.drools.semantics.builder.reasoner.CodeSystem;
 import org.drools.shapes.terms.generator.JavaGenerator;
 import org.drools.shapes.terms.generator.TerminologyGenerator;
 import org.drools.shapes.terms.generator.util.Loader;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;

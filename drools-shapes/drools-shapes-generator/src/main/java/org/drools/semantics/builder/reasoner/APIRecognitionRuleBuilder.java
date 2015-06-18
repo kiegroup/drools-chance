@@ -12,8 +12,12 @@ import org.drools.compiler.lang.api.TypeDeclarationDescrBuilder;
 import org.drools.compiler.lang.api.impl.PackageDescrBuilderImpl;
 import org.drools.compiler.lang.descr.PackageDescr;
 import org.drools.compiler.lang.descr.RuleDescr;
+import org.drools.core.base.ValueType;
+import org.drools.core.base.evaluators.EvaluatorDefinition;
 import org.drools.core.base.evaluators.IsAEvaluatorDefinition;
+import org.drools.core.base.evaluators.Operator;
 import org.drools.core.factmodel.traits.Traitable;
+import org.drools.core.spi.Evaluator;
 import org.drools.semantics.NamedIndividual;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
@@ -25,13 +29,18 @@ import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message;
 import org.kie.api.definition.type.PropertyReactive;
 import org.kie.api.io.ResourceType;
+import org.kie.internal.builder.conf.EvaluatorOption;
 import org.kie.internal.utils.KieHelper;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLDataCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLDataComplementOf;
 import org.semanticweb.owlapi.model.OWLDataExactCardinality;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
 import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
 import org.semanticweb.owlapi.model.OWLDataMinCardinality;
@@ -42,11 +51,11 @@ import org.semanticweb.owlapi.model.OWLDataUnionOf;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
@@ -58,12 +67,19 @@ import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
 import org.w3._2002._07.owl.Thing;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class APIRecognitionRuleBuilder {
+
+    private static final IRI EXPRESSES = IRI.create( TermsNames.EXPRESSES );
+    private static final IRI IN_SCHEME = IRI.create( TermsNames.IN_SCHEME );
 
     protected Map<OWLClassExpression,OWLClassExpression> definitions;
     protected DLRecognitionBuildContext context = new DLRecognitionBuildContext();
@@ -83,12 +99,17 @@ public class APIRecognitionRuleBuilder {
         this.model = model;
     }
 
+
     public String createDRL() {
+        return createDRL( true );
+    }
+
+    public String createDRL( boolean validate ) {
         definitions = preprocessDefinitions( new DLogicTransformer( model.getOntology() ).getDefinitions() );
 
         PackageDescr root = visit( definitions );
 
-        String drl = generateDRL( root, true );
+        String drl = generateDRL( root, validate );
 
         System.out.println( "******************************************************************************" );
         System.out.println( "******************************************************************************" );
@@ -202,10 +223,11 @@ public class APIRecognitionRuleBuilder {
             for ( OWLClassExpression subArg : ( (OWLNaryBooleanClassExpression) arg ).getOperandsAsList() ) {
                 if ( ! subArg.isAnonymous() ) {
                     pattern.constraint( isA( "this ", true, subArg ) );
-                } else if ( subArg instanceof OWLObjectSomeValuesFrom && isDenotes( (OWLObjectSomeValuesFrom) subArg ) ) {
-                    OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) subArg;
-                    String prop = ( (OWLObjectSomeValuesFrom) subArg ).getProperty().getNamedProperty().getIRI().getFragment();
-                    pattern.constraint( prop + " denotes " );
+                } else if ( subArg instanceof OWLObjectSomeValuesFrom && isDenotes( subArg ) ) {
+                    IRI propIRI = ( (OWLObjectSomeValuesFrom) subArg ).getProperty().getNamedProperty().getIRI();
+                    String prop = typedProperty( propIRI.toQuotedString(), propIRI.getFragment() );
+                    String val = qualifiedConceptName( ( (OWLObjectSomeValuesFrom) subArg ).getFiller() );
+                    pattern.constraint( prop + " denotes " + val );
                 } else if ( subArg instanceof OWLObjectComplementOf && ! ( (OWLObjectComplementOf) subArg ).getOperand().isAnonymous() ) {
                     pattern.constraint( isA( "this", false, ( (OWLObjectComplementOf) subArg ).getOperand() ) );
                 } else if ( subArg instanceof OWLQuantifiedObjectRestriction || subArg instanceof OWLObjectCardinalityRestriction
@@ -225,6 +247,7 @@ public class APIRecognitionRuleBuilder {
             }
             for ( OWLClassExpression subArg : ( (OWLNaryBooleanClassExpression) arg ).getOperandsAsList() ) {
                 if ( subArg.isAnonymous()
+                     && ! isDenotes( subArg )
                      && ! ( subArg instanceof OWLObjectComplementOf && ! ( (OWLObjectComplementOf) subArg ).getOperand().isAnonymous() )
                      && ! ( subArg instanceof OWLObjectOneOf ) ) {
                     nestedAtom( parent, subArg );
@@ -237,7 +260,33 @@ public class APIRecognitionRuleBuilder {
 
     }
 
-    private boolean isDenotes( OWLObjectSomeValuesFrom arg ) {
+    private String qualifiedConceptName( OWLClassExpression filler ) {
+        String res = "";
+        OWLDataFactory odf = model.getOntology().getOWLOntologyManager().getOWLDataFactory();
+        OWLObjectSomeValuesFrom expresses = (OWLObjectSomeValuesFrom) ( (OWLObjectUnionOf) filler ).getOperandsAsList().iterator().next();
+        OWLClassExpression nested = expresses.getFiller();
+        nested = ((OWLNaryBooleanClassExpression) nested ).getOperandsAsList().get( 0 );
+        nested = ((OWLNaryBooleanClassExpression) nested ).getOperandsAsList().get( 0 );
+        OWLObjectOneOf ones = (OWLObjectOneOf) nested;
+
+        OWLNamedIndividual concept = (OWLNamedIndividual) ones.getIndividuals().iterator().next();
+        Set<OWLIndividual> schemes = concept.getObjectPropertyValues( odf.getOWLObjectProperty( IN_SCHEME ), model.getOntology() );
+        if ( ! schemes.isEmpty() ) {
+            OWLNamedIndividual scheme = (OWLNamedIndividual) schemes.iterator().next();
+            CodeSystem cs = CodeSystem.build( scheme, model.getOntology() );
+            res += NameUtils.getTermCodeSystemName( cs.getCodeSystemName() );
+        }
+        ConceptCode code = ConceptCode.build( concept, model.getOntology() );
+        res += NameUtils.getTermConceptName( code.getCode(), code.getName() );
+
+        return res;
+    }
+
+    private boolean isDenotes( OWLClassExpression expr ) {
+        if ( ! ( expr instanceof OWLObjectSomeValuesFrom ) ) {
+            return false;
+        }
+        OWLObjectSomeValuesFrom arg = (OWLObjectSomeValuesFrom) expr;
         if ( ! ( arg.getFiller() instanceof OWLObjectUnionOf ) ) {
             return false;
         }
@@ -246,7 +295,7 @@ public class APIRecognitionRuleBuilder {
             return false;
         }
         OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) subArgs.get( 0 );
-        if ( some.getProperty().asOWLObjectProperty().getIRI().equals( TermsNames.EXPRESSES ) ) {
+        if ( some.getProperty().asOWLObjectProperty().getIRI().equals( EXPRESSES ) ) {
             return true;
         }
         return false;
@@ -285,15 +334,24 @@ public class APIRecognitionRuleBuilder {
         StringBuilder sb = new StringBuilder();
         if ( ! context.isPropertyBound( pKey ) ) {
             context.bindProperty( pName );
-
-            String dom = model.getProperty( key ).getDomain().getFullyQualifiedName();
             //sb.append( isA( "this", true, dom ) );
             //sb.append( ", " );
-            sb.append( pKey ).append( " : " ).append( "this" ).append( "#" ).append( dom ).append( "." ).append( pName );
+            sb.append( pKey ).append( " : " ).append( typedProperty( key, pName ) );
             return sb.toString();
         } else {
             return null;
         }
+    }
+
+    private String typedProperty( String propIRI, String pName ) {
+        String dom = model.getProperty( propIRI ).getDomain().getFullyQualifiedName();
+        StringBuilder sb = new StringBuilder()
+                .append( "this" )
+                .append( "#" )
+                .append( dom )
+                .append( "." )
+                .append( pName );
+        return sb.toString();
     }
 
     protected String oneOf( OWLObjectOneOf ones ) {
@@ -515,17 +573,23 @@ public class APIRecognitionRuleBuilder {
     public static String generateDRL( PackageDescr root, boolean validate ) {
         String drl = new DrlDumper().dump( root );
 
+        System.out.println( drl );
+
         if ( validate ) {
             KieHelper kh = new KieHelper(
-                /*
                 EvaluatorOption.get( "denotes", new EvaluatorDefinition() {
-                @Override
-                public String[] getEvaluatorIds() {
-                    return new String[]{ "denotes" };
-                }
-                }  )
-                */
-            );
+                                         public String[] getEvaluatorIds() { return new String[] { "denotes" }; }
+                                         public boolean isNegatable() { return false; }
+                                         public Evaluator getEvaluator( ValueType type, String operatorId, boolean isNegated, String parameterText, Target leftTarget, Target rightTarget ) { return null; }
+                                         public Evaluator getEvaluator( ValueType type, String operatorId, boolean isNegated, String parameterText ) { return null; }
+                                         public Evaluator getEvaluator( ValueType type, Operator operator, String parameterText ) { return null; }
+                                         public Evaluator getEvaluator( ValueType type, Operator operator ) { return null; }
+                                         public boolean supportsType( ValueType type ) { return true; }
+                                         public Target getTarget() { return Target.FACT; }
+                                         public void writeExternal( ObjectOutput objectOutput ) throws IOException {}
+                                         public void readExternal( ObjectInput objectInput ) throws IOException, ClassNotFoundException {}
+                                     } )
+                );
             KieServices kieServices = KieServices.Factory.get();
             KieFileSystem kfs = kieServices.newKieFileSystem();
             kfs.write( kieServices.getResources().newByteArrayResource( drl.getBytes() )

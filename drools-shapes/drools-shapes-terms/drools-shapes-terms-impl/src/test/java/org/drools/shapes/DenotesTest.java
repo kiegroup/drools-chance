@@ -15,7 +15,7 @@ import org.kie.internal.utils.KieHelper;
 
 import java.util.Date;
 
-public class TestDenotes {
+public class DenotesTest {
 
     @Test
     public void testCDEqualityInRule() {

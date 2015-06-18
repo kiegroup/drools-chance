@@ -811,6 +811,20 @@ public final class NameUtils {
 
 
 
+    public static String getTermCodeSystemName( String codeSystemName ) {
+        return  NameUtils.capitalize( codeSystemName.replaceAll( "[^a-zA-Z0-9]", "_" ) );
+    }
+
+    public static String getTermConceptName( String conceptCode, String conceptName ) {
+        conceptName = fixSpecialCharacters( conceptName );
+        return NameUtils.capitalize( conceptName.replaceAll("[^a-zA-Z0-9]", "_")  );
+    }
+
+    private static String fixSpecialCharacters( String s ) {
+        s = s.replaceAll( ">", "_GT_" );
+        s = s.replaceAll( "<", "_LT_" );
+        return s;
+    }
 
 
 

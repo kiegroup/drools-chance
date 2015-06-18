@@ -47,32 +47,37 @@
 			<dependency>
 				<groupId>org.drools</groupId>
 				<artifactId>drools-shapes-terms-api</artifactId>
-				<version>6.3.0-SNAPSHOT</version>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.drools</groupId>
+				<artifactId>drools-shapes-generator</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.drools</groupId>
 				<artifactId>drools-shapes-terms-cts2</artifactId>
-				<version>6.3.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.drools</groupId>
 				<artifactId>drools-shapes-terms-fhir</artifactId>
-				<version>6.3.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.drools</groupId>
 				<artifactId>drools-shapes-terms-file</artifactId>
-				<version>6.3.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.drools</groupId>
 				<artifactId>drools-shapes-terms-graph</artifactId>
-				<version>6.3.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.drools</groupId>
 				<artifactId>drools-shapes-terms-internal</artifactId>
-				<version>6.3.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>

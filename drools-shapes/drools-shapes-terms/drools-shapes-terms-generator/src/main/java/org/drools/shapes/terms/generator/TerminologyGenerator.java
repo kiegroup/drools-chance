@@ -1,5 +1,8 @@
 package org.drools.shapes.terms.generator;
 
+import edu.mayo.cts2.terms.TermsNames;
+import org.drools.semantics.builder.reasoner.CodeSystem;
+import org.drools.semantics.builder.reasoner.ConceptCode;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
@@ -17,7 +20,7 @@ public class TerminologyGenerator {
     private static final IRI CONCEPT_SCHEME     = IRI.create( "http://www.w3.org/2004/02/skos/core#ConceptScheme" );
     private static final IRI CONCEPT            = IRI.create( "http://www.w3.org/2004/02/skos/core#Concept" );
     private static final IRI LABEL              = IRI.create( "http://www.w3.org/2004/02/skos/core#prefLabel" );
-    private static final IRI NOTATION           = IRI.create( "http://www.w3.org/2004/02/skos/core#notation" );
+    private static final IRI NOTATION           = IRI.create( TermsNames.NOTATION );
     private static final IRI OID                = IRI.create( "https://www.hl7.org/oid" );
 
     private OWLOntology model;
@@ -40,29 +43,7 @@ public class TerminologyGenerator {
             Set<OWLClassExpression> types = ind.getTypes( model.getImportsClosure() );
             for ( OWLClassExpression kls : types ) {
                 if ( kls.toString().contains( "ConceptScheme" ) ) {
-                    CodeSystem cs = new CodeSystem();
-                    cs.setCodeSystemUri( ind.getIRI().toString() );
-
-                    for ( OWLLiteral val : ind.getDataPropertyValues(odf.getOWLDataProperty( NOTATION ), model ) ) {
-                        cs.setCodeSystemName( val.getLiteral() );
-                    }
-                    if ( cs.getCodeSystemName() == null ) {
-                        Set<OWLAnnotation> labels = ind.getAnnotations( model, odf.getOWLAnnotationProperty( LABEL ) );
-                        if ( ! labels.isEmpty() ) {
-                            cs.setCodeSystemName( ((OWLLiteral) labels.iterator().next().getValue()).getLiteral() );
-                        }
-                    }
-                    if ( cs.getCodeSystemName() == null ) {
-                        cs.setCodeSystemName( ind.getIRI().getFragment().replaceAll( "\\.", "_" ) );
-                    }
-
-                    for ( OWLAnnotation val : ind.getAnnotations( model, odf.getOWLAnnotationProperty( OID ) ) ) {
-                        cs.setCodeSystemId( ( (OWLLiteral) val.getValue() ).getLiteral() );
-                    }
-                    if ( cs.getCodeSystemId() == null ) {
-                        cs.setCodeSystemId( URI.create( cs.getCodeSystemUri() ).getFragment() );
-                    }
-
+                    CodeSystem cs = CodeSystem.build( ind, model );
                     codeSystems.put( cs.getCodeSystemUri(), cs );
                 }
             }
@@ -73,22 +54,11 @@ public class TerminologyGenerator {
             Set<OWLClassExpression> types = ind.getTypes( model.getImportsClosure() );
             for ( OWLClassExpression kls : types ) {
                 if ( kls.asOWLClass().equals( odf.getOWLClass( CONCEPT ) ) ) {
-                    Concept concept = new Concept();
-                    concept.setUri( ind.getIRI().toString() );
 
-                    Set<OWLLiteral> values = ind.getDataPropertyValues( odf.getOWLDataProperty( IRI.create( "http://www.w3.org/2004/02/skos/core#notation" ) ), model );
-                    for ( OWLLiteral val : values ) {
-                        concept.setCode( val.getLiteral().toString() );
-                    }
-
-                    String name = concept.getCode();
-                    if ( name != null && Character.isDigit( name.charAt( 0 ) ) ) {
-                        name = "_" + name;
-                    }
-                    concept.setName( name );
+                    ConceptCode concept = ConceptCode.build( ind, model );
 
                     for ( OWLObjectPropertyAssertionAxiom dp : model.getObjectPropertyAssertionAxioms( ind ) ) {
-                        if ( dp.getProperty().asOWLObjectProperty().getIRI().toString().contains( "inScheme" ) ) {
+                        if ( dp.getProperty().asOWLObjectProperty().getIRI().equals( IRI.create( TermsNames.IN_SCHEME ) ) ) {
                             OWLIndividual cs = dp.getObject();
                             concept.setCodeSystem( cs.toString() );
                             CodeSystem codeSystem = codeSystems.get( cs.asOWLNamedIndividual().getIRI().toString() );

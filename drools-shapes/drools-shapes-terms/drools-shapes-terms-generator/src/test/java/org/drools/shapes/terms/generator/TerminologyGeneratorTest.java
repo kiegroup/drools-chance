@@ -2,6 +2,8 @@ package org.drools.shapes.terms.generator;
 
 import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 import org.apache.commons.lang3.StringUtils;
+import org.drools.semantics.builder.reasoner.CodeSystem;
+import org.drools.semantics.builder.reasoner.ConceptCode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -50,7 +52,7 @@ public class TerminologyGeneratorTest {
     public void testGenerateConceptsWithReasoning() {
         assertEquals(1, codeSystemMap.size());
 
-        Set<Concept> concepts = codeSystemMap.values().iterator().next().getConcepts();
+        Set<ConceptCode> concepts = codeSystemMap.values().iterator().next().getConcepts();
 
         assertEquals(2, concepts.size());
     }
@@ -59,9 +61,9 @@ public class TerminologyGeneratorTest {
     public void testGenerateConceptsPopulated() {
         assertEquals(1, codeSystemMap.size());
 
-        Set<Concept> concepts = codeSystemMap.values().iterator().next().getConcepts();
+        Set<ConceptCode> concepts = codeSystemMap.values().iterator().next().getConcepts();
 
-        for( Concept concept : concepts ) {
+        for( ConceptCode concept : concepts ) {
             assertNotNull( concept.getCode() );
             assertNotNull( concept.getCodeSystem() );
             assertNotNull( concept.getName() );

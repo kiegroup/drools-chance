@@ -684,8 +684,32 @@ public class DL_7_RuleTest {
 
 
 
+    @Test
+    public void testDenotesRule() {
+        String owl = "Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>) " +
+                     "Prefix(easy:=<http://test#>) " +
 
+                     "Ontology(<http://test> " +
 
+                     "Declaration(Class(easy:AgeObservation)) " +
+                     "Declaration(Class(easy:Observation)) " +
+                     "Declaration(NamedIndividual(easy:person_age)) " +
+                     "DataPropertyAssertion(<http://www.w3.org/2004/02/skos/core#notation> easy:person_age \"age\"^^xsd:string) " +
+                     "EquivalentClasses(easy:AgeObservation ObjectIntersectionOf(ObjectSomeValuesFrom(<easy:code> ObjectHasValue(<http://www.mayo.edu/terms-metamodel/terms#expresses> easy:person_age)) easy:Observation)) " +
+                     "SubClassOf(easy:BiologicalProcess easy:Process) " +
+                     ")";
+
+        Resource res = KieServices.Factory.get().getResources().newByteArrayResource( owl.getBytes() );
+
+        OntoModel ontoModel = factory.buildModel( "test",
+                                                  res,
+                                                  DLFactoryConfiguration.newConfiguration( OntoModel.Mode.NONE,
+                                                                                           DLFactoryConfiguration.minimalAxiomGenerators ) );
+
+        String drl0 = new APIRecognitionRuleBuilder( ontoModel ).setRedeclare( true ).setUseMetaClass( false ).createDRL( false );
+
+        assertTrue( drl0.contains( "this#test.RootThing.code denotes Age" ) );
+    }
 
 
     @Test

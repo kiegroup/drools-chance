@@ -509,6 +509,9 @@ public class ShapeCaster
         protected boolean redeclare                 = false;
         protected String rootClass                  = Thing.class.getCanonicalName();
 
+        protected List<String> definitions          = new ArrayList<String>();
+        protected List<String> ignores              = new ArrayList<String>();
+
         public boolean isUseTMS() {
             return useTMS;
         }
@@ -564,7 +567,23 @@ public class ShapeCaster
         public void setRootClass( String rootClass ) {
             this.rootClass = rootClass;
         }
-        
+
+        public List<String> getDefinitions() {
+            return definitions;
+        }
+
+        public void setDefinitions( List<String> definitions ) {
+            this.definitions = definitions;
+        }
+
+        public List<String> getIgnores() {
+            return ignores;
+        }
+
+        public void setIgnores( List<String> ignores ) {
+            this.ignores = ignores;
+        }
+
         public Properties toProperties() {
             Properties prop = new Properties();
             prop.setProperty( "useTMS", Boolean.toString( useTMS ) );
@@ -573,7 +592,13 @@ public class ShapeCaster
             prop.setProperty( "refract", Boolean.toString( refract ) );
             prop.setProperty( "useMetaClass", Boolean.toString( useMetaClass ) );
             prop.setProperty( "redeclare", Boolean.toString( redeclare ) );
-            prop.setProperty( "rootClass", Thing.class.getCanonicalName() );
+            if ( definitions != null && ! definitions.isEmpty() ) {
+                prop.setProperty( "definitions", definitions.toString() );
+            }
+            if ( ignores != null && ! ignores.isEmpty() ) {
+                prop.setProperty( "ignores", ignores.toString() );
+            }
+            prop.setProperty( "rootClass", rootClass );
             return  prop;
         }
     }

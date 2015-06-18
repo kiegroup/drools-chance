@@ -24,53 +24,74 @@ import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.RecognitionRuleModel;
 import org.drools.semantics.builder.model.RecognitionRuleModelImpl;
 import org.drools.semantics.builder.reasoner.APIRecognitionRuleBuilder;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.StreamDocumentSource;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.w3._2002._07.owl.Thing;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 public class RecognitionRuleCompilerImpl extends ModelCompilerImpl implements RecognitionRuleCompiler {
 
     protected APIRecognitionRuleBuilder builder;
     protected Properties props;
+    protected OWLOntology additionals;
 
     @Override
     protected void setModel( final OntoModel model ) {
         this.model = (CompiledOntoModel) ModelFactory.newModel( ModelFactory.CompileTarget.RL, model );
         this.builder = new APIRecognitionRuleBuilder( model );
         initialize( props );
+        try {
+            additionals = loadAdditionalDefinitions( props );
+        } catch ( OWLOntologyCreationException e ) {
+            e.printStackTrace();
+        }
     }
+
 
     public CompiledOntoModel compile( OntoModel model ) {
         OWLOntology ontology = model.getOntology();
-        HashMap<String,Object> map = new HashMap<String, Object>();
 
         if ( getModel() == null ) {
             setModel( model );
         }
-        PackageDescrBuilder builder = ( ( RecognitionRuleModelImpl ) getModel() ).getPackage();
+        PackageDescrBuilder pdBuilder = ( ( RecognitionRuleModelImpl ) getModel() ).getPackage();
         for ( Concept con : getModel().getConcepts() ) {
-            if ( con.isPrimitive() ) {
+            if ( con.isPrimitive() || con.isAbstrakt() || con.isAnonymous() || con.isResolved() ) {
                 continue;
             }
             OWLClass klass = ontology.getOWLOntologyManager().getOWLDataFactory().getOWLClass( con.getIRI() );
-            Set<OWLClassExpression> defs = klass.getEquivalentClasses( ontology.getImportsClosure() );
-            if ( ! defs.isEmpty() ) {
-                for ( OWLClassExpression def : defs ) {
-                    map.clear();
-                    map.put( "klass", klass );
-                    map.put( "defn", def );
-                    compile( con, builder, map );
-                }
+            processDefinitions( con, klass, ontology, pdBuilder );
+            if ( additionals != null ) {
+                processDefinitions( con, klass, additionals, pdBuilder );
             }
         }
         return getModel();
+    }
+
+    private void processDefinitions( Concept con, OWLClass klass, OWLOntology ontology, PackageDescrBuilder pdBuilder ) {
+        Set<OWLClassExpression> defs = klass.getEquivalentClasses( ontology.getImportsClosure() );
+        HashMap<String,Object> map = new HashMap<String, Object>();
+        if ( ! defs.isEmpty() ) {
+            for ( OWLClassExpression def : defs ) {
+                map.clear();
+                map.put( "klass", klass );
+                map.put( "defn", def );
+                compile( con, pdBuilder, map );
+            }
+        }
     }
 
 
@@ -89,6 +110,45 @@ public class RecognitionRuleCompilerImpl extends ModelCompilerImpl implements Re
     public void configure( Properties properties ) {
         this.props = properties;
     }
+
+    private OWLOntology loadAdditionalDefinitions( Properties props ) throws OWLOntologyCreationException {
+        OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
+        if ( props.containsKey( "definitions" ) ) {
+            String list = props.getProperty( "definitions" );
+            StringTokenizer tok = new StringTokenizer( list, "[]," );
+
+            OWLOntologyLoaderConfiguration olc = new OWLOntologyLoaderConfiguration();
+            olc.setMissingImportHandlingStrategy( MissingImportHandlingStrategy.SILENT );
+            if ( props.containsKey( "ignores" ) ) {
+                olc = addIgnores( olc, props.getProperty( "ignores" ) );
+            }
+            OWLOntology ontology = null;
+            while ( tok.hasMoreTokens() ) {
+                String res = tok.nextToken();
+                try {
+
+                    ontology = ontologyManager.loadOntologyFromOntologyDocument(
+                            new StreamDocumentSource( RecognitionRuleCompilerImpl.class.getResourceAsStream( res ) ),
+                            olc );
+                } catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+            }
+            return ontology;
+        }
+        return null;
+    }
+
+    private OWLOntologyLoaderConfiguration addIgnores( OWLOntologyLoaderConfiguration olc, String ignores ) {
+        StringTokenizer tok = new StringTokenizer( ignores, "[]," );
+
+        while ( tok.hasMoreTokens() ) {
+            String res = tok.nextToken();
+            olc = olc.addIgnoredImport( IRI.create( res ) );
+        }
+        return olc;
+    }
+
 
     protected void initialize( Properties properties ) {
         builder.setRedeclare( Boolean.parseBoolean( properties.getProperty( "redeclare", "true" ) ) )

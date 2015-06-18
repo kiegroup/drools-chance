@@ -16,7 +16,7 @@ public class @{className} {
 
 
 @foreach{ concept : codeSystem.concepts }
-    public static final @{typeIntf.getName()} @{getPropertyName(concept.name)} = CodeFactory.get().buildCode( "@{concept.code}", "@{concept.name}", codeSystemId, codeSystemName );
+    public static final @{typeIntf.getName()} @{org.drools.semantics.utils.NameUtils.getTermConceptName(concept.code,concept.name)} = CodeFactory.get().buildCode( java.net.URI.create("@{concept.uri}"), "@{concept.code}", "@{concept.name}", codeSystemId, codeSystemName );
 
 @end{}
 

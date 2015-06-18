@@ -75,7 +75,7 @@ public class DLFactoryConfiguration {
     public static final List<InferredAxiomGenerator<? extends OWLAxiom>> minimalAxiomGenerators = Collections.unmodifiableList(
             new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>(
                     Arrays.asList(
-//                            new InferredClassAssertionAxiomGenerator(),
+                            new InferredClassAssertionAxiomGenerator(),
 //                            new InferredDataPropertyCharacteristicAxiomGenerator(),
 //                            new InferredEquivalentClassAxiomGenerator(),
 //                            new InferredEquivalentDataPropertiesAxiomGenerator(),
