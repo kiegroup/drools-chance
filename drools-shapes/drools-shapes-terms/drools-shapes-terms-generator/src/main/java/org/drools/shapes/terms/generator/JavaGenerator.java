@@ -1,7 +1,6 @@
 package org.drools.shapes.terms.generator;
 
-import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
-
+import cts2.mayo.edu.terms_metamodel.terms.ConceptDescriptor;
 import org.drools.semantics.builder.reasoner.CodeSystem;
 import org.drools.semantics.utils.NameUtils;
 import org.drools.shapes.terms.ConceptCoding;

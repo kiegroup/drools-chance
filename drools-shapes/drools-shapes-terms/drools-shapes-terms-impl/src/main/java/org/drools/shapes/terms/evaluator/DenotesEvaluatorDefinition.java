@@ -1,7 +1,7 @@
 package org.drools.shapes.terms.evaluator;
 
 import com.clarkparsia.empire.annotation.RdfProperty;
-import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
+import cts2.mayo.edu.terms_metamodel.terms.ConceptDescriptor;
 import org.drools.core.base.BaseEvaluator;
 import org.drools.core.base.ValueType;
 import org.drools.core.base.evaluators.EvaluatorDefinition;

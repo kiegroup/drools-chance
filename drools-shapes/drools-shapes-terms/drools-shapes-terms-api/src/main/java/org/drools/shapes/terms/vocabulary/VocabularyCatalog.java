@@ -7,7 +7,7 @@
 
 package org.drools.shapes.terms.vocabulary;
 
-import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
+import cts2.mayo.edu.terms_metamodel.terms.ConceptDescriptor;
 
 import java.net.URI;
 import java.util.Map;

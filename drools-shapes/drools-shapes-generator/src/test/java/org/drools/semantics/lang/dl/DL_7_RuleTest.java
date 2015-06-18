@@ -695,7 +695,7 @@ public class DL_7_RuleTest {
                      "Declaration(Class(easy:Observation)) " +
                      "Declaration(NamedIndividual(easy:person_age)) " +
                      "DataPropertyAssertion(<http://www.w3.org/2004/02/skos/core#notation> easy:person_age \"age\"^^xsd:string) " +
-                     "EquivalentClasses(easy:AgeObservation ObjectIntersectionOf(ObjectSomeValuesFrom(<easy:code> ObjectHasValue(<http://www.mayo.edu/terms-metamodel/terms#expresses> easy:person_age)) easy:Observation)) " +
+                     "EquivalentClasses(easy:AgeObservation ObjectIntersectionOf(ObjectSomeValuesFrom(<easy:code> ObjectHasValue(<http://edu.mayo.cts2/terms-metamodel/terms#expresses> easy:person_age)) easy:Observation)) " +
                      "SubClassOf(easy:BiologicalProcess easy:Process) " +
                      ")";
 

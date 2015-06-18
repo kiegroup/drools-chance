@@ -89,6 +89,7 @@ public class RecognitionRuleCompilerImpl extends ModelCompilerImpl implements Re
                 map.clear();
                 map.put( "klass", klass );
                 map.put( "defn", def );
+                map.put( "ontology", ontology );
                 compile( con, pdBuilder, map );
             }
         }
@@ -99,7 +100,8 @@ public class RecognitionRuleCompilerImpl extends ModelCompilerImpl implements Re
         getModel().addTrait( con.getIri(), builder.createDRL( (OWLClass) params.get( "klass" ),
                                                               (OWLClassExpression) params.get( "defn" ),
                                                               false,
-                                                              (PackageDescrBuilder) context ) );
+                                                              (PackageDescrBuilder) context,
+                                                              (OWLOntology) params.get( "ontology" ) ) );
     }
 
     public RecognitionRuleModel getModel() {

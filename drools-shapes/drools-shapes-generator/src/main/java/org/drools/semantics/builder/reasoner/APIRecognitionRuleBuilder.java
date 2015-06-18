@@ -34,13 +34,11 @@ import org.kie.internal.utils.KieHelper;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLDataCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLDataComplementOf;
 import org.semanticweb.owlapi.model.OWLDataExactCardinality;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
 import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
 import org.semanticweb.owlapi.model.OWLDataMinCardinality;
@@ -62,6 +60,7 @@ import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLQuantifiedDataRestriction;
 import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
@@ -94,9 +93,11 @@ public class APIRecognitionRuleBuilder {
     protected boolean redeclare                 = false;
 
     protected OntoModel model;
+    protected DLogicTransformer transformer;
 
     public APIRecognitionRuleBuilder( OntoModel model ) {
         this.model = model;
+        transformer = new DLogicTransformer( model.getOntology() );
     }
 
 
@@ -107,7 +108,7 @@ public class APIRecognitionRuleBuilder {
     public String createDRL( boolean validate ) {
         definitions = preprocessDefinitions( new DLogicTransformer( model.getOntology() ).getDefinitions() );
 
-        PackageDescr root = visit( definitions );
+        PackageDescr root = visit( definitions, model.getOntology() );
 
         String drl = generateDRL( root, validate );
 
@@ -122,27 +123,28 @@ public class APIRecognitionRuleBuilder {
         return drl;
     }
 
-    protected PackageDescr visit( final Map<OWLClassExpression, OWLClassExpression> definitions ) {
+    protected PackageDescr visit( final Map<OWLClassExpression, OWLClassExpression> definitions, OWLOntology ontology ) {
         PackageDescrBuilder builder = PackageDescrBuilderImpl.newPackage().name( model.getDefaultPackage() );;
 
         buildHeader( builder );
 
         for ( OWLClassExpression k : definitions.keySet() ) {
             if ( ! k.isAnonymous() ) {
-                buildRecognitionRule( k.asOWLClass(), definitions.get( k ), builder.newRule() );
+                buildRecognitionRule( k.asOWLClass(), definitions.get( k ), builder.newRule(), ontology );
             }
         }
 
         return builder.getDescr();
     }
 
-    public RuleDescr createDRL( final OWLClass klass, final OWLClassExpression definition, boolean withHeader, PackageDescrBuilder builder ) {
+    public RuleDescr createDRL( final OWLClass klass, final OWLClassExpression definition, boolean withHeader, PackageDescrBuilder builder, OWLOntology ontology ) {
         RuleDescrBuilder rule = builder.newRule();
         if ( withHeader ) {
             buildHeader( builder );
         }
 
-        buildRecognitionRule( klass, definition, rule );
+        buildRecognitionRule( klass, transformer.toDNF( definition ), rule, ontology != null ? ontology : model.getOntology() );
+
         return rule.getDescr();
     }
 
@@ -156,9 +158,9 @@ public class APIRecognitionRuleBuilder {
         }
     }
 
-    protected void buildRecognitionRule( OWLClass klass, OWLClassExpression defn, RuleDescrBuilder rule ) {
+    protected void buildRecognitionRule( OWLClass klass, OWLClassExpression defn, RuleDescrBuilder rule, OWLOntology ontology ) {
         context.clearBindings();
-        String fqn =  model.getConcept( klass.getIRI().toQuotedString() ).getFullyQualifiedName();
+        String fqn = model.getConcept( klass.getIRI().toQuotedString() ).getFullyQualifiedName();
 
         rule.name( "Recognition " + klass.getIRI().toString() );
         rule.attribute( "no-loop", "" );
@@ -172,7 +174,7 @@ public class APIRecognitionRuleBuilder {
             .append( " ); \n" );
         }
 
-        processOr( rule.lhs(), defn, fqn, null );
+        processOr( rule.lhs(), defn, fqn, null, ontology );
 
         if ( ! useMetaClass ) {
             rhs.append( "\t" ).append( "don( " )
@@ -180,31 +182,31 @@ public class APIRecognitionRuleBuilder {
                     .append( fqn ).append( ".class" )
                     .append( useTMS ? ", true " : ", false" ).append( " );" ).append( "\n" );
         } else {
-            rhs.append( "\t" ).append( fqn ).append( "_" )
-                    .append( ".don( " ).append( context.getScopedIdentifier() ).append( " );" ).append( "\n" );
+            rhs.append( "\t" ).append( "bolster( " ).append( fqn ).append( "_" )
+                    .append( ".don( " ).append( context.getScopedIdentifier() ).append( " ) );" ).append( "\n" );
         }
         rule.rhs( rhs.toString() );
     }
 
-    protected void processOr( CEDescrBuilder parent, OWLClassExpression expr, String typeName, Object source ) {
+    protected void processOr( CEDescrBuilder parent, OWLClassExpression expr, String typeName, Object source, OWLOntology ontology ) {
         CEDescrBuilder or = parent.or();
         context.clearBindings();
         if ( expr instanceof OWLObjectUnionOf ) {
             OWLObjectUnionOf union = (OWLObjectUnionOf) expr;
             for ( OWLClassExpression sub : union.getOperandsAsList() ) {
-                processAnd( or, sub, typeName, source );
+                processAnd( or, sub, typeName, source, ontology );
             }
         } else if ( ! expr.isAnonymous() ) {
-            processAnd( or, expr, typeName, source );
+            processAnd( or, expr, typeName, source, ontology );
         }
     }
 
-    protected void processAnd( CEDescrBuilder or, OWLClassExpression expr, String typeName, Object source ) {
+    protected void processAnd( CEDescrBuilder or, OWLClassExpression expr, String typeName, Object source, OWLOntology ontology ) {
         CEDescrBuilder and = or.and();
-        processArg( and, expr, typeName, source );
+        processArg( and, expr, typeName, source, ontology );
     }
 
-    protected void processArg( CEDescrBuilder parent, OWLClassExpression arg, String typeName, Object source ) {
+    protected void processArg( CEDescrBuilder parent, OWLClassExpression arg, String typeName, Object source, OWLOntology ontology ) {
 
         PatternDescrBuilder pattern = parent.pattern();
 
@@ -226,7 +228,7 @@ public class APIRecognitionRuleBuilder {
                 } else if ( subArg instanceof OWLObjectSomeValuesFrom && isDenotes( subArg ) ) {
                     IRI propIRI = ( (OWLObjectSomeValuesFrom) subArg ).getProperty().getNamedProperty().getIRI();
                     String prop = typedProperty( propIRI.toQuotedString(), propIRI.getFragment() );
-                    String val = qualifiedConceptName( ( (OWLObjectSomeValuesFrom) subArg ).getFiller() );
+                    String val = qualifiedConceptName( ( (OWLObjectSomeValuesFrom) subArg ).getFiller(), ontology );
                     pattern.constraint( prop + " denotes " + val );
                 } else if ( subArg instanceof OWLObjectComplementOf && ! ( (OWLObjectComplementOf) subArg ).getOperand().isAnonymous() ) {
                     pattern.constraint( isA( "this", false, ( (OWLObjectComplementOf) subArg ).getOperand() ) );
@@ -250,7 +252,7 @@ public class APIRecognitionRuleBuilder {
                      && ! isDenotes( subArg )
                      && ! ( subArg instanceof OWLObjectComplementOf && ! ( (OWLObjectComplementOf) subArg ).getOperand().isAnonymous() )
                      && ! ( subArg instanceof OWLObjectOneOf ) ) {
-                    nestedAtom( parent, subArg );
+                    nestedAtom( parent, subArg, ontology );
                 }
             }
             context.clearBindings();
@@ -260,9 +262,9 @@ public class APIRecognitionRuleBuilder {
 
     }
 
-    private String qualifiedConceptName( OWLClassExpression filler ) {
+    private String qualifiedConceptName( OWLClassExpression filler, OWLOntology ontology ) {
         String res = "";
-        OWLDataFactory odf = model.getOntology().getOWLOntologyManager().getOWLDataFactory();
+        OWLDataFactory odf = ontology.getOWLOntologyManager().getOWLDataFactory();
         OWLObjectSomeValuesFrom expresses = (OWLObjectSomeValuesFrom) ( (OWLObjectUnionOf) filler ).getOperandsAsList().iterator().next();
         OWLClassExpression nested = expresses.getFiller();
         nested = ((OWLNaryBooleanClassExpression) nested ).getOperandsAsList().get( 0 );
@@ -270,13 +272,13 @@ public class APIRecognitionRuleBuilder {
         OWLObjectOneOf ones = (OWLObjectOneOf) nested;
 
         OWLNamedIndividual concept = (OWLNamedIndividual) ones.getIndividuals().iterator().next();
-        Set<OWLIndividual> schemes = concept.getObjectPropertyValues( odf.getOWLObjectProperty( IN_SCHEME ), model.getOntology() );
+        Set<OWLIndividual> schemes = concept.getObjectPropertyValues( odf.getOWLObjectProperty( IN_SCHEME ), ontology );
         if ( ! schemes.isEmpty() ) {
             OWLNamedIndividual scheme = (OWLNamedIndividual) schemes.iterator().next();
-            CodeSystem cs = CodeSystem.build( scheme, model.getOntology() );
-            res += NameUtils.getTermCodeSystemName( cs.getCodeSystemName() );
+            CodeSystem cs = CodeSystem.build( scheme, ontology );
+            res += NameUtils.namespaceURIToPackage( scheme.getIRI().getNamespace() ) + "." + NameUtils.getTermCodeSystemName( cs.getCodeSystemName() ) + ".";
         }
-        ConceptCode code = ConceptCode.build( concept, model.getOntology() );
+        ConceptCode code = ConceptCode.build( concept, ontology );
         res += NameUtils.getTermConceptName( code.getCode(), code.getName() );
 
         return res;
@@ -368,13 +370,13 @@ public class APIRecognitionRuleBuilder {
         return sb.toString();
     }
 
-    protected void nestedAtom( CEDescrBuilder parent, OWLClassExpression expr ) {
+    protected void nestedAtom( CEDescrBuilder parent, OWLClassExpression expr, OWLOntology ontology ) {
         if ( expr instanceof OWLObjectComplementOf ) {
-            negAtom( parent, (OWLObjectComplementOf) expr );
+            negAtom( parent, (OWLObjectComplementOf) expr, ontology );
         } else if ( expr instanceof OWLObjectSomeValuesFrom ) {
-            someAtom( parent, (OWLObjectSomeValuesFrom) expr );
+            someAtom( parent, (OWLObjectSomeValuesFrom) expr, ontology );
         } else if ( expr instanceof OWLObjectCardinalityRestriction ) {
-            numAtom( parent, (OWLObjectCardinalityRestriction) expr );
+            numAtom( parent, (OWLObjectCardinalityRestriction) expr, ontology );
         } else if ( expr instanceof OWLDataSomeValuesFrom ) {
             someData( parent, ( OWLDataSomeValuesFrom ) expr );
         } else if ( expr instanceof OWLDataAllValuesFrom ) {
@@ -383,25 +385,25 @@ public class APIRecognitionRuleBuilder {
     }
 
 
-    protected void negAtom( CEDescrBuilder parent, OWLObjectComplementOf expr ) {
+    protected void negAtom( CEDescrBuilder parent, OWLObjectComplementOf expr, OWLOntology ontology ) {
         OWLClassExpression operand = expr.getOperand();
         OWLQuantifiedRestriction restr = (OWLQuantifiedRestriction) operand;
         String key = ((OWLObjectPropertyExpression) restr.getProperty()).asOWLObjectProperty().getIRI().toQuotedString();
         String pName = model.getProperty( key ).getName();
-        processOr( parent.not(), (OWLObjectUnionOf) restr.getFiller(), null, context.getPropertyKey( pName ) );
+        processOr( parent.not(), (OWLObjectUnionOf) restr.getFiller(), null, context.getPropertyKey( pName ), ontology );
     }
 
-    protected void someAtom( CEDescrBuilder parent, OWLObjectSomeValuesFrom expr ) {
+    protected void someAtom( CEDescrBuilder parent, OWLObjectSomeValuesFrom expr, OWLOntology ontology ) {
         String key = expr.getProperty().asOWLObjectProperty().getIRI().toQuotedString();
         String pName = model.getProperty( key ).getName();
         String src = context.getPropertyKey( pName );
 
         context.push();
-        processOr( parent.exists(), (OWLObjectUnionOf) expr.getFiller(), null, src );
+        processOr( parent.exists(), (OWLObjectUnionOf) expr.getFiller(), null, src, ontology );
         context.pop();
     }
 
-    protected void numAtom( CEDescrBuilder parent, OWLObjectCardinalityRestriction expr ) {
+    protected void numAtom( CEDescrBuilder parent, OWLObjectCardinalityRestriction expr, OWLOntology ontology ) {
         String key = expr.getProperty().asOWLObjectProperty().getIRI().toQuotedString();
         String pName = model.getProperty( key ).getName();
         String src = context.getPropertyKey( pName );
@@ -416,7 +418,7 @@ public class APIRecognitionRuleBuilder {
         } else if ( expr instanceof OWLObjectExactCardinality ) {
             acc.constraint( "$num" + " == " + expr.getCardinality() );
         }
-        processOr( acc.source(), (OWLObjectUnionOf) expr.getFiller(), null, src );
+        processOr( acc.source(), (OWLObjectUnionOf) expr.getFiller(), null, src, ontology );
         context.pop();
     }
 

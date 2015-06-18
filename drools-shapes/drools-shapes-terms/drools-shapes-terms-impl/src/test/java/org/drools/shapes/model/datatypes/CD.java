@@ -8,7 +8,7 @@
 package org.drools.shapes.model.datatypes;
 
 
-import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
+import cts2.mayo.edu.terms_metamodel.terms.ConceptDescriptor;
 
 import java.net.URI;
 import java.util.List;

@@ -81,7 +81,6 @@ public class DLogicTransformer {
         DNFVisitor visitor = new DNFVisitor();
         nnf.accept( visitor );
         OWLClassExpression dnf = visitor.getDNF();
-        System.out.println( dnf );
         return dnf;
     }
 

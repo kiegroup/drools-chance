@@ -7,7 +7,7 @@
 
 package org.drools.shapes.terms;
 
-import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
+import cts2.mayo.edu.terms_metamodel.terms.ConceptDescriptor;
 import org.drools.shapes.model.datatypes.CD;
 
 import java.net.URI;

@@ -1,6 +1,7 @@
 package org.drools.shapes.terms.evaluator;
 
 
+import cts2.mayo.edu.terms_metamodel.terms.ConceptDescriptor;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.ScopedEntityName;
@@ -15,7 +16,6 @@ import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescripti
 import edu.mayo.cts2.framework.service.profile.mapentry.name.MapEntryReadId;
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId;
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.name.ValueSetDefinitionReadId;
-import edu.mayo.terms_metamodel.terms.ConceptDescriptor;
 import org.apache.commons.lang.StringUtils;
 import org.drools.shapes.terms.TermsInferenceServiceFactory;
 import org.drools.shapes.terms.operations.TermsInference;
