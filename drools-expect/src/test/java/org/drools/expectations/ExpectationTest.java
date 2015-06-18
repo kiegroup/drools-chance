@@ -137,14 +137,23 @@ public class ExpectationTest extends ExpTestBase {
                 "    } onViolation { " +
                 "        \t System.out.println( 'Expectation violated' ); " +
                 "    } " +
-                "   expect TextMsg( '9135551234', '8185551234', 'Did you call?', $more ; this after[0,100ms] $trigger ) " +
+                "   expect $tmsg: TextMsg( '9135551234', '8185551234', 'Did you call?', $more ; this after[0,100ms] $trigger ) " +
                 "   onFulfill { " +
-                "       insert(new TextMsg( drools.getWorkingMemory(), '8185551234', '9135551234', 'Yes', '8^)' ) ); " +
+                "       \t $tmsg.setEmoticon(' ;-)'); \n " +
+                "       \t update($tmsg); \n " +
                 "       \t list.add( 'TM1'+$more );\n " +
                 "       \t System.out.println( 'Secondary expectation fulfilled' );\n " +
                 "   } onViolation { " +
                 "       \t System.out.println( 'Secondary expectation violated' ); " +
-                "   }" +
+                "   } " +
+                "   expect forall( $msg: TextMsg( '9135551234' ) " +
+                "                        TextMsg( this == $msg, emoticon == ' ;-)' ) ) " +
+                "   onFulfill { " +
+                "       \t list.add( 'TM2' ); " +
+                "       \t System.out.println( 'Tertiary expectation fulfilled' ); " +
+                "   } onViolation {" +
+                "       \t System.out.println( 'Tertiary expectation violated' ); " +
+                "   } " +
                 "   list.add( 0 ); " +
                 "   System.out.println( 'Triggered expectation ' + $trigger ); " +
                 "end " +

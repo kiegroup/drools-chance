@@ -222,15 +222,24 @@ public class DRLExpectationParser  {
             }
 
             String label = null;
+            boolean contained = false;
             if ( input.LA( 1 ) == DRL6Lexer.ID && input.LA( 2 ) == DRL6Lexer.COLON && !helper.validateCEKeyword( 1 ) ) {
                 label = parser.label(DroolsEditorType.IDENTIFIER_PATTERN);
                 if ( state.failed ) return null;
+            } else if (helper.validateCEKeyword(1)) {
+                if (helper.validateIdentifierKey( DroolsSoftKeywords.FORALL)) {
+                    contained = true;
+                }
             }
 
             if ( state.backtracking == 0 ) {
-                parser.lhsPattern( negated ? expectDescr.expectLhs().not().pattern() : expectDescr.expectLhs().pattern(), label, false );
+                if (contained) {
+                    parser.lhsForall(expectDescr.expectLhs());
+                } else {
+                    parser.lhsPattern(negated ? expectDescr.expectLhs().not().pattern() : expectDescr.expectLhs().pattern(), label, false);
+                }
             } else {
-                parser.lhsPattern( null, label, false );
+                parser.lhsPattern(null, label, false);
             }
 
             failsOn(packageDescr, expectDescr, (ExpectationRuleDescr) rule.getDescr() );
