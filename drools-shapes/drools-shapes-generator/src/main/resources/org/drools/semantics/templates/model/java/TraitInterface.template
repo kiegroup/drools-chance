@@ -32,10 +32,10 @@ import javax.persistence.Basic;
 
 // @{iri}
 
-@RdfsClass( value="@{namespace}@{name}" )
+@RdfsClass( value="@{iri}" )
 @Namespaces({ "tns", "@{namespace}" })
 @thewebsemantic.Namespace( "@{namespace}" )
-@thewebsemantic.RdfType( "@{namespace}@{name}" )
+@thewebsemantic.RdfType( "@{iri}}" )
 @org.drools.core.factmodel.traits.Trait
 @org.kie.api.definition.type.PropertyReactive
 public interface @{name} extends @if{ ! standalone } org.drools.semantics.Thing, @end{} org.drools.core.metadata.Metadatable  @if{ implInterface != null} , @{ implInterface } @end{}

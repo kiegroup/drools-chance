@@ -198,6 +198,8 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
 
         register( "http://www.w3.org/2001/XMLSchema#unsignedInt", "xsd:unsignedInt" );
 
+        register( "http://www.w3.org/2001/XMLSchema#base64Binary", "xsd:base64Binary" );
+
         register( "http://www.w3.org/2001/XMLSchema#anyURI", "xsd:anyURI" );
 
         registerComplexConcept( "http://www.w3.org/2001/XMLSchema#List", "List" );
@@ -949,6 +951,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
             }
         }
         this.conceptCache.put( iri.toQuotedString(), rangeCon );
+        rangeCon.setAnonymous( true );
         model.addConcept( rangeCon );
         return rangeCon;
     }

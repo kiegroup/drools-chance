@@ -31,6 +31,7 @@ import org.drools.semantics.builder.DLFactoryBuilder;
 import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.shapes.OntoModelCompiler;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -469,6 +470,41 @@ public class DL_9_CompilationTest {
         }
 
     }
+
+    @Test
+    public void testMetaclassWithCrossAttributes() {
+
+        OntoModel results = factory.buildModel( "crossAttributes",
+                                                ResourceFactory.newClassPathResource( "ontologies/crossAttributes.owl" ),
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
+
+        assertTrue( results.isHierarchyConsistent() );
+
+        compiler = new OntoModelCompiler( results, folder.getRoot() );
+
+        // ****** Stream the java interfaces
+        boolean javaOut = compiler.streamJavaInterfaces( true );
+
+        assertTrue( javaOut );
+
+        // ****** Stream the XSDs, the JaxB customizations abd the persistence configuration
+        boolean metaOut = compiler.streamMetaclasses( false );
+        assertTrue( metaOut );
+
+        showDirContent( folder );
+
+        List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler.doCompile();
+
+        boolean success = true;
+        for ( Diagnostic diag : diagnostics ) {
+            System.out.println( "ERROR : " + diag );
+            if ( diag.getKind() == Diagnostic.Kind.ERROR ) {
+                success = false;
+            }
+        }
+        assertTrue( success );
+    }
+
 
     @Test
     public void testRecognitionRuleGeneration() {

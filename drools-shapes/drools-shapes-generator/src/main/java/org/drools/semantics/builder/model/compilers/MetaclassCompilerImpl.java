@@ -32,8 +32,10 @@ import org.drools.semantics.utils.NameUtils;
 import org.w3._2002._07.owl.Thing;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MetaclassCompilerImpl extends ModelCompilerImpl implements MetaclassModelCompiler {
 
@@ -57,36 +59,50 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
     }
 
     @Override
-    public void compile( Concept con, Object target, Map<String, Object> params ) {
+    public void compile( Concept con, Object tgt, Map<String, Object> params ) {
 
-        if ( con.getIRI().toQuotedString().equals( Thing.IRI ) ) {
+        if ( con.getIRI().toQuotedString().equals( Thing.IRI ) || con.isAbstrakt() || con.isAnonymous() ) {
             return;
         }
 
         Map<String,PropInfo> properties = new HashMap<String, PropInfo>();
+        Set<PropInfo> localProperties = new HashSet<PropInfo>();
         propertyCache.put( con.getFullyQualifiedName(), properties );
 
         for ( PropertyRelation prop : con.getAvailableProperties() ) {
 
             PropInfo p = new PropInfo();
+            Concept target = findLocalRange( prop.getTarget() );
+
             p.propName = prop.getName();
-            p.typeName = prop.getTarget().getFullyQualifiedName();
-            p.simpleTypeName = prop.getTarget().getName();
+            p.typeName = target.getFullyQualifiedName();
+            p.simpleTypeName = target.getName();
 
             p.propIri = prop.getIri();
-            p.simple = prop.getTarget().isPrimitive();
-            p.primitive = prop.getTarget().isPrimitive();
+            p.simple = prop.getMaxCard() != null && prop.getMaxCard() == 1;
+            p.primitive = target.isPrimitive();
 
             p.inherited = prop.isInherited();
 
-            p.range = NameUtils.map( prop.getTarget().getFullyQualifiedName(), true );
+            p.range = NameUtils.map( target.getFullyQualifiedName(), true );
             p.javaRangeType = p.simple ? p.range : List.class.getName() + "<" + p.range + ">";
 
             p.domain = prop.getDomain().getFullyQualifiedName();
 
             String inverseName = prop.getInverse() != null ? prop.getInverse().getName() : null;
 
-            properties.put( p.propName, p );
+            if ( prop.isRestricted() ) {
+                if ( ! prop.getTarget().isPrimitive() && ! prop.isTransient() && ! ( prop.isAttribute() && ! ( prop.getMaxCard() != null && prop.getMaxCard() == 1 ) ) ) {
+                    properties.put( p.propName, p );
+                }
+            } else {
+                properties.put( p.propName, p );
+            }
+
+            if ( isLocal( prop, con ) ) {
+                localProperties.add( p );
+            }
+
 
 
             if ( inverseName != null ) {
@@ -125,26 +141,54 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
             }
         }
 
+        Concept parent = findConcreteParent( con.getChosenSuperConcept() );
 
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put( "klassName", con.getName() );
         map.put( "typeName", con.getName() );
+        map.put( "fullTypeName", con.getFullyQualifiedName() );
         map.put( "package", con.getPackage() );
-        map.put( "supertypeName", con.getChosenSuperConcept().getName() );
-        map.put( "supertypePackage", con.getChosenSuperConcept().getPackage()  );
+        map.put( "supertypeName", parent.getName() );
+        map.put( "supertypePackage", parent.getPackage()  );
         map.put( "typeIri", con.getIri() );
-        map.put( "withImpl", useImplClasses );
+        map.put( "withImpl", this.useImplClasses );
 
         map.put( "properties", properties.values() );
+        map.put( "localProperties", localProperties );
 
         String metaClass = SemanticXSDModelCompilerImpl.getTemplatedCode( metaClassTempl, map );
-
-        System.out.println( metaClass );
 
         model.addTrait( con.getFullyQualifiedName(), new AbstractJavaModelImpl.InterfaceHolder( metaClass, con.getPackage() ) );
 
     }
 
+    private boolean isLocal( PropertyRelation prop, Concept con ) {
+        if ( con.getChosenProperties().containsValue( prop ) ) {
+            return true;
+        }
+        if ( prop.getDomain().isAnonymous() ) {
+            return true;
+        }
+        return con.getChosenSuperConcept().getAvailableProperties().contains( prop );
+    }
+
+    private Concept findLocalRange( Concept target ) {
+        if ( ! ( target.isAnonymous() || target.isAbstrakt() ) ) {
+            return target;
+        } else {
+            return findConcreteParent( target.getChosenSuperConcept() );
+        }
+    }
+
+    private Concept findConcreteParent( Concept chosenSuperConcept ) {
+        while ( chosenSuperConcept.isAbstrakt() || chosenSuperConcept.isAnonymous() ) {
+            if ( chosenSuperConcept == chosenSuperConcept.getChosenSuperConcept() ) {
+                return model.getConcept( Thing.IRI );
+            }
+            chosenSuperConcept = chosenSuperConcept.getChosenSuperConcept();
+        }
+        return chosenSuperConcept;
+    }
 
 
     public String buildFactory( String pack ) {
@@ -157,7 +201,9 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
             if ( !pack.equals( con.getPackage() ) ) {
                 continue;
             }
-            classNames.put( con.getName(), con.getFullyQualifiedName() );
+            if ( ! con.isAbstrakt() ) {
+                classNames.put( con.getName(), con.getFullyQualifiedName() );
+            }
         }
         return SemanticXSDModelCompilerImpl.getTemplatedCode( metaFactoryTempl, map );
     }

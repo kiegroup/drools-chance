@@ -10,7 +10,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         metaClassInfo = @{ typeName }_Meta.getInstance();
     }
 
-    @foreach{ prop : properties } @if{ ! prop.inherited }
+    @foreach{ prop : properties } @if{ localProperties.contains( prop ) }
         public static final org.drools.core.metadata.MetaProperty<@{ prop.domain },@{ prop.range },@{ prop.javaRangeType }> @{ prop.propName } = @{ typeName }_Meta.@{ prop.propName };
     @end{}@end{ '\n' }
 
@@ -44,7 +44,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         public static @{ typeName }_Meta getInstance() {
             if ( instance == null ) {
                 instance = new @{ typeName }_Meta( new org.drools.core.metadata.MetaProperty[] {
-                        @foreach{ prop : properties } @if{ ! prop.inherited } @{ prop.propName }, @end{} @end{}
+                        @foreach{ prop : properties } @if{ localProperties.contains( prop ) } @{ prop.propName }, @end{} @end{}
                 } );
             }
             return instance;
@@ -52,7 +52,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
 
         @foreach{ prop : properties }
-            @if{ ! prop.inherited }
+            @if{ localProperties.contains( prop ) }
             public static final org.drools.core.metadata.@if{ prop.simple }One@else{}Many@end{}ValuedMetaProperty
                                         <@{ prop.domain }, @{ prop.range }@if{ !prop.simple }, @{ prop.javaRangeType }@end{}> @{ prop.propName } =
                     new @{ prop.concreteType }<@{prop.domain},@{ prop.range }>
@@ -138,7 +138,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
         @foreach{ prop : properties }
         public @{ typeName }_NewInstance<T> @{ prop.propName }( @{ prop.javaRangeType } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
-            @if{ ! prop.inherited }
+            @if{ localProperties.contains( prop ) }
                 getSetter().@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
                 @else{}
                 super.@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
@@ -147,7 +147,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         }
         @if{ ! prop.simple }
         public @{ typeName }_NewInstance<T> @{ prop.propName }( @{ prop.range } value, org.drools.core.metadata.Lit mode ) {
-            @if{ ! prop.inherited }
+            @if{ localProperties.contains( prop ) }
                 getSetter().@{ prop.propName }( value, mode );
                 @else{}
                 super.@{ prop.propName }( value, mode );
@@ -192,7 +192,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
         @foreach{ prop : properties }
         public @{typeName}_Modify @{ prop.propName }( @{ prop.javaRangeType } newVal @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
-            @if{ ! prop.inherited }
+            @if{ localProperties.contains( prop ) }
             addTask( @{ prop.propName }, newVal, @if{ ! prop.simple } mode @else{} newVal != null ? org.drools.core.metadata.Lit.SET : org.drools.core.metadata.Lit.REMOVE @end{} );
             @else{}
             super.@{ prop.propName }( newVal @if{ ! prop.simple }, mode @end{} );
@@ -201,7 +201,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         }
         @if{ ! prop.simple }
         public @{typeName}_Modify @{ prop.propName }( @{ prop.range } newVal, org.drools.core.metadata.Lit mode ) {
-            @if{ ! prop.inherited }
+            @if{ localProperties.contains( prop ) }
             addTask( @{ prop.propName }, java.util.Collections.singletonList( newVal ), mode );
             @else{}
             super.@{ prop.propName }( newVal, mode );
@@ -239,7 +239,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
         @foreach{ prop : properties }
         public @{ typeName }_Don<K,T> @{ prop.propName }( @{ prop.javaRangeType } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
-            @if{ ! prop.inherited }
+            @if{ localProperties.contains( prop ) }
             getSetter().@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
             @else{}
             super.@{ prop.propName }( value @if{ ! prop.simple }, mode @end{} );
@@ -248,7 +248,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         }
         @if{ ! prop.simple }
         public @{ typeName }_Don<K,T> @{ prop.propName }( @{ prop.range } value, org.drools.core.metadata.Lit mode ) {
-            @if{ ! prop.inherited }
+            @if{ localProperties.contains( prop ) }
             getSetter().@{ prop.propName }( value, mode );
             @else{}
             super.@{ prop.propName }( value, mode );

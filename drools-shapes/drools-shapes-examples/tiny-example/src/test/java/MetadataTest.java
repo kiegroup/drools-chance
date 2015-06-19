@@ -11,6 +11,7 @@ import org.drools.core.factmodel.traits.TraitableBean;
 import org.drools.core.util.StandaloneTraitFactory;
 import org.junit.Test;
 import org.test.MyKlass;
+import org.test.MyKlass_;
 import org.test.MyTargetKlass;
 import org.w3._2002._07.owl.ThingImpl;
 
@@ -31,6 +32,11 @@ public class MetadataTest {
         ski.setProp( "hello" );
 
         MySubKlass_ sk = new MySubKlass_( ski );
+
+        MyKlass_ k = new MyKlass_( null );
+
+
+
 
         assertEquals( 42, (int) sk.subProp.get( ski ) );
         assertEquals( "hello", sk.prop.get( ski ) );

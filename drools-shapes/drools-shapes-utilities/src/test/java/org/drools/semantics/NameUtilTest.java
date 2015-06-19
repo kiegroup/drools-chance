@@ -12,7 +12,7 @@ public class NameUtilTest {
         String s = "_foo_bar___";
         String t = NameUtils.compactUpperCase( s );
         System.out.println( t );
-        assertEquals( "FooBar___", t );
+        assertEquals( "FooBar3", t );
     }
 
 }

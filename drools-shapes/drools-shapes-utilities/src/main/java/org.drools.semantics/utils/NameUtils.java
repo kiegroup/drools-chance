@@ -579,13 +579,14 @@ public final class NameUtils {
     }
 
     private static String trail( String s ) {
-        //Pattern p = Pattern.compile( "_+$" );
-        //return p.matcher( s.trim() ).group( 1 );
         int start = s.length() - 1;
+        int count = 0;
         while ( start > 1 && s.charAt( start ) == '_' ) {
             start--;
+            count++;
         }
-        return s.substring( start + 1 );
+        //return s.substring( start + 1 );
+        return ""+count;
     }
 
     public static String compactUpperCase( final String name ) {
@@ -711,6 +712,10 @@ public final class NameUtils {
         } else if ( "xsd:unsignedInt".equals( dataType ) ) {
 
             return box ? "java.lang.Long" : "long";
+
+        } else if ( "xsd:base64Binary".equals( dataType ) ) {
+
+            return box ? "java.lang.Byte[]" : "byte[]";
 
         } else {
             return dataType;
