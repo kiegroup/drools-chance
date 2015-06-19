@@ -127,9 +127,13 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             if ( getInstantiatorFactory() != null ) {
                 return getInstantiatorFactory().instantiate( @{ typeName }.class, getId() );
             }
+            @if{ withImpl }
             @{package}.@{ typeName }Impl x = new @{package}.@{ typeName }Impl();
             x.setDyEntryId( getId().toString() );
             return x;
+            @else{}
+              throw new UnsupportedOperationException( "Unable to create an instance for class @{package}.@{typeName}");
+            @end{}
         }
 
         @foreach{ prop : properties }

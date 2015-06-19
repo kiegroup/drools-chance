@@ -23,14 +23,15 @@ public class ModelCompilerFactory {
 
     public static ModelCompiler newModelCompiler( ModelFactory.CompileTarget target ) {
         switch ( target ) {
-            case JAVA   : return new JavaInterfaceModelCompilerImpl();
-            case DRL    : return new DRLModelCompilerImpl();
-            case JAR    : return new JarInterfaceModelCompilerImpl();
-            case GRAPH  : return new GraphModelCompilerImpl();
-            case XSD    : return new XSDModelCompilerImpl();
-            case XSDX   : return new SemanticXSDModelCompilerImpl();
-            case WORKSET: return new WorkingSetModelCompilerImpl();
-            case RL     : return new RecognitionRuleCompilerImpl();
+            case JAVA       : return new JavaInterfaceModelCompilerImpl();
+            case DRL        : return new DRLModelCompilerImpl();
+            case JAR        : return new JarInterfaceModelCompilerImpl();
+            case GRAPH      : return new GraphModelCompilerImpl();
+            case XSD        : return new XSDModelCompilerImpl();
+            case XSDX       : return new SemanticXSDModelCompilerImpl();
+            case WORKSET    : return new WorkingSetModelCompilerImpl();
+            case RL         : return new RecognitionRuleCompilerImpl();
+            case METACLASS  : return new MetaclassCompilerImpl();
         }
         return null;
     }

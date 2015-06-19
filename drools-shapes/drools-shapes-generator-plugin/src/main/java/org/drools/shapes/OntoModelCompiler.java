@@ -6,10 +6,12 @@ import org.drools.semantics.builder.DLFactoryConfiguration;
 import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.DRLModel;
 import org.drools.semantics.builder.model.JarModel;
+import org.drools.semantics.builder.model.MetaclassModel;
 import org.drools.semantics.builder.model.ModelFactory;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.RecognitionRuleModel;
 import org.drools.semantics.builder.model.SemanticXSDModel;
+import org.drools.semantics.builder.model.compilers.MetaclassModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompiler;
 import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.RecognitionRuleCompiler;
@@ -350,9 +352,20 @@ public class OntoModelCompiler {
         return success;
     }
 
+    public boolean streamMetaclasses( boolean withDefaultClasses ) {
+        MetaclassModelCompiler mcompiler = (MetaclassModelCompiler) ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.METACLASS );
+        MetaclassModel metaModel = (MetaclassModel) mcompiler.compile( model, withDefaultClasses );
+
+        boolean success = metaModel.save( getJavaDir().getPath() );
+        if ( withDefaultClasses ) {
+            success = metaModel.streamFactory( mcompiler.buildFactory( model.getDefaultPackage() ), getJavaDir().getPath() );
+        }
+
+        return success;
+    }
 
     public boolean streamJavaInterfaces( boolean includeJar ) {
-        ModelCompiler jcompiler = ModelCompilerFactory.newModelCompiler(ModelFactory.CompileTarget.JAR);
+        ModelCompiler jcompiler = ModelCompilerFactory.newModelCompiler( ModelFactory.CompileTarget.JAR );
         JarModel jarModel = (JarModel) jcompiler.compile( model );
 
         boolean success = jarModel.save( getJavaDir().getPath() );

@@ -23,10 +23,8 @@ import org.drools.semantics.builder.model.Concept;
 import org.drools.semantics.builder.model.OntoModel;
 import org.drools.semantics.builder.model.PropertyRelation;
 import org.drools.semantics.utils.NameUtils;
-import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message;
+import org.kie.api.builder.Results;
 import org.kie.api.definition.type.PropertyReactive;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.conf.EvaluatorOption;
@@ -575,32 +573,12 @@ public class APIRecognitionRuleBuilder {
     public static String generateDRL( PackageDescr root, boolean validate ) {
         String drl = new DrlDumper().dump( root );
 
-        System.out.println( drl );
-
         if ( validate ) {
             KieHelper kh = new KieHelper(
-                EvaluatorOption.get( "denotes", new EvaluatorDefinition() {
-                                         public String[] getEvaluatorIds() { return new String[] { "denotes" }; }
-                                         public boolean isNegatable() { return false; }
-                                         public Evaluator getEvaluator( ValueType type, String operatorId, boolean isNegated, String parameterText, Target leftTarget, Target rightTarget ) { return null; }
-                                         public Evaluator getEvaluator( ValueType type, String operatorId, boolean isNegated, String parameterText ) { return null; }
-                                         public Evaluator getEvaluator( ValueType type, Operator operator, String parameterText ) { return null; }
-                                         public Evaluator getEvaluator( ValueType type, Operator operator ) { return null; }
-                                         public boolean supportsType( ValueType type ) { return true; }
-                                         public Target getTarget() { return Target.FACT; }
-                                         public void writeExternal( ObjectOutput objectOutput ) throws IOException {}
-                                         public void readExternal( ObjectInput objectInput ) throws IOException, ClassNotFoundException {}
-                                     } )
-                );
-            KieServices kieServices = KieServices.Factory.get();
-            KieFileSystem kfs = kieServices.newKieFileSystem();
-            kfs.write( kieServices.getResources().newByteArrayResource( drl.getBytes() )
-                               .setSourcePath( "test.drl" )
-                               .setResourceType( ResourceType.DRL ) );
-            KieBuilder kieBuilder = kieServices.newKieBuilder( kfs );
-            kieBuilder.buildAll();
-            if ( kieBuilder.getResults().hasMessages( Message.Level.ERROR ) ) {
-                throw new IllegalStateException( kieBuilder.getResults().getMessages( Message.Level.ERROR ).toString() );
+                EvaluatorOption.get( "denotes", new MockEvaluatorDefinition() ) );
+            Results res = kh.addContent( drl, ResourceType.DRL ).verify();
+            if ( res.hasMessages( Message.Level.ERROR ) ) {
+                throw new IllegalStateException( res.getMessages( Message.Level.ERROR ).toString() );
             }
         }
 
@@ -649,5 +627,18 @@ public class APIRecognitionRuleBuilder {
         return this;
     }
 
+    public static class MockEvaluatorDefinition implements EvaluatorDefinition {
+        public MockEvaluatorDefinition() { }
+        public String[] getEvaluatorIds() { return new String[] { "denotes" }; }
+        public boolean isNegatable() { return false; }
+        public Evaluator getEvaluator( ValueType type, String operatorId, boolean isNegated, String parameterText, EvaluatorDefinition.Target leftTarget, EvaluatorDefinition.Target rightTarget ) { return null; }
+        public Evaluator getEvaluator( ValueType type, String operatorId, boolean isNegated, String parameterText ) { return null; }
+        public Evaluator getEvaluator( ValueType type, Operator operator, String parameterText ) { return null; }
+        public Evaluator getEvaluator( ValueType type, Operator operator ) { return null; }
+        public boolean supportsType( ValueType type ) { return true; }
+        public EvaluatorDefinition.Target getTarget() { return EvaluatorDefinition.Target.FACT; }
+        public void writeExternal( ObjectOutput objectOutput ) throws IOException {}
+        public void readExternal( ObjectInput objectInput ) throws IOException, ClassNotFoundException {}
+    }
 
 }

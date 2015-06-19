@@ -287,8 +287,18 @@ public class ShapeCaster
     }
 
 
+    /**
+     * @parameter default-value="false"
+     */
+    private boolean generateMetaclasses = false;
 
+    public boolean isGenerateMetaclasses() {
+        return generateMetaclasses;
+    }
 
+    public void setGenerateMetaclasses( boolean generateMetaclasses ) {
+        this.generateMetaclasses = generateMetaclasses;
+    }
 
 
 
@@ -357,6 +367,10 @@ public class ShapeCaster
 
         if ( isGenerateDefaultImplClasses() ) {
             compiler.streamXSDsWithBindings( true, persistenceTemplate );
+        }
+
+        if ( isGenerateMetaclasses() ) {
+            compiler.streamMetaclasses( this.isGenerateDefaultImplClasses() );
         }
 
         if ( isGenerateIndividuals() ) {

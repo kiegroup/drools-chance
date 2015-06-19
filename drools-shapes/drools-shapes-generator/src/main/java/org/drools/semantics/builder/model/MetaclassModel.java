@@ -17,7 +17,18 @@
 package org.drools.semantics.builder.model;
 
 
-public class JavaInterfaceModelImpl extends AbstractJavaModelImpl implements JavaInterfaceModel {
+import org.jdom.Document;
+import org.jdom.Namespace;
+
+import java.io.File;
+import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Map;
 
 
+public interface MetaclassModel extends CompiledOntoModel {
+
+    boolean save( String path );
+
+    boolean streamFactory( String code, String path );
 }

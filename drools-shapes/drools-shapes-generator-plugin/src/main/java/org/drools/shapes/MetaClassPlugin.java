@@ -34,10 +34,7 @@ import java.util.Set;
 public class
         MetaClassPlugin extends MetadataPlugin {
 
-    private static String metaClassTempl = "metaClass";
     private static String metaAttribTempl = "metaAttrib";
-    private static String metaFactoryTempl = "metaFactory";
-
 
     public String getOptionName() {
         return "Xmetaclass";
@@ -52,233 +49,31 @@ public class
     @Override
     public boolean run(Outline outline, Options opt, ErrorHandler errorHandler) throws SAXException {
 
-        Map<String, Map<String,PropInfo>> propertyCache = new HashMap<String, Map<String, PropInfo>>(  );
-
         for (ClassOutline co : outline.getClasses() ) {
 
             CPluginCustomization c = co.target.getCustomizations().find( uri.toString(), "type" );
             if( c == null ) {
                 continue;
             }
-
-            Map<String,PropInfo> properties = new HashMap<String, PropInfo>();
-            propertyCache.put( co.target.getName(), properties );
-
-            Element keyed = c.element;
-            NodeList propList = keyed.getChildNodes();
-            for ( int j = 0; j < propList.getLength(); j++ ) {
-                Node n = propList.item( j );
-                if ( n instanceof Element ) {
-                    Element el = (Element) n;
-
-                    PropInfo p = new PropInfo();
-                    p.propName = el.getAttribute( "name" );
-
-                    String fqn =  el.getAttribute( "type" );
-                    p.typeName = fqn;
-                    p.simpleTypeName = fqn.substring( fqn.lastIndexOf( '.' ) + 1 );
-
-                    p.propIri = el.getAttribute( "iri" );
-                    p.simple = Boolean.valueOf( ( (Element) n ).getAttribute( "simple" ) );
-                    p.primitive = Boolean.valueOf( ( (Element) n ).getAttribute( "primitive" ) );
-
-                    p.inherited = Boolean.valueOf( el.getAttribute( "inherited" ) );
-
-                    String javaType = getJavaType( p.typeName );
-                    p.range = javaType;
-                    p.javaRangeType = p.simple ? javaType : ( List.class.getName() + "<" + javaType + ">" );
-
-                    p.domain = getJavaType( el.getAttribute( "domain" ) );
-
-                    String inverseName = el.getAttribute( "inverse" ).length() > 0 ? el.getAttribute( "inverse" ) : null;
-
-                    properties.put( p.propName, p );
-
-                    if ( inverseName != null ) {
-                        Map<String,PropInfo> foreignProperties = propertyCache.get( p.range );
-                        if ( foreignProperties == null ) {
-                            foreignProperties = propertyCache.get( p.range + "Impl" );
-                        }
-                        if ( foreignProperties != null ) {
-                            PropInfo inv = null;
-                            if ( foreignProperties.containsKey( inverseName ) ) {
-                                inv = foreignProperties.get( inverseName );
-                            } else {
-                                inverseName = inverseName + p.domain.substring( p.domain.lastIndexOf( "." ) + 1 );
-                                inv = foreignProperties.get( inverseName );
-                            }
-                            if ( inv != null ) {
-                                p.inverse = inv;
-                                inv.inverse = p;
-                            } else {
-                                // it may still be a property with same domain and range
-                            }
-                        }
-                    }
-
-                }
-            }
-
-        }
-
-        for (ClassOutline co : outline.getClasses() ) {
-            CPluginCustomization c = co.target.getCustomizations().find( uri.toString(), "type" );
-            if( c == null ) {
-                continue;
-            }
-            Element keyed = c.element;
-
-            Map<String,PropInfo> properties = propertyCache.get( co.target.getName() );
-            for ( PropInfo p : properties.values() ) {
-                if ( p.inverse == null ) {
-                    p.concreteType = p.simple ? ToOnePropertyLiteral.class.getName() : ToManyPropertyLiteral.class.getName();
-                } else {
-                    if ( p.simple ) {
-                        p.concreteType = p.inverse.simple ? OneToOnePropertyLiteral.class.getName() : ManyToOnePropertyLiteral.class.getName();
-                    } else {
-                        p.concreteType = p.inverse.simple ? OneToManyPropertyLiteral.class.getName() : ManyToManyPropertyLiteral.class.getName();
-                    }
-                }
-            }
-
 
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put( "klassName", co.target.shortName );
-            map.put( "typeName", keyed.getAttribute( "name" ) );
-            map.put( "package", keyed.getAttribute( "package" ) );
-            map.put( "supertypeName", keyed.getAttribute( "parent" ) );
-            map.put( "supertypePackage", keyed.getAttribute( "parentPackage" ) );
-            map.put( "typeIri", keyed.getAttribute( "iri" ) );
+            map.put( "typeName", c.element.getAttribute( "name" ) );
+            map.put( "package", c.element.getAttribute( "package" ) );
+            map.put( "supertypeName", c.element.getAttribute( "parent" ) );
+            map.put( "supertypePackage", c.element.getAttribute( "parentPackage" ) );
+            map.put( "typeIri", c.element.getAttribute( "iri" ) );
 
-            map.put( "properties", properties.values() );
-
-            String metaClass = SemanticXSDModelCompilerImpl.getTemplatedCode( metaClassTempl, map );
-            String metaAttrib = SemanticXSDModelCompilerImpl.getTemplatedCode( metaAttribTempl, map);
+            String metaAttrib = SemanticXSDModelCompilerImpl.getTemplatedCode( metaAttribTempl, map );
 
             co.implClass._implements( MetadataHolder.class );
             co.implClass.direct( metaAttrib );
-
-            FileOutputStream fos = null;
-            try {
-                File metaFile = new File( opt.targetDir.getPath().replace( "xjc", "java" ) +
-                                          File.separator +
-                                          StringUtils.replace(keyed.getAttribute( "package" ), ".", File.separator ) +
-                                          File.separator +
-                                          keyed.getAttribute( "name" ) +
-                                          "_.java" );
-                if ( ! metaFile.getParentFile().exists() ) {
-                    metaFile.getParentFile().mkdirs();
-                }
-                fos = new FileOutputStream( metaFile );
-                fos.write( metaClass.getBytes() );
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            } finally {
-                if ( fos != null ) {
-                    try {
-                        fos.close();
-                    } catch ( IOException e ) {
-                        e.printStackTrace();
-                    }
-                }
-            }
 
             c.markAsAcknowledged();
 
         }
 
-        Set<String> packages = new HashSet<String>();
-        for ( ClassOutline co : outline.getClasses() ) {
-            CPluginCustomization c = co.target.getCustomizations().find( uri.toString(), "type" );
-            if( c == null ) {
-                continue;
-            }
-            Element keyed = c.element;
-            if ( keyed.hasAttribute( "package" ) ) {
-                packages.add( keyed.getAttribute( "package" ) );
-            }
-        }
-        for ( String pack : packages ) {
-            buildFactory( pack, outline.getClasses(), opt );
-        }
-
         return true;
     }
 
-
-
-    private void buildFactory( String pack, Collection<? extends ClassOutline> classes, Options opt ) {
-        Map<String,String> classNames = new HashMap<String, String>();
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put( "classNames", classNames );
-        map.put( "package", pack );
-
-        for ( ClassOutline co : classes ) {
-            CPluginCustomization c = co.target.getCustomizations().find( uri.toString(), "type" );
-            if ( c == null ) {
-                continue;
-            }
-            Element keyed = c.element;
-            if ( ! pack.equals( keyed.getAttribute( "package" ) ) ) {
-                continue;
-            }
-            String simpleName = keyed.getAttribute( "name" );
-            classNames.put( simpleName , pack + "." + simpleName );
-        }
-        String metaFactory = SemanticXSDModelCompilerImpl.getTemplatedCode( metaFactoryTempl, map );
-
-        FileOutputStream fos = null;
-        try {
-            File metaFile = new File( opt.targetDir.getPath().replace( "xjc", "java" ) +
-                                      File.separator +
-                                      StringUtils.replace( pack, ".", File.separator ) +
-                                      File.separator +
-                                      "MetaFactory.java" );
-            if ( ! metaFile.getParentFile().exists() ) {
-                metaFile.getParentFile().mkdirs();
-            }
-            fos = new FileOutputStream( metaFile );
-            fos.write( metaFactory.getBytes() );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        } finally {
-            if ( fos != null ) {
-                try {
-                    fos.close();
-                } catch ( IOException e ) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }
-
-
-    private String getJavaType( String name ) {
-        // try built ins to resolve xsd:simpletypes. if not, assume a regular java class
-        String javaName = NameUtils.builtInTypeToWrappingJavaType( name );
-        if ( javaName != null ) {
-            return javaName;
-        } else {
-            return name;
-        }
-    }
-
-
-    public class PropInfo {
-
-        public String propName;
-        public String typeName;
-        public String javaRangeType;
-        public String propIri;
-        public boolean simple;
-        public String range;
-        public String domain;
-        public boolean inherited;
-        public PropInfo inverse;
-        public String concreteType;
-        public int position;
-        public String simpleTypeName;
-        public boolean primitive;
-    }
 }

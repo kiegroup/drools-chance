@@ -71,10 +71,8 @@ import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -308,7 +306,7 @@ public class DL_9_CompilationTest {
     }
 
     @Test
-    public void testMetadataMetaclassGeneration() {
+    public void testMetadataMetaclassGeneration() throws ParserConfigurationException, TransformerException, SAXException, IOException {
 
         OntoModel results = factory.buildModel( "simple",
                                                 ResourceFactory.newClassPathResource( "ontologies/testMetadata.owl" ),
@@ -327,6 +325,9 @@ public class DL_9_CompilationTest {
         boolean xsdOut = compiler.streamXSDsWithBindings( true );
 
         assertTrue( xsdOut );
+
+        boolean metaOut = compiler.streamMetaclasses( true );
+        assertTrue( metaOut );
 
         showDirContent( folder );
 
@@ -408,8 +409,11 @@ public class DL_9_CompilationTest {
 
         // ****** Stream the XSDs, the JaxB customizations abd the persistence configuration
         boolean xsdOut = compiler.streamXSDsWithBindings( true );
-
         assertTrue( xsdOut );
+
+        // ****** Stream the XSDs, the JaxB customizations abd the persistence configuration
+        boolean metaOut = compiler.streamMetaclasses( true );
+        assertTrue( metaOut );
 
         showDirContent( folder );
 
@@ -530,6 +534,39 @@ public class DL_9_CompilationTest {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             fail( e.getMessage() );
         }
+
+    }
+
+    @Test
+    public void testMetaClassGeneration() {
+
+        OntoModel results = factory.buildModel( "rules",
+                                                ResourceFactory.newClassPathResource( "ontologies/testSimpleDefinition.owl" ),
+                                                DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
+        compiler = new OntoModelCompiler( results, folder.getRoot() );
+
+        // ****** Stream the java interfaces
+        boolean javaOut = compiler.streamJavaInterfaces( true );
+        assertTrue( javaOut );
+
+        // ****** Stream the recognition rules
+        boolean recogOut = compiler.streamRecognitionRules( new Properties() );
+        assertTrue( recogOut );
+
+        boolean mcOut = compiler.streamMetaclasses( false );
+        assertTrue( mcOut );
+
+        showDirContent( folder );
+
+        List<Diagnostic<? extends JavaFileObject>> diagnostics = compiler.doCompile();
+        boolean success = true;
+        for ( Diagnostic diag : diagnostics ) {
+            System.out.println( "ERROR : " + diag );
+            if ( diag.getKind() == Diagnostic.Kind.ERROR ) {
+                success = false;
+            }
+        }
+        assertTrue( success );
 
     }
 

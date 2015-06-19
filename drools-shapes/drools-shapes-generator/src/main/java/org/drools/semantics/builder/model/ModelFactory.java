@@ -23,7 +23,7 @@ public class ModelFactory {
 
 
     public enum CompileTarget {
-        BASE, JAVA, DRL, RL, JAR, GRAPH, XSD, XSDX, WORKSET;
+        BASE, JAVA, DRL, RL, JAR, GRAPH, XSD, XSDX, WORKSET, METACLASS;
     }
 
 
@@ -74,6 +74,9 @@ public class ModelFactory {
             case RL     : CompiledOntoModel rmodel = new RecognitionRuleModelImpl();
                             rmodel.initFromBaseModel( base );
                             return rmodel;
+            case METACLASS: CompiledOntoModel mmodel = new MetaclassModelImpl();
+                            mmodel.initFromBaseModel( base );
+                            return mmodel;
             case BASE:
             default  : GenericModelImpl model = new GenericModelImpl();
                 model.setPackageNameMappings( nameMappings );

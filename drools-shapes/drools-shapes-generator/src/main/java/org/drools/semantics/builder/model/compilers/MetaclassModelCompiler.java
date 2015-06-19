@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package org.drools.semantics.builder.model;
+package org.drools.semantics.builder.model.compilers;
 
+import org.drools.semantics.builder.model.CompiledOntoModel;
+import org.drools.semantics.builder.model.OntoModel;
+import org.drools.semantics.builder.model.SemanticXSDModel;
 
-public class JavaInterfaceModelImpl extends AbstractJavaModelImpl implements JavaInterfaceModel {
+import java.io.File;
 
+public interface MetaclassModelCompiler extends ModelCompiler {
 
+    public CompiledOntoModel compile( OntoModel model, boolean withMetaclasses );
+
+    public String buildFactory( String pack );
 }
