@@ -141,7 +141,7 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
             }
         }
 
-        Concept parent = findConcreteParent( con.getChosenSuperConcept() );
+        Concept parent = findConcreteParent( con, con.getChosenSuperConcept(), localProperties, properties );
 
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put( "klassName", con.getName() );
@@ -169,7 +169,7 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
         if ( prop.getDomain().isAnonymous() ) {
             return true;
         }
-        return ! con.getChosenSuperConcept().getAvailableProperties().contains( prop );
+        return ! con.getChosenSuperConcept().hasImplProperty( prop );
     }
 
     private Concept findLocalRange( Concept target ) {
@@ -184,6 +184,19 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
         while ( chosenSuperConcept.isAbstrakt() || chosenSuperConcept.isAnonymous() ) {
             if ( chosenSuperConcept == chosenSuperConcept.getChosenSuperConcept() ) {
                 return model.getConcept( Thing.IRI );
+            }
+            chosenSuperConcept = chosenSuperConcept.getChosenSuperConcept();
+        }
+        return chosenSuperConcept;
+    }
+
+    private Concept findConcreteParent( Concept base, Concept chosenSuperConcept, Set<PropInfo> localProperties, Map<String, PropInfo> properties ) {
+        while ( chosenSuperConcept.isAbstrakt() || chosenSuperConcept.isAnonymous() ) {
+            if ( chosenSuperConcept == chosenSuperConcept.getChosenSuperConcept() ) {
+                return model.getConcept( Thing.IRI );
+            }
+            for ( PropertyRelation p : chosenSuperConcept.getChosenProperties().values() ) {
+                localProperties.add( properties.get( p.getName() ) );
             }
             chosenSuperConcept = chosenSuperConcept.getChosenSuperConcept();
         }

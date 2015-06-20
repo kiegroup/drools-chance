@@ -307,6 +307,17 @@ public class Concept implements Cloneable {
         return ans;
     }
 
+    public boolean hasImplProperty( PropertyRelation prop ) {
+        Concept con = this;
+        while ( con != null ) {
+            if ( con.getChosenProperties().containsValue( prop ) ) {
+                return true;
+            }
+            con = con.getChosenSuperConcept();
+        }
+        return false;
+    }
+
 
     public ConceptImplProxy getImplementingCon() {
         return implementingCon;
