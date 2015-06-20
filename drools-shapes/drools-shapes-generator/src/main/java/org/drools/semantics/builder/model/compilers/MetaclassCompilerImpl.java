@@ -169,7 +169,7 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
         if ( prop.getDomain().isAnonymous() ) {
             return true;
         }
-        return con.getChosenSuperConcept().getAvailableProperties().contains( prop );
+        return ! con.getChosenSuperConcept().getAvailableProperties().contains( prop );
     }
 
     private Concept findLocalRange( Concept target ) {
