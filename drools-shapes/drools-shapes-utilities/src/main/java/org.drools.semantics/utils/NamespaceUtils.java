@@ -8,6 +8,8 @@ import java.util.Map;
 
 public class NamespaceUtils {
 
+    private static final String OWL_PACKAGE = "org.w3._2002._07.owl";
+
     private static Map<String, Namespace> knownNamespaces;
 
     static {
@@ -63,5 +65,8 @@ public class NamespaceUtils {
         return ns1;
     }
 
+    public static boolean isOWL( String packageName ) {
+        return OWL_PACKAGE.equals( packageName );
+    }
 
 }

@@ -88,6 +88,9 @@ package org.drools.semantics.builder.model.compilers;
             if ( con.isTop() && standalone ) {
                 sups.remove( con );
             }
+            if ( con.isResolved() && con.getResolvedAs() == Concept.Resolution.CLASS ) {
+                sups.remove( con );
+            }
         }
         return sups;
     }

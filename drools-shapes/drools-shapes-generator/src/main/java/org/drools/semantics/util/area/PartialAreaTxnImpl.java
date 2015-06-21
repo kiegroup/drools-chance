@@ -43,10 +43,10 @@ public class PartialAreaTxnImpl {
 //
 //                    for( Concept root : area.getRoots() ) {
 //                        BitSet bs = new BitSet();
-//                        bs = (BitSet) root.getTypeCode().clone();
-//                        bs.and( cct.getTypeCode() );
+//                        bs = (BitSet) root._getTypeCode().clone();
+//                        bs.and( cct._getTypeCode() );
 //
-//                        if( root.getTypeCode().equals( bs ) ) {
+//                        if( root._getTypeCode().equals( bs ) ) {
 //                            numParents++;
 //                        }
 //

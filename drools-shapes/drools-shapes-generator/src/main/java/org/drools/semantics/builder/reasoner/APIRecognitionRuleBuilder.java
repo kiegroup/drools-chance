@@ -78,6 +78,8 @@ public class APIRecognitionRuleBuilder {
     private static final IRI EXPRESSES = IRI.create( TermsNames.EXPRESSES );
     private static final IRI IN_SCHEME = IRI.create( TermsNames.IN_SCHEME );
 
+    private static int counter = 0;
+
     protected Map<OWLClassExpression,OWLClassExpression> definitions;
     protected DLRecognitionBuildContext context = new DLRecognitionBuildContext();
 
@@ -160,7 +162,7 @@ public class APIRecognitionRuleBuilder {
         context.clearBindings();
         String fqn = model.getConcept( klass.getIRI().toQuotedString() ).getFullyQualifiedName();
 
-        rule.name( "Recognition " + klass.getIRI().toString() );
+        rule.name( "Recognition " + klass.getIRI().toString() + ( counter++ ) );
         rule.attribute( "no-loop", "" );
 
         StringBuilder rhs = new StringBuilder();
@@ -181,7 +183,7 @@ public class APIRecognitionRuleBuilder {
                     .append( useTMS ? ", true " : ", false" ).append( " );" ).append( "\n" );
         } else {
             rhs.append( "\t" ).append( "bolster( " ).append( fqn ).append( "_" )
-                    .append( ".don( " ).append( context.getScopedIdentifier() ).append( " ) );" ).append( "\n" );
+                    .append( ".don" ).append( NameUtils.capitalize( klass.getIRI().getFragment() ) ).append( "( " ).append( context.getScopedIdentifier() ).append( " ) );" ).append( "\n" );
         }
         rule.rhs( rhs.toString() );
     }

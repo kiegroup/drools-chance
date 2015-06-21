@@ -17,6 +17,7 @@ import org.drools.semantics.builder.model.compilers.ModelCompilerFactory;
 import org.drools.semantics.builder.model.compilers.RecognitionRuleCompiler;
 import org.drools.semantics.builder.model.compilers.SemanticXSDModelCompiler;
 import org.drools.semantics.utils.NameUtils;
+import org.drools.semantics.utils.NamespaceUtils;
 import org.jvnet.hyperjaxb3.maven2.Hyperjaxb3Mojo;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -358,7 +359,13 @@ public class OntoModelCompiler {
 
         boolean success = metaModel.save( getJavaDir().getPath() );
         if ( withDefaultClasses ) {
-            success = metaModel.streamFactory( mcompiler.buildFactory( model.getDefaultPackage() ), getJavaDir().getPath() );
+            for ( String pack : model.getAllPackageNames() ) {
+                if ( NamespaceUtils.isOWL( pack ) ) {
+                    continue;
+                }
+                success &= metaModel.streamFactory( mcompiler.buildFactory( pack ), getJavaDir().getPath() + pack.replaceAll( "\\.", File.separator ) );
+            }
+
         }
 
         return success;

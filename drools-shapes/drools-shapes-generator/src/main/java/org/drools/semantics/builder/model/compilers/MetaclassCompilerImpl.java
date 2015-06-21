@@ -55,78 +55,94 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
     @Override
     public CompiledOntoModel compile( OntoModel model, boolean withMetaclasses ) {
         this.useImplClasses = withMetaclasses;
+        preparePropertyCache( model );
         return super.compile( model );
     }
+
+    private void preparePropertyCache( OntoModel model ) {
+        for ( Concept con : model.getConcepts() ) {
+            if ( con.getIRI().toQuotedString().equals( Thing.IRI ) || con.isAbstrakt() || con.isAnonymous() ) {
+                continue;
+            }
+            Map<String,PropInfo> properties = new HashMap<String, PropInfo>();
+            propertyCache.put( con.getFullyQualifiedName(), properties );
+
+
+            for ( PropertyRelation prop : con.getAvailableProperties() ) {
+
+                PropInfo p = new PropInfo();
+                Concept target = findLocalRange( prop.getTarget() );
+
+                p.propName = prop.getName();
+                p.typeName = target.getFullyQualifiedName();
+                p.simpleTypeName = target.getName();
+
+                p.propIri = prop.getIri();
+                p.simple = prop.getMaxCard() != null && prop.getMaxCard() == 1;
+                p.primitive = target.isPrimitive();
+
+                p.inherited = prop.isInherited();
+
+                p.range = NameUtils.map( target.getFullyQualifiedName(), true );
+                p.javaRangeType = p.simple ? p.range : List.class.getName() + "<" + p.range + ">";
+
+                p.domain = prop.getDomain().getFullyQualifiedName();
+
+                String inverseName = prop.getInverse() != null ? prop.getInverse().getName() : null;
+
+                if ( prop.isRestricted() ) {
+                    if ( ! prop.getTarget().isPrimitive() && ! prop.isTransient() && ! ( prop.isAttribute() && ! ( prop.getMaxCard() != null && prop.getMaxCard() == 1 ) ) ) {
+                        properties.put( p.propName, p );
+                    }
+                } else {
+                    properties.put( p.propName, p );
+                }
+
+
+                if ( inverseName != null ) {
+                    Map<String, PropInfo> foreignProperties = propertyCache.get( p.range );
+                    if ( foreignProperties == null ) {
+                        foreignProperties = propertyCache.get( p.range + "Impl" );
+                    }
+                    if ( foreignProperties != null ) {
+                        PropInfo inv = null;
+                        if ( foreignProperties.containsKey( inverseName ) ) {
+                            inv = foreignProperties.get( inverseName );
+                        } else {
+                            inverseName = inverseName + p.domain.substring( p.domain.lastIndexOf( "." ) + 1 );
+                            inv = foreignProperties.get( inverseName );
+                        }
+                        if ( inv != null ) {
+                            p.inverse = inv;
+                            inv.inverse = p;
+                        } else {
+                            // it may still be a property with same domain and range
+                        }
+                    }
+                }
+
+            }
+
+        }
+    }
+
+
 
     @Override
     public void compile( Concept con, Object tgt, Map<String, Object> params ) {
 
-        if ( con.getIRI().toQuotedString().equals( Thing.IRI ) || con.isAbstrakt() || con.isAnonymous() ) {
+        if ( con.getIRI().toQuotedString().equals( Thing.IRI ) || con.isAbstrakt() || con.isAnonymous() || con.isResolved() ) {
             return;
         }
 
-        Map<String,PropInfo> properties = new HashMap<String, PropInfo>();
+        Map<String,PropInfo> properties = propertyCache.get( con.getFullyQualifiedName() );
         Set<PropInfo> localProperties = new HashSet<PropInfo>();
-        propertyCache.put( con.getFullyQualifiedName(), properties );
 
         for ( PropertyRelation prop : con.getAvailableProperties() ) {
-
-            PropInfo p = new PropInfo();
-            Concept target = findLocalRange( prop.getTarget() );
-
-            p.propName = prop.getName();
-            p.typeName = target.getFullyQualifiedName();
-            p.simpleTypeName = target.getName();
-
-            p.propIri = prop.getIri();
-            p.simple = prop.getMaxCard() != null && prop.getMaxCard() == 1;
-            p.primitive = target.isPrimitive();
-
-            p.inherited = prop.isInherited();
-
-            p.range = NameUtils.map( target.getFullyQualifiedName(), true );
-            p.javaRangeType = p.simple ? p.range : List.class.getName() + "<" + p.range + ">";
-
-            p.domain = prop.getDomain().getFullyQualifiedName();
-
-            String inverseName = prop.getInverse() != null ? prop.getInverse().getName() : null;
-
-            if ( prop.isRestricted() ) {
-                if ( ! prop.getTarget().isPrimitive() && ! prop.isTransient() && ! ( prop.isAttribute() && ! ( prop.getMaxCard() != null && prop.getMaxCard() == 1 ) ) ) {
-                    properties.put( p.propName, p );
-                }
-            } else {
-                properties.put( p.propName, p );
-            }
-
+            PropInfo p = properties.get( prop.getName() );
             if ( isLocal( prop, con ) ) {
                 localProperties.add( p );
             }
-
-
-
-            if ( inverseName != null ) {
-                Map<String, PropInfo> foreignProperties = propertyCache.get( p.range );
-                if ( foreignProperties == null ) {
-                    foreignProperties = propertyCache.get( p.range + "Impl" );
-                }
-                if ( foreignProperties != null ) {
-                    PropInfo inv = null;
-                    if ( foreignProperties.containsKey( inverseName ) ) {
-                        inv = foreignProperties.get( inverseName );
-                    } else {
-                        inverseName = inverseName + p.domain.substring( p.domain.lastIndexOf( "." ) + 1 );
-                        inv = foreignProperties.get( inverseName );
-                    }
-                    if ( inv != null ) {
-                        p.inverse = inv;
-                        inv.inverse = p;
-                    } else {
-                        // it may still be a property with same domain and range
-                    }
-                }
-            }
-
         }
 
         for ( PropInfo p : properties.values() ) {
@@ -159,8 +175,8 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
         String metaClass = SemanticXSDModelCompilerImpl.getTemplatedCode( metaClassTempl, map );
 
         model.addTrait( con.getFullyQualifiedName(), new AbstractJavaModelImpl.InterfaceHolder( metaClass, con.getPackage() ) );
-
     }
+
 
     private boolean isLocal( PropertyRelation prop, Concept con ) {
         if ( con.getChosenProperties().containsValue( prop ) ) {

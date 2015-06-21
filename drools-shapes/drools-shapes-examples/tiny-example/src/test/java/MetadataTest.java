@@ -3,10 +3,14 @@ import com.foo.MySubKlass;
 import com.foo.MySubKlassImpl;
 import com.foo.MySubKlass_;
 
+import org.drools.core.metadata.InvertibleMetaProperty;
 import org.junit.Test;
+import org.test.MetaFactory;
 import org.test.MyKlass;
 import org.test.MyKlassImpl;
 import org.test.MyKlass_;
+import org.test.MyTargetKlass;
+import org.test.MyTargetKlass_;
 import org.w3._2002._07.owl.ThingImpl;
 
 import java.lang.reflect.Field;
@@ -36,7 +40,7 @@ public class MetadataTest {
         assertEquals( 42, (int) sk.subProp.get( ski ) );
         assertEquals( "hello", sk.prop.get( ski ) );
 
-        sk.modify().prop( "bye" ).subProp( -99 ).call();
+        sk.modify().subProp( -99 ).prop( "bye" ).call();
 
         assertEquals( -99, (int) sk.subProp.get( ski ) );
         assertEquals( "bye", sk.prop.get( ski ) );
@@ -53,7 +57,7 @@ public class MetadataTest {
         assertEquals( 42, (int) sk.subProp.get( ski ) );
         assertEquals( "hello", sk.prop.get( ski ) );
 
-        sk.modify().prop( "bye" ).subProp( -99 ).call();
+        sk.modify().subProp( -99 ).prop( "bye" ).call();
 
         assertEquals( -99, (int) sk.subProp.get( ski ) );
         assertEquals( "bye", sk.prop.get( ski ) );
@@ -85,6 +89,19 @@ public class MetadataTest {
     }
 
 
+    @Test
+    public void testMetaFactory() {
+        Class<?> m1 = org.test.MetaFactory.class;
+        assertEquals( 8, m1.getDeclaredMethods().length );
+        Class<?> m2 = com.foo.MetaFactory.class;
+        assertEquals( 4, m2.getDeclaredMethods().length );
+    }
+
+    @Test
+    public void testInvertibility() {
+        assertTrue( MyKlass_.links instanceof InvertibleMetaProperty );
+        assertTrue( MyTargetKlass_.linkedBy instanceof InvertibleMetaProperty );
+    }
 
 }
 

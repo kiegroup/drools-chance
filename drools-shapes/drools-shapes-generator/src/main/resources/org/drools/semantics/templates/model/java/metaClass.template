@@ -2,10 +2,10 @@
 
 package @{ package };
 
-public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer<T> @else{} @{ supertypePackage }.@{ supertypeName }_<T>
+public class @{ typeName }_ extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.MetadataContainer @else{} @{ supertypePackage }.@{ supertypeName }_
     @end{} implements java.io.Serializable {
 
-    public @{ typeName }_( T x ) {
+    public @{ typeName }_( @{ typeName } x ) {
         super( x );
         metaClassInfo = @{ typeName }_Meta.getInstance();
     }
@@ -15,39 +15,42 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
     @end{}@end{ '\n' }
 
 
-    public static <X extends @{package}.@{ typeName }> @{ typeName }_NewInstance<X> new@{ typeName }( Object id, org.drools.core.metadata.With... args ) {
+    public static @{ typeName }_NewInstance new@{ typeName }( Object id, org.drools.core.metadata.With... args ) {
         return @{ typeName }_Meta.getInstance().newInstance( id, args );
     }
-    public static <X extends @{package}.@{ typeName }> @{ typeName }_NewInstance<X> new@{ typeName }( org.drools.core.metadata.With... args ) {
+    public static @{ typeName }_NewInstance new@{ typeName }( org.drools.core.metadata.With... args ) {
         return @{ typeName }_Meta.getInstance().newInstance( args );
     }
 
-    public static <X, K extends @{ package }.@{ typeName }> @{ typeName }_Don<X,K> don@{ typeName }( X core, org.drools.core.metadata.With... args ) {
-        return new @{ typeName }_Don<X,K>( core, args );
+    public static @{ typeName }_Don don@{ typeName }( Object core, org.drools.core.metadata.With... args ) {
+        return new @{ typeName }_Don( core, args );
     }
 
-    public static @{ typeName }_Modify<? extends @{ typeName }> modify( @{ typeName } x, org.drools.core.metadata.With... args ) {
-        return new @{ typeName }_Modify<@{ typeName }>( x, args );
+    public static @{ typeName }_Modify modify( @{ typeName } x, org.drools.core.metadata.With... args ) {
+        return new @{ typeName }_Modify( x, args );
     }
 
-    public @{typeName}_Modify<T> modify( org.drools.core.metadata.With... args ) {
-        return new @{typeName}_Modify<T>( getTarget(), args );
+    public @{typeName}_Modify modify( org.drools.core.metadata.With... args ) {
+        return new @{typeName}_Modify( getTarget(), args );
+    }
+
+    public @{typeName} getTarget() {
+        return (@{typeName}) super.getTarget();
     }
 
 
 
+    public static class @{ typeName }_Meta extends org.drools.core.metadata.ClassLiteral implements java.io.Serializable {
 
-    public static class @{ typeName }_Meta<T extends @{ package }.@{ typeName }> extends org.drools.core.metadata.ClassLiteral<T> implements java.io.Serializable {
-
-        private static @{ typeName }_Meta instance;
+        private static @{ typeName }_Meta ___instance;
 
         public static @{ typeName }_Meta getInstance() {
-            if ( instance == null ) {
-                instance = new @{ typeName }_Meta( new org.drools.core.metadata.MetaProperty[] {
+            if ( ___instance == null ) {
+                ___instance = new @{ typeName }_Meta( new org.drools.core.metadata.MetaProperty[] {
                         @foreach{ prop : properties } @if{ localProperties.contains( prop ) } @{ prop.propName }, @end{} @end{}
                 } );
             }
-            return instance;
+            return ___instance;
         }
 
 
@@ -77,7 +80,7 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
         @end{ '\n' }
 
 
-        protected @{ typeName }_Meta( org.drools.core.metadata.MetaProperty<T,?,?>[] propertyLiterals ) {
+        protected @{ typeName }_Meta( org.drools.core.metadata.MetaProperty[] propertyLiterals ) {
             super( propertyLiterals );
         }
 
@@ -94,25 +97,25 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             return key;
         }
 
-        public @{ typeName }_NewInstance<T> newInstance( Object id, org.drools.core.metadata.With... args ) {
-            return new @{ typeName }_NewInstance<T>( id, args );
+        public @{ typeName }_NewInstance newInstance( Object id, org.drools.core.metadata.With... args ) {
+            return new @{ typeName }_NewInstance( id, args );
         }
-        public @{ typeName }_NewInstance<T> newInstance( org.drools.core.metadata.With... args ) {
-            return new @{ typeName }_NewInstance<T>( args );
+        public @{ typeName }_NewInstance newInstance( org.drools.core.metadata.With... args ) {
+            return new @{ typeName }_NewInstance( args );
         }
 
         @Override
-        public Class<T> getTargetClass() {
-            return (Class<T>) @{ package }.@{ typeName }.class;
+        public Class getTargetClass() {
+            return (Class) @{ package }.@{ typeName }.class;
         }
     }
 
 
-    public static class @{ typeName }_NewInstance<T extends @{package}.@{ typeName } >
-            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.NewInstanceLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_NewInstance<T> @end{} implements java.io.Serializable {
+    public static class @{ typeName }_NewInstance
+            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.NewInstanceLiteral @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_NewInstance @end{} implements java.io.Serializable {
 
         public @{ typeName }_NewInstance( Object id, org.drools.core.metadata.With... args ) {
-            super( java.net.URI.create( id.toString() ), args );
+            super( id, args );
         }
         public @{ typeName }_NewInstance( org.drools.core.metadata.With... args ) {
             super( args );
@@ -136,36 +139,30 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             @end{}
         }
 
-        @foreach{ prop : properties }
-        public @{ typeName }_NewInstance<T> @{ prop.propName }( @{ prop.javaRangeType } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
-            @if{ localProperties.contains( prop ) }
-                getSetter().@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
-                @else{}
-                super.@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
-            @end{}
+    @foreach{ prop : properties }
+    @if{ localProperties.contains( prop ) }
+        public @{ typeName }_NewInstance @{ prop.propName }( @{ prop.javaRangeType } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
+            getSetter().@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
             return this;
         }
         @if{ ! prop.simple }
-        public @{ typeName }_NewInstance<T> @{ prop.propName }( @{ prop.range } value, org.drools.core.metadata.Lit mode ) {
-            @if{ localProperties.contains( prop ) }
-                getSetter().@{ prop.propName }( value, mode );
-                @else{}
-                super.@{ prop.propName }( value, mode );
-            @end{}
+        public @{ typeName }_NewInstance @{ prop.propName }( @{ prop.range } value, org.drools.core.metadata.Lit mode ) {
+            getSetter().@{ prop.propName }( value, mode );
             return this;
         }
         @end{}
-        @end{ '\n' }
+    @end{}
+    @end{ '\n' }
 
-        protected @{ typeName }_Modify<T> getSetter() {
+        protected @{ typeName }_Modify getSetter() {
             if ( setter == null ) {
                 setter = new @{ typeName }_Modify( null, this.with );
             }
-            return ( @{ typeName }_Modify<T>) setter;
+            return ( @{ typeName }_Modify) setter;
         }
 
         @Override
-        public Class<T> getInstanceClass() {
+        public Class getInstanceClass() {
             return @{ typeName }_Meta.getInstance().getTargetClass();
         }
 
@@ -174,15 +171,15 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
 
 
 
-    public static class @{typeName}_Modify<T extends @{typeName}>
-            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.ModifyLiteral<T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify<T> @end{} implements java.io.Serializable {
+    public static class @{typeName}_Modify
+            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.ModifyLiteral @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Modify @end{} implements java.io.Serializable {
 
-        public @{ typeName }_Modify( T x, org.drools.core.metadata.With... args ) {
+        public @{ typeName }_Modify( @{ typeName } x, org.drools.core.metadata.With... args ) {
             super( x, args );
         }
 
         @Override
-        protected org.drools.core.metadata.MetaClass<T> getMetaClassInfo() {
+        protected org.drools.core.metadata.MetaClass getMetaClassInfo() {
             return @{ typeName }_Meta.getInstance();
         }
 
@@ -190,79 +187,67 @@ public class @{ typeName }_<T extends @{package}.@{ typeName }> extends @if{ "Th
             return @{ package }.@{ typeName }.class;
         }
 
-        @foreach{ prop : properties }
+    @foreach{ prop : properties }
+    @if{ localProperties.contains( prop ) }
         public @{typeName}_Modify @{ prop.propName }( @{ prop.javaRangeType } newVal @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
-            @if{ localProperties.contains( prop ) }
             addTask( @{ prop.propName }, newVal, @if{ ! prop.simple } mode @else{} newVal != null ? org.drools.core.metadata.Lit.SET : org.drools.core.metadata.Lit.REMOVE @end{} );
-            @else{}
-            super.@{ prop.propName }( newVal @if{ ! prop.simple }, mode @end{} );
-            @end{}
             return this;
         }
         @if{ ! prop.simple }
         public @{typeName}_Modify @{ prop.propName }( @{ prop.range } newVal, org.drools.core.metadata.Lit mode ) {
-            @if{ localProperties.contains( prop ) }
             addTask( @{ prop.propName }, java.util.Collections.singletonList( newVal ), mode );
-            @else{}
-            super.@{ prop.propName }( newVal, mode );
-            @end{}
             return this;
         }
         @end{}
-        @end{ '\n' }
+    @end{}
+    @end{ '\n' }
 
     }
 
 
-    public static class @{typeName}_Don<K, T extends @{typeName}>
-            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.DonLiteral<K,T> @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Don<K,T> @end{} implements java.io.Serializable {
+    public static class @{typeName}_Don
+            extends @if{ "Thing".equals( supertypeName ) } org.drools.core.metadata.DonLiteral @else{} @{ supertypePackage }.@{ supertypeName }_.@{ supertypeName }_Don @end{} implements java.io.Serializable {
 
-        public @{ typeName }_Don( K target, org.drools.core.metadata.With... args ) {
+        public @{ typeName }_Don( Object target, org.drools.core.metadata.With... args ) {
             super( target, args );
         }
 
         @Override
-        protected org.drools.core.metadata.MetaClass<T> getMetaClassInfo() {
+        protected org.drools.core.metadata.MetaClass getMetaClassInfo() {
             return @{ typeName }_Meta.getInstance();
         }
 
         @Override
-        public Class<T> getTrait() {
+        public Class getTrait() {
             return @{ typeName }_Meta.getInstance().getTargetClass();
         }
 
         @Override
-        public @{ typeName }_Don<K,T> setTraitFactory( org.drools.core.factmodel.traits.AbstractTraitFactory factory ) {
+        public @{ typeName }_Don setTraitFactory( org.drools.core.factmodel.traits.AbstractTraitFactory factory ) {
             super.setTraitFactory( factory );
             return this;
         }
 
-        @foreach{ prop : properties }
-        public @{ typeName }_Don<K,T> @{ prop.propName }( @{ prop.javaRangeType } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
-            @if{ localProperties.contains( prop ) }
+    @foreach{ prop : properties }
+    @if{ localProperties.contains( prop ) }
+        public @{ typeName }_Don @{ prop.propName }( @{ prop.javaRangeType } value @if{ ! prop.simple }, org.drools.core.metadata.Lit mode @end{} ) {
             getSetter().@{ prop.propName }( value @if{ ! prop.simple }, mode @end{}  );
-            @else{}
-            super.@{ prop.propName }( value @if{ ! prop.simple }, mode @end{} );
-            @end{}
             return this;
         }
         @if{ ! prop.simple }
-        public @{ typeName }_Don<K,T> @{ prop.propName }( @{ prop.range } value, org.drools.core.metadata.Lit mode ) {
-            @if{ localProperties.contains( prop ) }
+        public @{ typeName }_Don @{ prop.propName }( @{ prop.range } value, org.drools.core.metadata.Lit mode ) {
             getSetter().@{ prop.propName }( value, mode );
-            @else{}
-            super.@{ prop.propName }( value, mode );
-            @end{}
             return this;
         }
         @end{}
-        @end{ '\n' }
+    @end{}
+    @end{ '\n' }
 
-        protected @{ typeName }_Modify<T> getSetter() {
+        protected @{ typeName }_Modify getSetter() {
             if ( setter == null ) {
                 setter = new @{ typeName }_Modify( null, this.with );
             }
-            return ( @{ typeName }_Modify<T>) setter;
+            return ( @{ typeName }_Modify) setter;
         }
     }
 

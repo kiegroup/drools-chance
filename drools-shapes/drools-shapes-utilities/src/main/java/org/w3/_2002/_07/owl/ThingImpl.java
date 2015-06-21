@@ -490,6 +490,9 @@ public class ThingImpl
         if ( __$$dynamic_traits_map$$ == null ) {
             return null;
         }
+        if ( __$$dynamic_traits_map$$.isEmpty() ) {
+            return null;
+        }
         return ((TraitTypeMap) __$$dynamic_traits_map$$).getCurrentTypeCode();
     }
 
@@ -511,17 +514,17 @@ public class ThingImpl
     }
 
     @Transient
-    public BitSet getTypeCode() {
+    public BitSet _getTypeCode() {
         throw new UnsupportedOperationException( "Shapes generated classes can't predict the type code at compile time" );
     }
 
     @Transient
-    public boolean isVirtual() {
+    public boolean _isVirtual() {
         return false;
     }
 
     @Transient
-    public String getTraitName() {
+    public String _getTraitName() {
         return getFullName();
     }
 
@@ -552,7 +555,7 @@ public class ThingImpl
     }
 
     @Override
-    public boolean hasTypeCode( BitSet typeCode ) {
+    public boolean _hasTypeCode( BitSet typeCode ) {
         if ( otns == null ) {
             return false;
         }
