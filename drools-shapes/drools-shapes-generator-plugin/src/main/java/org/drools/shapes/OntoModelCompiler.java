@@ -363,7 +363,7 @@ public class OntoModelCompiler {
                 if ( NamespaceUtils.isOWL( pack ) ) {
                     continue;
                 }
-                success &= metaModel.streamFactory( mcompiler.buildFactory( pack ), getJavaDir().getPath() + pack.replaceAll( "\\.", File.separator ) );
+                success &= metaModel.streamFactory( mcompiler.buildFactory( pack ), getJavaDir().getPath() + File.separator + pack.replaceAll( "\\.", File.separator ) );
             }
 
         }

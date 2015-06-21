@@ -202,12 +202,11 @@ public class PropertyRelation extends Relation implements Cloneable {
     }
 
     public String getGetter() {
-        String prefix = ( isSimpleBoolean() && ! isCollection() ) ? "is" : "get";
-        return prefix + NameUtils.compactUpperCase( getName() );
+        return NameUtils.getter( getName(), isSimpleBoolean() ? "boolean" : Boolean.class.getName(), isCollection() ? null : 1 );
     }
 
     public String getSetter() {
-        return "set" + NameUtils.compactUpperCase( getName() );
+        return NameUtils.setter( getName() );
     }
 
 
