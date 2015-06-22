@@ -103,7 +103,7 @@ public class ExpectationTest extends ExpTestBase {
     }
 
     @Test
-    public void testComplexFulfill() {
+    public void testExpectForall() {
 
         String src = "" +
                 "package org.drools; " +
@@ -117,42 +117,19 @@ public class ExpectationTest extends ExpTestBase {
                 "   more : String " +
                 "end " +
                 " " +
-                "declare TextMsg " +
-                "   @role(event) " +
-                "   sendingPhone: String    @key " +
-                "   receivingPhone: String  @key " +
-                "   message: String         @key " +
-                "   emoticon: String " +
-                "end " +
-
                 "rule Expect_Test_Rule " +
                 "when " +
-                "   $trigger : Msg( 'John', 'Peter', 'Hello' ; ) " +
+                "   $trigger : Msg( 'John' ; ) " +
                 "then " +
-                "   expect Msg( 'Peter', 'John', 'Hello back', $more ; this after[0,100ms] $trigger ) " +
-                "          " +
+                "   expect Msg( 'Peter'; this after[0,100ms] $trigger ) " +
+                "          forall( $msg: Msg( 'Peter'; ) " +
+                "                   Msg( this == $msg, receiver == 'John' ) ) " +
                 "   onFulfill { " +
-                "        \t list.add( 'F1' + $more ); \n" +
-                "        \t System.out.println( 'Expectation fulfilled' ); \n" +
-                "    } onViolation { " +
-                "        \t System.out.println( 'Expectation violated' ); " +
-                "    } " +
-                "   expect $tmsg: TextMsg( '9135551234', '8185551234', 'Did you call?', $more ; this after[0,100ms] $trigger ) " +
-                "   onFulfill { " +
-                "       \t $tmsg.setEmoticon(' ;-)'); \n " +
-                "       \t update($tmsg); \n " +
-                "       \t list.add( 'TM1'+$more );\n " +
-                "       \t System.out.println( 'Secondary expectation fulfilled' );\n " +
-                "   } onViolation { " +
-                "       \t System.out.println( 'Secondary expectation violated' ); " +
-                "   } " +
-                "   expect forall( $msg: TextMsg( '9135551234' ) " +
-                "                        TextMsg( this == $msg, emoticon == ' ;-)' ) ) " +
-                "   onFulfill { " +
-                "       \t list.add( 'TM2' ); " +
-                "       \t System.out.println( 'Tertiary expectation fulfilled' ); " +
+                "       list.add( 'AM1' ); " +
+                "       System.out.println( 'Expectation fulfilled' ); " +
                 "   } onViolation {" +
-                "       \t System.out.println( 'Tertiary expectation violated' ); " +
+                "       list.add( 'AM2' ); " +
+                "       System.out.println( 'Expectation violated' );" +
                 "   } " +
                 "   list.add( 0 ); " +
                 "   System.out.println( 'Triggered expectation ' + $trigger ); " +
@@ -179,27 +156,30 @@ public class ExpectationTest extends ExpTestBase {
 
 
 
-        assertEquals( Arrays.asList( 0, "F1Y" ), list );
+        System.out.println(reportWMObjects(kSession));
+        assertEquals(Arrays.asList(0, "AM1"), list);
         assertEquals( 1, countMeta( Fulfill.class.getName(), kSession ) );
-        assertEquals( 2, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Pending.class.getName(), kSession ) );
         assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
 
         sleep(30);
-        kSession.insert(newTextMessage( kSession, "9135551234", "8185551234", "Did you call?", ":-)"));
+        kSession.insert( newMessage( kSession, "John", "Peter", "Hello again", "Y" ) );
+        sleep(10);
+        kSession.insert( newMessage( kSession, "Peter", "Steve", "Hello", "X" ) );
         kSession.fireAllRules();
-        assertEquals( Arrays.asList( 0, "F1Y", "TM1:-)" ),list );
-        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( Arrays.asList( 0, "AM1", 0 ), list );
+        assertEquals( 1, countMeta(Fulfill.class.getName(), kSession) );
         assertEquals( 2, countMeta( Pending.class.getName(), kSession ) );
         assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
 
-        sleep( 110 );
+        sleep( 150 );
 
         kSession.fireAllRules();
 
-        assertEquals( Arrays.asList( 0, "F1Y", "TM1:-)" ),list );
-        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( Arrays.asList( 0, "AM1", 0, "AM2" ), list );
+        assertEquals( 1, countMeta( Fulfill.class.getName(), kSession ) );
         assertEquals( 0, countMeta( Pending.class.getName(), kSession ) );
-        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Viol.class.getName(), kSession ) );
 
 
     }
