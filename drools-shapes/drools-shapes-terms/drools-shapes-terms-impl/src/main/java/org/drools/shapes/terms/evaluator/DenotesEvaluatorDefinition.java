@@ -112,7 +112,19 @@ public class DenotesEvaluatorDefinition implements EvaluatorDefinition {
             }
             //TODO : these casts are potentially unsafe, but the check should be done at compile time, not at runtime
 
-            boolean answer = eval.denotes( toConceptDescriptor( left ), toConceptDescriptor( right ), getPropertyURI( extractor ) );
+            boolean answer = false;
+            boolean leftEnum = left.getClass().isEnum();
+            boolean rightEnum = right.getClass().isEnum();
+
+            if ( leftEnum && rightEnum ) {
+                answer = eval.denotes( (Enum) left, (Enum) right );
+            } else if ( leftEnum ) {
+                answer = eval.denotes( (Enum) left, toConceptDescriptor( right ) );
+            } else if ( rightEnum ) {
+                answer = eval.denotes( toConceptDescriptor( left ), (Enum) right );
+            } else {
+                answer = eval.denotes( toConceptDescriptor( left ), toConceptDescriptor( right ), getPropertyURI( extractor ) );
+            }
             return this.getOperator().isNegated() ? ! answer : answer;
         }
 
@@ -138,7 +150,8 @@ public class DenotesEvaluatorDefinition implements EvaluatorDefinition {
 
     };
 
-    protected ConceptDescriptor toConceptDescriptor(Object object) {
+    protected ConceptDescriptor toConceptDescriptor( Object object ) {
+
         return (ConceptDescriptor) object;
     }
 

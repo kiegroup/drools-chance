@@ -63,8 +63,21 @@ public class DenotesEvaluatorImpl implements TermsInference {
 
     }
 
+    public boolean denotes( Enum left, Enum right ) {
+        return left == right;
+    }
+
+    public boolean denotes( ConceptDescriptor left, Enum right ) {
+        return left.getCodeSystemName().equals( right.getClass().getSimpleName() ) && left.getCode().equals( right.toString() );
+    }
+
+    public boolean denotes( Enum left, ConceptDescriptor right ) {
+        return right.getCodeSystemName().equals( left.getClass().getSimpleName() ) && right.getCode().equals( left.toString() );
+    }
+
+
     private boolean isSelf(ConceptDescriptor left, ConceptDescriptor right) {
-        return left.getUri().equals(right.getUri());
+        return left.getUri().equals( right.getUri() );
     }
 
     private EntityDescriptionQuery descendants(ConceptDescriptor right) {
