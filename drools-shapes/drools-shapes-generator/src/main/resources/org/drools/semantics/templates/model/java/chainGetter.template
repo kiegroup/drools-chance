@@ -21,7 +21,7 @@
 @declare{'chainGetter'}
 
     @@javax.persistence.Transient
-    public void @{ setter( name ) } (
+    public void @{ setter( name, max, enhancedNames ) } (
         @if{ max != 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
         x
     ) {
@@ -32,7 +32,7 @@
     public
     @if{ max == null || max > 1 } java.util.List<@{ type }> @else{} @{ type } @end{}
 
-    @{ getter( name, type, max ) }() {
+    @{ getter( name, type, max, enhancedNames ) }() {
 
         java.util.List<@{ type }> ans = new java.util.ArrayList<@{ map( type, true ) }>();
 
@@ -46,7 +46,7 @@
 
             @foreach{ link : chain }
                 for ( java.lang.Object o : temp ) {
-                    temp2.addAll( ((@{ map( link.type, true ) }) o).@{ getter( link.name, map( link.type, true ) ) }() );
+                    temp2.addAll( ((@{ map( link.type, true ) }) o).@{ getter( link.name, map( link.type, true ), enhancedNames ) }() );
                 }
                 temp.clear();
                 temp.addAll( temp2 );

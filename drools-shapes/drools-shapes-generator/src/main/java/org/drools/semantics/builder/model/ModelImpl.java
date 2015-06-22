@@ -213,4 +213,14 @@ public abstract class ModelImpl implements OntoModel {
     public void setMinimal( boolean minimal ) {
         innerModel.setMinimal( minimal );
     }
+
+    @Override
+    public boolean isUseEnhancedNames() {
+        return innerModel.isUseEnhancedNames();
+    }
+
+    @Override
+    public void setUseEnhancedNames( boolean useEnhancedNames ) {
+        innerModel.setUseEnhancedNames( useEnhancedNames );
+    }
 }

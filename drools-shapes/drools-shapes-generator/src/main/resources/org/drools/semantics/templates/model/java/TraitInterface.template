@@ -67,11 +67,11 @@ public interface @{name} extends @if{ ! standalone } org.drools.semantics.Thing,
             java.util.List<@{ map( prop.target.fullyQualifiedName, true ) }@if{ !prop.target.primitive }@end{}>
         @end{}
 
-        @{ getter( prop.name, map( prop.target.fullyQualifiedName, true ), prop.maxCard ) }();
+        @{ getter( prop.name, map( prop.target.fullyQualifiedName, true ), prop.maxCard, enhancedNames ) }();
 
 
     // @{prop.property}
-    public void @{ setter( prop.name ) }(
+    public void @{ setter( prop.name, prop.maxCard, enhancedNames ) }(
         @if{ prop.maxCard == 1 }
             @{ map( prop.target.fullyQualifiedName, true ) }@if{ !prop.target.primitive }@end{}
         @else{}

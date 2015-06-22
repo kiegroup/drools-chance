@@ -58,6 +58,8 @@ public class GenericModelImpl implements OntoModel, Cloneable {
 
     private boolean standalone;
 
+    private boolean useEnhancedNames;
+
     protected GenericModelImpl newInstance() {
         return new GenericModelImpl();
     }
@@ -418,5 +420,15 @@ public class GenericModelImpl implements OntoModel, Cloneable {
     @Override
     public void setStandalone( boolean standalone ) {
         this.standalone = standalone;
+    }
+
+    @Override
+    public boolean isUseEnhancedNames() {
+        return useEnhancedNames;
+    }
+
+    @Override
+    public void setUseEnhancedNames( boolean useEnhancedNames ) {
+        this.useEnhancedNames = useEnhancedNames;
     }
 }

@@ -76,9 +76,9 @@
         ]]></ci:code>
 
 
-        <meta:type name="@{concept.name}" iri="@{concept.namespace}@{concept.name}" package="@{concept.package}" parent="@{concept.chosenSuperConcept.name}" parentPackage="@{concept.chosenSuperConcept.package}">
+        <meta:type name="@{concept.name}" iri="@{concept.namespace}@{concept.name}" package="@{concept.package}" parent="@{concept.chosenSuperConcept.name}" parentPackage="@{concept.chosenSuperConcept.package}" enhancedNames="@{enhancedNames}">
         @foreach{ prop : concept.effectiveBaseProperties }
-            <meta:property name="@{prop.name}" iri="@{prop.iri}" primitive="@{ prop.target.primitive }" inherited="@{! prop.isLocalImplementationFor( concept )}" domain="@{prop.domain.fullyQualifiedName}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }" @if{ prop.inverse != null }inverse="@{ prop.inverse.name }"@end{}>
+            <meta:property name="@{prop.name}" iri="@{prop.iri}" primitive="@{ prop.target.primitive }" inherited="@{! prop.isLocalImplementationFor( concept )}" domain="@{prop.domain.fullyQualifiedName}" type="@{prop.target.fullyQualifiedName}" simple="@{ concept.lookupProperty(prop.property).simple }" @if{ prop.inverse != null }inverse="@{ prop.inverse.name }"@end{} enhancedNames="@{enhancedNames}">
                 @foreach{ subProp : concept.properties.values }
                 @if{ subProp.restricted && subProp.baseProperty == prop }
                     <meta:restriction name="@{subProp.name}" type="@{subProp.target.fullyQualifiedName}" single="@{subProp.maxCard == 1}"/>
@@ -106,7 +106,7 @@
             @code{ prop = properties[ concept.iri ][ propKey ] }
             @if{ prop.transient }
                 <dsp:accessor name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" primitive="@{prop.target.primitive}"
-                              min="@{prop.minCard}" max="@{prop.maxCard}"
+                              min="@{prop.minCard}" max="@{prop.maxCard}" enhancedNames="@{enhancedNames}"
                               inherited="@{prop.isInheritedFor(concept)}" base="@{prop.baseProperty.name}" baseType="@{prop.baseProperty.target.fullyQualifiedName}" simple="@{prop.simple}">
                     @foreach{ chain : prop.chains }
                         <dsp:chain>
@@ -115,7 +115,7 @@
                     @end{}
                 </dsp:accessor>
             @else{}
-                <dsp:property name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" primitive="@{prop.target.primitive}" restr="@{prop.addableTarget}" simple="@{prop.simple}" min="@{prop.minCard}" max="@{prop.maxCard}" />
+                <dsp:property name="@{prop.name}" type="@{prop.target.fullyQualifiedName}" primitive="@{prop.target.primitive}" restr="@{prop.addableTarget}" simple="@{prop.simple}" min="@{prop.minCard}" max="@{prop.maxCard}" enhancedNames="@{enhancedNames}"/>
             @end{}
         @end{}
         </dsp:accessors>

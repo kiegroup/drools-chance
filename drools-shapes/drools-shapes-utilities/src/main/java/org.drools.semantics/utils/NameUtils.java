@@ -19,6 +19,7 @@
 
 package org.drools.semantics.utils;
 
+import com.sun.codemodel.JJavaName;
 import org.drools.semantics.Literal;
 
 import javax.xml.ws.Holder;
@@ -617,26 +618,49 @@ public final class NameUtils {
         return upName;
     }
 
-    public static String getter( String name, String type ) {
-        return getter( name, type, null );
+    public static String getter( String name, String type, boolean enhanceNames ) {
+        return getter( name, type, null, enhanceNames );
     }
 
-    public static String setter( String name ) {
-        return "set" + capitalize( name );
+    public static String setter( String name, Integer max, boolean enhanceNames ) {
+        if ( isMultiple( max ) && enhanceNames ) {
+            return "set" + capitalize( pluralize( name ) );
+        } else {
+            return "set" + capitalize( name );
+        }
     }
 
-    public static String getter( String name, String type, Integer max ) {
-        String prefix = ( ( max != null && max == 1 ) && "boolean".equals( type ) ) ? "is" : "get";
-        return prefix + capitalize( name );
+    public static String pluralize( String name ) {
+        if ( name.endsWith( "_" ) ) {
+            int start = name.length() - 1;
+            while ( name.charAt( start - 1 ) == '_' ) {
+                start--;
+            }
+            String root = JJavaName.getPluralForm( name.substring( 0, start ) );
+            String trail = name.substring( start );
+            return root + trail;
+        } else {
+            return JJavaName.getPluralForm( name );
+        }
     }
 
+    public static String setter( String name, boolean enhanceNames ) {
+        return setter( name, null, enhanceNames );
+    }
 
+    public static String getter( String name, String type, Integer max, boolean enhanceNames ) {
+        boolean multiple = isMultiple( max );
+        String prefix = ( multiple && "boolean".equals( type ) ) ? "is" : "get";
+        if ( enhanceNames && multiple ) {
+            return prefix + capitalize( pluralize( name ) );
+        } else {
+            return prefix + capitalize( name );
+        }
+    }
 
-
-
-
-
-
+    private static boolean isMultiple( Integer max ) {
+        return max == null || max != 1;
+    }
 
 
     public static String negate( String expr ) {

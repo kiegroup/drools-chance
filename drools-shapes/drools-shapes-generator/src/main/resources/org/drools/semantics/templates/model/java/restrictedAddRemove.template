@@ -29,7 +29,7 @@
         @elseif{ ! primitive }
             add@{ capitalize( base ) }( x );
         @else{}
-            @{ getter( base, type ) }().add( x );
+            @{ getter( base, type, enhancedNames ) }().add( x );
         @end{}
 
     }
@@ -39,7 +39,7 @@
         @if{ simple }
             @{ compactVariable( name ) } = null;
         @else{}
-            @{ getter( base, type ) }().remove( x );
+            @{ getter( base, type, enhancedNames ) }().remove( x );
         @end{}
     }
 

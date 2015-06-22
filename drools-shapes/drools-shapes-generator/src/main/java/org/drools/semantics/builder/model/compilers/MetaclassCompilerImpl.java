@@ -80,6 +80,7 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
                 p.propIri = prop.getIri();
                 p.simple = prop.getMaxCard() != null && prop.getMaxCard() == 1;
                 p.primitive = target.isPrimitive();
+                p.maxCard = prop.getMaxCard();
 
                 p.inherited = prop.isInherited();
 
@@ -171,6 +172,7 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
 
         map.put( "properties", properties.values() );
         map.put( "localProperties", localProperties );
+        map.put( "enhancedNames", model.isUseEnhancedNames() );
 
         String metaClass = SemanticXSDModelCompilerImpl.getTemplatedCode( metaClassTempl, map );
 
@@ -254,6 +256,7 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
         public int position;
         public String simpleTypeName;
         public boolean primitive;
+        public Integer maxCard;
     }
 
 }

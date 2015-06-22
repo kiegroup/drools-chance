@@ -77,6 +77,7 @@ public class MetadataPlugin extends Plugin {
             map.put( "propertyNames", propNames );
             map.put( "typeNames", typeNames );
             map.put( "simpleFlags", simpleFlags );
+            map.put( "enhancedNames", keyed.getAttribute( "enhancedNames" ) );
 
 
             String meta = SemanticXSDModelCompilerImpl.getTemplatedCode( metaDescrTempl, map);

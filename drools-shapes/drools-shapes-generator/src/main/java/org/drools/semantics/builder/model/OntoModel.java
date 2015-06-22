@@ -140,4 +140,8 @@ public interface OntoModel extends Cloneable {
     public boolean isMinimal();
 
     public void setMinimal( boolean minimal );
+
+    public boolean isUseEnhancedNames();
+
+    public void setUseEnhancedNames( boolean useEnhancedNames );
 }

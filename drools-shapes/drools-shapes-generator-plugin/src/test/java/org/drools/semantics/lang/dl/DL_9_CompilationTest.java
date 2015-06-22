@@ -116,7 +116,7 @@ public class DL_9_CompilationTest {
 
         assertTrue( results.isHierarchyConsistent() );
 
-        compiler = new OntoModelCompiler( results, folder.getRoot() );
+        compiler = new OntoModelCompiler( results, folder.getRoot(), false );
 
         // ****** Stream the java interfaces
         boolean javaOut = compiler.streamJavaInterfaces( true );
@@ -233,7 +233,7 @@ public class DL_9_CompilationTest {
 
         assertTrue( results.isHierarchyConsistent() );
 
-        compiler = new OntoModelCompiler( results, folder.getRoot() );
+        compiler = new OntoModelCompiler( results, folder.getRoot(), false );
 
         // ****** Stream the java interfaces
         boolean javaOut = compiler.streamJavaInterfaces( true );
@@ -315,7 +315,7 @@ public class DL_9_CompilationTest {
 
         assertTrue( results.isHierarchyConsistent() );
 
-        compiler = new OntoModelCompiler( results, folder.getRoot() );
+        compiler = new OntoModelCompiler( results, folder.getRoot(), false );
 
         // ****** Stream the java interfaces
         boolean javaOut = compiler.streamJavaInterfaces( true );
@@ -401,7 +401,7 @@ public class DL_9_CompilationTest {
 
         assertTrue( results.isHierarchyConsistent() );
 
-        compiler = new OntoModelCompiler( results, folder.getRoot() );
+        compiler = new OntoModelCompiler( results, folder.getRoot(), false );
 
         // ****** Stream the java interfaces
         boolean javaOut = compiler.streamJavaInterfaces( true );
@@ -480,7 +480,7 @@ public class DL_9_CompilationTest {
 
         assertTrue( results.isHierarchyConsistent() );
 
-        compiler = new OntoModelCompiler( results, folder.getRoot() );
+        compiler = new OntoModelCompiler( results, folder.getRoot(), false );
 
         // ****** Stream the java interfaces
         boolean javaOut = compiler.streamJavaInterfaces( true );
@@ -515,7 +515,7 @@ public class DL_9_CompilationTest {
 
         assertTrue( results.isHierarchyConsistent() );
 
-        compiler = new OntoModelCompiler( results, folder.getRoot() );
+        compiler = new OntoModelCompiler( results, folder.getRoot(), false );
 
         // ****** Stream the java interfaces
         boolean javaOut = compiler.streamJavaInterfaces( true );
@@ -579,7 +579,7 @@ public class DL_9_CompilationTest {
         OntoModel results = factory.buildModel( "rules",
                                                 ResourceFactory.newClassPathResource( "ontologies/testSimpleDefinition.owl" ),
                                                 DLFactoryConfiguration.newConfiguration( OntoModel.Mode.HIERARCHY ) );
-        compiler = new OntoModelCompiler( results, folder.getRoot() );
+        compiler = new OntoModelCompiler( results, folder.getRoot(), false );
 
         // ****** Stream the java interfaces
         boolean javaOut = compiler.streamJavaInterfaces( true );
@@ -632,7 +632,7 @@ public class DL_9_CompilationTest {
                                                     ResourceFactory.newClassPathResource( "ontologies/diamondProp.manchester.owl" ),
                                                     DLFactoryConfiguration.newConfiguration( OntoModel.Mode.OPTIMIZED ) );
 
-            compiler = new OntoModelCompiler( diamond, folder.getRoot() );
+            compiler = new OntoModelCompiler( diamond, folder.getRoot(), false );
 
             List<Diagnostic<? extends JavaFileObject>> diag1 = compiler.compileOnTheFly( OntoModelCompiler.minimalOptions, OntoModelCompiler.MOJO_VARIANTS.JPA2 );
 
@@ -665,7 +665,7 @@ public class DL_9_CompilationTest {
             assertNotNull( botInst );
 
 
-            OntoModelCompiler compiler2 = new OntoModelCompiler( results, folder.getRoot() );
+            OntoModelCompiler compiler2 = new OntoModelCompiler( results, folder.getRoot(), false );
 
             compiler2.fixResolvedClasses();
 

@@ -234,6 +234,20 @@ public class ShapeCaster
 
 
     /**
+     * @parameter default-value="false"
+     */
+    private boolean useEnhancedNames = false;
+
+    public boolean isUseEnhancedNames() {
+        return useEnhancedNames;
+    }
+
+    public void setUseEnhancedNames( boolean useEnhancedNames ) {
+        this.useEnhancedNames = useEnhancedNames;
+    }
+
+
+    /**
      * @parameter
      */
     private RecognitionRuleConfig recognitionRuleConfig = new RecognitionRuleConfig();
@@ -339,7 +353,7 @@ public class ShapeCaster
         results.setMinimal( compilationOptions.contains( "-minimal" ) );
         results.setStandalone( compilationOptions.contains( "-standalone" ) );
 
-        OntoModelCompiler compiler = new OntoModelCompiler( results, target );
+        OntoModelCompiler compiler = new OntoModelCompiler( results, target, isUseEnhancedNames() );
 
 
         if ( compiler.existsResult() ) {

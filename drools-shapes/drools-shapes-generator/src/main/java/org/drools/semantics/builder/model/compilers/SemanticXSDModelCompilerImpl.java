@@ -188,6 +188,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
             vars.put( "schemaLocation", NameUtils.namespaceURIToPackage( ns ) );
 //            vars.put( "schemaLocation", getModel().getName() + ( prefix == null ? "" : ( "_" + prefix ) ) );
             vars.put( "extra_code", prepareCodeExtensions( sxsdModel ) );
+            vars.put( "enhancedNames", model.isUseEnhancedNames() );
 
             String bindings = TemplateRuntime.eval( template, NameUtils.getInstance(), vars ).toString();
 
@@ -345,9 +346,9 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
                 if ( ! prop.isRestricted() && ! prop.isTransient() ) {
 
 
-                    String setter = prop.getSetter();
-                    String adder = prop.getSetter().replace( "set", "add" );
-                    String toggler = prop.getSetter().replace( "set", "remove" );
+                    String setter = prop.getSetter( model.isUseEnhancedNames() );
+                    String adder = prop.getSetter( model.isUseEnhancedNames() ).replace( "set", "add" );
+                    String toggler = prop.getSetter( model.isUseEnhancedNames() ).replace( "set", "remove" );
 
                     Map<String,Object> vars = new HashMap<String, Object>();
                     vars.put( "typeName", prop.getTypeName() );
@@ -355,7 +356,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
                     vars.put( "isCollection", prop.isCollection() );
 
                     vars.put( "name", prop.getName() );
-                    vars.put( "getter", prop.getGetter() );
+                    vars.put( "getter", prop.getGetter( model.isUseEnhancedNames() ) );
                     vars.put( "setter", setter );
                     vars.put( "adder", adder );
                     vars.put( "toggler", toggler );
@@ -382,7 +383,7 @@ public class SemanticXSDModelCompilerImpl extends XSDModelCompilerImpl implement
                         vars.put( "typeName", prop.getTypeName() );
                         vars.put( "isSimpleBoolean", prop.isSimpleBoolean() );
                         vars.put( "isCollection", prop.isCollection() );
-                        vars.put( "getter", prop.getGetter() );
+                        vars.put( "getter", prop.getGetter( model.isUseEnhancedNames() ) );
                         vars.put( "min", prop.getMinCard() );
                         vars.put( "max", prop.getMaxCard() );
 

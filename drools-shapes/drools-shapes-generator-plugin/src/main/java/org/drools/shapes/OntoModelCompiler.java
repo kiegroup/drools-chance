@@ -193,7 +193,7 @@ public class OntoModelCompiler {
 
 
 
-    public OntoModelCompiler( OntoModel model, File rootFolder ) {
+    public OntoModelCompiler( OntoModel model, File rootFolder, boolean useEnhancedNames ) {
         if ( ! rootFolder.exists() ) {
             rootFolder.mkdirs();
         }
@@ -201,6 +201,7 @@ public class OntoModelCompiler {
         initDirectories();
 
         this.model = model;
+        model.setUseEnhancedNames( useEnhancedNames );
 
         lookupExistingSchemas();
     }

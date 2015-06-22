@@ -101,7 +101,8 @@ public class AccessorPlugin extends Plugin {
                 String name = el.getAttribute( "name" );
                 String type = el.getAttribute( "type" );
                 String simp = el.getAttribute( "simple" );
-                PropEssentials prop = new PropEssentials( name, type, Boolean.valueOf( simp ) );
+                String enhancedNames = el.getAttribute( "enhancedNames" );
+                PropEssentials prop = new PropEssentials( name, type, Boolean.valueOf( simp ), Boolean.valueOf( enhancedNames ) );
 
                 for ( int k = 0; k < el.getChildNodes().getLength(); k++ ) {
                     Node m = el.getChildNodes().item( k );
@@ -125,6 +126,7 @@ public class AccessorPlugin extends Plugin {
             map.put( "type", prop.getType() );
             map.put( "subs", prop.getSubs() );
             map.put( "simple", prop.isSimple() );
+            map.put( "enhancedNames", prop.isEnhancedName() );
             String meta = SemanticXSDModelCompilerImpl.getTemplatedCode( inferredGetterTempl, map );
             co.implClass.direct( meta );
         }
@@ -183,6 +185,7 @@ public class AccessorPlugin extends Plugin {
         vars.put( "max", null );
         vars.put( "simple", simple );
         vars.put( "primitive", Boolean.valueOf( item.getAttribute( "primitive" ) ) );
+        vars.put( "enhancedNames", Boolean.valueOf( item.getAttribute( "enhancedNames" ) ) );
 
         String code;
 
@@ -212,6 +215,7 @@ public class AccessorPlugin extends Plugin {
         vars.put( "base", item.getAttribute( "base" ) );
         vars.put( "baseType", baseType );
         vars.put( "simple", simple );
+        vars.put( "enhancedNames", Boolean.valueOf( item.getAttribute( "enhancedNames" ) ) );
 
         Set<List<Link>> chains = new HashSet<List<Link>>();
         NodeList chainsList = item.getElementsByTagNameNS( uri, "chain");
@@ -322,10 +326,11 @@ public class AccessorPlugin extends Plugin {
         private String name;
         private String type;
         private boolean simple;
+        private boolean enhancedName;
         
         private List<Sub> subs;
 
-        public PropEssentials(String name, String type, boolean simple) {
+        public PropEssentials(String name, String type, boolean simple, boolean enhancedName) {
             this.name = name;
             this.type = type;
             this.simple = simple;
@@ -362,6 +367,14 @@ public class AccessorPlugin extends Plugin {
 
         public void setSimple(boolean simple) {
             this.simple = simple;
+        }
+
+        public boolean isEnhancedName() {
+            return enhancedName;
+        }
+
+        public void setEnhancedName( boolean enhancedName ) {
+            this.enhancedName = enhancedName;
         }
 
         @Override

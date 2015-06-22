@@ -201,12 +201,12 @@ public class PropertyRelation extends Relation implements Cloneable {
         return NameUtils.map( getTarget().getName(), true );
     }
 
-    public String getGetter() {
-        return NameUtils.getter( getName(), isSimpleBoolean() ? "boolean" : Boolean.class.getName(), isCollection() ? null : 1 );
+    public String getGetter( boolean enhanceNames ) {
+        return NameUtils.getter( getName(), isSimpleBoolean() ? "boolean" : Boolean.class.getName(), getMaxCard(), enhanceNames );
     }
 
-    public String getSetter() {
-        return NameUtils.setter( getName() );
+    public String getSetter( boolean enhanceNames ) {
+        return NameUtils.setter( getName(), getMaxCard(), enhanceNames );
     }
 
 

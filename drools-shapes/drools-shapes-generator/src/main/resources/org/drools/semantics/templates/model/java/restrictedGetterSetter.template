@@ -22,7 +22,7 @@
 
 
     @@javax.persistence.Transient
-    public void @{ setter( name ) } (
+    public void @{ setter( name, enhancedNames ) } (
         @if{ max != 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
         x
     ) {
@@ -31,13 +31,13 @@
         @else{}
 
             java.util.List<@{map( type, true )}> removals = new java.util.ArrayList<@{map( type, true )}>();
-            for ( java.lang.Object o : @{ getter( base, map( type, true ) ) }() ) {
+            for ( java.lang.Object o : @{ getter( base, map( type, true ), enhancedNames ) }() ) {
                 if ( o instanceof @{map( type, true )} ) {
                     removals.add( (@{map( type, true )}) o );
                 }
             }
 
-            @{ getter( base, map( type, true ) ) }().removeAll( removals );
+            @{ getter( base, map( type, true ), enhancedNames ) }().removeAll( removals );
 
             @if{ max == null || max > 1 }
                 @if{ ! primitive }
@@ -45,13 +45,13 @@
                         add@{ capitalize( base ) }( y );
                     }
                 @else{}
-                    @{ getter( base, map( type, true )  ) }().addAll( x );
+                    @{ getter( base, map( type, true ), enhancedNames ) }().addAll( x );
                 @end{}
             @else{}
                 @if{ ! primitive }
                     add@{ capitalize( base ) }( (java.lang.Object) x );
                 @else{}
-                    @{ getter( base, map( type, true )  ) }().add( x );
+                    @{ getter( base, map( type, true ), enhancedNames ) }().add( x );
                 @end{}
             @end{}
         @end{}
@@ -64,14 +64,14 @@
      public
         @if{ max != 1 } java.util.List<@{ map( type, true ) }> @else{} @{ map( type, true ) } @end{}
 
-        @{ getter( name, map( type, true ), max ) }()  {
+        @{ getter( name, map( type, true ), max, enhancedNames ) }()  {
 
         @if{ max == 0 }
             return java.util.Collections.emptyList();
         @else{}
             java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList<@{ map( type, true ) }>();
 
-            for ( @{ map( baseType, true ) } x : @{ getter( base, map( type, true ) ) }() ) {
+            for ( @{ map( baseType, true ) } x : @{ getter( base, map( type, true ), enhancedNames ) }() ) {
                 if ( x instanceof @{ map( type, true ) } ) {
                     ans.add( (@{ map( type, true ) }) x );
                 }

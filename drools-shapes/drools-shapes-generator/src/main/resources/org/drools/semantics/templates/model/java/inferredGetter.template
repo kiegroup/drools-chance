@@ -22,23 +22,23 @@
 
 
         @javax.persistence.Transient
-        public java.util.List<@{ map( type, true ) }> @{ getter( name, map( type, true ) ) }Inferred()  {
+        public java.util.List<@{ map( type, true ) }> @{ getter( name, map( type, true ), enhancedNames ) }Inferred()  {
 
             @if{ ! simple }
-                java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( @{ getter( name, map( type, true ) ) }() );
+                java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( @{ getter( name, map( type, true ), enhancedNames ) }() );
             @else{}
                 //@{name}, @{type}
                 java.util.List<@{ map( type, true ) }> ans = new java.util.ArrayList( );
-                    ans.add( @{ getter( name, map( type, true ), 1 ) }() );
+                    ans.add( @{ getter( name, map( type, true ), 1, enhancedNames ) }() );
             @end{}
 
             // @{subs}
             @foreach{ sub : subs }
             @if{ ! sub.type.startsWith( "xsd:" ) }
                 @if{ sub.single }
-                    ans.add( @{ getter( sub.name, map( sub.type, true ), 1 ) }() );
+                    ans.add( @{ getter( sub.name, map( sub.type, true ), 1, enhancedNames ) }() );
                 @else{}
-                    ans.addAll( @{ getter( sub.name, map( sub.type, true ) ) }() );
+                    ans.addAll( @{ getter( sub.name, map( sub.type, true ), enhancedNames ) }() );
                 @end{}
             @end{}
             @end{}

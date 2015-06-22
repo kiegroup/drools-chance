@@ -27,7 +27,7 @@
         @elseif{ ! primitive }
             add@{ capitalize( name ) }( (java.lang.Object) x );
         @else{}
-            @{ getter( name, type, max ) }().add( x );
+            @{ getter( name, type, max, enhancedNames ) }().add( x );
         @end{}
     }
 
@@ -38,7 +38,7 @@
                 @{ compactVariable( name ) } = null;
             }
         @else{}
-            @{ getter( name, type, max ) }().remove( x );
+            @{ getter( name, type, max, enhancedNames ) }().remove( x );
         @end{}
     }
 

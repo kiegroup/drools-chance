@@ -176,7 +176,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
 
             {
                 mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                        NameUtils.getter( rel.getName(), NameUtils.map( rel.getTarget().getName(), true ), rel.getMaxCard() ),
+                        NameUtils.getter( rel.getName(), NameUtils.map( rel.getTarget().getName(), true ), rel.getMaxCard(), model.isUseEnhancedNames() ),
                         "()" + propType,
                         genericGetType,
                         null);
@@ -207,7 +207,7 @@ public class JarInterfaceModelCompilerImpl extends JavaInterfaceModelCompilerImp
             {
                 //if ( ! rel.isReadOnly() ) {
                     mv = cw.visitMethod( ACC_PUBLIC + ACC_ABSTRACT,
-                            NameUtils.setter( rel.getName() ),
+                            NameUtils.setter( rel.getName(), rel.getMaxCard(), model.isUseEnhancedNames() ),
                             "(" + propType + ")V",
                             genericSetType,
                             null);

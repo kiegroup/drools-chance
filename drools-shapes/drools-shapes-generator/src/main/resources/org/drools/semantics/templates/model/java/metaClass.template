@@ -61,8 +61,8 @@ public class @{ typeName }_ extends @if{ "Thing".equals( supertypeName ) } org.d
                     new @{ prop.concreteType }<@{prop.domain},@{ prop.range }>
                                         ( @{ prop.position }, "@{ prop.propName }", java.net.URI.create( "@{ prop.propIri }" ) ) {
 
-                public @{ prop.javaRangeType } get( @{ prop.domain } o ) { return o.@{ getter( prop.propName, map( prop.typeName, true ), prop.simple ? 1 : null ) }(); }
-                public void set( @{ prop.domain } o, @{ prop.javaRangeType } value ) { o.@{ setter( prop.propName ) }( value ); }
+                public @{ prop.javaRangeType } get( @{ prop.domain } o ) { return o.@{ getter( prop.propName, map( prop.typeName, true ), prop.simple ? 1 : null, enhancedNames ) }(); }
+                public void set( @{ prop.domain } o, @{ prop.javaRangeType } value ) { o.@{ setter( prop.propName, prop.maxCard, enhancedNames ) }( value ); }
 
                 @if{ prop.inverse != null }
                 @Override

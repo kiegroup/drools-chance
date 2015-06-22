@@ -25,7 +25,7 @@
         public void add@{ capitalize(name) }( java.lang.Object x ) {
             @if{ ! simple }
             if ( x instanceof @{map( type, true ) } ) {
-                @{ getter( name, type, max ) }().add( ( @{ map( type, true ) } ) x );
+                @{ getter( name, type, max, enhancedNames ) }().add( ( @{ map( type, true ) } ) x );
             } else {
                 //TODO : Trait it!
             }
