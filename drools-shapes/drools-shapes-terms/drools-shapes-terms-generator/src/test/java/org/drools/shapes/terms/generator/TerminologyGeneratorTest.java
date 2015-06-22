@@ -98,7 +98,7 @@ public class TerminologyGeneratorTest {
                     Thread.currentThread().getContextClassLoader()
             );
 
-            Class scheme = Class.forName( "org.drools.test.SCH1", true, urlKL );
+            Class scheme = Class.forName( "test.generator.SCH1", true, urlKL );
 
             Field ns = scheme.getField( "codeSystemId" );
             Assert.assertEquals( "0.0.0.0", ns.get( null ) );

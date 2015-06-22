@@ -8,15 +8,15 @@ public class @{className} {
     public static final String codeSystemId = "@{codeSystem.codeSystemId}";
     public static final URI codeSystemURI = URI.create( "@{codeSystem.codeSystemUri}" );
 
-    public static final @{typeIntf.getName()} __SELF = CodeFactory.get().buildCode( codeSystemURI, codeSystemId, codeSystemName, null, null );
+    public static final @{typeIntf.getName()} __SELF = @{ outerPackage }.CodeFactory.get().buildCode( codeSystemURI, codeSystemId, codeSystemName, null, null );
 
     static {
-        VocabularyCatalog.get().register( codeSystemId, __SELF );
+        @{ outerPackage }.VocabularyCatalog.get().register( codeSystemId, __SELF );
     }
 
 
 @foreach{ concept : codeSystem.concepts }
-    public static final @{typeIntf.getName()} @{org.drools.semantics.utils.NameUtils.getTermConceptName(concept.code,concept.name)} = CodeFactory.get().buildCode( java.net.URI.create("@{concept.uri}"), "@{concept.code}", "@{concept.name}", codeSystemId, codeSystemName );
+    public static final @{typeIntf.getName()} @{org.drools.semantics.utils.NameUtils.getTermConceptName(concept.code,concept.name)} = @{ outerPackage }.CodeFactory.get().buildCode( java.net.URI.create("@{concept.uri}"), "@{concept.code}", "@{concept.name}", codeSystemId, codeSystemName );
 
 @end{}
 

@@ -10,6 +10,7 @@ import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRuntime;
+import org.semanticweb.owlapi.model.IRI;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -58,17 +59,19 @@ public class JavaGenerator {
         for( CodeSystem codeSystem : codeSystems ) {
             if ( ! codeSystem.getConcepts().isEmpty() ) {
                 String className = NameUtils.getTermCodeSystemName( codeSystem.getCodeSystemName() );
+                String innerPackageName = NameUtils.namespaceURIToPackage( IRI.create( codeSystem.getCodeSystemUri() ).getNamespace() );
 
                 Map<String,Object> context = new HashMap<String,Object>();
                 context.put( "codeSystem", codeSystem );
                 context.put( "className", className );
-                context.put( "packageName", packageName );
+                context.put( "packageName", innerPackageName );
+                context.put( "outerPackage", packageName );
                 context.put( "JavaGenerator", JavaGenerator.class );
                 context.put( "implClass", ConceptCoding.class );
                 context.put( "typeIntf", ConceptDescriptor.class );
 
                 String mainText = (String) TemplateRuntime.execute( compiled, this, context );
-                this.writeToFile( mainText, outputDir, packageName, className );
+                this.writeToFile( mainText, outputDir, innerPackageName, className );
             }
         }
     }
