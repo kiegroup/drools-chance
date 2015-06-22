@@ -579,7 +579,7 @@ public final class NameUtils {
         return upName;
     }
 
-    private static String trail( String s ) {
+    private static int trail( String s ) {
         int start = s.length() - 1;
         int count = 0;
         while ( start > 1 && s.charAt( start ) == '_' ) {
@@ -587,7 +587,7 @@ public final class NameUtils {
             count++;
         }
         //return s.substring( start + 1 );
-        return ""+count;
+        return count;
     }
 
     public static String compactUpperCase( final String name ) {
@@ -602,6 +602,15 @@ public final class NameUtils {
             upName += trail( name );
         }
         return upName;
+    }
+
+    public static String fixTrail( String name ) {
+        if ( name.endsWith( "_" ) ) {
+            int N = trail( name );
+            return name.substring( 0, name.length() - N ) + N;
+        } else {
+            return name;
+        }
     }
 
     public static String compactVariable( final String name ) {
