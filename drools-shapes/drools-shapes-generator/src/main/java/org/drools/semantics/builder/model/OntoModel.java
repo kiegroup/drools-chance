@@ -144,4 +144,8 @@ public interface OntoModel extends Cloneable {
     public boolean isUseEnhancedNames();
 
     public void setUseEnhancedNames( boolean useEnhancedNames );
+
+    public boolean isTraiting();
+
+    public void setTraiting( boolean traiting );
 }

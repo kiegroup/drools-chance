@@ -38,7 +38,7 @@ import javax.persistence.Basic;
 @thewebsemantic.RdfType( "@{iri}}" )
 @org.drools.core.factmodel.traits.Trait
 @org.kie.api.definition.type.PropertyReactive
-public interface @{name} extends @if{ ! standalone } org.drools.semantics.Thing, @end{} org.drools.core.metadata.Metadatable  @if{ implInterface != null} , @{ implInterface } @end{}
+public interface @{name} extends @if{ ! standalone } org.drools.semantics.Thing, @end{} @if{ traiting } org.drools.core.factmodel.traits.Thing, @end{} org.drools.core.metadata.Metadatable  @if{ implInterface != null} , @{ implInterface } @end{}
                                  @if{ superConcepts.size > 0 } , @foreach{ sup : superConcepts } @{sup.package}.@{compactUpperCase( sup.name ) } @end{','} @end{}
 {
 
@@ -47,7 +47,7 @@ public interface @{name} extends @if{ ! standalone } org.drools.semantics.Thing,
     @code{ prop = properties[ propKey ] }
 
 
-    @if{ ! ( prop.simple && prop.restricted && prop.target.primitive ) }
+    @if{ prop.public }
     @comment{ do not generate getters and setters for simple, primitive, restricted properties }
 
     // @{prop.property}   --    @{prop.maxCard}   --- @{prop.name}

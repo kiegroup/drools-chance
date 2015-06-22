@@ -74,6 +74,7 @@ package org.drools.semantics.builder.model.compilers;
             map.put( "keys", con.getKeys() );
             map.put( "shadowed", con.isShadowed() );
             map.put( "standalone", model.isStandalone() );
+            map.put( "traiting", model.isTraiting() );
             map.put( "enhancedNames", model.isUseEnhancedNames() );
             map.put( "minimal", model.isMinimal() );
 

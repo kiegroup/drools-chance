@@ -223,4 +223,14 @@ public abstract class ModelImpl implements OntoModel {
     public void setUseEnhancedNames( boolean useEnhancedNames ) {
         innerModel.setUseEnhancedNames( useEnhancedNames );
     }
+
+    @Override
+    public boolean isTraiting() {
+        return innerModel.isTraiting();
+    }
+
+    @Override
+    public void setTraiting( boolean traiting ) {
+        innerModel.setTraiting( traiting );
+    }
 }

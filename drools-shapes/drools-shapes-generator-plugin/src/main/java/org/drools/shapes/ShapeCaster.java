@@ -352,6 +352,7 @@ public class ShapeCaster
         OntoModel results = processOntology( mode );
         results.setMinimal( compilationOptions.contains( "-minimal" ) );
         results.setStandalone( compilationOptions.contains( "-standalone" ) );
+        results.setTraiting( compilationOptions.contains( "-traiting" ) );
 
         OntoModelCompiler compiler = new OntoModelCompiler( results, target, isUseEnhancedNames() );
 

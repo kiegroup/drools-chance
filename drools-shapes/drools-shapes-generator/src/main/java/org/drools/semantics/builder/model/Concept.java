@@ -313,6 +313,9 @@ public class Concept implements Cloneable {
             if ( con.getChosenProperties().containsValue( prop ) ) {
                 return true;
             }
+            if ( con == con.getChosenSuperConcept() ) {
+                return false;
+            }
             con = con.getChosenSuperConcept();
         }
         return false;

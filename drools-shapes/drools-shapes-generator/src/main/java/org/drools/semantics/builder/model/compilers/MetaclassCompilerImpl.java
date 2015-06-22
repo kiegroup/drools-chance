@@ -73,6 +73,8 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
                 PropInfo p = new PropInfo();
                 Concept target = findLocalRange( prop.getTarget() );
 
+                p.from = prop;
+
                 p.propName = prop.getName();
                 p.typeName = target.getFullyQualifiedName();
                 p.simpleTypeName = target.getName();
@@ -96,7 +98,9 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
                         properties.put( p.propName, p );
                     }
                 } else {
-                    properties.put( p.propName, p );
+                    if ( prop.isPublic() ) {
+                        properties.put( p.propName, p );
+                    }
                 }
 
 
@@ -181,6 +185,9 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
 
 
     private boolean isLocal( PropertyRelation prop, Concept con ) {
+        if ( ! prop.isPublic() ) {
+            return false;
+        }
         if ( con.getChosenProperties().containsValue( prop ) ) {
             return true;
         }
@@ -257,6 +264,33 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
         public String simpleTypeName;
         public boolean primitive;
         public Integer maxCard;
+
+        public PropertyRelation from;
+
+        @Override
+        public String toString() {
+            return "PropInfo{" +
+                   "propName='" + propName + '\'' +
+                   ", typeName='" + typeName + '\'' +
+                   '}';
+        }
+
+        @Override
+        public boolean equals( Object o ) {
+            if ( this == o ) return true;
+            if ( !( o instanceof PropInfo ) ) return false;
+
+            PropInfo propInfo = (PropInfo) o;
+
+            if ( !from.equals( propInfo.from ) ) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return from.hashCode();
+        }
     }
 
 }

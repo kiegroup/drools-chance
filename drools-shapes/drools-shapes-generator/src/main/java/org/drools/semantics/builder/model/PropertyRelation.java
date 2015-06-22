@@ -361,6 +361,10 @@ public class PropertyRelation extends Relation implements Cloneable {
     public void setAttribute( boolean attribute ) {
         this.attribute = attribute;
     }
+
+    public boolean isPublic() {
+        return ! ( simple && restricted && getTarget().isPrimitive() ) && ! ( isAttribute() && ! restrictedProperties.isEmpty() );
+    }
 }
 
 
