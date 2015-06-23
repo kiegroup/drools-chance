@@ -359,14 +359,20 @@ public class OntoModelCompiler {
         MetaclassModel metaModel = (MetaclassModel) mcompiler.compile( model, withDefaultClasses );
 
         boolean success = metaModel.save( getJavaDir().getPath() );
+        String regexSeparator = File.separator;
+        if (regexSeparator.equals("\\"))
+            regexSeparator = "\\\\";
         if ( withDefaultClasses ) {
             for ( String pack : model.getAllPackageNames() ) {
                 if ( NamespaceUtils.isOWL( pack ) ) {
                     continue;
                 }
-                success &= metaModel.streamFactory( mcompiler.buildFactory( pack ), getJavaDir().getPath() + File.separator + pack.replaceAll( "\\.", File.separator ) );
+                try {
+                    success &= metaModel.streamFactory(mcompiler.buildFactory(pack), getJavaDir().getPath() + File.separator + pack.replaceAll("\\.", regexSeparator));
+                } catch (RuntimeException re) {
+                    re.printStackTrace();
+                }
             }
-
         }
 
         return success;
