@@ -103,6 +103,88 @@ public class ExpectationTest extends ExpTestBase {
     }
 
     @Test
+    public void testExpectForall() {
+
+        String src = "" +
+                "package org.drools; " +
+                "global java.util.List list; " +
+
+                "declare Msg " +
+                "   @role(event) " +
+                "   sender : String     @key " +
+                "   receiver : String   @key " +
+                "   body : String       @key " +
+                "   more : String " +
+                "end " +
+                " " +
+                "rule Expect_Test_Rule " +
+                "when " +
+                "   $trigger : Msg( 'John' ; ) " +
+                "then " +
+                "   expect Msg( 'Peter'; this after[0,100ms] $trigger ) " +
+                "          forall( $msg: Msg( 'Peter'; ) " +
+                "                   Msg( this == $msg, receiver == 'John' ) ) " +
+                "   onFulfill { " +
+                "       list.add( 'AM1' ); " +
+                "       System.out.println( 'Expectation fulfilled' ); " +
+                "   } onViolation {" +
+                "       list.add( 'AM2' ); " +
+                "       System.out.println( 'Expectation violated' );" +
+                "   } " +
+                "   list.add( 0 ); " +
+                "   System.out.println( 'Triggered expectation ' + $trigger ); " +
+                "end " +
+                "";
+
+        KieSession kSession = buildKnowledgeSession( src.getBytes() );
+        List<Object> list = new LinkedList<Object>();
+        kSession.setGlobal( "list", list );
+
+        System.out.println( "====================================================================================" );
+        kSession.insert( newMessage( kSession, "John", "Peter", "Hello", "X" ) );
+        kSession.fireAllRules();
+        assertTrue( list.contains( 0 ) );
+
+        System.out.println( "================================= SLEEP =========================================" );
+        sleep( 20 );
+        System.out.println( "================================= WAAKE =========================================" );
+
+        kSession.insert( newMessage( kSession, "Peter", "John", "Hello back", "Y" ) );
+        kSession.fireAllRules();
+        System.out.println( "================================= DONE =========================================" );
+
+
+
+
+        System.out.println(reportWMObjects(kSession));
+        assertEquals(Arrays.asList(0, "AM1"), list);
+        assertEquals( 1, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+
+        sleep(30);
+        kSession.insert( newMessage( kSession, "John", "Peter", "Hello again", "Y" ) );
+        sleep(10);
+        kSession.insert( newMessage( kSession, "Peter", "Steve", "Hello", "X" ) );
+        kSession.fireAllRules();
+        assertEquals( Arrays.asList( 0, "AM1", 0 ), list );
+        assertEquals( 1, countMeta(Fulfill.class.getName(), kSession) );
+        assertEquals( 2, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+
+        sleep( 150 );
+
+        kSession.fireAllRules();
+
+        assertEquals( Arrays.asList( 0, "AM1", 0, "AM2" ), list );
+        assertEquals( 1, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Viol.class.getName(), kSession ) );
+
+
+    }
+
+    @Test
     public void testSimpleFulfill() {
 
         String src = "" +

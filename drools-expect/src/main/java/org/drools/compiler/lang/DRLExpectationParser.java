@@ -23,12 +23,10 @@ import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 import org.drools.compiler.lang.api.*;
+import org.drools.compiler.lang.api.impl.CEDescrBuilderImpl;
 import org.drools.compiler.lang.api.impl.ExpectationDescrBuilderImpl;
-import org.drools.compiler.lang.descr.AndDescr;
-import org.drools.compiler.lang.descr.BaseDescr;
-import org.drools.compiler.lang.descr.ExpectationRuleDescr;
+import org.drools.compiler.lang.descr.*;
 import it.unibo.deis.lia.org.drools.expectations.DRLExpectationHelper;
-import org.drools.compiler.lang.descr.PatternDescr;
 
 import java.util.List;
 
@@ -202,37 +200,55 @@ public class DRLExpectationParser  {
                     null,
                     DroolsEditorType.KEYWORD);
 
-            boolean negated = false;
-            if (helper.validateIdentifierKey(ExpectationSoftKeywords.ONE)) {
-                parser.match(input,
-                        DRL6Lexer.ID,
-                        ExpectationSoftKeywords.ONE,
-                        null,
-                        DroolsEditorType.KEYWORD);
-                expectDescr.one();
-            } else {
-                if (helper.validateIdentifierKey( DroolsSoftKeywords.NOT )) {
+            CEDescrBuilder lhs = new CEDescrBuilderImpl(expectDescr, new AndDescr());
+            do {
+
+                boolean negated = false;
+                if (helper.validateIdentifierKey(ExpectationSoftKeywords.ONE)) {
                     parser.match(input,
                             DRL6Lexer.ID,
-                            DroolsSoftKeywords.NOT,
+                            ExpectationSoftKeywords.ONE,
                             null,
                             DroolsEditorType.KEYWORD);
-                    negated = true;
+                    expectDescr.one();
+                } else {
+                    if (helper.validateIdentifierKey(DroolsSoftKeywords.NOT)) {
+                        parser.match(input,
+                                DRL6Lexer.ID,
+                                DroolsSoftKeywords.NOT,
+                                null,
+                                DroolsEditorType.KEYWORD);
+                        negated = true;
+                    }
                 }
-            }
 
-            String label = null;
-            if ( input.LA( 1 ) == DRL6Lexer.ID && input.LA( 2 ) == DRL6Lexer.COLON && !helper.validateCEKeyword( 1 ) ) {
-                label = parser.label(DroolsEditorType.IDENTIFIER_PATTERN);
-                if ( state.failed ) return null;
-            }
+                String label = null;
+                boolean contained = false;
+                if (input.LA(1) == DRL6Lexer.ID && input.LA(2) == DRL6Lexer.COLON && !helper.validateCEKeyword(1)) {
+                    label = parser.label(DroolsEditorType.IDENTIFIER_PATTERN);
+                    if (state.failed) return null;
+                } else if (helper.validateCEKeyword(1)) {
+                    if (helper.validateIdentifierKey(DroolsSoftKeywords.FORALL)) {
+                        contained = true;
+                    }
+                }
 
-            if ( state.backtracking == 0 ) {
-                parser.lhsPattern( negated ? expectDescr.expectLhs().not().pattern() : expectDescr.expectLhs().pattern(), label, false );
-            } else {
-                parser.lhsPattern( null, label, false );
-            }
+                if (state.backtracking == 0) {
+                    if (contained) {
+                        parser.lhsForall(negated ? lhs.not():lhs);
+                    } else {
+                        parser.lhsPattern(negated ? lhs.not().pattern():lhs.pattern(), label, false);
+                    }
 
+                } else {
+                    parser.lhsPattern(null, label, false);
+                }
+            } while (!helper.validateIdentifierKey(ExpectationSoftKeywords.FAILSON)
+                    && !helper.validateIdentifierKey(ExpectationSoftKeywords.ONFULFILL)
+                    && !helper.validateIdentifierKey(ExpectationSoftKeywords.ONVIOLATION)
+                    && !helper.validateIdentifierKey(DroolsSoftKeywords.END));
+
+            ((ExpectationDescr)expectDescr.getDescr()).setExpectLhs((AndDescr)lhs.getDescr());
             failsOn(packageDescr, expectDescr, (ExpectationRuleDescr) rule.getDescr() );
 
             onFulfill( packageDescr, expectDescr, (ExpectationRuleDescr) rule.getDescr() );
@@ -427,7 +443,13 @@ public class DRLExpectationParser  {
 
 
     boolean isExpectationNext() {
-        return helper.validateIdentifierKey( ExpectationSoftKeywords.EXPECT ) || (input.LA( 1 ) == DRL6Lexer.ID && input.LA( 2 ) == DRL6Lexer.COLON);
+        if (helper.validateIdentifierKey( ExpectationSoftKeywords.EXPECT )) {
+            return true;
+        }
+        if (input.LA( 1 ) == DRL6Lexer.ID && input.LA( 2 ) == DRL6Lexer.COLON) {
+            return true;
+        }
+        return false;
     }
 
     boolean isRepairNext() {

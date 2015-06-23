@@ -24,17 +24,7 @@ import org.drools.compiler.lang.api.ECEPackageDescrBuilder;
 import org.drools.compiler.lang.api.PackageDescrBuilder;
 import org.drools.compiler.lang.api.PatternDescrBuilder;
 import org.drools.compiler.lang.api.RuleDescrBuilder;
-import org.drools.compiler.lang.descr.AndDescr;
-import org.drools.compiler.lang.descr.BaseDescr;
-import org.drools.compiler.lang.descr.ConditionalElementDescr;
-import org.drools.compiler.lang.descr.ExpectationDescr;
-import org.drools.compiler.lang.descr.ExpectationRuleDescr;
-import org.drools.compiler.lang.descr.ExprConstraintDescr;
-import org.drools.compiler.lang.descr.NamedConsequenceDescr;
-import org.drools.compiler.lang.descr.NotDescr;
-import org.drools.compiler.lang.descr.OrDescr;
-import org.drools.compiler.lang.descr.PatternDescr;
-import org.drools.compiler.lang.descr.RuleDescr;
+import org.drools.compiler.lang.descr.*;
 import org.drools.core.util.StringUtils;
 
 import java.util.*;
@@ -337,7 +327,9 @@ public class DRLExpectationHelper {
     public void buildFulfillRule( PackageDescrBuilder builder, ExpectationRuleDescr rule, ExpectationDescr expectations ) {
 
         RuleDescr fulfillRule = expectations.getFulfill();
+        AttributeDescr noloop = new AttributeDescr("no-loop","");
         fulfillRule.addAnnotation( "Propagation", "EAGER" );
+        fulfillRule.addAttribute(noloop);
         boolean addMatchConsequence = ! StringUtils.isEmpty( fulfillRule.getConsequence().toString().trim() );
 
         AndDescr fulfillLhs = fulfillRule.getLhs();
@@ -378,6 +370,8 @@ public class DRLExpectationHelper {
     public void buildViolationRule( PackageDescrBuilder builder, ExpectationRuleDescr rule, ExpectationDescr expectations ) {
 
         RuleDescr violRule = expectations.getViolation();
+        AttributeDescr noloop = new AttributeDescr("no-loop","");
+        violRule.addAttribute(noloop);
         violRule.addAnnotation( "Propagation", "EAGER" );
 
         AndDescr violLhs = violRule.getLhs();
@@ -387,6 +381,15 @@ public class DRLExpectationHelper {
 
         NotDescr not = new NotDescr( expectations.getExpectLhs()  );
         violLhs.addDescr( not );
+        if (expectations.getExpired() != null) {
+            RuleDescr expireRule = expectations.getExpired();
+            AndDescr additional = expireRule.getLhs();
+            for (BaseDescr descr: additional.getDescrs()) {
+                if (descr instanceof PatternDescr) {
+                    violLhs.addDescr(descr);
+                }
+            }
+        }
 
         if ( ! rule.isExpectationDisabled() ) {
             violLhs.addDescr( expectPattern( expectations.getLabel(), extractVars( rule.getLhs(), expectations.getLabel() ), true ) );
