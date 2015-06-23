@@ -47,7 +47,7 @@ public class ProvenanceHelper {
         });
         kieBaseConfiguration.getComponentFactory().getTraitFactory().setInstantiatorFactory( new InstantiatorFactory() {
             @Override
-            public TraitableBean instantiate( Class<? extends Thing> trait, Object id ) {
+            public TraitableBean instantiate( Class<?> trait, Object id ) {
                 return new IdentifiableEntity( id.toString() );
             }
 
