@@ -639,6 +639,15 @@ public final class NameUtils {
         }
     }
 
+
+    public static String enhance( String name, Integer max, boolean enhanceNames ) {
+        if ( isMultiple( max ) && enhanceNames ) {
+            return pluralize( name );
+        } else {
+            return name;
+        }
+    }
+
     public static String pluralize( String name ) {
         if ( name.endsWith( "_" ) ) {
             int start = name.length() - 1;

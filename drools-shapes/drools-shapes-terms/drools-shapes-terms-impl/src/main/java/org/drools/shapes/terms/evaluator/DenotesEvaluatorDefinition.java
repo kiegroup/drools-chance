@@ -103,7 +103,33 @@ public class DenotesEvaluatorDefinition implements EvaluatorDefinition {
             Object right = value.getValue();
         	Object left = extractor.getValue( factHandle.getObject() );
 
-            if(right == null || left == null) {
+            return this.evaluate( left, right, workingMemory, extractor );
+        }
+
+        private String getPropertyURI( InternalReadAccessor extractor ) {
+            RdfProperty ann = extractor.getNativeReadMethod().getAnnotation( RdfProperty.class );
+            return ann != null ? ann.value() : null;
+        }
+
+        @Override
+        public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, InternalFactHandle leftFh, InternalReadAccessor rightExtractor, InternalFactHandle rightFh) {
+            Object left = leftExtractor.getValue( workingMemory, leftFh.getObject() );
+            Object right = rightExtractor.getValue( workingMemory, rightFh.getObject() );
+            return this.evaluate( left, right, workingMemory, rightExtractor );
+        }
+
+        @Override
+        public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle right) {
+            throw new UnsupportedOperationException( "TODO" );
+        }
+
+        @Override
+        public boolean evaluateCachedRight(InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle left) {
+            throw new UnsupportedOperationException( "TODO" );
+        }
+
+        private boolean evaluate( Object left, Object right, InternalWorkingMemory workingMemory, InternalReadAccessor extractor ) {
+            if( right == null || left == null) {
                 return this.getOperator().isNegated() ? true : false;
             }
 
@@ -128,27 +154,9 @@ public class DenotesEvaluatorDefinition implements EvaluatorDefinition {
             return this.getOperator().isNegated() ? ! answer : answer;
         }
 
-        private String getPropertyURI( InternalReadAccessor extractor ) {
-            RdfProperty ann = extractor.getNativeReadMethod().getAnnotation( RdfProperty.class );
-            return ann != null ? ann.value() : null;
-        }
 
-        @Override
-        public boolean evaluate(InternalWorkingMemory workingMemory, InternalReadAccessor leftExtractor, InternalFactHandle leftFh, InternalReadAccessor rightExtractor, InternalFactHandle rightFh) {
-            throw new UnsupportedOperationException();
-        }
+    }
 
-        @Override
-        public boolean evaluateCachedLeft(InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle right) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean evaluateCachedRight(InternalWorkingMemory workingMemory, VariableRestriction.VariableContextEntry context, InternalFactHandle left) {
-            throw new UnsupportedOperationException();
-        }
-
-    };
 
     protected ConceptDescriptor toConceptDescriptor( Object object ) {
 

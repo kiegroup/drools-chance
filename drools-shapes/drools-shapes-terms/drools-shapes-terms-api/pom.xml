@@ -91,6 +91,7 @@
 					<axiomInference>lite</axiomInference>
 					<generateInterfaces>true</generateInterfaces>
 					<generateInterfaceJar>false</generateInterfaceJar>
+					<generateMetaclasses>true</generateMetaclasses>
 					<generateTraitDRL>false</generateTraitDRL>
 					<generateDefaultImplClasses>false</generateDefaultImplClasses>
 					<inheritanceMode>OPTIMIZED</inheritanceMode>
