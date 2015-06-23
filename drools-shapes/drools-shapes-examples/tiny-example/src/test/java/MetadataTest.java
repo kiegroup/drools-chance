@@ -4,6 +4,7 @@ import com.foo.MySubKlassImpl;
 import com.foo.MySubKlass_;
 
 import org.drools.core.metadata.InvertibleMetaProperty;
+import org.drools.core.metadata.Lit;
 import org.junit.Test;
 import org.test.MetaFactory;
 import org.test.MyKlass;
@@ -18,6 +19,7 @@ import java.net.URI;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -92,7 +94,7 @@ public class MetadataTest {
     @Test
     public void testMetaFactory() {
         Class<?> m1 = org.test.MetaFactory.class;
-        assertEquals( 8, m1.getDeclaredMethods().length );
+        assertEquals( 12, m1.getDeclaredMethods().length );
         Class<?> m2 = com.foo.MetaFactory.class;
         assertEquals( 4, m2.getDeclaredMethods().length );
     }
@@ -103,5 +105,17 @@ public class MetadataTest {
         assertTrue( MyTargetKlass_.linkedBy instanceof InvertibleMetaProperty );
     }
 
+
+    @Test
+    public void testPropertyChain() {
+        MyTargetKlass tgt = (MyTargetKlass) MyTargetKlass_.newMyTargetKlass( "2" ).call();
+        MyKlass src = (MyKlass) MyKlass_.newMyKlass( "1" ).call();
+
+        MyKlass_.modify( src ).arc( tgt, Lit.ADD ).call();
+
+        assertTrue( src.getArc().contains( tgt ) );
+        assertFalse( src.getFirst().isEmpty() );
+
+    }
 }
 

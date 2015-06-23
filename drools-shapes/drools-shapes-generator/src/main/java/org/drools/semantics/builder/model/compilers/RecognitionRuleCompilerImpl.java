@@ -36,6 +36,9 @@ import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.w3._2002._07.owl.Thing;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -128,10 +131,14 @@ public class RecognitionRuleCompilerImpl extends ModelCompilerImpl implements Re
             while ( tok.hasMoreTokens() ) {
                 String res = tok.nextToken();
                 try {
-
-                    ontology = ontologyManager.loadOntologyFromOntologyDocument(
-                            new StreamDocumentSource( RecognitionRuleCompilerImpl.class.getResourceAsStream( res ) ),
-                            olc );
+                    StreamDocumentSource src;
+                    if ( new File( res ).exists() ) {
+                        src = new StreamDocumentSource( new FileInputStream( res ) );
+                    } else {
+                        URL url = RecognitionRuleCompilerImpl.class.getResource( res );
+                        src = new StreamDocumentSource( url.openStream() );
+                    }
+                    ontology = ontologyManager.loadOntologyFromOntologyDocument( src, olc );
                 } catch ( Exception e ) {
                     e.printStackTrace();
                 }
