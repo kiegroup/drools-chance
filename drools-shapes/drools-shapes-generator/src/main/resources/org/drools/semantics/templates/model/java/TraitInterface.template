@@ -47,7 +47,7 @@ public interface @{name} extends @if{ ! standalone } org.drools.semantics.Thing,
     @code{ prop = properties[ propKey ] }
 
 
-    @if{ prop.public }
+    @if{ prop.public && ! prop.resolved }
     @comment{ do not generate getters and setters for simple, primitive, restricted properties }
 
     // @{prop.property}   --    @{prop.maxCard}   --- @{prop.name}

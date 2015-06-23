@@ -864,6 +864,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         rel.setDomain( con );
                         con.addProperty( rel.getProperty(), rel.getName(), rel );
                         hierarchicalModel.addProperty( rel );
+                        rel.resolve();
                     }
                 }
             }
@@ -904,6 +905,7 @@ public class DelegateInferenceStrategy extends AbstractModelInferenceStrategy {
                         rel.setAttribute( Annotations.hasAnnotation( op, Annotations.ATTRIBUTE, ontoDescr ) );
                         rel = hierarchicalModel.addProperty( rel );
                         con.addProperty( rel.getProperty(), rel.getName(), rel );
+                        rel.resolve();
 
                     }
                 }

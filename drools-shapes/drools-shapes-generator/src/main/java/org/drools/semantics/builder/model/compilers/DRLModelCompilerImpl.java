@@ -40,7 +40,7 @@ public class DRLModelCompilerImpl extends ModelCompilerImpl implements DRLModelC
     }
 
     public void compile( Concept con, Object context, Map<String, Object> params ) {
-        if ( con.isResolved() && ( con.getResolvedAs() == Concept.Resolution.CLASS || con.getResolvedAs() == Concept.Resolution.ENUM ) ) {
+        if ( con.isResolved() ) {
             return;
         }
         getModel().addTrait( con.getFullyQualifiedName(), TemplateRuntime.execute( template, context, params ).toString().trim() );

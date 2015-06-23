@@ -19,7 +19,10 @@ package org.drools.semantics.builder.model;
 import org.drools.semantics.utils.NameUtils;
 import org.kie.api.definition.type.Position;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +51,7 @@ public class PropertyRelation extends Relation implements Cloneable {
     private Set<List<PropertyRelation>> chains = new HashSet<List<PropertyRelation>>();
 
     private boolean functional;
-
+    private boolean resolved;
 
     public PropertyRelation( String subject, String property, String object, String name ) {
         this.subject = subject;
@@ -364,6 +367,79 @@ public class PropertyRelation extends Relation implements Cloneable {
 
     public boolean isPublic() {
         return ! ( simple && restricted && getTarget().isPrimitive() ) && ! ( isAttribute() && ! restrictedProperties.isEmpty() );
+    }
+
+    public void resolve() {
+        if ( ! getDomain().isResolved() ) {
+            resolved = false;
+            return;
+        }
+        if ( getDomain().getResolvedAs() == Concept.Resolution.IFACE || getDomain().getResolvedAs() == Concept.Resolution.CLASS ) {
+            try {
+                Class<?> klass = Class.forName( getDomain().getFullyQualifiedName() );
+                Set<Method> methods = getMethods( klass );
+                for ( Method method : methods ) {
+                    if ( ! method.getName().startsWith( "get" ) && ! method.getName().startsWith( "is" ) ) {
+                        continue;
+                    }
+                    String mn = method.getName().toLowerCase();
+                    if ( compareMethod( mn, getName().toLowerCase() ) ) {
+                        resolved = true;
+                        return;
+                    }
+                    if ( compareMethod( mn, NameUtils.pluralize( getName() ).toLowerCase() ) ) {
+                        resolved = true;
+                        return;
+                    }
+                }
+            } catch ( Exception e ) {
+                resolved = false;
+                return;
+            }
+        }
+        resolved = false;
+    }
+
+    private Set<Method> getMethods( Class<?> klass ) {
+
+        if ( klass == Object.class ) {
+            return Collections.EMPTY_SET;
+        }
+        Set<Method> methods = new HashSet<Method>();
+        methods.addAll( Arrays.asList( klass.getMethods() ) );
+        if ( klass.getSuperclass() != null && klass.getSuperclass() != Object.class ) {
+            methods.addAll( getMethods( klass.getSuperclass() ) );
+        }
+        for ( Class itf : klass.getInterfaces() ) {
+            methods.addAll( getMethods( itf ) );
+        }
+        return methods;
+    }
+
+    private boolean compareMethod( String methodName, String propertyName ) {
+        if ( ! methodName.contains( propertyName ) ) {
+            return false;
+        }
+
+        if ( methodName.startsWith( "get" ) ) {
+            methodName = methodName.substring( 3 );
+        } else if ( methodName.startsWith( "is" ) ) {
+            methodName = methodName.substring( 2 );
+        }
+
+        if ( methodName.startsWith( propertyName ) ) {
+            methodName = methodName.substring( propertyName.length() );
+        }
+
+        if ( methodName.matches( "\\d*" ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isResolved() {
+        return resolved;
     }
 }
 
