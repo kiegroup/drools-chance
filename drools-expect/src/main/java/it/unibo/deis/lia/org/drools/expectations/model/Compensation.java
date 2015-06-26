@@ -3,11 +3,13 @@ package it.unibo.deis.lia.org.drools.expectations.model;
 import org.kie.api.definition.type.Position;
 import org.kie.api.definition.type.Role;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Role( Role.Type.EVENT )
-public class Compensation {
+public class Compensation implements Serializable {
 
+    private static final long serialVersionUID = 3083918175399259003L;
     @Position( 0 )
     private String label;
 

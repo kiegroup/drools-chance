@@ -5,12 +5,14 @@ import org.kie.api.definition.type.Position;
 import org.kie.api.definition.type.PropertyReactive;
 import org.kie.api.definition.type.Role;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Role( Role.Type.EVENT )
 @PropertyReactive
-public class Fulfill implements ExpectationResult {
+public class Fulfill implements ExpectationResult, Serializable {
 
+    private static final long serialVersionUID = 6649565452855024414L;
     // id of the initial activation
     @Key
     @Position( 0 )
