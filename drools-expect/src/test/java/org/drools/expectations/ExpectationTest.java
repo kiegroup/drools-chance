@@ -16,22 +16,13 @@
 
 package org.drools.expectations;
 
-import it.unibo.deis.lia.org.drools.expectations.model.Closure;
-import it.unibo.deis.lia.org.drools.expectations.model.Expectation;
-import it.unibo.deis.lia.org.drools.expectations.model.Failure;
-import it.unibo.deis.lia.org.drools.expectations.model.Fulfill;
-import it.unibo.deis.lia.org.drools.expectations.model.Pending;
-import it.unibo.deis.lia.org.drools.expectations.model.Success;
-import it.unibo.deis.lia.org.drools.expectations.model.Viol;
-import org.junit.Ignore;
+import it.unibo.deis.lia.org.drools.expectations.model.*;
 import org.junit.Test;
-import org.kie.api.definition.KiePackage;
-import org.kie.api.definition.rule.Global;
-import org.kie.api.event.rule.DebugAgendaEventListener;
-import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
-import org.kie.api.event.rule.DefaultAgendaEventListener;
+import org.kie.api.KieServices;
 import org.kie.api.runtime.KieSession;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +31,79 @@ import static org.junit.Assert.*;
 
 
 public class ExpectationTest extends ExpTestBase {
+
+    @Test
+    public void testMarshall() throws Exception {
+        String src = "" +
+                "package org.drools; " +
+
+                "declare Msg " +
+                "   @role(event) " +
+                "   sender   :   String @key " +
+                "   receiver   :   String @key " +
+                "   body      :   String @key " +
+                "   more      :   String " +
+                "end " +
+                " " +
+                "declare Interrupt " +
+                "   reason   :   String @key " +
+                "end " +
+                " " +
+                "global java.util.List list; " +
+
+                "rule FailsOn_Test_Rule " +
+                "when " +
+                "   $trigger: Msg( 'John', 'Peter', 'Hello' ; ) " +
+                "then " +
+                "   expect Msg( 'Peter', 'John', 'Hello back', $more ; this after[0,100ms] $trigger ) " +
+                "   failsOn Interrupt( 'ignore' ; ) " +
+                "   onFulfill { " +
+                "      list.add( 'F1'+$more ); " +
+                "      System.out.println( 'Expectation fulfilled' ); " +
+                "   } onViolation { " +
+                "      System.out.println( 'Expectation violated' ); " +
+                "   } " +
+                "   list.add( 0 ); " +
+                "   System.out.println( 'Triggered expectation: '+$trigger ); " +
+                "end";
+
+        KieSession kSession = buildKnowledgeSession( src.getBytes() );
+        List<Object> list = new LinkedList<Object>();
+        kSession.setGlobal("list", list);
+
+        System.out.println("====================================================================================");
+        kSession.insert(newMessage(kSession, "John", "Peter", "Hello", "X"));
+        kSession.fireAllRules();
+        assertTrue(list.contains(0));
+
+        /**
+         * Causes the failsOn rule (which currently is named with *__Expire suffix) to activate
+         **/
+        sleep(10);
+        kSession.insert(newInterrupt(kSession, "ignore"));
+        kSession.fireAllRules();
+        sleep(50);
+
+        /**
+         * Shouldn't cause anything more to activate (due to Closure occurring earlier),
+         * but at this time the onFulfill rule activates
+         */
+        kSession.insert(newMessage(kSession, "Peter", "John", "Hello back", "Y"));
+        kSession.fireAllRules();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        KieServices.Factory
+                .get()
+                .getMarshallers()
+                .newMarshaller(kSession.getKieBase()).marshall(baos, kSession);
+
+        KieServices.Factory
+                .get()
+                .getMarshallers()
+                .newMarshaller(kSession.getKieBase()).unmarshall(new ByteArrayInputStream(baos.toByteArray()));
+
+    }
 
     @Test
     public void testFailsOn() {
@@ -100,6 +164,88 @@ public class ExpectationTest extends ExpTestBase {
         kSession.insert(newMessage(kSession, "Peter", "John", "Hello back", "Y"));
         kSession.fireAllRules();
         System.out.println( reportWMObjects( kSession ) );
+    }
+
+    @Test
+    public void testExpectForall() {
+
+        String src = "" +
+                "package org.drools; " +
+                "global java.util.List list; " +
+
+                "declare Msg " +
+                "   @role(event) " +
+                "   sender : String     @key " +
+                "   receiver : String   @key " +
+                "   body : String       @key " +
+                "   more : String " +
+                "end " +
+                " " +
+                "rule Expect_Test_Rule " +
+                "when " +
+                "   $trigger : Msg( 'John' ; ) " +
+                "then " +
+                "   expect Msg( 'Peter'; this after[0,100ms] $trigger ) " +
+                "          forall( $msg: Msg( 'Peter'; ) " +
+                "                   Msg( this == $msg, receiver == 'John' ) ) " +
+                "   onFulfill { " +
+                "       list.add( 'AM1' ); " +
+                "       System.out.println( 'Expectation fulfilled' ); " +
+                "   } onViolation {" +
+                "       list.add( 'AM2' ); " +
+                "       System.out.println( 'Expectation violated' );" +
+                "   } " +
+                "   list.add( 0 ); " +
+                "   System.out.println( 'Triggered expectation ' + $trigger ); " +
+                "end " +
+                "";
+
+        KieSession kSession = buildKnowledgeSession( src.getBytes() );
+        List<Object> list = new LinkedList<Object>();
+        kSession.setGlobal( "list", list );
+
+        System.out.println( "====================================================================================" );
+        kSession.insert( newMessage( kSession, "John", "Peter", "Hello", "X" ) );
+        kSession.fireAllRules();
+        assertTrue( list.contains( 0 ) );
+
+        System.out.println( "================================= SLEEP =========================================" );
+        sleep( 20 );
+        System.out.println( "================================= WAAKE =========================================" );
+
+        kSession.insert( newMessage( kSession, "Peter", "John", "Hello back", "Y" ) );
+        kSession.fireAllRules();
+        System.out.println( "================================= DONE =========================================" );
+
+
+
+
+        System.out.println(reportWMObjects(kSession));
+        assertEquals(Arrays.asList(0, "AM1"), list);
+        assertEquals( 1, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+
+        sleep(30);
+        kSession.insert( newMessage( kSession, "John", "Peter", "Hello again", "Y" ) );
+        sleep(10);
+        kSession.insert( newMessage( kSession, "Peter", "Steve", "Hello", "X" ) );
+        kSession.fireAllRules();
+        assertEquals( Arrays.asList( 0, "AM1", 0 ), list );
+        assertEquals( 1, countMeta(Fulfill.class.getName(), kSession) );
+        assertEquals( 2, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+
+        sleep( 150 );
+
+        kSession.fireAllRules();
+
+        assertEquals( Arrays.asList( 0, "AM1", 0, "AM2" ), list );
+        assertEquals( 1, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Viol.class.getName(), kSession ) );
+
+
     }
 
     @Test

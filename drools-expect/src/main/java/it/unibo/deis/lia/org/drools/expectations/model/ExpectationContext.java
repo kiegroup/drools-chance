@@ -6,9 +6,12 @@ import org.kie.api.definition.type.Position;
 import org.kie.api.definition.type.PropertyReactive;
 import org.kie.api.runtime.rule.Match;
 
-@PropertyReactive
-public class ExpectationContext {
+import java.io.Serializable;
 
+@PropertyReactive
+public class ExpectationContext implements Serializable {
+
+    private static final long serialVersionUID = -3564358457726574602L;
     @Key
     @Position( 0 )
     private long ctxId;

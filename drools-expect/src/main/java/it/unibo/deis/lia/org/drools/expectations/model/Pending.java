@@ -9,12 +9,14 @@ import org.kie.api.definition.type.Role;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Role( Role.Type.EVENT )
 @PropertyReactive
-public class Pending {
+public class Pending implements Serializable {
 
+    private static final long serialVersionUID = -669101176444937215L;
     @Key
     @Position( 0 )
     private String label;

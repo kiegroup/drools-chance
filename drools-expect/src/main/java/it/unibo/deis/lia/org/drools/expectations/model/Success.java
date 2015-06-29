@@ -2,11 +2,13 @@ package it.unibo.deis.lia.org.drools.expectations.model;
 
 import org.kie.api.definition.type.Role;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Role( Role.Type.EVENT )
-public class Success implements ExpectationResult {
+public class Success implements ExpectationResult, Serializable {
 
+    private static final long serialVersionUID = -330971009668327807L;
     private long originId;
 
     private String ruleName;

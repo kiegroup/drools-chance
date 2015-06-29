@@ -10,11 +10,13 @@ import org.kie.api.definition.type.PropertyReactive;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
+import java.io.Serializable;
 import java.util.List;
 
 @PropertyReactive
-public class Expectation {
+public class Expectation implements Serializable {
 
+    private static final long serialVersionUID = 4773544980103621154L;
     // id of the initial activation
     @Key @Position( 0 )
     private long originId;

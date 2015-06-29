@@ -4,12 +4,14 @@ import org.kie.api.definition.type.Key;
 import org.kie.api.definition.type.PropertyReactive;
 import org.kie.api.definition.type.Role;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Role( Role.Type.EVENT )
 @PropertyReactive
-public class Viol implements ExpectationResult {
+public class Viol implements ExpectationResult, Serializable {
 
+    private static final long serialVersionUID = -6363181832369683908L;
     // id of the initial activation
     @Key
     private long originId;

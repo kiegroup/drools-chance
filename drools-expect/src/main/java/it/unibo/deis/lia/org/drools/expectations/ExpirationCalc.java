@@ -3,16 +3,7 @@ package it.unibo.deis.lia.org.drools.expectations;
 import org.drools.compiler.compiler.DescrBuildError;
 import org.drools.compiler.compiler.DrlExprParser;
 import org.drools.compiler.compiler.DroolsParserException;
-import org.drools.compiler.lang.descr.AndDescr;
-import org.drools.compiler.lang.descr.BaseDescr;
-import org.drools.compiler.lang.descr.ConditionalElementDescr;
-import org.drools.compiler.lang.descr.ConstraintConnectiveDescr;
-import org.drools.compiler.lang.descr.ExprConstraintDescr;
-import org.drools.compiler.lang.descr.NotDescr;
-import org.drools.compiler.lang.descr.OperatorDescr;
-import org.drools.compiler.lang.descr.OrDescr;
-import org.drools.compiler.lang.descr.PatternDescr;
-import org.drools.compiler.lang.descr.RelationalExprDescr;
+import org.drools.compiler.lang.descr.*;
 import org.drools.core.base.evaluators.Operator;
 import org.drools.core.base.evaluators.TimeIntervalParser;
 import org.kie.internal.builder.conf.LanguageLevelOption;
@@ -33,8 +24,14 @@ public class ExpirationCalc {
             return offset;
         } else if ( ce instanceof OrDescr ) {
             long offset = 0;
-            for ( BaseDescr child : ( (AndDescr) ce ).getDescrs() ) {
-                offset = Math.max( offset, calcExpirationOffset( trigger, child ) );
+            for (BaseDescr child : ((AndDescr) ce).getDescrs()) {
+                offset = Math.max(offset, calcExpirationOffset(trigger, child));
+            }
+            return offset;
+        } else if ( ce instanceof ForallDescr) {
+            long offset = 0;
+            for (BaseDescr child: ((ForallDescr)ce).getDescrs()) {
+                offset = Math.max(offset, calcExpirationOffset(trigger, child));
             }
             return offset;
         } else if ( ce instanceof PatternDescr ) {
