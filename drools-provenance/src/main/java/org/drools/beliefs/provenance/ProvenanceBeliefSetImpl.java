@@ -13,6 +13,7 @@ import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.factmodel.AnnotationDefinition;
 import org.drools.core.metadata.*;
 import org.drools.core.process.core.Work;
+import org.drools.core.rule.Declaration;
 import org.drools.core.rule.Pattern;
 import org.drools.core.rule.RuleConditionElement;
 import org.drools.core.spi.Activation;
@@ -134,8 +135,12 @@ public class ProvenanceBeliefSetImpl
 
     private Map<String, Object> buildContext( Activation justifier ) {
         Map map = new HashMap();
+        String currentConsequenceName = justifier.getConsequence().getName();
+        Map<String, Declaration> declarationMap = justifier.getSubRule().getInnerDeclarations(currentConsequenceName);
         for ( String declaration :justifier.getSubRule().getOuterDeclarations().keySet() ) {
-            map.put( declaration, justifier.getDeclarationValue( declaration ) );
+            if (declarationMap.containsKey(declaration)) {
+                map.put(declaration, justifier.getDeclarationValue(declaration));
+            }
         }
         return TemplateRegistry.sanitize( map );
     }
