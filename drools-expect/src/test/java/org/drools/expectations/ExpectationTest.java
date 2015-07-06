@@ -16,9 +16,15 @@
 
 package org.drools.expectations;
 
+import it.unibo.deis.lia.org.drools.expectations.Expectations;
 import it.unibo.deis.lia.org.drools.expectations.model.*;
+import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
+import org.drools.core.marshalling.impl.IdentityPlaceholderResolverStrategy;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.kie.api.KieBase;
 import org.kie.api.KieServices;
+import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.KieSession;
 
 import java.io.ByteArrayInputStream;
@@ -33,75 +39,105 @@ import static org.junit.Assert.*;
 public class ExpectationTest extends ExpTestBase {
 
     @Test
-    public void testMarshall() throws Exception {
+    @Ignore
+    public void testMarshall() {
+
         String src = "" +
                 "package org.drools; " +
+                "import org.drools.expectations.*; " +
+                "global java.util.List list; " +
 
                 "declare Msg " +
                 "   @role(event) " +
-                "   sender   :   String @key " +
-                "   receiver   :   String @key " +
-                "   body      :   String @key " +
-                "   more      :   String " +
+                "   sender : String     @key " +
+                "   receiver : String   @key " +
+                "   body : String       @key " +
+                "   more : String       @key " +
                 "end " +
-                " " +
-                "declare Interrupt " +
-                "   reason   :   String @key " +
-                "end " +
-                " " +
-                "global java.util.List list; " +
 
-                "rule FailsOn_Test_Rule " +
+                "rule 'Expect' " +
                 "when " +
-                "   $trigger: Msg( 'John', 'Peter', 'Hello' ; ) " +
+                "   $trigger : Msg( 'John', 'Peter', 'Hello' ; ) " +
                 "then " +
                 "   expect Msg( 'Peter', 'John', 'Hello back', $more ; this after[0,100ms] $trigger ) " +
-                "   failsOn Interrupt( 'ignore' ; ) " +
                 "   onFulfill { " +
-                "      list.add( 'F1'+$more ); " +
-                "      System.out.println( 'Expectation fulfilled' ); " +
+                "       list.add( 'F1' + $more ); " +
                 "   } onViolation { " +
-                "      System.out.println( 'Expectation violated' ); " +
+                "       System.out.println( 'Violation!!!' ); " +
+                "       list.add( 'V1' ); " +
                 "   } " +
-                "   list.add( 0 ); " +
-                "   System.out.println( 'Triggered expectation: '+$trigger ); " +
-                "end";
+                "end " +
+                "";
 
-        KieSession kSession = buildKnowledgeSession( src.getBytes() );
+        KieSession kSession = buildKnowledgeSession(src.getBytes());
+
+
         List<Object> list = new LinkedList<Object>();
-        kSession.setGlobal("list", list);
+        kSession.setGlobal( "list", list );
 
-        System.out.println("====================================================================================");
-        kSession.insert(newMessage(kSession, "John", "Peter", "Hello", "X"));
-        kSession.fireAllRules();
-        assertTrue(list.contains(0));
-
-        /**
-         * Causes the failsOn rule (which currently is named with *__Expire suffix) to activate
-         **/
-        sleep(10);
-        kSession.insert(newInterrupt(kSession, "ignore"));
-        kSession.fireAllRules();
-        sleep(50);
-
-        /**
-         * Shouldn't cause anything more to activate (due to Closure occurring earlier),
-         * but at this time the onFulfill rule activates
-         */
-        kSession.insert(newMessage(kSession, "Peter", "John", "Hello back", "Y"));
+        kSession.insert( newMessage( kSession, "John", "Peter", "Hello", "X" ) );
         kSession.fireAllRules();
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        kSession.insert( newMessage( kSession, "Peter", "John", "Hello back", "Y" ) );
+        kSession.fireAllRules();
+        kSession.insert( newMessage( kSession, "Peter", "John", "Hello back", "Y2" ) );
+        kSession.fireAllRules();
 
-        KieServices.Factory
-                .get()
-                .getMarshallers()
-                .newMarshaller(kSession.getKieBase()).marshall(baos, kSession);
+        assertTrue( list.contains( "F1Y" ) );
+        assertTrue( list.contains( "F1Y2" ) );
+        assertFalse( list.contains( "V1" ) );
+        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
 
-        KieServices.Factory
-                .get()
-                .getMarshallers()
-                .newMarshaller(kSession.getKieBase()).unmarshall(new ByteArrayInputStream(baos.toByteArray()));
+        sleep( 150 );
+
+        System.out.println( reportWMObjects( kSession ) );
+
+        kSession.insert( newMessage( kSession, "Peter", "John", "Hello back", "Y3" ) );
+        kSession.fireAllRules();
+
+        System.out.println( reportWMObjects( kSession ) );
+
+        assertFalse( list.contains( "F1Y3" ) );
+        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Expectation.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+
+        sleep( 10 );
+
+        kSession.insert( newMessage( kSession, "John", "Peter", "Hello", "X2" ) );
+
+        System.out.println( reportWMObjects( kSession ) );
+
+        kSession.fireAllRules();
+
+        System.out.println( reportWMObjects( kSession ) );
+
+        assertEquals( Arrays.asList( "F1Y", "F1Y2" ), list );
+        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
+
+        ByteArrayOutputStream baos = this.marshallSession(kSession);
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        kSession.dispose();
+
+        kSession = this.unmarshallSession(kSession.getKieBase(),bais);
+        sleep( 110 );
+
+        kSession.addEventListener(new org.kie.api.event.rule.DebugAgendaEventListener());
+        kSession.fireAllRules();
+        System.out.println(reportWMObjects(kSession));
+
+//        assertTrue( list.contains( "V1" ) );
+
+
+        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
+        assertEquals( 0, countMeta( Pending.class.getName(), kSession ) );
+        assertEquals( 1, countMeta( Viol.class.getName(), kSession ) );
+        assertEquals( 2 ,countMeta( Expectation.class.getName(), kSession ) );
 
     }
 

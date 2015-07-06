@@ -6,7 +6,7 @@ import org.kie.api.definition.type.Position
 rule "org.drools.expectations.CloseAll_Fail"
 when
     $c : Closure( label == "*" )
-    $e : Expectation( $context, $label, $act, $actId, $tuple ; active == true, $ruleName : ruleName  )
+    $e : Expectation( $context, $label, $actId, $tuple ; active == true, $ruleName : ruleName  )
     not Fulfill( label == $label, expId == $actId )
 then
     insert( new Viol( $context, $label, $actId, drools.getMatch().getActivationNumber(), $tuple , false, $ruleName) );
@@ -18,7 +18,7 @@ end
 rule "org.drools.expectations.CloseAll"
 when
     $c : Closure( label == "*" )
-    $e : Expectation( $context, $label, $act, $actId, $tuple ; active == true, $t0 : start )
+    $e : Expectation( $context, $label, $actId, $tuple ; active == true, $t0 : start )
     exists Fulfill( label == $label, expId == $actId )
 then
     long t1 = ((org.drools.core.common.EventFactHandle) drools.getFactHandle($c)).getStartTimestamp();
@@ -31,7 +31,7 @@ end
 rule "org.drools.expectations.Closure"
 when
     $c : Closure( $label ; )
-    $e : Expectation( $context, $label, $act, $actId, $tuple ; active == true, $ruleName : ruleName )
+    $e : Expectation( $context, $label, $actId, $tuple ; active == true, $ruleName : ruleName )
 then
     insert( new Viol( $context, $label, $actId, drools.getMatch().getActivationNumber(), $tuple , false, $ruleName) );
 end
@@ -45,10 +45,9 @@ then
 end
 
 
-
 rule "org.drools.expectations.ClipF"
 when
-    $e : Expectation( $context, $lab, $act, $actId ; active == true, $t0 : start )
+    $e : Expectation( $context, $lab, $actId ; active == true, $t0 : start )
     $f : Fulfill( label == $lab, expId == $actId )
 then
     long t1 = ( (org.drools.core.common.EventFactHandle) drools.getFactHandle($f) ).getStartTimestamp();
@@ -61,16 +60,16 @@ end
 rule "org.drools.expectations.Pending"
 @Direct
 when
-    Expectation( $context, $lab , $act, $actId, $tuple ; active == true )
+    Expectation( $context, $lab , $actId, $tuple ; active == true )
 then
-    insertLogical( new Pending( $lab, $act, $actId, $tuple ) );
+    insertLogical( new Pending( $lab, $actId, $tuple ) );
 end
 
 
 rule "org.drools.expectations.Mark"
 @Direct
 when
-    $e: Expectation( $context, $label, $act, $actId ; active == true, fulfilled == false )
+    $e: Expectation( $context, $label, $actId ; active == true, fulfilled == false )
     Fulfill( label == $label, expId == $actId )
 then
     modify ( $e ) {
@@ -81,7 +80,7 @@ end
 rule "org.drools.expectations.OneShot"
 salience -1
 when
-    $e: OneShotExpectation( $context, $label, $act, $actId ; active == true )
+    $e: OneShotExpectation( $context, $label, $actId ; active == true )
     Fulfill( label == $label, expId == $actId )
 then
     modify ( $e ) {

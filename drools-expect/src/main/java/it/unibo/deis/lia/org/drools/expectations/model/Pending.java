@@ -21,19 +21,15 @@ public class Pending implements Serializable {
     @Position( 0 )
     private String label;
 
-    @Position( 1 )
-    private Match act;
-
     @Key
-    @Position( 2 )
+    @Position( 1 )
     private long actId;
 
-    @Position( 3 )
+    @Position( 2 )
     private List tuple;
 
-    public Pending( String label, Match act, long actId, List tuple ) {
+    public Pending( String label, long actId, List tuple ) {
         this.label = label;
-        this.act = act;
         this.actId = actId;
         this.tuple = tuple;
     }
@@ -71,14 +67,6 @@ public class Pending implements Serializable {
         this.label = label;
     }
 
-    public Match getAct() {
-        return act;
-    }
-
-    public void setAct( Match act ) {
-        this.act = act;
-    }
-
     public long getActId() {
         return actId;
     }
@@ -101,7 +89,6 @@ public class Pending implements Serializable {
                "label='" + label + '\'' +
                //", act=" + act +
                ", actId=" + actId +
-               ", tuple=" + Expectations.formatTuple( act ) +
                '}';
     }
 

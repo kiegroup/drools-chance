@@ -19,19 +19,29 @@ package org.drools.expectations;
 
 import it.unibo.deis.lia.org.drools.expectations.ECEHelper;
 import it.unibo.deis.lia.org.drools.expectations.model.Expectation;
+import it.unibo.deis.lia.org.drools.expectations.model.ExpectationContext;
 import org.drools.compiler.builder.impl.ECE;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import it.unibo.deis.lia.org.drools.expectations.DRLExpectationHelper;
 import org.drools.core.ClockType;
+import org.drools.core.WorkingMemory;
 import org.drools.core.common.DefaultFactHandle;
 import org.drools.core.common.EventFactHandle;
+import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
+import org.drools.core.marshalling.impl.IdentityPlaceholderResolverStrategy;
+import org.drools.core.spi.Activation;
+import org.drools.core.spi.ConsequenceExceptionHandler;
 import org.drools.core.time.SessionPseudoClock;
+import org.drools.core.util.DroolsStreamUtils;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.type.FactType;
+import org.kie.api.marshalling.Marshaller;
+import org.kie.api.marshalling.ObjectMarshallingStrategy;
+import org.kie.api.marshalling.ObjectMarshallingStrategyAcceptor;
 import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
@@ -42,6 +52,9 @@ import org.kie.internal.KnowledgeBaseFactory;
 import org.kie.internal.builder.conf.RuleEngineOption;
 import org.kie.internal.definition.KnowledgePackage;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,15 +69,57 @@ import static org.junit.Assert.fail;
 public class ExpTestBase {
 
     protected SessionClock clock;
+    private Marshaller marshaller;
+
+    public class TestConsequenceHandler implements ConsequenceExceptionHandler {
+
+        @Override
+        public void handleException(Activation activation, WorkingMemory workingMemory, Exception exception) {
+            System.err.println("Consequence error in activation: "+activation.getRule());
+            if (activation.getSubRule() != null) {
+                System.err.println("  sub-rule name: "+activation.getSubRule().getChildren());
+            }
+            System.err.println("Consequence: "+activation.getConsequence().getName());
+            exception.printStackTrace();
+        }
+    }
 
     public KieSession buildKnowledgeSession( byte[] source ) {
         KieSession kieSession = new ECEHelper().addECEContent( new String( source ) ).newECESession( false );
-
+        marshaller = KieServices.Factory.get().getMarshallers().newMarshaller(kieSession.getKieBase());
         clock = kieSession.getSessionClock();
         assertEquals( 0, kieSession.getObjects().size() );
         return kieSession;
     }
 
+    public ByteArrayOutputStream marshallSession(KieSession session) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            KieServices.Factory
+                    .get()
+                    .getMarshallers()
+                    .newMarshaller(session.getKieBase()).marshall(baos, session);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return baos;
+    }
+
+    public KieSession unmarshallSession(KieBase kbase, ByteArrayInputStream bais) {
+        KieSession kSession = null;
+        try {
+            kSession = KieServices.Factory
+                    .get()
+                    .getMarshallers()
+                    .newMarshaller(kbase).unmarshall(bais);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return kSession;
+    }
 
 
     public static String reportWMObjects( KieSession session ) {
