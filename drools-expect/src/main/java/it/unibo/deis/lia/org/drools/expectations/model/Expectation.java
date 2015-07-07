@@ -25,41 +25,36 @@ public class Expectation implements Serializable {
     @Key @Position( 1 )
     private String label;
 
-    // activation which generated the expectation
-    @Position( 2 )
-    private Match act;
-
     // quick reference to act.id
-    @Key @Position( 3 )
+    @Key @Position( 2 )
     private long actId;
 
     // tuple which generated the expectation (ref to act.tuple)
-    @Position( 4 )
+    @Position( 3 )
     private List tuple;
 
     // timestamp of the expectation's generation
-    @Position( 5 )
+    @Position( 4 )
     private long start;
 
     // (timestamp of the moment the expectation is fulfilled/violated) - start
-    @Position( 6 )
+    @Position( 5 )
     private long duration;
 
     // true if pending
-    @Position( 7 )
+    @Position( 6 )
     private boolean active;
 
     // name of the rule the expectation is declared within
-    @Position( 8 )
+    @Position( 7 )
     private String ruleName;
 
-    @Position( 9 )
+    @Position( 8 )
     private boolean fulfilled;
 
-    public Expectation( long originId, String label, Match act, long actId, List tuple, long start, long duration, boolean active, String ruleName ) {
+    public Expectation( long originId, String label, long actId, List tuple, long start, long duration, boolean active, String ruleName ) {
         this.originId = originId;
         this.label = label;
-        this.act = act;
         this.actId = actId;
         this.tuple = tuple;
         this.start = start;
@@ -90,14 +85,6 @@ public class Expectation implements Serializable {
 
     public void setLabel( String label ) {
         this.label = label;
-    }
-
-    public Match getAct() {
-        return act;
-    }
-
-    public void setAct( Match act ) {
-        this.act = act;
     }
 
     public long getActId() {
@@ -185,7 +172,6 @@ public class Expectation implements Serializable {
                ", label='" + label + '\'' +
                //", act=" + act +
                ", actId=" + actId +
-               ", tuple=" + Expectations.formatTuple( act ) +
                ", start=" + start +
                ", duration=" + duration +
                ", active=" + active +

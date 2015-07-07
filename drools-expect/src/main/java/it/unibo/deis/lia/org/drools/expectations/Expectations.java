@@ -11,6 +11,8 @@ import org.drools.core.common.InternalFactHandle;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
+import java.util.List;
+
 public class Expectations {
 
     public static Expectation newExpectation( String label,
@@ -39,7 +41,6 @@ public class Expectations {
             return new Expectation(
                     ((org.drools.core.spi.Activation) currentMatch).getActivationNumber(),
                     label,
-                    currentMatch,
                     ((org.drools.core.spi.Activation) currentMatch).getActivationNumber(),
                     __templist,
                     now,
@@ -51,9 +52,9 @@ public class Expectations {
 
     public static Fulfill newFulfill( String label,
                                       String ruleName,
+                                      Expectation expectation,
                                       Match currentMatch,
-                                      long $___initial_activation_ID,
-                                      Match $___pending_expectation_act ) {
+                                      long $___initial_activation_ID ) {
 
         java.util.List __exp_fulfill_args = new java.util.ArrayList( currentMatch.getObjects() );
         __exp_fulfill_args.remove( __exp_fulfill_args.size() - 1 );
@@ -61,18 +62,18 @@ public class Expectations {
         return new Fulfill(
                 $___initial_activation_ID,
                 label,
-                ((org.drools.core.spi.Activation) $___pending_expectation_act).getActivationNumber(),
+                expectation.getActId(),
                 ((org.drools.core.spi.Activation) currentMatch).getActivationNumber(),
-                new java.util.ArrayList( $___pending_expectation_act.getObjects() ),
+                expectation.getTuple(),
                 __exp_fulfill_args,
                 ruleName );
     }
 
     public static Viol newViolation( String label,
                                      String ruleName,
+                                     Expectation expectation,
                                      Match currentMatch,
-                                     long $___initial_activation_ID,
-                                     Match $___pending_expectation_act ) {
+                                     long $___initial_activation_ID ) {
 
         java.util.List __exp_fulfill_args = new java.util.ArrayList( currentMatch.getObjects() );
         __exp_fulfill_args.remove( __exp_fulfill_args.size() - 1 );
@@ -80,9 +81,9 @@ public class Expectations {
         return new Viol(
                 $___initial_activation_ID,
                 label,
-                ((org.drools.core.spi.Activation) $___pending_expectation_act).getActivationNumber(),
+                expectation.getActId(),
                 ((org.drools.core.spi.Activation) currentMatch).getActivationNumber(),
-                new java.util.ArrayList( $___pending_expectation_act.getObjects() ),
+                expectation.getTuple(),
                 false,
                 ruleName );
     }
