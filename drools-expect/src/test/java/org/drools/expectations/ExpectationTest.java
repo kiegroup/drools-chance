@@ -39,7 +39,6 @@ import static org.junit.Assert.*;
 public class ExpectationTest extends ExpTestBase {
 
     @Test
-    @Ignore
     public void testMarshall() {
 
         String src = "" +
@@ -92,52 +91,52 @@ public class ExpectationTest extends ExpTestBase {
 
         sleep( 150 );
 
-        System.out.println( reportWMObjects( kSession ) );
-
-        kSession.insert( newMessage( kSession, "Peter", "John", "Hello back", "Y3" ) );
         kSession.fireAllRules();
-
         System.out.println( reportWMObjects( kSession ) );
-
-        assertFalse( list.contains( "F1Y3" ) );
-        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
-        assertEquals( 1, countMeta( Expectation.class.getName(), kSession ) );
-        assertEquals( 0, countMeta( Pending.class.getName(), kSession ) );
-        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
-
-        sleep( 10 );
-
-        kSession.insert( newMessage( kSession, "John", "Peter", "Hello", "X2" ) );
-
-        System.out.println( reportWMObjects( kSession ) );
-
-        kSession.fireAllRules();
-
-        System.out.println( reportWMObjects( kSession ) );
-
-        assertEquals( Arrays.asList( "F1Y", "F1Y2" ), list );
-        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
-        assertEquals( 1, countMeta( Pending.class.getName(), kSession ) );
-        assertEquals( 0, countMeta( Viol.class.getName(), kSession ) );
 
         ByteArrayOutputStream baos = this.marshallSession(kSession);
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         kSession.dispose();
+        KieSession kieSession = this.unmarshallSession(bais);
 
-        kSession = this.unmarshallSession(kSession.getKieBase(),bais);
-        sleep( 110 );
+        // Note: We have to re-establish our connection with the list that is in the reconstituted session
+        list = (List)kieSession.getGlobal("list");
+        System.out.println( reportWMObjects(kieSession) );
 
-        kSession.addEventListener(new org.kie.api.event.rule.DebugAgendaEventListener());
-        kSession.fireAllRules();
-        System.out.println(reportWMObjects(kSession));
+        kieSession.insert( newMessage( kieSession, "Peter", "John", "Hello back", "Y3" ) );
 
-//        assertTrue( list.contains( "V1" ) );
+        System.out.println( reportWMObjects( kieSession ) );
+
+        assertFalse( list.contains( "F1Y3" ) );
+        assertEquals( 2, countMeta( Fulfill.class.getName(), kieSession ) );
+        assertEquals( 1, countMeta( Expectation.class.getName(), kieSession ) );
+        assertEquals(0, countMeta(Pending.class.getName(), kieSession));
+        assertEquals(0, countMeta(Viol.class.getName(), kieSession));
+
+        sleep(10);
 
 
-        assertEquals( 2, countMeta( Fulfill.class.getName(), kSession ) );
-        assertEquals( 0, countMeta( Pending.class.getName(), kSession ) );
-        assertEquals( 1, countMeta( Viol.class.getName(), kSession ) );
-        assertEquals( 2 ,countMeta( Expectation.class.getName(), kSession ) );
+        kieSession.insert(newMessage(kieSession, "John", "Peter", "Hello", "X2"));
+        kieSession.fireAllRules();
+        System.out.println(reportWMObjects(kieSession));
+
+        assertEquals(Arrays.asList("F1Y", "F1Y2"), list);
+        assertEquals(2, countMeta(Fulfill.class.getName(), kieSession));
+        assertEquals(1, countMeta(Pending.class.getName(), kieSession));
+        assertEquals(0, countMeta(Viol.class.getName(), kieSession));
+
+        sleep(110);
+
+        kieSession.fireAllRules();
+        System.out.println(reportWMObjects(kieSession));
+
+        assertTrue(list.contains("V1"));
+
+
+        assertEquals(2, countMeta(Fulfill.class.getName(), kieSession));
+        assertEquals(0, countMeta(Pending.class.getName(), kieSession));
+        assertEquals(1, countMeta(Viol.class.getName(), kieSession));
+        assertEquals(2, countMeta(Expectation.class.getName(), kieSession));
 
     }
 
