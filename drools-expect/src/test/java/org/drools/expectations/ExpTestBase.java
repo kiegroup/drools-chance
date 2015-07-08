@@ -16,7 +16,8 @@
 
 package org.drools.expectations;
 
-
+import static org.kie.api.runtime.EnvironmentName.GLOBALS;
+import static org.kie.api.runtime.EnvironmentName.CALENDARS;
 import it.unibo.deis.lia.org.drools.expectations.ECEHelper;
 import it.unibo.deis.lia.org.drools.expectations.model.Expectation;
 import it.unibo.deis.lia.org.drools.expectations.model.ExpectationContext;
@@ -26,6 +27,8 @@ import it.unibo.deis.lia.org.drools.expectations.DRLExpectationHelper;
 import org.drools.core.ClockType;
 import org.drools.core.WorkingMemory;
 import org.drools.core.common.DefaultFactHandle;
+import org.drools.core.common.DroolsObjectInputStream;
+import org.drools.core.common.DroolsObjectOutputStream;
 import org.drools.core.common.EventFactHandle;
 import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
 import org.drools.core.marshalling.impl.IdentityPlaceholderResolverStrategy;
@@ -39,12 +42,11 @@ import org.kie.api.KieServices;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.type.FactType;
+import org.kie.api.marshalling.KieMarshallers;
 import org.kie.api.marshalling.Marshaller;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.marshalling.ObjectMarshallingStrategyAcceptor;
-import org.kie.api.runtime.ClassObjectFilter;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.*;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.time.SessionClock;
 import org.kie.internal.KnowledgeBase;
@@ -69,7 +71,9 @@ import static org.junit.Assert.fail;
 public class ExpTestBase {
 
     protected SessionClock clock;
-    private Marshaller marshaller;
+    private KieSessionConfiguration sessionConfig;
+    private Environment sessionEnvironment;
+    private KieBase kieBase;
 
     public class TestConsequenceHandler implements ConsequenceExceptionHandler {
 
@@ -85,34 +89,48 @@ public class ExpTestBase {
     }
 
     public KieSession buildKnowledgeSession( byte[] source ) {
-        KieSession kieSession = new ECEHelper().addECEContent( new String( source ) ).newECESession( false );
-        marshaller = KieServices.Factory.get().getMarshallers().newMarshaller(kieSession.getKieBase());
+        KieSession kieSession = new ECEHelper().addECEContent(new String(source)).newECESession(false);
+        kieBase = kieSession.getKieBase();
+        sessionConfig = kieSession.getSessionConfiguration();
+        sessionEnvironment = kieSession.getEnvironment();
         clock = kieSession.getSessionClock();
         assertEquals( 0, kieSession.getObjects().size() );
         return kieSession;
     }
 
+    private Marshaller createMarshaller(KieBase kBase) {
+        KieMarshallers marshallers = KieServices.Factory.get().getMarshallers();
+        ObjectMarshallingStrategyAcceptor acceptor = marshallers.newClassFilterAcceptor(new String[]{"*.*"});
+        ObjectMarshallingStrategy strategy = marshallers.newSerializeMarshallingStrategy(acceptor);
+        return marshallers.newMarshaller(kBase,new ObjectMarshallingStrategy[] {strategy});
+    }
+
     public ByteArrayOutputStream marshallSession(KieSession session) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
+        KieBase kBase = session.getKieBase();
         try {
-            KieServices.Factory
-                    .get()
-                    .getMarshallers()
-                    .newMarshaller(session.getKieBase()).marshall(baos, session);
+            DroolsObjectOutputStream stream = new DroolsObjectOutputStream(baos);
+            stream.writeObject(kBase);
+            stream.writeObject(session.getGlobals());
+            stream.writeObject(session.getCalendars());
+            createMarshaller(kBase).marshall(stream, session);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return baos;
     }
 
-    public KieSession unmarshallSession(KieBase kbase, ByteArrayInputStream bais) {
+    public KieSession unmarshallSession(ByteArrayInputStream bais) {
         KieSession kSession = null;
         try {
-            kSession = KieServices.Factory
-                    .get()
-                    .getMarshallers()
-                    .newMarshaller(kbase).unmarshall(bais);
+            DroolsObjectInputStream stream = new DroolsObjectInputStream(bais);
+            KieBase base = (KieBase)stream.readObject();
+            Globals globals = (Globals)stream.readObject();
+            Calendars calendars = (Calendars)stream.readObject();
+            sessionEnvironment.set(GLOBALS, globals);
+            sessionEnvironment.set(CALENDARS, calendars);
+            kSession = createMarshaller(base).unmarshall(stream, sessionConfig, sessionEnvironment);
+            clock = kSession.getSessionClock();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -138,6 +156,7 @@ public class ExpTestBase {
 
         }
         String ans = " ================ WM " + session.getObjects().size() + " ==============\n";
+        ans += "Session Clock Current Time: "+session.getSessionClock().getCurrentTime()+"\n";
         while (! queue.isEmpty())
             ans += queue.poll();
         ans += " ================ END WM ===========\n";
@@ -218,7 +237,6 @@ public class ExpTestBase {
         }
         return null;
     }
-
 
     protected int countMeta( String type, KieSession ksession ) {
         Class klass = null;
