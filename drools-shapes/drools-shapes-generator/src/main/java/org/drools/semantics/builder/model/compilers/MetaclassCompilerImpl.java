@@ -22,12 +22,7 @@ import org.drools.core.metadata.OneToManyPropertyLiteral;
 import org.drools.core.metadata.OneToOnePropertyLiteral;
 import org.drools.core.metadata.ToManyPropertyLiteral;
 import org.drools.core.metadata.ToOnePropertyLiteral;
-import org.drools.semantics.builder.model.AbstractJavaModelImpl;
-import org.drools.semantics.builder.model.CompiledOntoModel;
-import org.drools.semantics.builder.model.Concept;
-import org.drools.semantics.builder.model.ModelFactory;
-import org.drools.semantics.builder.model.OntoModel;
-import org.drools.semantics.builder.model.PropertyRelation;
+import org.drools.semantics.builder.model.*;
 import org.drools.semantics.utils.NameUtils;
 import org.w3._2002._07.owl.Thing;
 
@@ -164,6 +159,7 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
 
         Concept parent = findConcreteParent( con, con.getChosenSuperConcept(), localProperties, properties );
 
+
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put( "klassName", con.getName() );
         map.put( "typeName", con.getName() );
@@ -239,7 +235,7 @@ public class MetaclassCompilerImpl extends ModelCompilerImpl implements Metaclas
             if ( !pack.equals( con.getPackage() ) ) {
                 continue;
             }
-            if ( ! con.isAbstrakt() ) {
+            if ( ! con.isAbstrakt() && model.getTraitNames().contains( con.getFullyQualifiedName() ) ) {
                 classNames.put( con.getName(), con.getFullyQualifiedName() );
             }
         }
