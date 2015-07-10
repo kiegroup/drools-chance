@@ -789,6 +789,19 @@ public class ProvenanceTest {
     }
 
     @Test
+    public void testProvenanceCollectionEvidence() {
+        KieSession kieSession = loadProvenanceSession("testProvenanceCollection.drl", null );
+
+        MyKlass mk = new MyKlassImpl();
+
+        kieSession.insert( mk );
+        kieSession.insert( "Test Display" );
+        kieSession.fireAllRules();
+
+        fail("This is throwing an exception...");
+    }
+
+    @Test
     public void testProvenanceNewWith() {
         List list = new ArrayList();
         KieSession kieSession = loadProvenanceSession("testTasks_newWith.drl", list );

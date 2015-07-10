@@ -7,12 +7,10 @@ import org.drools.beliefs.provenance.templates.TemplateRegistry;
 import org.drools.core.InitialFact;
 import org.drools.core.beliefsystem.BeliefSystem;
 import org.drools.core.beliefsystem.simple.SimpleBeliefSet;
-import org.drools.core.beliefsystem.simple.SimpleMode;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.factmodel.AnnotationDefinition;
 import org.drools.core.metadata.*;
-import org.drools.core.process.core.Work;
 import org.drools.core.rule.Declaration;
 import org.drools.core.rule.Pattern;
 import org.drools.core.rule.RuleConditionElement;
@@ -38,12 +36,12 @@ public class ProvenanceBeliefSetImpl
                                                 .withIdentifier( new Literal( "JBoss Drools " + Drools.getFullVersion() ) );
 
     public ProvenanceBeliefSetImpl( BeliefSystem beliefSystem, InternalFactHandle rootHandle ) {
-        super( beliefSystem, rootHandle );
+        super(beliefSystem, rootHandle);
     }
 
 
     public void recordActivity( MetaCallableTask task, Activation activation, boolean positiveAssertion ) {
-    	Activity activity = this.createActivity( task, activation, positiveAssertion );
+    	Activity activity = this.createActivity(task, activation, positiveAssertion);
         if ( activity == null ) {
             // no activity was actually performed
             return;
@@ -142,6 +140,21 @@ public class ProvenanceBeliefSetImpl
                 map.put(declaration, justifier.getDeclarationValue(declaration));
             }
         }
+
+        for ( RuleConditionElement element :justifier.getRule().getLhs().getChildren() ) {
+            if(element instanceof Pattern && ((Pattern) element).getSource() != null) {
+                for (RuleConditionElement nestedElement : ((Pattern) element).getSource().getNestedElements()) {
+                    declarationMap.putAll(nestedElement.getInnerDeclarations());
+                    for ( String declaration : nestedElement.getOuterDeclarations().keySet() ) {
+                        if (declarationMap.containsKey(declaration)) {
+                            // this thows a NPE
+                            //map.put(declaration, justifier.getDeclarationValue(declaration));
+                        }
+                    }
+                }
+            }
+        }
+
         return TemplateRegistry.sanitize( map );
     }
 
@@ -152,13 +165,30 @@ public class ProvenanceBeliefSetImpl
                 continue;
             }
 
-            if ( isEvidence( justifier.getRule().getLhs().getChildren().get( j ) ) ) {
-                Instance source = new InstanceImpl().withIdentifier( new Literal( MetadataContainer.getIdentifier( o ) ) );
+            RuleConditionElement element = justifier.getRule().getLhs().getChildren().get( j );
+            if(element instanceof Pattern && ((Pattern) element).getSource() != null) {
+                for(RuleConditionElement nestedElement : ((Pattern) element).getSource().getNestedElements()) {
+                    if (isEvidence( nestedElement )) {
+                        for (Object listObj : (List) o) {
+                            Instance source = new InstanceImpl().withIdentifier(new Literal(MetadataContainer.getIdentifier(listObj)));
 
-                subject.addWasDerivedFrom( source );
-                activity.addUsed( source );
+                            subject.addWasDerivedFrom(source);
+                            activity.addUsed(source);
 
-                decorateEvidence( source, justifier.getRule(), justifier.getRule().getLhs().getChildren().get( j ), context );
+
+                            decorateEvidence(source, justifier.getRule(), nestedElement, context);
+                        }
+                    }
+                }
+            } else {
+                if (isEvidence( element )) {
+                    Instance source = new InstanceImpl().withIdentifier(new Literal(MetadataContainer.getIdentifier(o)));
+
+                    subject.addWasDerivedFrom(source);
+                    activity.addUsed(source);
+
+                    decorateEvidence(source, justifier.getRule(), element, context);
+                }
             }
         }
 
