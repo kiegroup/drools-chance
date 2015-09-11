@@ -12,16 +12,16 @@
 	<parent>
 		<artifactId>drools-shapes-terms</artifactId>
 		<groupId>org.drools</groupId>
-		<version>6.3.0-SNAPSHOT</version>
+		<version>6.4.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.drools</groupId>
 	<artifactId>drools-shapes-terms-api</artifactId>
-	<version>6.3.0-SNAPSHOT</version>
+	<version>6.4.0-SNAPSHOT</version>
 
 	<properties>
-		<chance.version>6.3.0-SNAPSHOT</chance.version>
+		<chance.version>6.4.0-SNAPSHOT</chance.version>
 	</properties>
 
 	<dependencies>
