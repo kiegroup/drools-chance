@@ -143,6 +143,7 @@ public class AssignSuperMoveFactory implements MoveListFactory {
             }
 
             scoreDirector.afterVariableChanged( con, "chosenSuper" );
+            scoreDirector.triggerVariableListeners();
         }
 
         @Override

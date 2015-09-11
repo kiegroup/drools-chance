@@ -70,6 +70,8 @@ public class SolutionInitializer implements CustomPhaseCommand {
             } else {
                 con.setChosenSuper( con );
             }
+
+            scoreDirector.triggerVariableListeners();
         }
 
 
