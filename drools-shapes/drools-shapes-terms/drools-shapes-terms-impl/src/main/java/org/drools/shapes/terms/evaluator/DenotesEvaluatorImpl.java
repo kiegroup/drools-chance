@@ -77,7 +77,7 @@ public class DenotesEvaluatorImpl implements TermsInference {
 
 
     private boolean isSelf(ConceptDescriptor left, ConceptDescriptor right) {
-        return left.getUri().equals( right.getUri() );
+        return left.equals( right );
     }
 
     private EntityDescriptionQuery descendants(ConceptDescriptor right) {

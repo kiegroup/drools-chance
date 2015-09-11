@@ -112,7 +112,7 @@ public class CD implements ConceptDescriptor {
 
         ConceptDescriptor cd = (ConceptDescriptor) o;
 
-        if ( !uri.equals( cd.getUri() ) ) return false;
+        if ( !getUri().equals( cd.getUri() ) ) return false;
 
         return true;
     }

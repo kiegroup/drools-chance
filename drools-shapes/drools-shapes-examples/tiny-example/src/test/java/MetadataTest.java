@@ -5,6 +5,7 @@ import com.foo.MySubKlass_;
 
 import org.drools.core.metadata.InvertibleMetaProperty;
 import org.drools.core.metadata.Lit;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.test.MetaFactory;
 import org.test.MyKlass;
@@ -107,6 +108,7 @@ public class MetadataTest {
 
 
     @Test
+    @Ignore
     public void testPropertyChain() {
         MyTargetKlass tgt = (MyTargetKlass) MyTargetKlass_.newMyTargetKlass( "2" ).call();
         MyKlass src = (MyKlass) MyKlass_.newMyKlass( "1" ).call();
