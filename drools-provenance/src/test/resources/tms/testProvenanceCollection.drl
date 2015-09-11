@@ -26,5 +26,5 @@ when
         $k : MyKlass() @Evidence( { @Display( type="1", value="Value 1" ), @Display( type="2", value="@{$k.prop}" ) } )
     )
 then
-    bolster( MySubKlass_.newMySubKlass( "xxx" ) );
+    insertLogical( MySubKlass_.newMySubKlass( "xxx" ) );
 end
